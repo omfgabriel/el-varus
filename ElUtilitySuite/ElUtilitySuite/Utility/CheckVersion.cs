@@ -68,6 +68,9 @@
             {
                 Console.WriteLine(e);
             }
+
+            Hacks.DisableSay = false;
+            Hacks.DisableDrawings = false;
         }
 
         #endregion
