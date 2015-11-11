@@ -105,11 +105,8 @@
                 potionsMenu.AddItem(new MenuItem("Potions.Activated", "Potions activated").SetValue(true));
                 potionsMenu.AddItem(new MenuItem("Potions.Health", "Health potions").SetValue(true));
                 potionsMenu.AddItem(new MenuItem("Potions.Biscuit", "Biscuits").SetValue(true));
-                potionsMenu.AddItem(new MenuItem("Potions.Mana", "Mana potions").SetValue(true));
-                potionsMenu.AddItem(new MenuItem("Potions.Flask", "Crystalline Flask").SetValue(true));
                 potionsMenu.AddItem(new MenuItem("seperator.Potions", ""));
                 potionsMenu.AddItem(new MenuItem("Potions.Player.Health", "Health percentage").SetValue(new Slider(20)));
-                potionsMenu.AddItem(new MenuItem("Potions.Player.Mana", "Mana percentage").SetValue(new Slider(20)));
             }
 
             var protectMenu = Menu.AddSubMenu(new Menu("Protect yourself", "ProtectYourself"));
