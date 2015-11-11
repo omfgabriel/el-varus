@@ -46,8 +46,7 @@
 
         private static bool PotCheck()
         {
-            return Entry.Player.HasBuff("FlaskOfCrystalWater") || Entry.Player.HasBuff("RegenerationPotion")
-                   || Entry.Player.HasBuff("ItemCrystalFlask") || Entry.Player.HasBuff("ItemMiniRegenPotion");
+            return Entry.Player.HasBuff("RegenerationPotion") || Entry.Player.HasBuff("ItemMiniRegenPotion");
         }
 
         private static void PotionManager()
@@ -59,8 +58,6 @@
             }
 
             var healthPotion = ItemData.Health_Potion.GetItem();
-            var manaPotion = ItemData.Mana_Potion.GetItem();
-            var crystallineFlask = ItemData.Crystalline_Flask.GetItem();
             var biscuit = ItemData.Total_Biscuit_of_Rejuvenation2.GetItem();
 
             if (Entry.Player.Health / Entry.Player.MaxHealth * 100
@@ -75,28 +72,6 @@
                 if (biscuit.IsOwned(Entry.Player) && InitializeMenu.Menu.Item("Potions.Biscuit").GetValue<bool>())
                 {
                     biscuit.Cast();
-                }
-            }
-
-            if (Entry.Player.ManaPercent <= InitializeMenu.Menu.Item("Potions.Player.Mana").GetValue<Slider>().Value)
-            {
-                if (manaPotion.IsOwned(Entry.Player) && InitializeMenu.Menu.Item("Potions.Mana").GetValue<bool>())
-                {
-                    manaPotion.Cast();
-                }
-            }
-
-            if (Entry.Player.HealthPercent <= InitializeMenu.Menu.Item("Potions.Player.Health").GetValue<Slider>().Value
-                && Entry.Player.ManaPercent <= InitializeMenu.Menu.Item("Potions.Player.Mana").GetValue<Slider>().Value
-                || ObjectManager.Player.HealthPercent
-                <= (InitializeMenu.Menu.Item("Potions.Player.Health").GetValue<Slider>().Value / 2)
-                || ObjectManager.Player.ManaPercent
-                <= (InitializeMenu.Menu.Item("Potions.Player.Mana").GetValue<Slider>().Value / 2)
-                && InitializeMenu.Menu.Item("Potions.Flask").GetValue<bool>())
-            {
-                if (crystallineFlask.IsOwned(Entry.Player))
-                {
-                    crystallineFlask.Cast();
                 }
             }
         }
