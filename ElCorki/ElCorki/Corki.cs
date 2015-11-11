@@ -124,7 +124,7 @@
                 if (r && spells[Spells.R1].IsReady() && spells[Spells.R1].IsInRange(rTarget)
                     || spells[Spells.R2].IsInRange(rTarget))
                 {
-                    var bigR = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig");
+                    var bigR = HasBigRocket();
 
                     var _target = TargetSelector.GetTarget(
                         bigR ? spells[Spells.R2].Range : spells[Spells.R1].Range,
@@ -147,6 +147,11 @@
                     spells[Spells.Q].Cast(target);
                 }
             }
+        }
+
+        private static bool HasBigRocket()
+        {
+            return ObjectManager.Player.Buffs.Any(buff => buff.DisplayName.ToLower() == "corkimissilebarragecounterbig");
         }
 
         private static void Combo(Obj_AI_Base target)
@@ -183,7 +188,7 @@
                 && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Ammo > rStacks
                 && spells[Spells.R1].IsInRange(rTarget))
             {
-                var bigR = ObjectManager.Player.HasBuff("corkimissilebarragecounterbig");
+                var bigR = HasBigRocket();
 
                 var _target = TargetSelector.GetTarget(
                     bigR ? spells[Spells.R2].Range : spells[Spells.R1].Range,
@@ -192,19 +197,11 @@
                 {
                     if (bigR)
                     {
-                        var pred = spells[Spells.R2].GetPrediction(target);
-                        if (pred.Hitchance >= CustomHitChance)
-                        {
-                            spells[Spells.R2].Cast(target);
-                        }
+                        spells[Spells.R2].Cast(target);
                     }
                     else
                     {
-                        var pred = spells[Spells.R1].GetPrediction(target);
-                        if (pred.Hitchance >= CustomHitChance)
-                        {
-                            spells[Spells.R1].Cast(target);
-                        }
+                        spells[Spells.R1].Cast(target);
                     }
                 }
             }
