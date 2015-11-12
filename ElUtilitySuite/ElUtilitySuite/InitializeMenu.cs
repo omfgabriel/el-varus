@@ -114,16 +114,12 @@
                 protectMenu.SubMenu("Rengar")
                     .AddItem(new MenuItem("Protect.Rengar2", "Rengar antigapcloser - Beta").SetValue(false));
                 protectMenu.SubMenu("Rengar")
-                    .AddItem(new MenuItem("Protect.Rengar.Lens", "Oracle's Lens").SetValue(true));
-                protectMenu.SubMenu("Rengar")
                     .AddItem(new MenuItem("Protect.Rengar.Pinkward", "Pinkward").SetValue(true));
                 protectMenu.SubMenu("Rengar")
                     .AddItem(new MenuItem("Protect.Rengar.PinkwardTrinket", "Pink trinket").SetValue(true));
                 protectMenu.SubMenu("Akali").AddItem(new MenuItem("Protect.Akali", "Autopink Akali W").SetValue(true));
                 protectMenu.SubMenu("Akali").AddItem(new MenuItem("Protect.Akali.PinkWard", "Pinkward").SetValue(true));
                 protectMenu.SubMenu("Akali").AddItem(new MenuItem("Protect.Akali.Trinket", "Trinket").SetValue(true));
-                protectMenu.SubMenu("Akali")
-                    .AddItem(new MenuItem("Protect.Akali.Sweeping", "Oracle's Lens").SetValue(true));
                 protectMenu.SubMenu("Akali")
                     .AddItem(new MenuItem("Protect.Akali.HP", "Pink when Akali's HP:").SetValue(new Slider(50)));
             }

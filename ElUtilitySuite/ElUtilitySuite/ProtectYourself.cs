@@ -93,7 +93,6 @@
         {
             if (sender.Name == "Rengar_Base_R_Alert" || sender.Name == "Rengar_LeapSound.troy" && sender.IsEnemy)
             {
-                var oracleLens = ItemData.Oracles_Lens_Trinket.GetItem();
                 var pinkTrinket = ItemData.Greater_Vision_Totem_Trinket.GetItem();
                 var pinkWard = ItemData.Vision_Ward.GetItem();
 
@@ -101,13 +100,6 @@
                     ObjectManager.Get<Obj_AI_Hero>()
                         .Where(hero => hero.IsValidTarget(1500) && hero.ChampionName == "Rengar" && hero.IsEnemy))
                 {
-                    if (oracleLens.IsOwned(Entry.Player) && oracleLens.IsReady()
-                        && InitializeMenu.Menu.Item("Protect.Rengar.Lens").GetValue<bool>())
-                    {
-                        oracleLens.Cast(Entry.Player);
-                        return;
-                    }
-
                     if (pinkWard.IsOwned(Entry.Player) && pinkWard.IsReady()
                         && InitializeMenu.Menu.Item("Protect.Rengar.Pinkward").GetValue<bool>())
                     {
@@ -153,7 +145,7 @@
                         {
                             var pinkTrinket = ItemData.Greater_Vision_Totem_Trinket.GetItem();
                             var pinkWard = ItemData.Vision_Ward.GetItem();
-                            var oracleLens = ItemData.Oracles_Lens_Trinket.GetItem();
+                            //var oracleLens = ItemData.Oracles_Lens_Trinket.GetItem();
 
                             if (InitializeMenu.Menu.Item("usecombo").GetValue<KeyBind>().Active)
                             {
@@ -176,12 +168,6 @@
                                         && InitializeMenu.Menu.Item("Protect.Akali.Trinket").GetValue<bool>())
                                     {
                                         pinkTrinket.Cast(wardPos);
-                                    }
-
-                                    if (oracleLens.IsOwned(Entry.Player) && oracleLens.IsReady()
-                                        && InitializeMenu.Menu.Item("Protect.Akali.Sweeping").GetValue<bool>())
-                                    {
-                                        oracleLens.Cast(wardPos);
                                     }
 
                                     if (pinkWard.IsOwned(Entry.Player) && pinkWard.IsReady()
