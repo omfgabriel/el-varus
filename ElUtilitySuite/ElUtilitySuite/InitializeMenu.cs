@@ -30,10 +30,10 @@
         {
             Menu = new Menu("ElUtilitySuite", "ElUtilitySuite", true);
 
-            var smite = Entry.Player.Spellbook.Spells.FindAll(h => h.Name.ToLower().Contains("smite")).FirstOrDefault();
+           /* var smite = Entry.Player.Spellbook.Spells.FindAll(h => h.Name.ToLower().Contains("smite")).FirstOrDefault();
             if (smite != null && Smite.smiteSlot != SpellSlot.Unknown)
-            {
-                var smiteMenu = Menu.AddSubMenu(new Menu("Smite", "Smite"));
+            { }*/
+            var smiteMenu = Menu.AddSubMenu(new Menu("Smite", "Smite"));
                 {
                     smiteMenu.AddItem(
                         new MenuItem("ElSmite.Activated", "Activated").SetValue(
@@ -72,14 +72,13 @@
                     smiteMenu.SubMenu("Drawings")
                         .AddItem(new MenuItem("ElSmite.Draw.Damage", "Draw smite Damage").SetValue(true));
                 }
-            }
+           
 
             if (Entry.Player.GetSpellSlot("summonerheal") != SpellSlot.Unknown)
             {
                 var healMenu = Menu.AddSubMenu(new Menu("Heal", "Heal"));
                 {
                     healMenu.AddItem(new MenuItem("Heal.Activated", "Heal").SetValue(true));
-                    healMenu.AddItem(new MenuItem("Heal.Predicted", "Predict damage").SetValue(true));
                     healMenu.AddItem(new MenuItem("Heal.HP", "Health percentage").SetValue(new Slider(20, 1)));
                     healMenu.AddItem(new MenuItem("Heal.Damage", "Heal on Dmg dealt %").SetValue(new Slider(40, 1)));
                     healMenu.AddItem(new MenuItem("seperator21", ""));
@@ -105,6 +104,10 @@
                 potionsMenu.AddItem(new MenuItem("Potions.Activated", "Potions activated").SetValue(true));
                 potionsMenu.AddItem(new MenuItem("Potions.Health", "Health potions").SetValue(true));
                 potionsMenu.AddItem(new MenuItem("Potions.Biscuit", "Biscuits").SetValue(true));
+                potionsMenu.AddItem(new MenuItem("Potions.RefillablePotion", "Refillable Potion").SetValue(true));
+                potionsMenu.AddItem(new MenuItem("Potions.HuntersPotion", "Hunters Potion").SetValue(true));
+                potionsMenu.AddItem(new MenuItem("Potions.CorruptingPotion", "Corrupting Potion").SetValue(true));
+
                 potionsMenu.AddItem(new MenuItem("seperator.Potions", ""));
                 potionsMenu.AddItem(new MenuItem("Potions.Player.Health", "Health percentage").SetValue(new Slider(20)));
             }

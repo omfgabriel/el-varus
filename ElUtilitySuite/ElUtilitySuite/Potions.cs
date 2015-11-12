@@ -1,6 +1,7 @@
 ﻿namespace ElUtilitySuite
 {
     using System;
+    using System.Linq;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -24,7 +25,7 @@
         }
 
         #endregion
-
+        //2031
         #region Methods
 
         private static void OnUpdate(EventArgs args)
@@ -36,6 +37,7 @@
 
             try
             {
+                //Console.WriteLine("Buffs: {0}", string.Join(" | ", Entry.Player.Buffs.Select(b => b.DisplayName)));
                 PotionManager();
             }
             catch (Exception e)
@@ -46,8 +48,12 @@
 
         private static bool PotCheck()
         {
-            return Entry.Player.HasBuff("RegenerationPotion") || Entry.Player.HasBuff("ItemMiniRegenPotion");
+            return Entry.Player.HasBuff("RegenerationPotion") || Entry.Player.HasBuff("ItemMiniRegenPotion")
+                   || Entry.Player.HasBuff("ItemCrystalFlask") || Entry.Player.HasBuff("ItemCrystalFlaskJungle")
+                   || Entry.Player.HasBuff("ItemDarkCrystalFlask");
         }
+
+        
 
         private static void PotionManager()
         {
@@ -59,6 +65,9 @@
 
             var healthPotion = ItemData.Health_Potion.GetItem();
             var biscuit = ItemData.Total_Biscuit_of_Rejuvenation2.GetItem();
+            var refillablePotion = ItemData.Refillable_Potion.GetItem();
+            var huntersPotion = ItemData.Hunters_Potion.GetItem();
+            var corruptingPotion = ItemData.Corrupting_Potion.GetItem();
 
             if (Entry.Player.Health / Entry.Player.MaxHealth * 100
                 < InitializeMenu.Menu.Item("Potions.Player.Health").GetValue<Slider>().Value)
@@ -72,6 +81,21 @@
                 if (biscuit.IsOwned(Entry.Player) && InitializeMenu.Menu.Item("Potions.Biscuit").GetValue<bool>())
                 {
                     biscuit.Cast();
+                }
+
+                if (refillablePotion.IsOwned(Entry.Player) && InitializeMenu.Menu.Item("Potions.RefillablePotion").GetValue<bool>())
+                {
+                    refillablePotion.Cast();
+                }
+
+                if (huntersPotion.IsOwned(Entry.Player) && InitializeMenu.Menu.Item("Potions.HuntersPotion").GetValue<bool>())
+                {
+                    huntersPotion.Cast();
+                }
+
+                if (corruptingPotion.IsOwned(Entry.Player) && InitializeMenu.Menu.Item("Potions.CorruptingPotion").GetValue<bool>())
+                {
+                    corruptingPotion.Cast();
                 }
             }
         }
