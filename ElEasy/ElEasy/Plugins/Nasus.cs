@@ -407,24 +407,25 @@
 
         private static void OnLastHit()
         {
-            var minions = MinionManager.GetMinions(
+            var minion = MinionManager.GetMinions(
                 Player.Position,
-                spells[Spells.E].Range,
+                spells[Spells.Q].Range + 100,
                 MinionTypes.All,
-                MinionTeam.Enemy,
-                MinionOrderTypes.MaxHealth);
+                MinionTeam.NotAlly,
+                MinionOrderTypes.MaxHealth).FirstOrDefault(m => GetBonusDmg(m) > m.Health);
 
-            foreach (var minion in minions)
+            if (minion == null)
             {
-                if (GetBonusDmg(minion) > minion.Health && spells[Spells.Q].IsReady())
-                {
-                    /*Orbwalker.SetAttack(false);
-                    spells[Spells.Q].Cast();*/
-                    Orbwalker.SetAttack(false);
-                    Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
-                    Orbwalker.SetAttack(true);
-                }
+                return;
             }
+
+            if (GetBonusDmg(minion) > minion.Health && spells[Spells.Q].IsReady())
+            {
+                Orbwalker.SetAttack(false);
+                Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
+                Orbwalker.SetAttack(true);
+            }
+            
         }
 
         private static void OnUpdate(EventArgs args)
