@@ -308,10 +308,10 @@
         {
             if (sender.IsMe)
             {
-                if (RengarQ || RengarE)
+                /*if (RengarQ || RengarE)
                 {
                     Orbwalking.ResetAutoAttackTimer();
-                }
+                }*/
 
                 if (args.SData.Name == "RengarR")
                 {

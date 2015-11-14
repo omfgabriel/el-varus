@@ -25,21 +25,6 @@ namespace ElRengarRevamped
         {
             try
             {
-               /* var target = TargetSelector.GetSelectedTarget();
-                if (target == null || !target.IsValidTarget() || TargetSelector.GetSelectedTarget() == null)
-                {
-                    target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
-                }
-
-                if (TargetSelector.GetSelectedTarget() != null)
-                {
-                    if (Vector3.Distance(Player.ServerPosition, target.ServerPosition) < spells[Spells.Q].Range)
-                    {
-                        target = TargetSelector.GetSelectedTarget();
-                        TargetSelector.SetTarget(target);
-                    }
-                }*/
-
                 var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Physical);
                 if (!target.IsValidTarget() || target == null)
                 {
@@ -51,10 +36,10 @@ namespace ElRengarRevamped
                     Rengar._selectedEnemy = target;
                 }
 
-                if (Player.Spellbook.IsAutoAttacking || Player.IsWindingUp)
+                /*if (Player.Spellbook.IsAutoAttacking || Player.IsWindingUp)
                 {
                     return;
-                }
+                }*/
 
                 if (Youmuu.IsReady() && Player.Distance(target) <= spells[Spells.Q].Range && target.IsValidTarget())
                 {
@@ -134,7 +119,8 @@ namespace ElRengarRevamped
                     }
                 }
 
-                if (Ferocity <= 4)
+       
+                if (Ferocity <= 4 && Orbwalking.CanMove(100))
                 {
                     if (IsActive("Combo.Use.Q") && Rengar.LastQ + 200 < Environment.TickCount
                         && target.Distance(Player) < spells[Spells.Q].Range && target.IsValidTarget(spells[Spells.Q].Range))
@@ -153,7 +139,7 @@ namespace ElRengarRevamped
                         return;
                     }
 
-                   if (IsActive("Combo.Use.W"))
+                   if (IsActive("Combo.Use.W") && !Player.IsDashing() && !HasPassive)
                     {
                         CastW(target);
                     }

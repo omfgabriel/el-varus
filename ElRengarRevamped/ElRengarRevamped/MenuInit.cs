@@ -16,7 +16,12 @@
         public static void Initialize()
         {
             Menu = new Menu("ElRengar", "ElRengar", true);
-            Standards.Orbwalker = new Orbwalking.Orbwalker(OrbwalkingMenu());
+            //Standards.Orbwalker = new Orbwalking.Orbwalker(OrbwalkingMenu());
+
+            var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
+            Standards.Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+            Menu.AddSubMenu(orbwalkerMenu);
+
             TargetSelector.AddToMenu(TargetSelectorMenu());
 
             var comboMenu = Menu.AddSubMenu(new Menu("Modes", "Modes"));
@@ -58,8 +63,8 @@
                 clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("Jungle.Use.Q", "Use Q").SetValue(true));
                 clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("Jungle.Use.W", "Use W").SetValue(true));
                 clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("Jungle.Use.E", "Use E").SetValue(true));
-                clearMenu.SubMenu("Jungleclear")
-                    .AddItem(new MenuItem("Jungle.Movement2", "Movement in jungle off").SetValue(false));
+                /*clearMenu.SubMenu("Jungleclear")
+                    .AddItem(new MenuItem("Jungle.Movement2", "Movement in jungle off").SetValue(false));*/
                 clearMenu.SubMenu("Jungleclear")
                     .AddItem(new MenuItem("Jungle.Save.Ferocity", "Save ferocity").SetValue(false));
             }
@@ -119,10 +124,10 @@
 
         #region Methods
 
-        private static Menu OrbwalkingMenu()
+        /*private static Menu OrbwalkingMenu()
         {
             return Menu.AddSubMenu(new Menu("jQuery Orbwalker", "Orbwalker"));
-        }
+        }*/
 
         private static Menu TargetSelectorMenu()
         {
