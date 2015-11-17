@@ -281,6 +281,12 @@
             notificationsMenu.AddItem(new MenuItem("notifRecFinished", "Recall finished").SetValue(true));
             notificationsMenu.AddItem(new MenuItem("notifRecAborted", "Recall aborted").SetValue(true));
 
+            // TODO toggle individual spells
+            var zhonyaMenu = new Menu("Zhonya's Hourglass", "zhonya");
+            zhonyaMenu.AddItem(
+                new MenuItem("ZhonyaDangerous", "Use Zhonya's Hourglass on Dangerous Spell").SetValue(true));
+            Menu.AddSubMenu(zhonyaMenu);
+
             Menu.AddItem(new MenuItem("seperator1", ""));
 
             Menu.AddItem(new MenuItem("usecombo", "Combo (Active)").SetValue(new KeyBind(32, KeyBindType.Press)));
