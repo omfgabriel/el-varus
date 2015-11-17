@@ -23,7 +23,7 @@
             {
                 "SRU_Red", "SRU_Blue", "SRU_Dragon",
                 "SRU_Baron", "SRU_Gromp", "SRU_Murkwolf",
-                "SRU_Razorbeak", "SRU_Krug", "Sru_Crab",
+                "SRU_Razorbeak", "SRU_RiftHerald", "SRU_Krug", "Sru_Crab",
                 "TT_Spiderboss", "TTNGolem", "TTNWolf",
                 "TTNWraith"
             };
@@ -215,8 +215,23 @@
                         * NO ALSO NO CREDITS JUST GET OUT DUDE GET OUTTTTTTTTTTTTTTTTTTTTTTT
                         */
 
+                        //Console.WriteLine(Minion.CharData.BaseSkinName);
+
                         switch (Minion.CharData.BaseSkinName)
                         {
+                            /*case "SRU_RiftHerald":
+                                barWidth = 145;
+                                Drawing.DrawLine(
+                                    new Vector2(hpBarPosition.X + 3 + (float)(barWidth * x), hpBarPosition.Y + 18),
+                                    new Vector2(hpBarPosition.X + 3 + (float)(barWidth * x), hpBarPosition.Y + 28),
+                                    2f,
+                                    Color.Chartreuse);
+                                Drawing.DrawText(
+                                    hpBarPosition.X - 22 + (float)(barWidth * x),
+                                    hpBarPosition.Y - 5,
+                                    Color.Chartreuse,
+                                    smiteDamage.ToString());
+                                break;*/
                             case "SRU_Dragon":
                                 barWidth = 145;
                                 Drawing.DrawLine(

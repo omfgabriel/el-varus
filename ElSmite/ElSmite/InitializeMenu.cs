@@ -29,6 +29,10 @@
                     mainMenu.AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
                     mainMenu.AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
 
+                    //hmm
+                    mainMenu.AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(false));
+
+
                     //Bullshit smites
                     mainMenu.AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
                     mainMenu.AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
