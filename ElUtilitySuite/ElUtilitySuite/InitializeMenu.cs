@@ -45,6 +45,8 @@
                         smiteMenu.AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
                         smiteMenu.AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
 
+                        smiteMenu.AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(false));
+
                         smiteMenu.AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
                         smiteMenu.AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
                         smiteMenu.AddItem(new MenuItem("SRU_Krug", "Krug").SetValue(false));
