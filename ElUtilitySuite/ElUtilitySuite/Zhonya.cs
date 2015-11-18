@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using LeagueSharp;
+using LeagueSharp.Common;
 
 namespace ElUtilitySuite
 {
     public class Zhonya
     {
-        public static List<ZhonyaSpell> Spells { get; set; }
+        private static Items.Item zhyonyaItem;
 
-        public static void Init()
+        static Zhonya()
         {
+            #region Spells Init
+
             Spells.Add(new ZhonyaSpell
             {
                 ChampionName = "aatrox",
@@ -27,16 +32,6 @@ namespace ElUtilitySuite
                 Delay = 250,
                 MissileSpeed = 1550,
                 CastRange = 975f
-            });
-
-            Spells.Add(new ZhonyaSpell
-            {
-                ChampionName = "alistar",
-                SDataName = "pulverize",
-                MissileName = "",
-                Delay = 250,
-                MissileSpeed = int.MaxValue,
-                CastRange = 365f
             });
 
             Spells.Add(new ZhonyaSpell
@@ -749,6 +744,88 @@ namespace ElUtilitySuite
                 MissileSpeed = int.MaxValue,
                 CastRange = 700f
             });
+
+            #endregion
+        }
+
+        public static List<ZhonyaSpell> Spells { get; set; }
+
+        private static Obj_AI_Hero Player
+        {
+            get { return ObjectManager.Player; }
+        }
+
+        public static void Init()
+        {
+            zhyonyaItem = new Items.Item(3157);
+
+            GameObject.OnCreate += GameObjectOnCreate;
+            Obj_AI_Base.OnProcessSpellCast += ObjAiBaseOnProcessSpellCast;
+        }
+
+        private static void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.IsAlly)
+            {
+                return;
+            }
+
+            var spellData =
+                Spells.FirstOrDefault(x => !string.IsNullOrEmpty(x.SDataName) && x.SDataName == args.SData.Name);
+
+            if (spellData == null)
+            {
+                return;
+            }
+
+            // Targetted spells
+            if (args.SData.TargettingType == SpellDataTargetType.Unit ||
+                args.SData.TargettingType == SpellDataTargetType.SelfAndUnit && args.Target.IsMe)
+            {
+                Utility.DelayAction.Add((int) (spellData.Delay - 100), () => zhyonyaItem.Cast());
+            }
+
+            // Non linear spells
+            if (args.SData.TargettingType.ToString().Contains("Location") ||
+                args.SData.TargettingType == SpellDataTargetType.Cone)
+            {
+                // TODO correct end pos
+                if (Player.Distance(args.End) <= args.SData.LineWidth + Player.BoundingRadius)
+                {
+                    Utility.DelayAction.Add(
+                        (int) (spellData.Delay + Player.Distance(args.Start)/args.SData.MissileSpeed*1000 - 200),
+                        () => zhyonyaItem.Cast());
+                }
+            }
+        }
+
+        private static void GameObjectOnCreate(GameObject sender, EventArgs args)
+        {
+            if (!sender.IsValid<MissileClient>() || sender.IsAlly)
+            {
+                return;
+            }
+
+            var missile = (MissileClient) sender;
+            var sdata =
+                Spells.FirstOrDefault(x => !string.IsNullOrEmpty(x.MissileName) && sender.Name == x.MissileName);
+
+            // Not in database
+            if (sdata == null)
+            {
+                return;
+            }
+
+            // TODO correct end pos
+            if (missile.SData.LineWidth + Player.BoundingRadius >=
+                Player.ServerPosition.To2D()
+                    .Distance(
+                        Player.ServerPosition.To2D()
+                            .ProjectOn(missile.StartPosition.To2D(), missile.EndPosition.To2D())
+                            .SegmentPoint))
+            {
+                zhyonyaItem.Cast();
+            }
         }
 
         public class ZhonyaSpell
@@ -757,7 +834,7 @@ namespace ElUtilitySuite
             public string SDataName { get; set; }
             public string MissileName { get; set; }
             public float Delay { get; set; }
-            public Int32 MissileSpeed { get; set; }
+            public int MissileSpeed { get; set; }
             public float CastRange { get; set; }
         }
     }
