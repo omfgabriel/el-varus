@@ -121,6 +121,36 @@ namespace ElUtilitySuite
 
             Spells.Add(new ZhonyaSpell
             {
+                ChampionName = "zed",
+                SDataName = "zedr",
+                MissileName = "",
+                Delay = 250,
+                MissileSpeed = int.MaxValue,
+                CastRange = 850f
+            });
+
+            Spells.Add(new ZhonyaSpell
+            {
+                ChampionName = "syndra",
+                SDataName = "syndrar",
+                MissileName = "",
+                Delay = 450,
+                MissileSpeed = 1250,
+                CastRange = 675f
+            });
+
+            Spells.Add(new ZhonyaSpell
+            {
+                ChampionName = "syndra",
+                SDataName = "syndraq",
+                MissileName = "syndraq",
+                Delay = 250,
+                MissileSpeed = 1750,
+                CastRange = 800f
+            });
+
+            Spells.Add(new ZhonyaSpell
+            {
                 ChampionName = "braum",
                 SDataName = "braumq",
                 MissileName = "braumqmissile",
