@@ -505,15 +505,6 @@ namespace ElUtilitySuite
                 },
                 new ZhonyaSpell
                 {
-                    ChampionName = "ryze",
-                    SDataName = "ryzew",
-                    MissileName = "",
-                    Delay = 250,
-                    MissileSpeed = int.MaxValue,
-                    CastRange = 600f
-                },
-                new ZhonyaSpell
-                {
                     ChampionName = "sejuani",
                     SDataName = "sejuaniglacialprisoncast",
                     MissileName = "sejuaniglacialprison",
