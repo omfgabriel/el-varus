@@ -1,4 +1,6 @@
-﻿namespace ElUtilitySuite
+﻿using System;
+
+namespace ElUtilitySuite
 {
     using System.Linq;
 
@@ -281,11 +283,35 @@
             notificationsMenu.AddItem(new MenuItem("notifRecFinished", "Recall finished").SetValue(true));
             notificationsMenu.AddItem(new MenuItem("notifRecAborted", "Recall aborted").SetValue(true));
 
-            // TODO toggle individual spells
             var zhonyaMenu = new Menu("Zhonya's Hourglass", "zhonya");
-            zhonyaMenu.AddItem(
-                new MenuItem("ZhonyaDangerous", "Use Zhonya's Hourglass on Dangerous Spell").SetValue(true));
-            Menu.AddSubMenu(zhonyaMenu);
+            {
+                var zhonyaSpellMenu = new Menu("Spells", "SpellPick");
+                {
+                    foreach (
+                        var spell in
+                            Zhonya.Spells.Where(
+                                x =>
+                                    ObjectManager.Get<Obj_AI_Hero>()
+                                        .Where(y => y.IsEnemy)
+                                        .Any(y => y.ChampionName.ToLower() == x.ChampionName)))
+                    {
+                        zhonyaSpellMenu.AddItem(
+                            new MenuItem(string.Format("Zhonya{0}", spell.SDataName),
+                                string.Format("{0} ({1}) - {2}",
+                                    char.ToUpper(spell.ChampionName[0]) + spell.ChampionName.Substring(1),
+                                    ObjectManager.Get<Obj_AI_Hero>()
+                                        .First(x => x.ChampionName.ToLower() == spell.ChampionName)
+                                        .Spellbook.Spells.First(x => x.SData.Name.ToLower() == spell.SDataName)
+                                        .Slot, spell.SDataName)).SetValue(true));
+                    }
+                }
+
+                zhonyaMenu.AddSubMenu(zhonyaSpellMenu);
+                zhonyaMenu.AddItem(
+                    new MenuItem("ZhonyaDangerous", "Use Zhonya's Hourglass on Dangerous Spell").SetValue(true));
+
+                Menu.AddSubMenu(zhonyaMenu);
+            }
 
             Menu.AddItem(new MenuItem("seperator1", ""));
 

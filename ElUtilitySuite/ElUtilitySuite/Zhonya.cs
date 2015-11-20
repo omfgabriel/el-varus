@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
 
 namespace ElUtilitySuite
 {
@@ -771,9 +772,17 @@ namespace ElUtilitySuite
             }
 
             var spellData =
-                Spells.FirstOrDefault(x => !string.IsNullOrEmpty(x.SDataName) && x.SDataName == args.SData.Name);
+                Spells.FirstOrDefault(
+                    x =>
+                        !string.IsNullOrEmpty(x.SDataName) && x.SDataName == args.SData.Name.ToLower() &&
+                        string.IsNullOrEmpty(x.MissileName));
 
             if (spellData == null)
+            {
+                return;
+            }
+
+            if (!InitializeMenu.Menu.Item(string.Format("Zhonya{0}", spellData.SDataName)).IsActive())
             {
                 return;
             }
@@ -786,16 +795,26 @@ namespace ElUtilitySuite
             }
 
             // Non linear spells
-            if (args.SData.TargettingType.ToString().Contains("Location") ||
-                args.SData.TargettingType == SpellDataTargetType.Cone)
+            if (!args.SData.TargettingType.ToString().Contains("Location") &&
+                args.SData.TargettingType != SpellDataTargetType.Cone)
             {
-                // TODO correct end pos
-                if (Player.Distance(args.End) <= args.SData.LineWidth + Player.BoundingRadius)
-                {
-                    Utility.DelayAction.Add(
-                        (int) (spellData.Delay + Player.Distance(args.Start)/args.SData.MissileSpeed*1000 - 200),
-                        () => zhyonyaItem.Cast());
-                }
+                return;
+            }
+
+            // Correct the end position
+            var endPosition = args.End;
+
+            if (args.Start.Distance(endPosition) > spellData.CastRange)
+            {
+                endPosition = args.Start +
+                              Vector3.Normalize(endPosition - args.Start)*spellData.CastRange;
+            }
+
+            if (Player.Distance(endPosition) <= args.SData.LineWidth + Player.BoundingRadius)
+            {
+                Utility.DelayAction.Add(
+                    (int) (spellData.Delay + Player.Distance(args.Start)/args.SData.MissileSpeed*1000 - 200),
+                    () => zhyonyaItem.Cast());
             }
         }
 
@@ -816,12 +835,25 @@ namespace ElUtilitySuite
                 return;
             }
 
-            // TODO correct end pos
+            if (!InitializeMenu.Menu.Item(string.Format("Zhonya{0}", sdata.SDataName)).IsActive())
+            {
+                return;
+            }
+
+            // Correct the end position
+            var endPosition = missile.EndPosition;
+
+            if (missile.StartPosition.Distance(endPosition) > sdata.CastRange)
+            {
+                endPosition = missile.StartPosition +
+                              Vector3.Normalize(endPosition - missile.StartPosition)*sdata.CastRange;
+            }
+
             if (missile.SData.LineWidth + Player.BoundingRadius >=
                 Player.ServerPosition.To2D()
                     .Distance(
                         Player.ServerPosition.To2D()
-                            .ProjectOn(missile.StartPosition.To2D(), missile.EndPosition.To2D())
+                            .ProjectOn(missile.StartPosition.To2D(), endPosition.To2D())
                             .SegmentPoint))
             {
                 zhyonyaItem.Cast();
