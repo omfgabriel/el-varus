@@ -122,10 +122,18 @@
 
         private static void OnDash(Obj_AI_Base sender, Dash.DashItem args)
         {
+            if (!sender.IsMe)
+                return;
+
             var target = TargetSelector.GetTarget(1500, TargetSelector.DamageType.Physical);
             if (!target.IsValidTarget())
             {
                 return;
+            }
+
+            if (sender.IsMe)
+            {
+                Orbwalking.LastAATick = Utils.GameTimeTickCount - Game.Ping / 2 - (int)Player.AttackCastDelay * 1000 + args.Duration;
             }
 
             if (sender.IsMe && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
@@ -304,14 +312,15 @@
             }
         }
 
+
         private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsMe)
             {
-                /*if (RengarQ || RengarE)
+                if (!args.SData.Name.ToLower().Contains("attack"))
                 {
-                    Orbwalking.ResetAutoAttackTimer();
-                }*/
+                    return;
+                }
 
                 if (args.SData.Name == "RengarR")
                 {
