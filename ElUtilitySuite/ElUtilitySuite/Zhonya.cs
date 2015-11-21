@@ -757,7 +757,6 @@ namespace ElUtilitySuite
                         .SegmentPoint) < width + Player.BoundingRadius ||
                 !isLinear && Player.Distance(endPosition) <= width + Player.BoundingRadius)
             {
-                Game.PrintChat("k");
                 zhyonyaItem.Cast();
             }
         }
