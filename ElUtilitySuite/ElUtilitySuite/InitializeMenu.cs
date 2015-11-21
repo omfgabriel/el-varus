@@ -308,7 +308,7 @@ namespace ElUtilitySuite
 
                 zhonyaMenu.AddSubMenu(zhonyaSpellMenu);
                 zhonyaMenu.AddItem(
-                    new MenuItem("ZhonyaDangerous", "Use Zhonya's Hourglass on Dangerous Spell").SetValue(true));
+                    new MenuItem("ZhonyaDangerousBROKEN", "Use Zhonya's Hourglass on Dangerous Spell").SetValue(false).DontSave());
 
                 Menu.AddSubMenu(zhonyaMenu);
             }
