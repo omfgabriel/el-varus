@@ -718,8 +718,13 @@ namespace ElUtilitySuite
                 return;
             }
 
+            if (Player.Distance(args.Start) > spellData.CastRange)
+            {
+                return;
+            }
+
             // Targetted spells
-            if (args.SData.TargettingType == SpellDataTargetType.Unit ||
+            if (args.SData.TargettingType == SpellDataTargetType.Unit && args.Target.IsMe ||
                 args.SData.TargettingType == SpellDataTargetType.SelfAndUnit && args.Target.IsMe ||
                 args.SData.TargettingType == SpellDataTargetType.Self ||
                 args.SData.TargettingType == SpellDataTargetType.SelfAoe &&
@@ -729,7 +734,7 @@ namespace ElUtilitySuite
                 return;
             }
 
-            // Non linear spells
+            // Anything besides a skillshot return
             if (!args.SData.TargettingType.ToString().Contains("Location") &&
                 args.SData.TargettingType != SpellDataTargetType.Cone)
             {
@@ -745,17 +750,18 @@ namespace ElUtilitySuite
                               Vector3.Normalize(endPosition - args.Start)*spellData.CastRange;
             }
 
+            // credits to kurisu
             var isLinear = args.SData.TargettingType == SpellDataTargetType.Cone || args.SData.LineWidth > 0;
             var width = isLinear && args.SData.TargettingType != SpellDataTargetType.Cone
                 ? args.SData.LineWidth
                 : (args.SData.CastRadius < 1 ? args.SData.CastRadiusSecondary : args.SData.CastRadius);
 
-            if (isLinear && Player.ServerPosition.To2D()
+            if ((isLinear && width + Player.BoundingRadius > Player.ServerPosition.To2D()
                 .Distance(
                     Player.ServerPosition.To2D()
                         .ProjectOn(args.Start.To2D(), endPosition.To2D())
-                        .SegmentPoint) < width + Player.BoundingRadius ||
-                !isLinear && Player.Distance(endPosition) <= width + Player.BoundingRadius)
+                        .SegmentPoint))  ||
+                (!isLinear && Player.Distance(endPosition) <= width + Player.BoundingRadius))
             {
                 zhyonyaItem.Cast();
             }
