@@ -505,6 +505,15 @@ namespace ElUtilitySuite
                 },
                 new ZhonyaSpell
                 {
+                    ChampionName = "riven",
+                    SDataName = "rivenizunablade",
+                    MissileName = "rivenlightsabermissile",
+                    Delay = 250,
+                    MissileSpeed = 1600,
+                    CastRange = 1075
+                },
+                new ZhonyaSpell
+                {
                     ChampionName = "sejuani",
                     SDataName = "sejuaniglacialprisoncast",
                     MissileName = "sejuaniglacialprison",
@@ -696,24 +705,28 @@ namespace ElUtilitySuite
             var spellData =
                 Spells.FirstOrDefault(
                     x =>
-                        !string.IsNullOrEmpty(x.SDataName) && x.SDataName == args.SData.Name.ToLower() &&
-                        string.IsNullOrEmpty(x.MissileName));
+                        x.SDataName == args.SData.Name.ToLower() || x.MissileName == args.SData.Name.ToLower());
 
             if (spellData == null)
             {
                 return;
             }
 
-            if (!InitializeMenu.Menu.Item(string.Format("Zhonya{0}", spellData.SDataName)).IsActive())
+            if (!InitializeMenu.Menu.Item(string.Format("Zhonya{0}", spellData.SDataName)).IsActive() ||
+                !InitializeMenu.Menu.Item("ZhonyaDangerous").IsActive())
             {
                 return;
             }
 
             // Targetted spells
             if (args.SData.TargettingType == SpellDataTargetType.Unit ||
-                args.SData.TargettingType == SpellDataTargetType.SelfAndUnit && args.Target.IsMe)
+                args.SData.TargettingType == SpellDataTargetType.SelfAndUnit && args.Target.IsMe ||
+                args.SData.TargettingType == SpellDataTargetType.Self ||
+                args.SData.TargettingType == SpellDataTargetType.SelfAoe &&
+                Player.Distance(sender) < spellData.CastRange)
             {
-                Utility.DelayAction.Add((int) (spellData.Delay - 100), () => zhyonyaItem.Cast());
+                zhyonyaItem.Cast();
+                return;
             }
 
             // Non linear spells
@@ -732,11 +745,20 @@ namespace ElUtilitySuite
                               Vector3.Normalize(endPosition - args.Start)*spellData.CastRange;
             }
 
-            if (Player.Distance(endPosition) <= args.SData.LineWidth + Player.BoundingRadius)
+            var isLinear = args.SData.TargettingType == SpellDataTargetType.Cone || args.SData.LineWidth > 0;
+            var width = isLinear && args.SData.TargettingType != SpellDataTargetType.Cone
+                ? args.SData.LineWidth
+                : (args.SData.CastRadius < 1 ? args.SData.CastRadiusSecondary : args.SData.CastRadius);
+
+            if (isLinear && Player.ServerPosition.To2D()
+                .Distance(
+                    Player.ServerPosition.To2D()
+                        .ProjectOn(args.Start.To2D(), endPosition.To2D())
+                        .SegmentPoint) < width + Player.BoundingRadius ||
+                !isLinear && Player.Distance(endPosition) <= width + Player.BoundingRadius)
             {
-                Utility.DelayAction.Add(
-                    (int) (spellData.Delay + Player.Distance(args.Start)/args.SData.MissileSpeed*1000 - 200),
-                    () => zhyonyaItem.Cast());
+                Game.PrintChat("k");
+                zhyonyaItem.Cast();
             }
         }
 
@@ -749,7 +771,10 @@ namespace ElUtilitySuite
 
             var missile = (MissileClient) sender;
             var sdata =
-                Spells.FirstOrDefault(x => !string.IsNullOrEmpty(x.MissileName) && sender.Name == x.MissileName);
+                Spells.FirstOrDefault(
+                    x =>
+                        missile.SData.Name.ToLower().Equals(x.MissileName) ||
+                        missile.SData.Name.ToLower().Equals(x.SDataName));
 
             // Not in database
             if (sdata == null)
@@ -757,7 +782,8 @@ namespace ElUtilitySuite
                 return;
             }
 
-            if (!InitializeMenu.Menu.Item(string.Format("Zhonya{0}", sdata.SDataName)).IsActive())
+            if (!InitializeMenu.Menu.Item(string.Format("Zhonya{0}", sdata.SDataName)).IsActive() ||
+                !InitializeMenu.Menu.Item("ZhonyaDangerous").IsActive())
             {
                 return;
             }
