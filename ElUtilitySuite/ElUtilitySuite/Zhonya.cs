@@ -760,7 +760,7 @@ namespace ElUtilitySuite
                 .Distance(
                     Player.ServerPosition.To2D()
                         .ProjectOn(args.Start.To2D(), endPosition.To2D())
-                        .SegmentPoint))  ||
+                        .SegmentPoint)) ||
                 (!isLinear && Player.Distance(endPosition) <= width + Player.BoundingRadius))
             {
                 zhyonyaItem.Cast();
