@@ -679,7 +679,8 @@ namespace ElUtilitySuite
 
         public static void Init()
         {
-            zhyonyaItem = new Items.Item(3157);
+            //3090
+            zhyonyaItem = new Items.Item(Game.MapId == GameMapId.SummonersRift ? 3157 : 3090);
 
             GameObject.OnCreate += GameObjectOnCreate;
             Obj_AI_Base.OnProcessSpellCast += ObjAiBaseOnProcessSpellCast;
@@ -770,7 +771,7 @@ namespace ElUtilitySuite
                               Vector3.Normalize(endPosition - missile.StartPosition)*sdata.CastRange;
             }
 
-            if (missile.SData.LineWidth + Player.BoundingRadius >=
+            if (missile.SData.LineWidth + Player.BoundingRadius >
                 Player.ServerPosition.To2D()
                     .Distance(
                         Player.ServerPosition.To2D()
