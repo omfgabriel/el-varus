@@ -32,14 +32,12 @@ namespace ElUtilitySuite
         {
             Menu = new Menu("ElUtilitySuite", "ElUtilitySuite", true);
 
-           /* var smite = Entry.Player.Spellbook.Spells.FindAll(h => h.Name.ToLower().Contains("smite")).FirstOrDefault();
-            if (smite != null && Smite.smiteSlot != SpellSlot.Unknown)
-            { }*/
             var smiteMenu = Menu.AddSubMenu(new Menu("Smite", "Smite"));
                 {
                     smiteMenu.AddItem(
                         new MenuItem("ElSmite.Activated", "Activated").SetValue(
                             new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle, true)));
+
                     if (Entry.IsSummonersRift)
                     {
                         smiteMenu.AddItem(new MenuItem("SRU_Dragon", "Dragon").SetValue(true));
@@ -133,8 +131,6 @@ namespace ElUtilitySuite
 
             var cleanseMenu = Menu.AddSubMenu(new Menu("Cleanse", "Cleanse"));
             {
-                //cleanseMenu.SubMenu("Specials").AddItem(new MenuItem("Protect.Cleanse.Specials.TaricE", "Cleanse Taric E").SetValue(false));
-                //cleanseMenu.SubMenu("Specials").AddItem(new MenuItem("Protect.Cleanse.Specials.LeonaQ", "Cleanse Leona Q").SetValue(false));
                 cleanseMenu.SubMenu("Specials")
                     .AddItem(new MenuItem("Protect.Cleanse.Specials.ZedR", "Cleanse Zed R").SetValue(true));
                 cleanseMenu.SubMenu("Specials")
@@ -278,10 +274,11 @@ namespace ElUtilitySuite
             #endregion
 
             var notificationsMenu = Menu.AddSubMenu(new Menu("Recall tracker", "Recall tracker"));
-
-            notificationsMenu.AddItem(new MenuItem("showRecalls", "Show Recalls").SetValue(true));
-            notificationsMenu.AddItem(new MenuItem("notifRecFinished", "Recall finished").SetValue(true));
-            notificationsMenu.AddItem(new MenuItem("notifRecAborted", "Recall aborted").SetValue(true));
+            {
+                notificationsMenu.AddItem(new MenuItem("showRecalls", "Show Recalls").SetValue(true));
+                notificationsMenu.AddItem(new MenuItem("notifRecFinished", "Recall finished").SetValue(true));
+                notificationsMenu.AddItem(new MenuItem("notifRecAborted", "Recall aborted").SetValue(true));
+            }
 
             var zhonyaMenu = new Menu("Zhonya's Hourglass", "zhonya");
             {
