@@ -699,10 +699,7 @@ namespace ElUtilitySuite
 
         public static List<ZhonyaSpell> Spells { get; set; }
 
-        private static Obj_AI_Hero Player
-        {
-            get { return ObjectManager.Player; }
-        }
+        private static Obj_AI_Hero Player => ObjectManager.Player;
 
         public static void Init()
         {
@@ -730,7 +727,7 @@ namespace ElUtilitySuite
                 return;
             }
 
-            if (!InitializeMenu.Menu.Item(string.Format("Zhonya{0}", spellData.SDataName)).IsActive() ||
+            if (!InitializeMenu.Menu.Item($"Zhonya{spellData.SDataName}").IsActive() ||
                 !InitializeMenu.Menu.Item("ZhonyaDangerous").IsActive())
             {
                 return;
@@ -805,7 +802,7 @@ namespace ElUtilitySuite
                 return;
             }
 
-            if (!InitializeMenu.Menu.Item(string.Format("Zhonya{0}", sdata.SDataName)).IsActive() ||
+            if (!InitializeMenu.Menu.Item($"Zhonya{sdata.SDataName}").IsActive() ||
                 !InitializeMenu.Menu.Item("ZhonyaDangerous").IsActive())
             {
                 return;
