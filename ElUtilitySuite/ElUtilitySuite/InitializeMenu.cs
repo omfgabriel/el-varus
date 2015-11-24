@@ -292,15 +292,25 @@ namespace ElUtilitySuite
                                         .Where(y => y.IsEnemy)
                                         .Any(y => y.ChampionName.ToLower() == x.ChampionName)))
                     {
-                        var champion = ObjectManager.Get<Obj_AI_Hero>()
-                            .FirstOrDefault(x => x.ChampionName.ToLower() == spell.ChampionName)?
+                        var objAiHero = ObjectManager.Get<Obj_AI_Hero>()
+                            .FirstOrDefault(x => x.ChampionName.ToLower() == spell.ChampionName);
+
+                        if (objAiHero == null)
+                        {
+                            continue;
+                        }
+
+                        var firstOrDefault = objAiHero
                             .Spellbook.Spells.FirstOrDefault(x => x.SData.Name.ToLower() == spell.SDataName);
 
-                        if (champion != null)
+                        if (firstOrDefault != null)
                         {
                             zhonyaSpellMenu.AddItem(
-                                new MenuItem($"Zhonya{spell.SDataName}",
-                                    $"{char.ToUpper(spell.ChampionName[0]) + spell.ChampionName.Substring(1)} ({champion.Slot}) - {spell.SDataName}").SetValue(true));
+                                new MenuItem(string.Format("Zhonya{0}", spell.SDataName),
+                                    string.Format("{0} ({1}) - {2}",
+                                        char.ToUpper(spell.ChampionName[0]) + spell.ChampionName.Substring(1),
+                                        firstOrDefault
+                                            .Slot, spell.SDataName)).SetValue(true));
                         }
                     }
                 }
