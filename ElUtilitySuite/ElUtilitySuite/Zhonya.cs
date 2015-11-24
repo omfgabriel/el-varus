@@ -226,6 +226,15 @@ namespace ElUtilitySuite
                 },
                 new ZhonyaSpell
                 {
+                    ChampionName = "fiddlesticks",
+                    SDataName = "crowstorm",
+                    MissileName = "",
+                    Delay = 250,
+                    MissileSpeed = int.MaxValue,
+                    CastRange = 800f
+                },
+                new ZhonyaSpell
+                {
                     ChampionName = "galio",
                     SDataName = "galioidolofdurand",
                     MissileName = "",
@@ -673,6 +682,15 @@ namespace ElUtilitySuite
                     Delay = 500,
                     MissileSpeed = int.MaxValue,
                     CastRange = 700f
+                },
+                new ZhonyaSpell
+                {
+                    ChampionName = "bard",
+                    SDataName = "bardr",
+                    MissileName = "bardr",
+                    Delay = 450,
+                    MissileSpeed = 210,
+                    CastRange = 3400f
                 }
             };
 
