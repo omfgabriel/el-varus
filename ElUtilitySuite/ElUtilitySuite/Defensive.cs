@@ -192,7 +192,7 @@
             var aHealthPercent = (int)((target.Health / target.MaxHealth) * 100);
             var iDamagePercent = (int)(incomingDamage / target.MaxHealth * 100);
 
-            if (!InitializeMenu.Menu.Item("DefenseOn" + target.SkinName).GetValue<bool>())
+            if (!InitializeMenu.Menu.Item("DefenseOn" + target.CharData.BaseSkinName).GetValue<bool>())
             {
                 return;
             }

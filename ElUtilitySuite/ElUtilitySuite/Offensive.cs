@@ -144,7 +144,7 @@
                     var aHealthPercent = (int)((Entry.Player.Health / target.MaxHealth) * 100);
 
                     if (eHealthPercent <= InitializeMenu.Menu.Item("use" + name + "Pct").GetValue<Slider>().Value
-                        && InitializeMenu.Menu.Item("ouseOn" + target.SkinName).GetValue<bool>())
+                        && InitializeMenu.Menu.Item("ouseOn" + target.CharData.BaseSkinName).GetValue<bool>())
                     {
                         if (targeted && itemId == 3092)
                         {
@@ -174,7 +174,7 @@
                     }
 
                     else if (aHealthPercent <= InitializeMenu.Menu.Item("use" + name + "Me").GetValue<Slider>().Value
-                             && InitializeMenu.Menu.Item("ouseOn" + target.SkinName).GetValue<bool>())
+                             && InitializeMenu.Menu.Item("ouseOn" + target.CharData.BaseSkinName).GetValue<bool>())
                     {
                         if (targeted)
                         {

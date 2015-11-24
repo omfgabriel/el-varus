@@ -40,26 +40,26 @@ namespace ElUtilitySuite
 
                     if (Entry.IsSummonersRift)
                     {
-                        smiteMenu.AddItem(new MenuItem("SRU_Dragon", "Dragon").SetValue(true));
-                        smiteMenu.AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
-                        smiteMenu.AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
-                        smiteMenu.AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Dragon", "Dragon").SetValue(true));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
 
-                        smiteMenu.AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(false));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(false));
 
-                        smiteMenu.AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
-                        smiteMenu.AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
-                        smiteMenu.AddItem(new MenuItem("SRU_Krug", "Krug").SetValue(false));
-                        smiteMenu.AddItem(new MenuItem("SRU_Razorbeak", "Chicken camp").SetValue(false));
-                        smiteMenu.AddItem(new MenuItem("Sru_Crab", "Crab").SetValue(false));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Krug", "Krug").SetValue(false));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Razorbeak", "Chicken camp").SetValue(false));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("Sru_Crab", "Crab").SetValue(false));
                     }
 
                     if (Entry.IsTwistedTreeline)
                     {
-                        smiteMenu.AddItem(new MenuItem("TT_Spiderboss", "Vilemaw Enabled").SetValue(true));
-                        smiteMenu.AddItem(new MenuItem("TT_NGolem", "Golem Enabled").SetValue(true));
-                        smiteMenu.AddItem(new MenuItem("TT_NWolf", "Wolf Enabled").SetValue(true));
-                        smiteMenu.AddItem(new MenuItem("TT_NWraith", "Wraith Enabled").SetValue(true));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_Spiderboss", "Vilemaw Enabled").SetValue(true));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_NGolem", "Golem Enabled").SetValue(true));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_NWolf", "Wolf Enabled").SetValue(true));
+                        smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_NWraith", "Wraith Enabled").SetValue(true));
                     }
 
                     //Killsteal submenu
@@ -171,7 +171,7 @@ namespace ElUtilitySuite
                 foreach (var a in ObjectManager.Get<Obj_AI_Hero>().Where(ally => ally.Team == Entry.Player.Team))
                 {
                     cleanseMenu.SubMenu("Mikaels settings")
-                        .AddItem(new MenuItem("Protect.Cleanse.Kappa" + a.SkinName, "Use for " + a.SkinName))
+                        .AddItem(new MenuItem("Protect.Cleanse.Kappa" + a.CharData.BaseSkinName, "Use for " + a.CharData.BaseSkinName))
                         .SetValue(true);
                 }
 
@@ -233,7 +233,7 @@ namespace ElUtilitySuite
             foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy))
             {
                 mainMenu.SubMenu("Champion Settings")
-                    .AddItem(new MenuItem("ouseOn" + x.SkinName, "Use for " + x.SkinName))
+                    .AddItem(new MenuItem("ouseOn" + x.CharData.BaseSkinName, "Use for " + x.CharData.BaseSkinName))
                     .SetValue(true);
             }
 
@@ -250,7 +250,7 @@ namespace ElUtilitySuite
 
             foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
             {
-                defensiveMenu.AddItem(new MenuItem("DefenseOn" + x.SkinName, "Use for " + x.SkinName)).SetValue(true);
+                defensiveMenu.SubMenu("Champion Settings").AddItem(new MenuItem("DefenseOn" + x.CharData.BaseSkinName, "Use for " + x.CharData.BaseSkinName)).SetValue(true);
             }
 
             CreateDefensiveItem("Randuin's Omen", "Randuins", "selfcount", 40, 40);
@@ -305,7 +305,7 @@ namespace ElUtilitySuite
 
                 zhonyaMenu.AddSubMenu(zhonyaSpellMenu);
                 zhonyaMenu.AddItem(
-                    new MenuItem("ZhonyaDangerous", "Use Zhonya's Hourglass on Dangerous Spell").SetValue(true));
+                    new MenuItem("ZhonyaDangerous", "Zhonya's on dangerous spell").SetValue(true));
 
                 Menu.AddSubMenu(zhonyaMenu);
             }

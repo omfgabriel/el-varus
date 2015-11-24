@@ -76,7 +76,7 @@
                     .Where(
                         x =>
                         x.IsAlly && !x.IsMe && x.IsValidTarget(900, false)
-                        && InitializeMenu.Menu.Item("Protect.Cleanse.Kappa" + x.SkinName).GetValue<bool>()
+                        && InitializeMenu.Menu.Item("Protect.Cleanse.Kappa" + x.CharData.BaseSkinName).GetValue<bool>()
                         && InitializeMenu.Menu.Item("Protect.Cleanse.Mikeals.Activated").GetValue<bool>())
                     .OrderByDescending(xe => xe.Health / xe.MaxHealth * 100))
             {

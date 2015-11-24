@@ -88,9 +88,6 @@
                 CheckVersion.Init();
                 Notifications.AddNotification(string.Format("El Utility Suite by jQuery v{0}", ScriptVersion), 10000);
 
-                Game.OnUpdate += OnUpdate;
-                //Obj_AI_Base.OnLevelUp += OnLevelUp;
-
                 var type = Type.GetType("ElUtilitySuite.Plugins." + Player.ChampionName);
                 if (type != null)
                 {
@@ -106,42 +103,5 @@
 
         #endregion
 
-        #region Methods
-
-        /*private static bool ChampionCheck()
-        {
-            return Player.ChampionName == "Udyr" || Player.ChampionName == "Elise" || Player.ChampionName == "Jayce";
-        }
-
-        private static void OnLevelUp(Obj_AI_Base sender, EventArgs args)
-        {
-            if (ChampionCheck() || !sender.IsMe)
-            {
-                return;
-            }
-
-            if (Player.Level == 6)
-            {
-                Player.Spellbook.LevelSpell(SpellSlot.R);
-            }
-        }*/
-
-        private static void OnUpdate(EventArgs args)
-        {
-            if (Player.IsDead)
-            {
-                return;
-            }
-
-            try
-            {
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred: '{0}'", e);
-            }
-        }
-
-        #endregion
     }
 }
