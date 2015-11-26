@@ -704,8 +704,15 @@ namespace ElUtilitySuite
             get { return ObjectManager.Player; }
         }
 
-        private static bool ZhonyaLowHp { get { return InitializeMenu.Menu.Item("ZhonyaHP_BETA").IsActive(); } }
-        private static int ZhonyaBelowHp { get { return InitializeMenu.Menu.Item("ZhonyaHPSlider").GetValue<Slider>().Value; } }
+        private static bool ZhonyaLowHp
+        {
+            get { return InitializeMenu.Menu.Item("ZhonyaHP_BETA").IsActive(); }
+        }
+
+        private static int ZhonyaBelowHp
+        {
+            get { return InitializeMenu.Menu.Item("ZhonyaHPSlider").GetValue<Slider>().Value; }
+        }
 
         public static void Init()
         {
