@@ -725,7 +725,7 @@ namespace ElUtilitySuite
 
         private static void ObjAiBaseOnOnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
         {
-            var target = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.TargetNetworkId);
+            var target = ObjectManager.GetUnitByNetworkId<AttackableUnit>(args.TargetNetworkId);
 
             if (!target.IsMe || !ZhonyaLowHp)
             {
