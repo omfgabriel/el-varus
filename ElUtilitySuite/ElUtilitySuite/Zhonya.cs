@@ -704,13 +704,31 @@ namespace ElUtilitySuite
             get { return ObjectManager.Player; }
         }
 
+        private static bool ZhonyaLowHp { get { return InitializeMenu.Menu.Item("ZhonyaHP_BETA").IsActive(); } }
+        private static int ZhonyaBelowHp { get { return InitializeMenu.Menu.Item("ZhonyaHPSlider").GetValue<Slider>().Value; } }
+
         public static void Init()
         {
-            //3090
             zhyonyaItem = new Items.Item(Game.MapId == GameMapId.SummonersRift ? 3157 : 3090);
 
             GameObject.OnCreate += GameObjectOnCreate;
             Obj_AI_Base.OnProcessSpellCast += ObjAiBaseOnProcessSpellCast;
+            AttackableUnit.OnDamage += ObjAiBaseOnOnDamage;
+        }
+
+        private static void ObjAiBaseOnOnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
+        {
+            var target = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.TargetNetworkId);
+
+            if (!target.IsMe || !ZhonyaLowHp)
+            {
+                return;
+            }
+
+            if (Player.HealthPercent < ZhonyaBelowHp || (Player.Health - args.Damage)/Player.MaxHealth < ZhonyaBelowHp)
+            {
+                zhyonyaItem.Cast();
+            }
         }
 
         private static void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)

@@ -318,6 +318,8 @@ namespace ElUtilitySuite
                 zhonyaMenu.AddSubMenu(zhonyaSpellMenu);
                 zhonyaMenu.AddItem(
                     new MenuItem("ZhonyaDangerous", "Zhonya's on dangerous spell").SetValue(true));
+                zhonyaMenu.AddItem(new MenuItem("ZhonyaHP_BETA", "Use Zhonya on low HP (BETA)").SetValue(false));
+                zhonyaMenu.AddItem(new MenuItem("ZhonyaHPSlider", "HP Percent").SetValue(new Slider(10, 1, 50)));
 
                 Menu.AddSubMenu(zhonyaMenu);
             }
@@ -328,7 +330,7 @@ namespace ElUtilitySuite
 
             Menu.AddItem(new MenuItem("seperator", ""));
             Menu.AddItem(new MenuItem("Versionnumber", string.Format("Version: {0}", Entry.ScriptVersion)));
-            Menu.AddItem(new MenuItem("by.jQuery", "Made By jQuery"));
+            Menu.AddItem(new MenuItem("by.jQuery", "Made By jQuery and a hint of ChewyMoon"));
 
             Menu.AddToMainMenu();
         }
