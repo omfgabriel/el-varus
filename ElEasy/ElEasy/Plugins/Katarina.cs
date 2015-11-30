@@ -58,8 +58,6 @@ namespace ElEasy.Plugins
             Orbwalking.BeforeAttack += BeforeAttack;
             GameObject.OnCreate += GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
-            // ReSharper disable once ObjectCreationAsStatement
-            new AssassinManager();
         }
 
         #endregion
@@ -176,42 +174,6 @@ namespace ElEasy.Plugins
             return (float)damage;
         }
 
-        private static Obj_AI_Hero GetEnemy(
-            float vDefaultRange = 0,
-            TargetSelector.DamageType vDefaultDamageType = TargetSelector.DamageType.Magical)
-        {
-            if (Math.Abs(vDefaultRange) < 0.00001)
-            {
-                vDefaultRange = spells[Spells.R].Range;
-            }
-
-            if (!Menu.Item("AssassinActive").GetValue<bool>())
-            {
-                return TargetSelector.GetTarget(vDefaultRange, vDefaultDamageType);
-            }
-
-            var assassinRange = Menu.Item("AssassinSearchRange").GetValue<Slider>().Value;
-
-            var vEnemy =
-                ObjectManager.Get<Obj_AI_Hero>()
-                    .Where(
-                        enemy =>
-                        enemy.Team != ObjectManager.Player.Team && !enemy.IsDead && enemy.IsVisible
-                        && Menu.Item("Assassin" + enemy.ChampionName) != null
-                        && Menu.Item("Assassin" + enemy.ChampionName).GetValue<bool>()
-                        && ObjectManager.Player.Distance(enemy) < assassinRange);
-
-            if (Menu.Item("AssassinSelectOption").GetValue<StringList>().SelectedIndex == 1)
-            {
-                vEnemy = (from vEn in vEnemy select vEn).OrderByDescending(vEn => vEn.MaxHealth);
-            }
-
-            var objAiHeroes = vEnemy as Obj_AI_Hero[] ?? vEnemy.ToArray();
-
-            var t = !objAiHeroes.Any() ? TargetSelector.GetTarget(vDefaultRange, vDefaultDamageType) : objAiHeroes[0];
-
-            return t;
-        }
 
         private static float GetHealth(Obj_AI_Base target)
         {
@@ -477,7 +439,7 @@ namespace ElEasy.Plugins
 
         private static void OnAutoHarass()
         {
-            var target = GetEnemy(spells[Spells.Q].Range);
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValid || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 return;
@@ -499,7 +461,7 @@ namespace ElEasy.Plugins
 
         private static void OnCombo()
         {
-            var target = GetEnemy(spells[Spells.Q].Range);
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValid)
             {
                 return;
@@ -630,7 +592,7 @@ namespace ElEasy.Plugins
 
         private static void OnHarass()
         {
-            var target = GetEnemy(spells[Spells.Q].Range);
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValid)
             {
                 return;
@@ -830,16 +792,6 @@ namespace ElEasy.Plugins
                 return;
             }
 
-            if (HasRBuff())
-            {
-                Orbwalker.SetAttack(false);
-                Orbwalker.SetMovement(false);
-            }
-            else
-            {
-                Orbwalker.SetAttack(true);
-                Orbwalker.SetMovement(true);
-            }
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
