@@ -1094,6 +1094,7 @@ namespace ElRengarRevamped
                 }
 
                 /*Jungle minions*/
+                /*Jungle minions*/
                 if (this.ActiveMode == OrbwalkingMode.LaneClear || this.ActiveMode == OrbwalkingMode.Mixed)
                 {
                     var jminions =
@@ -1101,15 +1102,23 @@ namespace ElRengarRevamped
                             .Where(
                                 mob =>
                                 mob.IsValidTarget() && mob.Team == GameObjectTeam.Neutral && this.InAutoAttackRange(mob)
-                                && mob.CharData.BaseSkinName != "gangplankbarrel");
+                                && mob.CharData.BaseSkinName != "gangplankbarrel")
+                            .MaxOrDefault(mob => mob.MaxHealth);
 
-                    result = _config.Item("Smallminionsprio").GetValue<bool>()
-                                 ? jminions.MinOrDefault(mob => mob.MaxHealth)
-                                 : jminions.MaxOrDefault(mob => mob.MaxHealth);
-
-                    if (result != null)
+                    if (jminions != null && jminions.IsValidTarget())
                     {
-                        return result;
+                        if (IsMelee(this.Player) && Standards.IsActive("Jungle.Movement2"))
+                        {
+                            this.SetMovement(false);
+                        }
+                        else
+                        {
+                            if (IsMelee(this.Player))
+                            {
+                                this.SetMovement(true);
+                            }
+                        }
+                        return jminions;
                     }
                 }
 

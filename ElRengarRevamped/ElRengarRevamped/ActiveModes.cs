@@ -36,11 +36,6 @@ namespace ElRengarRevamped
                     Rengar._selectedEnemy = target;
                 }
 
-                /*if (Player.Spellbook.IsAutoAttacking || Player.IsWindingUp)
-                {
-                    return;
-                }*/
-
                 if (Youmuu.IsReady() && Player.Distance(target) <= spells[Spells.Q].Range && target.IsValidTarget())
                 {
                     Youmuu.Cast(Player);
@@ -64,7 +59,6 @@ namespace ElRengarRevamped
                                     {
                                         if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
                                         {
-                                            Console.WriteLine("SWITCH COMBO");
                                             MenuInit.Menu.Item("Combo.Prio")
                                                 .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
                                             LastSwitch = Utils.GameTimeTickCount;
