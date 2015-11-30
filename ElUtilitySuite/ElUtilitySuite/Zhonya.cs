@@ -725,7 +725,7 @@ namespace ElUtilitySuite
 
         private static void ObjAiBaseOnOnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
         {
-            if (!sender.IsMe || !ZhonyaLowHp)
+            if (args.TargetNetworkId != Player.NetworkId || !ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId).IsMe || !ZhonyaLowHp)
             {
                 return;
             }

@@ -280,7 +280,7 @@ namespace ElUtilitySuite
                 notificationsMenu.AddItem(new MenuItem("notifRecAborted", "Recall aborted").SetValue(true));
             }
 
-            /*var zhonyaMenu = new Menu("Zhonya's Hourglass", "zhonya");
+            var zhonyaMenu = new Menu("Zhonya's Hourglass", "zhonya");
             {
                 var zhonyaSpellMenu = new Menu("Spells", "SpellPick");
                 {
@@ -322,7 +322,7 @@ namespace ElUtilitySuite
                 zhonyaMenu.AddItem(new MenuItem("ZhonyaHPSlider", "HP Percent").SetValue(new Slider(10, 1, 50)));
 
                 Menu.AddSubMenu(zhonyaMenu);
-            }*/
+            }
 
             Menu.AddItem(new MenuItem("seperator1", ""));
 
