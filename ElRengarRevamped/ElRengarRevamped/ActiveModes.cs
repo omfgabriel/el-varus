@@ -78,7 +78,6 @@ namespace ElRengarRevamped
                                     {
                                         if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
                                         {
-                                            Console.WriteLine("SWITCH COMBO");
                                             MenuInit.Menu.Item("Combo.Prio")
                                                 .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
                                             LastSwitch = Utils.GameTimeTickCount;
