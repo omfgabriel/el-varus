@@ -18,7 +18,7 @@
         {
             try
             {
-                Base.Load(ObjectManager.Player.ChampionName);
+                Base.Load(ObjectManager.Player.CharData.BaseSkinName);
                 Notifications.AddNotification("ElEasy - " + ObjectManager.Player.ChampionName + " 1.0.1.8", 8000);
             }
             catch (Exception e)

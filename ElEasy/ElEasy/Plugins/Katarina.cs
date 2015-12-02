@@ -462,7 +462,7 @@ namespace ElEasy.Plugins
         private static void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValid)
+            if (target == null || !target.IsValidTarget())
             {
                 return;
             }
@@ -514,10 +514,10 @@ namespace ElEasy.Plugins
                 }
             }
 
-            if (spells[Spells.R].Instance.Name != "KatarinaR")
+            /*if (spells[Spells.R].Instance.Name != "KatarinaR")
             {
                 return;
-            }
+            }*/
 
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
@@ -787,7 +787,7 @@ namespace ElEasy.Plugins
 
         private static void OnUpdate(EventArgs args)
         {
-            if (Player.IsDead || MenuGUI.IsChatOpen)
+            if (Player.IsDead)
             {
                 return;
             }
