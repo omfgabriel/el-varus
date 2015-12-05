@@ -10,14 +10,14 @@
     using SharpDX;
 
     /// <summary>
-    /// Casts Zhonya on dangerous spells.
+    ///     Casts Zhonya on dangerous spells.
     /// </summary>
     public class Zhonya
     {
         #region Static Fields
 
         /// <summary>
-        /// The zhyonya item
+        ///     The zhyonya item
         /// </summary>
         private static Items.Item zhyonyaItem;
 
@@ -26,7 +26,7 @@
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes the <see cref="Zhonya"/> class.
+        ///     Initializes the <see cref="Zhonya" /> class.
         /// </summary>
         static Zhonya()
         {
@@ -422,6 +422,22 @@
                                  {
                                      ChampionName = "bard", SDataName = "bardr", MissileName = "bardr", Delay = 450,
                                      MissileSpeed = 210, CastRange = 3400f
+                                 },
+                             new ZhonyaSpell
+                                 {
+                                     ChampionName = "fizz", SDataName = "fizzmarinerdoom",
+                                     MissileName = "fizzmarinerdoommissile", Delay = 250, MissileSpeed = 1300,
+                                     CastRange = 1275f
+                                 },
+                             new ZhonyaSpell
+                                 {
+                                     ChampionName = "vladimir", SDataName = "vladimirhemoplague", MissileName = "",
+                                     Delay = 250, MissileSpeed = int.MaxValue, CastRange = 875f
+                                 },
+                             new ZhonyaSpell
+                                 {
+                                     ChampionName = "mordekaiser", SDataName = "mordekaiserchildrenofthegrave",
+                                     MissileName = "", Delay = 250, MissileSpeed = int.MaxValue, CastRange = 850f
                                  }
                          };
 
@@ -433,10 +449,10 @@
         #region Public Properties
 
         /// <summary>
-        /// Gets or sets the spells.
+        ///     Gets or sets the spells.
         /// </summary>
         /// <value>
-        /// The spells.
+        ///     The spells.
         /// </value>
         public static List<ZhonyaSpell> Spells { get; set; }
 
@@ -445,10 +461,10 @@
         #region Properties
 
         /// <summary>
-        /// Gets the player.
+        ///     Gets the player.
         /// </summary>
         /// <value>
-        /// The player.
+        ///     The player.
         /// </value>
         private static Obj_AI_Hero Player
         {
@@ -459,10 +475,10 @@
         }
 
         /// <summary>
-        /// Gets the zhonya below hp menu value.
+        ///     Gets the zhonya below hp menu value.
         /// </summary>
         /// <value>
-        /// The zhonya below hp menu value.
+        ///     The zhonya below hp menu value.
         /// </value>
         private static int ZhonyaBelowHp
         {
@@ -473,10 +489,10 @@
         }
 
         /// <summary>
-        /// Gets a value indicating whether to zhonya at low hp.
+        ///     Gets a value indicating whether to zhonya at low hp.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if zhonya at low hp; otherwise, <c>false</c>.
+        ///     <c>true</c> if zhonya at low hp; otherwise, <c>false</c>.
         /// </value>
         private static bool ZhonyaLowHp
         {
@@ -491,7 +507,7 @@
         #region Public Methods and Operators
 
         /// <summary>
-        /// Initializes this instance.
+        ///     Initializes this instance.
         /// </summary>
         public static void Init()
         {
@@ -507,10 +523,10 @@
         #region Methods
 
         /// <summary>
-        /// Fired when a game object is created.
+        ///     Fired when a game object is created.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
+        /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private static void GameObjectOnCreate(GameObject sender, EventArgs args)
         {
             if (!sender.IsValid<MissileClient>() || sender.IsAlly)
@@ -558,10 +574,10 @@
         }
 
         /// <summary>
-        /// Called when an Obj_AI_Base takes damage.
+        ///     Called when an Obj_AI_Base takes damage.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="AttackableUnitDamageEventArgs"/> instance containing the event data.</param>
+        /// <param name="args">The <see cref="AttackableUnitDamageEventArgs" /> instance containing the event data.</param>
         private static void ObjAiBaseOnOnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
         {
             if (args.TargetNetworkId != Player.NetworkId
@@ -577,10 +593,10 @@
         }
 
         /// <summary>
-        /// Fired when the game processes a spell cast.
+        ///     Fired when the game processes a spell cast.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs"/> instance containing the event data.</param>
+        /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private static void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsAlly)
@@ -654,57 +670,57 @@
         #endregion
 
         /// <summary>
-        /// Represents a spell that zhonya should be casted on.
+        ///     Represents a spell that zhonya should be casted on.
         /// </summary>
         public class ZhonyaSpell
         {
             #region Public Properties
 
             /// <summary>
-            /// Gets or sets the cast range.
+            ///     Gets or sets the cast range.
             /// </summary>
             /// <value>
-            /// The cast range.
+            ///     The cast range.
             /// </value>
             public float CastRange { get; set; }
 
             /// <summary>
-            /// Gets or sets the name of the champion.
+            ///     Gets or sets the name of the champion.
             /// </summary>
             /// <value>
-            /// The name of the champion.
+            ///     The name of the champion.
             /// </value>
             public string ChampionName { get; set; }
 
             /// <summary>
-            /// Gets or sets the delay.
+            ///     Gets or sets the delay.
             /// </summary>
             /// <value>
-            /// The delay.
+            ///     The delay.
             /// </value>
             public float Delay { get; set; }
 
             /// <summary>
-            /// Gets or sets the name of the missile.
+            ///     Gets or sets the name of the missile.
             /// </summary>
             /// <value>
-            /// The name of the missile.
+            ///     The name of the missile.
             /// </value>
             public string MissileName { get; set; }
 
             /// <summary>
-            /// Gets or sets the missile speed.
+            ///     Gets or sets the missile speed.
             /// </summary>
             /// <value>
-            /// The missile speed.
+            ///     The missile speed.
             /// </value>
             public int MissileSpeed { get; set; }
 
             /// <summary>
-            /// Gets or sets the name of the s data.
+            ///     Gets or sets the name of the s data.
             /// </summary>
             /// <value>
-            /// The name of the s data.
+            ///     The name of the s data.
             /// </value>
             public string SDataName { get; set; }
 
