@@ -445,7 +445,7 @@
                 && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
             {
                 Utility.DelayAction.Add(
-                     700 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                     500 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                     () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                 return;
             }
@@ -460,7 +460,7 @@
                 if (ItemData.Quicksilver_Sash.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        700 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        500 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Quicksilver_Sash.GetItem().Cast());
                     return;
                 }
@@ -468,7 +468,7 @@
                 if (ItemData.Mikaels_Crucible.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        700 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        500 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Mikaels_Crucible.GetItem().Cast());
                     return;
                 }
@@ -476,7 +476,7 @@
                 if (ItemData.Dervish_Blade.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        700 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        500 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Dervish_Blade.GetItem().Cast());
                     return;
                 }
@@ -484,7 +484,7 @@
                 if (ItemData.Mercurial_Scimitar.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        700 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        500 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Mercurial_Scimitar.GetItem().Cast());
                     return;
                 }
@@ -536,7 +536,7 @@
                     && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
                 {
                     Utility.DelayAction.Add(
-                          700 + (int)spellData.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                          500 + (int)spellData.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                     return;
                 }
@@ -544,7 +544,7 @@
                 if (ItemData.Quicksilver_Sash.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        700 + (int)spellData.Delay
+                        500 + (int)spellData.Delay
                         + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Quicksilver_Sash.GetItem().Cast());
                     return;
@@ -553,7 +553,7 @@
                 if (ItemData.Mikaels_Crucible.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        700 + (int)spellData.Delay
+                        500 + (int)spellData.Delay
                         + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Mikaels_Crucible.GetItem().Cast(Player));
                     return;
@@ -562,7 +562,7 @@
                 if (ItemData.Dervish_Blade.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        700 + (int)spellData.Delay
+                        500 + (int)spellData.Delay
                         + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Dervish_Blade.GetItem().Cast());
                     return;
@@ -571,7 +571,7 @@
                 if (ItemData.Mercurial_Scimitar.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        700 + (int)spellData.Delay
+                        500 + (int)spellData.Delay
                         + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Mercurial_Scimitar.GetItem().Cast());
                     return;
@@ -611,7 +611,7 @@
                     && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
                 {
                     Utility.DelayAction.Add(
-                          700 + (int)spellData.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                          500 + (int)spellData.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                     return;
                 }
@@ -619,7 +619,7 @@
                 if (ItemData.Quicksilver_Sash.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        700 + (int)spellData.Delay
+                        500 + (int)spellData.Delay
                         + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Quicksilver_Sash.GetItem().Cast());
                     return;
@@ -628,7 +628,7 @@
                 if (ItemData.Mikaels_Crucible.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                       700 + (int)spellData.Delay
+                       500 + (int)spellData.Delay
                         + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Mikaels_Crucible.GetItem().Cast());
                     return;
@@ -637,7 +637,7 @@
                 if (ItemData.Dervish_Blade.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                       700 + (int)spellData.Delay
+                       500 + (int)spellData.Delay
                         + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Dervish_Blade.GetItem().Cast());
                     return;
@@ -646,7 +646,7 @@
                 if (ItemData.Mercurial_Scimitar.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                       700 + (int)spellData.Delay
+                       500 + (int)spellData.Delay
                         + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Mercurial_Scimitar.GetItem().Cast());
                     return;
