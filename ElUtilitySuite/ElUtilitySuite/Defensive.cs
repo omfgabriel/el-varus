@@ -170,8 +170,10 @@
 
         private static void UseItem(string menuvar, string name, int itemId, float itemRange = float.MaxValue)
         {
-
-            if (Entry.Player.InFountain()) return;
+            if (Entry.Player.InFountain())
+            {
+                return;
+            }
 
             if (!Items.HasItem(itemId) || !Items.CanUseItem(itemId))
             {
@@ -222,7 +224,10 @@
 
         private static void UseItemCount(string name, int itemId, float itemRange)
         {
-            if (Entry.Player.InFountain()) return;
+            if (Entry.Player.InFountain())
+            {
+                return;
+            }
 
             if (!Items.HasItem(itemId) || !Items.CanUseItem(itemId))
             {

@@ -1,7 +1,6 @@
 ﻿namespace ElUtilitySuite
 {
     using System;
-    using System.Linq;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -10,6 +9,12 @@
 
     internal static class Potions
     {
+        #region Static Fields
+
+        private static Items.Item refillablePotion, huntersPotion, corruptingPotion;
+
+        #endregion
+
         #region Public Methods and Operators
 
         public static void Load()
@@ -29,7 +34,7 @@
         }
 
         #endregion
-        //2031
+
         #region Methods
 
         private static void OnUpdate(EventArgs args)
@@ -56,10 +61,6 @@
                    || Entry.Player.HasBuff("ItemDarkCrystalFlask");
         }
 
-
-
-        private static Items.Item refillablePotion, huntersPotion, corruptingPotion;
-
         private static void PotionManager()
         {
             if (!InitializeMenu.Menu.Item("Potions.Activated").GetValue<bool>() || Entry.Player.InFountain()
@@ -85,17 +86,20 @@
                     biscuit.Cast();
                 }
 
-                if (refillablePotion.IsOwned(Entry.Player) && InitializeMenu.Menu.Item("Potions.RefillablePotion").GetValue<bool>())
+                if (refillablePotion.IsOwned(Entry.Player)
+                    && InitializeMenu.Menu.Item("Potions.RefillablePotion").GetValue<bool>())
                 {
                     refillablePotion.Cast();
                 }
 
-                if (huntersPotion.IsOwned(Entry.Player) && InitializeMenu.Menu.Item("Potions.HuntersPotion").GetValue<bool>())
+                if (huntersPotion.IsOwned(Entry.Player)
+                    && InitializeMenu.Menu.Item("Potions.HuntersPotion").GetValue<bool>())
                 {
                     huntersPotion.Cast();
                 }
 
-                if (corruptingPotion.IsOwned(Entry.Player) && InitializeMenu.Menu.Item("Potions.CorruptingPotion").GetValue<bool>())
+                if (corruptingPotion.IsOwned(Entry.Player)
+                    && InitializeMenu.Menu.Item("Potions.CorruptingPotion").GetValue<bool>())
                 {
                     corruptingPotion.Cast();
                 }

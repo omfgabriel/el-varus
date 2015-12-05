@@ -10,14 +10,14 @@
     using SharpDX;
 
     /// <summary>
-    /// Tracks jungle camps.
+    ///     Tracks jungle camps.
     /// </summary>
     internal class JungleTracker
     {
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes the <see cref="JungleTracker"/> class.
+        ///     Initializes the <see cref="JungleTracker" /> class.
         /// </summary>
         static JungleTracker()
         {
@@ -182,39 +182,46 @@
         #region Public Properties
 
         /// <summary>
-        /// Gets or sets the jungle camps.
+        ///     Gets or sets the jungle camps.
         /// </summary>
         /// <value>
-        /// The jungle camps.
+        ///     The jungle camps.
         /// </value>
         public static List<JungleCamp> JungleCamps { get; set; }
 
         /// <summary>
-        /// Gets the live camps.
+        ///     Gets the live camps.
         /// </summary>
         /// <value>
-        /// The live camps.
+        ///     The live camps.
         /// </value>
-        public static IEnumerable<JungleCamp> LiveCamps { get
+        public static IEnumerable<JungleCamp> LiveCamps
         {
-            return JungleCamps.Where(x => !x.Dead);
-        } } 
+            get
+            {
+                return JungleCamps.Where(x => !x.Dead);
+            }
+        }
 
         #endregion
 
         #region Public Methods and Operators
 
         public static void Init()
-        { 
+        {
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Games the object_ on create.
+        ///     Games the object_ on create.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
+        /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private static void GameObject_OnCreate(GameObject sender, EventArgs args)
         {
             if (sender.Type != GameObjectType.obj_AI_Minion)
@@ -242,11 +249,11 @@
         }
 
         /// <summary>
-        /// Games the object_ on delete.
+        ///     Games the object_ on delete.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private static void GameObject_OnDelete(GameObject sender, System.EventArgs args)
+        /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
+        private static void GameObject_OnDelete(GameObject sender, EventArgs args)
         {
             if (sender.Type != GameObjectType.obj_AI_Minion)
             {
@@ -275,14 +282,14 @@
         #endregion
 
         /// <summary>
-        /// Represents a jungle camp.
+        ///     Represents a jungle camp.
         /// </summary>
         public class JungleCamp
         {
             #region Constructors and Destructors
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="JungleCamp"/> class.
+            ///     Initializes a new instance of the <see cref="JungleCamp" /> class.
             /// </summary>
             /// <param name="respawnTime">The respawn time.</param>
             /// <param name="position">The position.</param>
@@ -311,18 +318,26 @@
             #region Public Properties
 
             /// <summary>
-            /// Gets or sets the type of the map.
+            ///     Gets or sets a value indicating whether this <see cref="JungleCamp" /> is dead.
             /// </summary>
             /// <value>
-            /// The type of the map.
+            ///     <c>true</c> if dead; otherwise, <c>false</c>.
+            /// </value>
+            public bool Dead { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the type of the map.
+            /// </summary>
+            /// <value>
+            ///     The type of the map.
             /// </value>
             public Utility.Map.MapType MapType { get; set; }
 
             /// <summary>
-            /// Gets the minimap position.
+            ///     Gets the minimap position.
             /// </summary>
             /// <value>
-            /// The minimap position.
+            ///     The minimap position.
             /// </value>
             public Vector2 MinimapPosition
             {
@@ -333,68 +348,60 @@
             }
 
             /// <summary>
-            /// Gets or sets the mob names.
+            ///     Gets or sets the mob names.
             /// </summary>
             /// <value>
-            /// The mob names.
+            ///     The mob names.
             /// </value>
             public string[] MobNames { get; set; }
 
             /// <summary>
-            /// Gets the position.
+            ///     Gets or sets the next respawn time.
             /// </summary>
             /// <value>
-            /// The position.
-            /// </value>
-            public Vector3 Position { get; }
-
-            /// <summary>
-            /// Gets the respawn time.
-            /// </summary>
-            /// <value>
-            /// The respawn time.
-            /// </value>
-            public int RespawnTime { get; private set; }
-
-            /// <summary>
-            /// Gets or sets the team.
-            /// </summary>
-            /// <value>
-            /// The team.
-            /// </value>
-            public GameObjectTeam Team { get; set; }
-
-            /// <summary>
-            /// Gets or sets a value indicating whether this <see cref="JungleCamp"/> is dead.
-            /// </summary>
-            /// <value>
-            ///   <c>true</c> if dead; otherwise, <c>false</c>.
-            /// </value>
-            public bool Dead { get; set; }
-
-            /// <summary>
-            /// Gets or sets the next respawn time.
-            /// </summary>
-            /// <value>
-            /// The next respawn time.
+            ///     The next respawn time.
             /// </value>
             public int NextRespawnTime { get; set; }
 
             /// <summary>
-            /// Gets or sets the objects dead.
+            ///     Gets or sets the objects alive.
             /// </summary>
             /// <value>
-            /// The objects dead.
+            ///     The objects alive.
+            /// </value>
+            public List<string> ObjectsAlive { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the objects dead.
+            /// </summary>
+            /// <value>
+            ///     The objects dead.
             /// </value>
             public List<string> ObjectsDead { get; set; }
 
             /// <summary>
-            /// Gets or sets the objects alive.
+            ///     Gets the position.
             /// </summary>
             /// <value>
-            /// The objects alive.
+            ///     The position.
             /// </value>
-            public List<string> ObjectsAlive { get; set; } 
+            public Vector3 Position { get; }
+
+            /// <summary>
+            ///     Gets the respawn time.
+            /// </summary>
+            /// <value>
+            ///     The respawn time.
+            /// </value>
+            public int RespawnTime { get; }
+
+            /// <summary>
+            ///     Gets or sets the team.
+            /// </summary>
+            /// <value>
+            ///     The team.
+            /// </value>
+            public GameObjectTeam Team { get; set; }
 
             #endregion
         }

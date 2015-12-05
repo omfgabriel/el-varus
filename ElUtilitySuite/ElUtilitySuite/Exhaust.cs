@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ElUtilitySuite
+﻿namespace ElUtilitySuite
 {
-    class Exhaust
+    internal class Exhaust
     {
     }
 }

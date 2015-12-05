@@ -73,7 +73,6 @@
 
         private static void CheckHeal(float incdmg = 0)
         {
-           
             var heal = Entry.Player.GetSpellSlot("summonerheal");
             if (heal == SpellSlot.Unknown)
             {
@@ -111,8 +110,7 @@
 
                 else if (iDamagePercent >= InitializeMenu.Menu.Item("Heal.Damage").GetValue<Slider>().Value
                          && InitializeMenu.Menu.Item("healon" + target.ChampionName).GetValue<bool>()
-                         && !Entry.Player.IsRecalling()
-                         && !Entry.Player.InFountain())
+                         && !Entry.Player.IsRecalling() && !Entry.Player.InFountain())
                 {
                     if (AggroTarget.NetworkId == target.NetworkId)
                     {
@@ -124,7 +122,6 @@
 
         private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-       
             if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy)
             {
                 var heroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);

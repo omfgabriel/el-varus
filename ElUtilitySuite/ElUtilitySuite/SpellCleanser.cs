@@ -6,26 +6,23 @@
 
     using LeagueSharp;
     using LeagueSharp.Common;
-    using ItemData = LeagueSharp.Common.Data.ItemData;
-
 
     using SharpDX;
+
+    using ItemData = LeagueSharp.Common.Data.ItemData;
 
     /// <summary>
     ///     Casts Cleanse on dangerous spells.
     /// </summary>
     public class SpellCleanser
     {
+        #region Constructors and Destructors
+
         #region Static Fields
 
         /// <summary>
         ///     The Cleanse item
         /// </summary>
-
-        #endregion
-
-        #region Constructors and Destructors
-
         /// <summary>
         ///     Initializes the <see cref="Cleanse" /> class.
         /// </summary>
@@ -218,6 +215,8 @@
 
             #endregion
         }
+
+        #endregion
 
         #endregion
 
@@ -427,8 +426,7 @@
                 if (ItemData.Quicksilver_Sash.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        (int)sdata.Delay
-                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Quicksilver_Sash.GetItem().Cast());
                     return;
                 }
@@ -436,8 +434,7 @@
                 if (ItemData.Mikaels_Crucible.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        (int)sdata.Delay
-                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Mikaels_Crucible.GetItem().Cast());
                     return;
                 }
@@ -445,8 +442,7 @@
                 if (ItemData.Dervish_Blade.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        (int)sdata.Delay
-                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Dervish_Blade.GetItem().Cast());
                     return;
                 }
@@ -454,8 +450,7 @@
                 if (ItemData.Mercurial_Scimitar.GetItem().IsReady())
                 {
                     Utility.DelayAction.Add(
-                        (int)sdata.Delay
-                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Mercurial_Scimitar.GetItem().Cast());
                     return;
                 }
