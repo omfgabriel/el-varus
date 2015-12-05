@@ -16,6 +16,10 @@
         {
             try
             {
+                refillablePotion = new Items.Item(2031);
+                huntersPotion = new Items.Item(2032);
+                corruptingPotion = new Items.Item(2033);
+
                 Game.OnUpdate += OnUpdate;
             }
             catch (Exception e)
@@ -37,7 +41,6 @@
 
             try
             {
-                //Console.WriteLine("Buffs: {0}", string.Join(" | ", Entry.Player.Buffs.Select(b => b.DisplayName)));
                 PotionManager();
             }
             catch (Exception e)
@@ -53,7 +56,9 @@
                    || Entry.Player.HasBuff("ItemDarkCrystalFlask");
         }
 
-        
+
+
+        private static Items.Item refillablePotion, huntersPotion, corruptingPotion;
 
         private static void PotionManager()
         {
@@ -65,9 +70,6 @@
 
             var healthPotion = ItemData.Health_Potion.GetItem();
             var biscuit = ItemData.Total_Biscuit_of_Rejuvenation2.GetItem();
-            var refillablePotion = ItemData.Refillable_Potion.GetItem();
-            var huntersPotion = ItemData.Hunters_Potion.GetItem();
-            var corruptingPotion = ItemData.Corrupting_Potion.GetItem();
 
             if (Entry.Player.Health / Entry.Player.MaxHealth * 100
                 < InitializeMenu.Menu.Item("Potions.Player.Health").GetValue<Slider>().Value)
