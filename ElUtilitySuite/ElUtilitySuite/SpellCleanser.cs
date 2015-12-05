@@ -289,6 +289,12 @@
             {
                 return;
             }
+
+            if (!InitializeMenu.Menu.Item(string.Format("Cleanse{0}", sdata.SDataName)).IsActive()
+               || !InitializeMenu.Menu.Item("CleanseDangerous").IsActive())
+            {
+                return;
+            }
         }
 
         /// <summary>
@@ -308,6 +314,17 @@
                     x => x.SDataName == args.SData.Name.ToLower() || x.MissileName == args.SData.Name.ToLower());
 
             if (spellData == null)
+            {
+                return;
+            }
+
+            if (!InitializeMenu.Menu.Item(string.Format("Cleanse{0}", spellData.SDataName)).IsActive()
+                || !InitializeMenu.Menu.Item("CleanseDangerous").IsActive())
+            {
+                return;
+            }
+
+            if (Player.Distance(args.Start) > spellData.CastRange)
             {
                 return;
             }

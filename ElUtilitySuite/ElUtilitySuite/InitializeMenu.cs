@@ -280,6 +280,49 @@ namespace ElUtilitySuite
                 notificationsMenu.AddItem(new MenuItem("notifRecAborted", "Recall aborted").SetValue(true));
             }
 
+            /*var spellCleanserMenu =  new Menu("Cleanse", "Cleanser");
+            {
+                var cleanseSpellMenu = new Menu("Spells", "SpellPick");
+                {
+                    foreach (
+                        var spell in
+                            SpellCleanser.Spells.Where(
+                                x =>
+                                    ObjectManager.Get<Obj_AI_Hero>()
+                                        .Where(y => y.IsEnemy)
+                                        .Any(y => y.ChampionName.ToLower() == x.ChampionName)))
+                    {
+                        var objAiHero = ObjectManager.Get<Obj_AI_Hero>()
+                            .FirstOrDefault(x => x.ChampionName.ToLower() == spell.ChampionName);
+
+                        if (objAiHero == null)
+                        {
+                            continue;
+                        }
+
+                        var firstOrDefault = objAiHero
+                            .Spellbook.Spells.FirstOrDefault(x => x.SData.Name.ToLower() == spell.SDataName);
+
+                        if (firstOrDefault != null)
+                        {
+                            cleanseSpellMenu.AddItem(
+                                new MenuItem(string.Format("Cleanse{0}", spell.SDataName),
+                                    string.Format("{0} ({1}) - {2}",
+                                        char.ToUpper(spell.ChampionName[0]) + spell.ChampionName.Substring(1),
+                                        firstOrDefault
+                                            .Slot, spell.SDataName)).SetValue(true));
+                        }
+                    }
+                }
+
+                spellCleanserMenu.AddSubMenu(cleanseSpellMenu);
+                spellCleanserMenu.AddItem(
+                    new MenuItem("CleanseDangerous", "Cleanse on dangerous spell").SetValue(true));
+
+                Menu.AddSubMenu(spellCleanserMenu);
+            }*/
+
+
             var zhonyaMenu = new Menu("Zhonya's Hourglass", "zhonya");
             {
                 var zhonyaSpellMenu = new Menu("Spells", "SpellPick");
