@@ -114,7 +114,105 @@ namespace ElUtilitySuite
                 potionsMenu.AddItem(new MenuItem("Potions.Player.Health", "Health percentage").SetValue(new Slider(20)));
             }
 
-            var protectMenu = Menu.AddSubMenu(new Menu("Protect yourself", "ProtectYourself"));
+            var spellCleanserMenu = new Menu("Cleanse", "Cleanser");
+            {
+                foreach (var a in ObjectManager.Get<Obj_AI_Hero>().Where(ally => ally.Team == Entry.Player.Team))
+                {
+                    spellCleanserMenu.SubMenu("Mikaels settings")
+                        .AddItem(new MenuItem("Protect.Cleanse.Kappa" + a.CharData.BaseSkinName, "Use for " + a.CharData.BaseSkinName))
+                        .SetValue(true);
+                }
+
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Activated")
+                    .AddItem(new MenuItem("Protect.Cleanse.Mikeals.Activated", "Activate Mikaels").SetValue(true));
+
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Stun.Ally", "Stuns").SetValue(true));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Charm.Ally", "Charms").SetValue(true));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Taunt.Ally", "Taunts").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Fear.Ally", "Fears").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Snare.Ally", "Snares").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Silence.Ally", "Silences").SetValue(true));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Suppression.Ally", "Suppressions").SetValue(true));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Polymorph.Ally", "Polymorphs").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Blind.Ally", "Blinds").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Slow.Ally", "Slows").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Posion.Ally", "Posion").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Knockup.Ally", "Knockups").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Knockback.Ally", "Knockbacks").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Flee.Ally", "Flee").SetValue(false));
+
+                spellCleanserMenu.AddItem(new MenuItem("New.Cleanse.Delay", "Cleanse delay ")).SetValue(new Slider(0, 0, 25));
+                spellCleanserMenu.AddItem(new MenuItem("New.cmode", "Mode: ")).SetValue(new StringList(new[] { "Always", "Combo" }, 1));
+                var cleanseSpellMenu = new Menu("Spells", "SpellPick");
+                {
+                    foreach (
+                        var spell in
+                            SpellCleanser.Spells.Where(
+                                x =>
+                                    ObjectManager.Get<Obj_AI_Hero>()
+                                        .Where(y => y.IsEnemy)
+                                        .Any(y => y.ChampionName.ToLower() == x.ChampionName)))
+                    {
+                        var objAiHero = ObjectManager.Get<Obj_AI_Hero>()
+                            .FirstOrDefault(x => x.ChampionName.ToLower() == spell.ChampionName);
+
+                        if (objAiHero == null)
+                        {
+                            continue;
+                        }
+
+                        var firstOrDefault = objAiHero
+                            .Spellbook.Spells.FirstOrDefault(x => x.SData.Name.ToLower() == spell.SDataName);
+
+                        if (firstOrDefault != null)
+                        {
+                            cleanseSpellMenu.AddItem(
+                                new MenuItem(string.Format("Cleanse{0}", spell.SDataName),
+                                    string.Format("{0} ({1}) - {2}",
+                                        char.ToUpper(spell.ChampionName[0]) + spell.ChampionName.Substring(1),
+                                        firstOrDefault
+                                            .Slot, spell.SDataName)).SetValue(true));
+                        }
+                    }
+                }
+
+                spellCleanserMenu.AddSubMenu(cleanseSpellMenu);
+                spellCleanserMenu.AddItem(
+                    new MenuItem("CleanseDangerous", "Cleanse on dangerous spell").SetValue(true));
+
+                Menu.AddSubMenu(spellCleanserMenu);
+            }
+
+            var protectMenu = Menu.AddSubMenu(new Menu("Stealth", "ProtectYourself"));
             {
                 protectMenu.SubMenu("Rengar")
                     .AddItem(new MenuItem("Protect.Rengar2", "Rengar antigapcloser - Beta").SetValue(false));
@@ -127,103 +225,6 @@ namespace ElUtilitySuite
                 protectMenu.SubMenu("Akali").AddItem(new MenuItem("Protect.Akali.Trinket", "Trinket").SetValue(true));
                 protectMenu.SubMenu("Akali")
                     .AddItem(new MenuItem("Protect.Akali.HP", "Pink when Akali's HP:").SetValue(new Slider(50)));
-            }
-
-            var cleanseMenu = Menu.AddSubMenu(new Menu("Cleanse", "Cleanse"));
-            {
-                cleanseMenu.SubMenu("Specials")
-                    .AddItem(new MenuItem("Protect.Cleanse.Specials.ZedR", "Cleanse Zed R").SetValue(true));
-                cleanseMenu.SubMenu("Specials")
-                    .AddItem(new MenuItem("Protect.Cleanse.Specials.SkarnerR", "Cleanse Skarner R").SetValue(true));
-                cleanseMenu.SubMenu("Specials")
-                    .AddItem(new MenuItem("Protect.Cleanse.Specials.VladimirR", "Cleanse Vladimir R").SetValue(true));
-                cleanseMenu.SubMenu("Specials")
-                    .AddItem(new MenuItem("Protect.Cleanse.Specials.FioraR", "Cleanse Fiora R").SetValue(true));
-                cleanseMenu.SubMenu("Specials")
-                    .AddItem(
-                        new MenuItem("Protect.Cleanse.Specials.MordekaiserR", "Cleanse Mordekaiser R").SetValue(true));
-                cleanseMenu.SubMenu("Specials")
-                    .AddItem(new MenuItem("Protect.Cleanse.Specials.LeonaR", "Cleanse Leona R").SetValue(false));
-
-                cleanseMenu.AddItem(new MenuItem("Cleanse.Activated", "Activated").SetValue(true));
-                cleanseMenu.AddItem(new MenuItem("Cleanse.Delay", "Cleanse delay ")).SetValue(new Slider(0, 0, 25));
-                foreach (var buff in Bufftype)
-                {
-                    var menucleanse =
-                        cleanseMenu.SubMenu("Cleanse settings")
-                            .AddItem(new MenuItem("Protect.Cleanse" + buff, "" + buff));
-
-                    if (buff == BuffType.Taunt || buff == BuffType.Snare || buff == BuffType.Polymorph
-                        || buff == BuffType.Blind || buff == BuffType.Slow || buff == BuffType.Poison
-                        || buff == BuffType.Knockback || buff == BuffType.Knockup || buff == BuffType.Flee)
-                    {
-                        menucleanse.SetValue(false);
-                    }
-                    else
-                    {
-                        menucleanse.SetValue(true);
-                    }
-                    cleanseMenu.SubMenu("Cleanse settings")
-                        .SubMenu("Activated")
-                        .AddItem(new MenuItem("Cleanse.Activated", "Activate Cleanse").SetValue(true));
-                }
-
-                foreach (var a in ObjectManager.Get<Obj_AI_Hero>().Where(ally => ally.Team == Entry.Player.Team))
-                {
-                    cleanseMenu.SubMenu("Mikaels settings")
-                        .AddItem(new MenuItem("Protect.Cleanse.Kappa" + a.CharData.BaseSkinName, "Use for " + a.CharData.BaseSkinName))
-                        .SetValue(true);
-                }
-
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Activated")
-                    .AddItem(new MenuItem("Protect.Cleanse.Mikeals.Activated", "Activate Mikaels").SetValue(true));
-
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Stun.Ally", "Stuns").SetValue(true));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Charm.Ally", "Charms").SetValue(true));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Taunt.Ally", "Taunts").SetValue(false));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Fear.Ally", "Fears").SetValue(false));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Snare.Ally", "Snares").SetValue(false));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Silence.Ally", "Silences").SetValue(true));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Suppression.Ally", "Suppressions").SetValue(true));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Polymorph.Ally", "Polymorphs").SetValue(false));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Blind.Ally", "Blinds").SetValue(false));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Slow.Ally", "Slows").SetValue(false));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Posion.Ally", "Posion").SetValue(false));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Knockup.Ally", "Knockups").SetValue(false));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Knockback.Ally", "Knockbacks").SetValue(false));
-                cleanseMenu.SubMenu("Mikaels settings")
-                    .SubMenu("Buffs")
-                    .AddItem(new MenuItem("Protect.Cleanse.Flee.Ally", "Flee").SetValue(false));
-
-                cleanseMenu.AddItem(new MenuItem("cmode", "Mode: "))
-                    .SetValue(new StringList(new[] { "Always", "Combo" }, 1));
             }
 
             #region Credits to Oracle
@@ -280,49 +281,6 @@ namespace ElUtilitySuite
                 notificationsMenu.AddItem(new MenuItem("notifRecAborted", "Recall aborted").SetValue(true));
             }
 
-            /*var spellCleanserMenu =  new Menu("Cleanse", "Cleanser");
-            {
-                var cleanseSpellMenu = new Menu("Spells", "SpellPick");
-                {
-                    foreach (
-                        var spell in
-                            SpellCleanser.Spells.Where(
-                                x =>
-                                    ObjectManager.Get<Obj_AI_Hero>()
-                                        .Where(y => y.IsEnemy)
-                                        .Any(y => y.ChampionName.ToLower() == x.ChampionName)))
-                    {
-                        var objAiHero = ObjectManager.Get<Obj_AI_Hero>()
-                            .FirstOrDefault(x => x.ChampionName.ToLower() == spell.ChampionName);
-
-                        if (objAiHero == null)
-                        {
-                            continue;
-                        }
-
-                        var firstOrDefault = objAiHero
-                            .Spellbook.Spells.FirstOrDefault(x => x.SData.Name.ToLower() == spell.SDataName);
-
-                        if (firstOrDefault != null)
-                        {
-                            cleanseSpellMenu.AddItem(
-                                new MenuItem(string.Format("Cleanse{0}", spell.SDataName),
-                                    string.Format("{0} ({1}) - {2}",
-                                        char.ToUpper(spell.ChampionName[0]) + spell.ChampionName.Substring(1),
-                                        firstOrDefault
-                                            .Slot, spell.SDataName)).SetValue(true));
-                        }
-                    }
-                }
-
-                spellCleanserMenu.AddSubMenu(cleanseSpellMenu);
-                spellCleanserMenu.AddItem(
-                    new MenuItem("CleanseDangerous", "Cleanse on dangerous spell").SetValue(true));
-
-                Menu.AddSubMenu(spellCleanserMenu);
-            }*/
-
-
             var zhonyaMenu = new Menu("Zhonya's Hourglass", "zhonya");
             {
                 var zhonyaSpellMenu = new Menu("Spells", "SpellPick");
@@ -373,7 +331,7 @@ namespace ElUtilitySuite
 
             Menu.AddItem(new MenuItem("seperator", ""));
             Menu.AddItem(new MenuItem("Versionnumber", string.Format("Version: {0}", Entry.ScriptVersion)));
-            Menu.AddItem(new MenuItem("by.jQuery", "Made By jQuery and a hint of ChewyMoon"));
+            Menu.AddItem(new MenuItem("by.jQuery", "jQ / ChewyMoon"));
 
             Menu.AddToMainMenu();
         }

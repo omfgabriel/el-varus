@@ -6,6 +6,10 @@
 
     using LeagueSharp;
     using LeagueSharp.Common;
+    using ItemData = LeagueSharp.Common.Data.ItemData;
+
+
+    using SharpDX;
 
     /// <summary>
     ///     Casts Cleanse on dangerous spells.
@@ -17,7 +21,6 @@
         /// <summary>
         ///     The Cleanse item
         /// </summary>
-        private static Items.Item cleanseItem;
 
         #endregion
 
@@ -206,6 +209,11 @@
                                      MissileName = "fizzmarinerdoommissile", Delay = 250, MissileSpeed = 1300,
                                      CastRange = 1275f
                                  },
+                             new CleanseSpell
+                                 {
+                                     ChampionName = "rammus", SDataName = "puncturingtaunt", MissileName = "", Delay = 250,
+                                     MissileSpeed = int.MaxValue, CastRange = 325f
+                                 },
                          };
 
             #endregion
@@ -250,8 +258,6 @@
         /// </summary>
         public static void Init()
         {
-            cleanseItem = new Items.Item(3140);
-
             // 3140 = Quicksilver
             // 3137 = Dervish Blade
             // 3193 = Mercurial Scimitar
@@ -259,11 +265,117 @@
 
             GameObject.OnCreate += GameObjectOnCreate;
             Obj_AI_Base.OnProcessSpellCast += ObjAiBaseOnProcessSpellCast;
+            Game.OnUpdate += OnUpdate;
         }
 
         #endregion
 
         #region Methods
+
+        private static void AllyCleanse()
+        {
+            var delay = InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
+
+            foreach (var unit in
+                ObjectManager.Get<Obj_AI_Hero>()
+                    .Where(
+                        x =>
+                        x.IsAlly && !x.IsMe && x.IsValidTarget(900, false)
+                        && InitializeMenu.Menu.Item("Protect.Cleanse.Kappa" + x.CharData.BaseSkinName).GetValue<bool>()
+                        && InitializeMenu.Menu.Item("Protect.Cleanse.Mikeals.Activated").GetValue<bool>())
+                    .OrderByDescending(xe => xe.Health / xe.MaxHealth * 100))
+            {
+                foreach (var b in unit.Buffs)
+                {
+                    if (ItemData.Mikaels_Crucible.GetItem().IsReady())
+                    {
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Slow.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Slow)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Stun.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Stun)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Charm.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Charm)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Taunt.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Taunt)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Fear.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Fear)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Snare.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Snare)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Silence.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Silence)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Suppression.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Suppression)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Polymorph.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Polymorph)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Blind.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Blind)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Knockback.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Knockback)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Knockup.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Knockup)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Posion.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Poison)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+
+                        if (InitializeMenu.Menu.Item("Protect.Cleanse.Flee.Ally").GetValue<bool>()
+                            && b.Type == BuffType.Flee)
+                        {
+                            Utility.DelayAction.Add(delay, () => ItemData.Mikaels_Crucible.GetItem().Cast(unit));
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         ///     Fired when a game object is created.
@@ -291,9 +403,62 @@
             }
 
             if (!InitializeMenu.Menu.Item(string.Format("Cleanse{0}", sdata.SDataName)).IsActive()
-               || !InitializeMenu.Menu.Item("CleanseDangerous").IsActive())
+                || !InitializeMenu.Menu.Item("CleanseDangerous").IsActive())
             {
                 return;
+            }
+
+            // Correct the end position
+            var endPosition = missile.EndPosition;
+
+            if (missile.StartPosition.Distance(endPosition) > sdata.CastRange)
+            {
+                endPosition = missile.StartPosition
+                              + Vector3.Normalize(endPosition - missile.StartPosition) * sdata.CastRange;
+            }
+
+            if (missile.SData.LineWidth + Player.BoundingRadius
+                > Player.ServerPosition.To2D()
+                      .Distance(
+                          Player.ServerPosition.To2D()
+                      .ProjectOn(missile.StartPosition.To2D(), endPosition.To2D())
+                      .SegmentPoint))
+            {
+                if (ItemData.Quicksilver_Sash.GetItem().IsReady())
+                {
+                    Utility.DelayAction.Add(
+                        (int)sdata.Delay
+                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        () => ItemData.Quicksilver_Sash.GetItem().Cast());
+                    return;
+                }
+
+                if (ItemData.Mikaels_Crucible.GetItem().IsReady())
+                {
+                    Utility.DelayAction.Add(
+                        (int)sdata.Delay
+                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        () => ItemData.Mikaels_Crucible.GetItem().Cast());
+                    return;
+                }
+
+                if (ItemData.Dervish_Blade.GetItem().IsReady())
+                {
+                    Utility.DelayAction.Add(
+                        (int)sdata.Delay
+                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        () => ItemData.Dervish_Blade.GetItem().Cast());
+                    return;
+                }
+
+                if (ItemData.Mercurial_Scimitar.GetItem().IsReady())
+                {
+                    Utility.DelayAction.Add(
+                        (int)sdata.Delay
+                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        () => ItemData.Mercurial_Scimitar.GetItem().Cast());
+                    return;
+                }
             }
         }
 
@@ -327,6 +492,138 @@
             if (Player.Distance(args.Start) > spellData.CastRange)
             {
                 return;
+            }
+
+            // Targetted spells
+            if (args.SData.TargettingType == SpellDataTargetType.Unit && args.Target.IsMe
+                || args.SData.TargettingType == SpellDataTargetType.SelfAndUnit && args.Target.IsMe
+                || args.SData.TargettingType == SpellDataTargetType.Self
+                || args.SData.TargettingType == SpellDataTargetType.SelfAoe
+                && Player.Distance(sender) < spellData.CastRange)
+            {
+                Console.WriteLine("Should cleanse");
+
+                if (ItemData.Quicksilver_Sash.GetItem().IsReady())
+                {
+                    Utility.DelayAction.Add(
+                        (int)spellData.Delay
+                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        () => ItemData.Quicksilver_Sash.GetItem().Cast());
+                    return;
+                }
+
+                if (ItemData.Mikaels_Crucible.GetItem().IsReady())
+                {
+                    Utility.DelayAction.Add(
+                        (int)spellData.Delay
+                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        () => ItemData.Mikaels_Crucible.GetItem().Cast(Player));
+                    return;
+                }
+
+                if (ItemData.Dervish_Blade.GetItem().IsReady())
+                {
+                    Utility.DelayAction.Add(
+                        (int)spellData.Delay
+                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        () => ItemData.Dervish_Blade.GetItem().Cast());
+                    return;
+                }
+
+                if (ItemData.Mercurial_Scimitar.GetItem().IsReady())
+                {
+                    Utility.DelayAction.Add(
+                        (int)spellData.Delay
+                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        () => ItemData.Mercurial_Scimitar.GetItem().Cast());
+                    return;
+                }
+                return;
+            }
+
+            // Anything besides a skillshot return
+            if (!args.SData.TargettingType.ToString().Contains("Location")
+                && args.SData.TargettingType != SpellDataTargetType.Cone)
+            {
+                return;
+            }
+
+            // Correct the end position
+            var endPosition = args.End;
+
+            if (args.Start.Distance(endPosition) > spellData.CastRange)
+            {
+                endPosition = args.Start + Vector3.Normalize(endPosition - args.Start) * spellData.CastRange;
+            }
+
+            // credits to kurisu
+            var isLinear = args.SData.TargettingType == SpellDataTargetType.Cone || args.SData.LineWidth > 0;
+            var width = isLinear && args.SData.TargettingType != SpellDataTargetType.Cone
+                            ? args.SData.LineWidth
+                            : (args.SData.CastRadius < 1 ? args.SData.CastRadiusSecondary : args.SData.CastRadius);
+
+            if ((isLinear
+                 && width + Player.BoundingRadius
+                 > Player.ServerPosition.To2D()
+                       .Distance(
+                           Player.ServerPosition.To2D().ProjectOn(args.Start.To2D(), endPosition.To2D()).SegmentPoint))
+                || (!isLinear && Player.Distance(endPosition) <= width + Player.BoundingRadius))
+            {
+                if (ItemData.Quicksilver_Sash.GetItem().IsReady())
+                {
+                    Utility.DelayAction.Add(
+                        (int)spellData.Delay
+                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        () => ItemData.Quicksilver_Sash.GetItem().Cast());
+                    return;
+                }
+
+                if (ItemData.Mikaels_Crucible.GetItem().IsReady())
+                {
+                    Utility.DelayAction.Add(
+                        (int)spellData.Delay
+                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        () => ItemData.Mikaels_Crucible.GetItem().Cast());
+                    return;
+                }
+
+                if (ItemData.Dervish_Blade.GetItem().IsReady())
+                {
+                    Utility.DelayAction.Add(
+                        (int)spellData.Delay
+                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        () => ItemData.Dervish_Blade.GetItem().Cast());
+                    return;
+                }
+
+                if (ItemData.Mercurial_Scimitar.GetItem().IsReady())
+                {
+                    Utility.DelayAction.Add(
+                        (int)spellData.Delay
+                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        () => ItemData.Mercurial_Scimitar.GetItem().Cast());
+                    return;
+                }
+            }
+        }
+
+        private static void OnUpdate(EventArgs args)
+        {
+            try
+            {
+                if (Entry.Player.IsDead)
+                {
+                    return;
+                }
+
+                if (InitializeMenu.Menu.Item("Protect.Cleanse.Mikeals.Activated").GetValue<bool>())
+                {
+                    AllyCleanse();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred: '{0}'", e);
             }
         }
 

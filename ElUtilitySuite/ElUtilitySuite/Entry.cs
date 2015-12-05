@@ -79,11 +79,12 @@
                 Barrier.Load();
                 Potions.Load();
                 Smite.Load();
-                Cleanse.Load();
+                //Cleanse.Load();
                 Offensive.Load();
                 Defensive.Load();
                 ProtectYourself.Load();
-                //Zhonya.Init();
+                Zhonya.Init();
+                SpellCleanser.Init();
                 InitializeMenu.Load();
                 CheckVersion.Init();
                 Notifications.AddNotification(string.Format("El Utility Suite by jQuery v{0}", ScriptVersion), 10000);
