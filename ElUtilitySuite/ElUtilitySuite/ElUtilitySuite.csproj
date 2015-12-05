@@ -65,7 +65,6 @@
     <Compile Include="Barrier.cs" />
     <Compile Include="Base.cs" />
     <Compile Include="CheckVersion.cs" />
-    <Compile Include="Cleanse.cs" />
     <Compile Include="Defensive.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="Exhaust.cs" />

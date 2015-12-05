@@ -79,7 +79,6 @@
                 Barrier.Load();
                 Potions.Load();
                 Smite.Load();
-                //Cleanse.Load();
                 Offensive.Load();
                 Defensive.Load();
                 ProtectYourself.Load();
