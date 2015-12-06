@@ -8,6 +8,7 @@
     using LeagueSharp.Common;
 
     using SharpDX;
+    using SharpDX.Direct3D9;
 
     /// <summary>
     ///     Tracks jungle camps.
@@ -182,6 +183,20 @@
         #region Public Properties
 
         /// <summary>
+        ///     Gets the live camps.
+        /// </summary>
+        /// <value>
+        ///     The live camps.
+        /// </value>
+        public static IEnumerable<JungleCamp> DeadCamps
+        {
+            get
+            {
+                return JungleCamps.Where(x => x.Dead);
+            }
+        }
+
+        /// <summary>
         ///     Gets or sets the jungle camps.
         /// </summary>
         /// <value>
@@ -189,19 +204,25 @@
         /// </value>
         public static List<JungleCamp> JungleCamps { get; set; }
 
+        #endregion
+
+        #region Properties
+
         /// <summary>
-        ///     Gets the live camps.
+        ///     Gets or sets the font.
         /// </summary>
         /// <value>
-        ///     The live camps.
+        ///     The font.
         /// </value>
-        public static IEnumerable<JungleCamp> LiveCamps
-        {
-            get
-            {
-                return JungleCamps.Where(x => !x.Dead);
-            }
-        }
+        private static Font Font { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the sprite.
+        /// </summary>
+        /// <value>
+        ///     The sprite.
+        /// </value>
+        private static Sprite Sprite { get; set; }
 
         #endregion
 
@@ -209,13 +230,55 @@
 
         public static void Init()
         {
+            Font = new Font(
+                Drawing.Direct3DDevice,
+                new FontDescription
+                    {
+                        FaceName = "Tahoma", Height = 14, OutputPrecision = FontPrecision.Default,
+                        Quality = FontQuality.Antialiased
+                    });
+
+            Sprite = new Sprite(Drawing.Direct3DDevice);
+
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
+            Drawing.OnEndScene += Drawing_OnEndScene;
+
+            Drawing.OnPreReset += args =>
+                {
+                    Font.OnLostDevice();
+                    Sprite.OnLostDevice();
+                };
+
+            Drawing.OnPostReset += args =>
+                {
+                    Font.OnResetDevice();
+                    Sprite.OnResetDevice();
+                };
         }
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        ///     Fired when the scene is completely rendered.
+        /// </summary>
+        /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
+        private static void Drawing_OnEndScene(EventArgs args)
+        {
+            foreach (var camp in DeadCamps)
+            {
+                var timeSpan = TimeSpan.FromMilliseconds(camp.NextRespawnTime);
+
+                Font.DrawText(
+                    Sprite,
+                    timeSpan.ToString("m:ss"),
+                    (int)camp.MinimapPosition.X,
+                    (int)camp.MinimapPosition.Y,
+                    new ColorBGRA(Color.White.ToBgra()));
+            }
+        }
 
         /// <summary>
         ///     Games the object_ on create.
