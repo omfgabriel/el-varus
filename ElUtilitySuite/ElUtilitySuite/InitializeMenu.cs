@@ -333,7 +333,7 @@
 
             var jngTimerMenu = new Menu("Jungle Timer", "JngTimer");
             jngTimerMenu.AddItem(new MenuItem("DrawTimers", "Draw Jungle Timers").SetValue(true));
-            jngTimerMenu.AddToMainMenu();
+            Menu.AddSubMenu(jngTimerMenu);
 
             Menu.AddItem(new MenuItem("seperator1", ""));
 
