@@ -586,7 +586,7 @@
                 return;
             }
 
-            if (Player.HealthPercent < ZhonyaBelowHp || (Player.Health - args.Damage) / Player.MaxHealth < ZhonyaBelowHp)
+            if (Player.HealthPercent < ZhonyaBelowHp || (Player.Health - args.Damage) / Player.MaxHealth * 100 < ZhonyaBelowHp)
             {
                 zhyonyaItem.Cast();
             }
