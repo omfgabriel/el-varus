@@ -84,6 +84,7 @@
                 ProtectYourself.Load();
                 Zhonya.Init();
                 SpellCleanser.Init();
+                JungleTracker.Init();
                 InitializeMenu.Load();
                 CheckVersion.Init();
                 Notifications.AddNotification(string.Format("El Utility Suite by jQuery v{0}", ScriptVersion), 10000);

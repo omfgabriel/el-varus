@@ -331,6 +331,10 @@
                 Menu.AddSubMenu(zhonyaMenu);
             }
 
+            var jngTimerMenu = new Menu("Jungle Timer", "JngTimer");
+            jngTimerMenu.AddItem(new MenuItem("DrawTimers", "Draw Jungle Timers").SetValue(true));
+            jngTimerMenu.AddToMainMenu();
+
             Menu.AddItem(new MenuItem("seperator1", ""));
 
             Menu.AddItem(new MenuItem("usecombo", "Combo (Active)").SetValue(new KeyBind(32, KeyBindType.Press)));

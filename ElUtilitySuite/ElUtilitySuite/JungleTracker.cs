@@ -216,29 +216,20 @@
         /// </value>
         private static Font Font { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the sprite.
-        /// </summary>
-        /// <value>
-        ///     The sprite.
-        /// </value>
-        private static Sprite Sprite { get; set; }
-
         #endregion
 
         #region Public Methods and Operators
 
         public static void Init()
         {
+            Game.PrintChat("LOAD");
             Font = new Font(
                 Drawing.Direct3DDevice,
                 new FontDescription
                     {
                         FaceName = "Tahoma", Height = 14, OutputPrecision = FontPrecision.Default,
-                        Quality = FontQuality.Antialiased
+                        Quality = FontQuality.Default
                     });
-
-            Sprite = new Sprite(Drawing.Direct3DDevice);
 
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
@@ -247,13 +238,11 @@
             Drawing.OnPreReset += args =>
                 {
                     Font.OnLostDevice();
-                    Sprite.OnLostDevice();
                 };
 
             Drawing.OnPostReset += args =>
                 {
                     Font.OnResetDevice();
-                    Sprite.OnResetDevice();
                 };
         }
 
@@ -267,16 +256,21 @@
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private static void Drawing_OnEndScene(EventArgs args)
         {
-            foreach (var camp in DeadCamps)
+            if (!InitializeMenu.Menu.Item("DrawTimers").IsActive())
             {
-                var timeSpan = TimeSpan.FromMilliseconds(camp.NextRespawnTime);
+                return;
+            }
 
+            foreach (var camp in DeadCamps.Where(x => x.NextRespawnTime - Environment.TickCount > 0))
+            {
+                var timeSpan = TimeSpan.FromMilliseconds(camp.NextRespawnTime - Environment.TickCount);
+                
                 Font.DrawText(
-                    Sprite,
-                    timeSpan.ToString("m:ss"),
+                    null,
+                    timeSpan.ToString(@"m\:ss"),
                     (int)camp.MinimapPosition.X,
                     (int)camp.MinimapPosition.Y,
-                    new ColorBGRA(Color.White.ToBgra()));
+                    new ColorBGRA(255, 255, 255, 255));
             }
         }
 
@@ -292,7 +286,7 @@
                 return;
             }
 
-            var camp = JungleCamps.FirstOrDefault(x => x.MobNames.Equals(sender.Name));
+            var camp = JungleCamps.FirstOrDefault(x => x.MobNames.Select(y => y.ToLower()).Any(z => z.Equals(sender.Name.ToLower())));
 
             if (camp == null)
             {
@@ -323,7 +317,7 @@
                 return;
             }
 
-            var camp = JungleCamps.FirstOrDefault(x => x.MobNames.Equals(sender.Name));
+            var camp = JungleCamps.FirstOrDefault(x => x.MobNames.Select(y => y.ToLower()).Any(z => z.Equals(sender.Name.ToLower())));
 
             if (camp == null)
             {
@@ -338,8 +332,9 @@
                 return;
             }
 
+
             camp.Dead = true;
-            camp.NextRespawnTime = Environment.TickCount + camp.RespawnTime;
+            camp.NextRespawnTime = Environment.TickCount + camp.RespawnTime - 3000;
         }
 
         #endregion
