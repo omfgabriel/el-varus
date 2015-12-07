@@ -478,13 +478,16 @@
                     return;
                 }
 
-                if (ItemData.Dervish_Blade.GetItem().IsReady())
+                if (Game.MapId == GameMapId.TwistedTreeline || Game.MapId == GameMapId.CrystalScar)
                 {
-                    Utility.DelayAction.Add(
-                        400 + (int)spellData.Delay
-                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
-                        () => ItemData.Dervish_Blade.GetItem().Cast());
-                    return;
+                    if (ItemData.Dervish_Blade.GetItem().IsReady())
+                    {
+                        Utility.DelayAction.Add(
+                            400 + (int)spellData.Delay
+                            + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                            () => ItemData.Dervish_Blade.GetItem().Cast());
+                        return;
+                    }
                 }
                 return;
             }
@@ -544,13 +547,16 @@
                     return;
                 }
 
-                if (ItemData.Dervish_Blade.GetItem().IsReady())
+                if (Game.MapId == GameMapId.TwistedTreeline || Game.MapId == GameMapId.CrystalScar)
                 {
-                    Utility.DelayAction.Add(
-                       400 + (int)spellData.Delay
-                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
-                        () => ItemData.Dervish_Blade.GetItem().Cast());
-                    return;
+                    if (ItemData.Dervish_Blade.GetItem().IsReady())
+                    {
+                        Utility.DelayAction.Add(
+                           400 + (int)spellData.Delay
+                            + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                            () => ItemData.Dervish_Blade.GetItem().Cast());
+                        return;
+                    }
                 }
             }
         }
