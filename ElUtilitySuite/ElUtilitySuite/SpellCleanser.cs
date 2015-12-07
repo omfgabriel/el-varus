@@ -451,11 +451,13 @@
             {
                 Console.WriteLine("Should cleanse");
 
+                var cleanseDelay = InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
+
                 if (summonerCleanse != SpellSlot.Unknown
                     && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
                 {
                     Utility.DelayAction.Add(
-                          400 + (int)spellData.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                          400 + (int)spellData.Delay + cleanseDelay,
                         () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                     return;
                 }
@@ -464,7 +466,7 @@
                 {
                     Utility.DelayAction.Add(
                         400 + (int)spellData.Delay
-                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        + cleanseDelay,
                         () => qss.Cast());
                     return;
                 }
@@ -473,7 +475,7 @@
                 {
                     Utility.DelayAction.Add(
                         400 + (int)spellData.Delay
-                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        + cleanseDelay,
                         () => mikaels.Cast(Player));
                     return;
                 }
@@ -484,7 +486,7 @@
                     {
                         Utility.DelayAction.Add(
                             400 + (int)spellData.Delay
-                            + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                            + cleanseDelay,
                             () => ItemData.Dervish_Blade.GetItem().Cast());
                         return;
                     }
@@ -520,11 +522,14 @@
                            Player.ServerPosition.To2D().ProjectOn(args.Start.To2D(), endPosition.To2D()).SegmentPoint))
                 || (!isLinear && Player.Distance(endPosition) <= width + Player.BoundingRadius))
             {
+
+                var cleanseDelay = InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
+
                 if (summonerCleanse != SpellSlot.Unknown
                     && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
                 {
                     Utility.DelayAction.Add(
-                          400 + (int)spellData.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                          400 + (int)spellData.Delay + cleanseDelay,
                         () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                     return;
                 }
@@ -533,7 +538,7 @@
                 {
                     Utility.DelayAction.Add(
                         400 + (int)spellData.Delay
-                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        + cleanseDelay,
                         () => qss.Cast());
                     return;
                 }
@@ -542,7 +547,7 @@
                 {
                     Utility.DelayAction.Add(
                        400 + (int)spellData.Delay
-                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        + cleanseDelay,
                         () => mikaels.Cast());
                     return;
                 }
@@ -553,7 +558,7 @@
                     {
                         Utility.DelayAction.Add(
                            400 + (int)spellData.Delay
-                            + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                            + cleanseDelay,
                             () => ItemData.Dervish_Blade.GetItem().Cast());
                         return;
                     }
