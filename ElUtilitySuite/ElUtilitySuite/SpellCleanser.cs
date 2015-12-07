@@ -359,6 +359,8 @@
                 return;
             }
 
+            var cleanseDelay = InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
+
             // Correct the end position
             var endPosition = missile.EndPosition;
 
@@ -372,7 +374,7 @@
                 && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
             {
                 Utility.DelayAction.Add(
-                     400 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                     400 + (int)sdata.Delay + cleanseDelay,
                     () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                 return;
             }
@@ -387,7 +389,7 @@
                 if (qss.IsReady())
                 {
                     Utility.DelayAction.Add(
-                        400 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        400 + (int)sdata.Delay + cleanseDelay,
                         () => qss.Cast());
                     return;
                 }
@@ -395,17 +397,20 @@
                 if (mikaels.IsReady())
                 {
                     Utility.DelayAction.Add(
-                        400 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
+                        400 + (int)sdata.Delay + cleanseDelay,
                         () => mikaels.Cast());
                     return;
                 }
 
-                if (ItemData.Dervish_Blade.GetItem().IsReady())
+                if (Game.MapId == GameMapId.TwistedTreeline || Game.MapId == GameMapId.CrystalScar)
                 {
-                    Utility.DelayAction.Add(
-                        400 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
-                        () => ItemData.Dervish_Blade.GetItem().Cast());
-                    return;
+                    if (ItemData.Dervish_Blade.GetItem().IsReady())
+                    {
+                        Utility.DelayAction.Add(
+                            400 + (int)sdata.Delay + cleanseDelay,
+                            () => ItemData.Dervish_Blade.GetItem().Cast());
+                        return;
+                    }
                 }
             }
         }
