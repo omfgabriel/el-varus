@@ -407,14 +407,6 @@
                         () => ItemData.Dervish_Blade.GetItem().Cast());
                     return;
                 }
-
-                if (qss.IsReady())
-                {
-                    Utility.DelayAction.Add(
-                        400 + (int)sdata.Delay + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
-                        () => qss.Cast());
-                    return;
-                }
             }
         }
 
@@ -558,15 +550,6 @@
                        400 + (int)spellData.Delay
                         + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
                         () => ItemData.Dervish_Blade.GetItem().Cast());
-                    return;
-                }
-
-                if (qss.IsReady())
-                {
-                    Utility.DelayAction.Add(
-                       400 + (int)spellData.Delay
-                        + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10,
-                        () => qss.Cast());
                     return;
                 }
             }
