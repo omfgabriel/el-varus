@@ -227,6 +227,11 @@
                                  {
                                      ChampionName = "rammus", SDataName = "puncturingtaunt", MissileName = "", Delay = 250,
                                      MissileSpeed = int.MaxValue, CastRange = 325f
+                                 },
+                               new CleanseSpell
+                                 {
+                                     ChampionName = "irelia", SDataName = "ireliaequilibriumstrike", MissileName = "", Delay = 250,
+                                     MissileSpeed = int.MaxValue, CastRange = 450f
                                  }
                          };
 
