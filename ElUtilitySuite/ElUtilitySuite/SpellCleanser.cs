@@ -23,15 +23,15 @@
         /// </summary>
         private static Spell cleanseSpell;
 
+        private static Items.Item mikaels = ItemData.Mikaels_Crucible.GetItem();
+
+        private static Items.Item qss;
+
         private static SpellDataInst slot1;
 
         private static SpellDataInst slot2;
 
         private static SpellSlot summonerCleanse;
-
-        private static Items.Item qss;
-
-        private static Items.Item mikaels = ItemData.Mikaels_Crucible.GetItem();
 
         #endregion
 
@@ -228,10 +228,10 @@
                                      ChampionName = "rammus", SDataName = "puncturingtaunt", MissileName = "", Delay = 250,
                                      MissileSpeed = int.MaxValue, CastRange = 325f
                                  },
-                               new CleanseSpell
+                             new CleanseSpell
                                  {
-                                     ChampionName = "irelia", SDataName = "ireliaequilibriumstrike", MissileName = "", Delay = 250,
-                                     MissileSpeed = int.MaxValue, CastRange = 450f
+                                     ChampionName = "irelia", SDataName = "ireliaequilibriumstrike", MissileName = "",
+                                     Delay = 250, MissileSpeed = int.MaxValue, CastRange = 450f
                                  }
                          };
 
@@ -274,15 +274,10 @@
 
         public static void Init()
         {
-            // 3140 = Quicksilver
-            // 3137 = Dervish Blade
-            // 3193 = Mercurial Scimitar
-            // 3222 = Mikael's Crucible
 
             slot1 = Entry.Player.Spellbook.GetSpell(SpellSlot.Summoner1);
             slot2 = Entry.Player.Spellbook.GetSpell(SpellSlot.Summoner2);
 
-            //Soon riot will introduce multiple cleanses, mark my words.
             var cleanseNames = new[] { "summonerboost" };
 
             if (cleanseNames.Contains(slot1.Name))
@@ -322,9 +317,9 @@
                 {
                     if (mikaels.IsReady())
                     {
-                        var buffMenuItem = InitializeMenu.Menu.Item(string.Format("Protect.Cleanse.{0}.Ally", b.Type.ToString()));
-                        if (buffMenuItem != null && 
-                            buffMenuItem.GetValue<bool>())
+                        var buffMenuItem =
+                            InitializeMenu.Menu.Item(string.Format("Protect.Cleanse.{0}.Ally", b.Type.ToString()));
+                        if (buffMenuItem != null && buffMenuItem.GetValue<bool>())
                         {
                             Utility.DelayAction.Add(delay, () => mikaels.Cast(unit));
                         }
@@ -379,7 +374,7 @@
                 && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
             {
                 Utility.DelayAction.Add(
-                     400 + (int)sdata.Delay + cleanseDelay,
+                    400 + (int)sdata.Delay + cleanseDelay,
                     () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                 return;
             }
@@ -393,17 +388,13 @@
             {
                 if (qss.IsReady())
                 {
-                    Utility.DelayAction.Add(
-                        400 + (int)sdata.Delay + cleanseDelay,
-                        () => qss.Cast());
+                    Utility.DelayAction.Add(400 + (int)sdata.Delay + cleanseDelay, () => qss.Cast());
                     return;
                 }
 
                 if (mikaels.IsReady())
                 {
-                    Utility.DelayAction.Add(
-                        400 + (int)sdata.Delay + cleanseDelay,
-                        () => mikaels.Cast());
+                    Utility.DelayAction.Add(400 + (int)sdata.Delay + cleanseDelay, () => mikaels.Cast());
                     return;
                 }
 
@@ -467,26 +458,20 @@
                     && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
                 {
                     Utility.DelayAction.Add(
-                          400 + (int)spellData.Delay + cleanseDelay,
+                        400 + (int)spellData.Delay + cleanseDelay,
                         () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                     return;
                 }
 
                 if (qss.IsReady())
                 {
-                    Utility.DelayAction.Add(
-                        400 + (int)spellData.Delay
-                        + cleanseDelay,
-                        () => qss.Cast());
+                    Utility.DelayAction.Add(400 + (int)spellData.Delay + cleanseDelay, () => qss.Cast());
                     return;
                 }
 
                 if (mikaels.IsReady())
                 {
-                    Utility.DelayAction.Add(
-                        400 + (int)spellData.Delay
-                        + cleanseDelay,
-                        () => mikaels.Cast(Player));
+                    Utility.DelayAction.Add(400 + (int)spellData.Delay + cleanseDelay, () => mikaels.Cast(Player));
                     return;
                 }
 
@@ -495,8 +480,7 @@
                     if (ItemData.Dervish_Blade.GetItem().IsReady())
                     {
                         Utility.DelayAction.Add(
-                            400 + (int)spellData.Delay
-                            + cleanseDelay,
+                            400 + (int)spellData.Delay + cleanseDelay,
                             () => ItemData.Dervish_Blade.GetItem().Cast());
                         return;
                     }
@@ -532,33 +516,26 @@
                            Player.ServerPosition.To2D().ProjectOn(args.Start.To2D(), endPosition.To2D()).SegmentPoint))
                 || (!isLinear && Player.Distance(endPosition) <= width + Player.BoundingRadius))
             {
-
                 var cleanseDelay = InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
 
                 if (summonerCleanse != SpellSlot.Unknown
                     && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
                 {
                     Utility.DelayAction.Add(
-                          400 + (int)spellData.Delay + cleanseDelay,
+                        400 + (int)spellData.Delay + cleanseDelay,
                         () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                     return;
                 }
 
                 if (qss.IsReady())
                 {
-                    Utility.DelayAction.Add(
-                        400 + (int)spellData.Delay
-                        + cleanseDelay,
-                        () => qss.Cast());
+                    Utility.DelayAction.Add(400 + (int)spellData.Delay + cleanseDelay, () => qss.Cast());
                     return;
                 }
 
                 if (mikaels.IsReady())
                 {
-                    Utility.DelayAction.Add(
-                       400 + (int)spellData.Delay
-                        + cleanseDelay,
-                        () => mikaels.Cast());
+                    Utility.DelayAction.Add(400 + (int)spellData.Delay + cleanseDelay, () => mikaels.Cast());
                     return;
                 }
 
@@ -567,8 +544,7 @@
                     if (ItemData.Dervish_Blade.GetItem().IsReady())
                     {
                         Utility.DelayAction.Add(
-                           400 + (int)spellData.Delay
-                            + cleanseDelay,
+                            400 + (int)spellData.Delay + cleanseDelay,
                             () => ItemData.Dervish_Blade.GetItem().Cast());
                         return;
                     }
@@ -580,7 +556,9 @@
         {
             try
             {
-                qss = ObjectManager.Player.InventoryItems.Any(item => item.Id == ItemId.Mercurial_Scimitar) ? ItemData.Mercurial_Scimitar.GetItem() : ItemData.Quicksilver_Sash.GetItem();
+                qss = ObjectManager.Player.InventoryItems.Any(item => item.Id == ItemId.Mercurial_Scimitar)
+                          ? ItemData.Mercurial_Scimitar.GetItem()
+                          : ItemData.Quicksilver_Sash.GetItem();
 
                 if (Entry.Player.IsDead)
                 {
