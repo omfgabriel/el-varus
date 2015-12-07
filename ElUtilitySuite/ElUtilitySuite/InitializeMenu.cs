@@ -125,7 +125,7 @@
 
                 spellCleanserMenu.SubMenu("Mikaels settings")
                     .SubMenu("Activated")
-                    .AddItem(new MenuItem("Protect.Cleanse.Mikeals.Activated", "Activate Mikaels").SetValue(true));
+                    .AddItem(new MenuItem("Protect.Cleanse.Mikaels.Activated", "Activate Mikaels").SetValue(true));
 
                 spellCleanserMenu.SubMenu("Mikaels settings")
                     .SubMenu("Buffs")
