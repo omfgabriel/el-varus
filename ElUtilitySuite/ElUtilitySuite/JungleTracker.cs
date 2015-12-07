@@ -222,7 +222,6 @@
 
         public static void Init()
         {
-            Game.PrintChat("LOAD");
             Font = new Font(
                 Drawing.Direct3DDevice,
                 new FontDescription
