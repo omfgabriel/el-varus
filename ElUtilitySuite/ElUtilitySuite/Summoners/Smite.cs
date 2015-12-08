@@ -1,7 +1,9 @@
-﻿namespace ElUtilitySuite
+﻿namespace ElUtilitySuite.Summoners
 {
     using System;
     using System.Linq;
+
+    using ElUtilitySuite.Utility;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -11,7 +13,7 @@
     using Color = System.Drawing.Color;
 
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class Smite
+    public class Smite : IPlugin
     {
         #region Static Fields
 
@@ -38,7 +40,18 @@
 
         #region Public Methods and Operators
 
-        public static void Load()
+        public static double SmiteDamage()
+        {
+            var damage = new[]
+                             {
+                                 20 * Entry.Player.Level + 370, 30 * Entry.Player.Level + 330,
+                                 40 * +Entry.Player.Level + 240, 50 * Entry.Player.Level + 100
+                             };
+
+            return Entry.Player.Spellbook.CanUseSpell(smite.Slot) == SpellState.Ready ? damage.Max() : 0;
+        }
+
+        public void Load()
         {
             try
             {
@@ -73,17 +86,6 @@
             {
                 Console.WriteLine("An error occurred: '{0}'", e);
             }
-        }
-
-        public static double SmiteDamage()
-        {
-            var damage = new[]
-                             {
-                                 20 * Entry.Player.Level + 370, 30 * Entry.Player.Level + 330,
-                                 40 * +Entry.Player.Level + 240, 50 * Entry.Player.Level + 100
-                             };
-
-            return Entry.Player.Spellbook.CanUseSpell(smite.Slot) == SpellState.Ready ? damage.Max() : 0;
         }
 
         #endregion

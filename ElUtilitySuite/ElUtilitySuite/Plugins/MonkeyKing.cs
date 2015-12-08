@@ -2,6 +2,9 @@
 {
     using System;
 
+    using ElUtilitySuite.Summoners;
+    using ElUtilitySuite.Utility;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 

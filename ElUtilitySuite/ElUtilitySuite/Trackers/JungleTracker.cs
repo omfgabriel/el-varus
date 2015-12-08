@@ -1,8 +1,10 @@
-﻿namespace ElUtilitySuite
+﻿namespace ElUtilitySuite.Trackers
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    using ElUtilitySuite.Utility;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -13,7 +15,7 @@
     /// <summary>
     ///     Tracks jungle camps.
     /// </summary>
-    internal class JungleTracker
+    internal class JungleTracker : IPlugin
     {
         #region Constructors and Destructors
 
@@ -220,7 +222,7 @@
 
         #region Public Methods and Operators
 
-        public static void Init()
+        public void Load()
         {
             Font = new Font(
                 Drawing.Direct3DDevice,
@@ -234,15 +236,9 @@
             GameObject.OnDelete += GameObject_OnDelete;
             Drawing.OnEndScene += Drawing_OnEndScene;
 
-            Drawing.OnPreReset += args =>
-                {
-                    Font.OnLostDevice();
-                };
+            Drawing.OnPreReset += args => { Font.OnLostDevice(); };
 
-            Drawing.OnPostReset += args =>
-                {
-                    Font.OnResetDevice();
-                };
+            Drawing.OnPostReset += args => { Font.OnResetDevice(); };
         }
 
         #endregion
@@ -263,7 +259,7 @@
             foreach (var camp in DeadCamps.Where(x => x.NextRespawnTime - Environment.TickCount > 0))
             {
                 var timeSpan = TimeSpan.FromMilliseconds(camp.NextRespawnTime - Environment.TickCount);
-                
+
                 Font.DrawText(
                     null,
                     timeSpan.ToString(@"m\:ss"),
@@ -285,7 +281,9 @@
                 return;
             }
 
-            var camp = JungleCamps.FirstOrDefault(x => x.MobNames.Select(y => y.ToLower()).Any(z => z.Equals(sender.Name.ToLower())));
+            var camp =
+                JungleCamps.FirstOrDefault(
+                    x => x.MobNames.Select(y => y.ToLower()).Any(z => z.Equals(sender.Name.ToLower())));
 
             if (camp == null)
             {
@@ -316,7 +314,9 @@
                 return;
             }
 
-            var camp = JungleCamps.FirstOrDefault(x => x.MobNames.Select(y => y.ToLower()).Any(z => z.Equals(sender.Name.ToLower())));
+            var camp =
+                JungleCamps.FirstOrDefault(
+                    x => x.MobNames.Select(y => y.ToLower()).Any(z => z.Equals(sender.Name.ToLower())));
 
             if (camp == null)
             {
@@ -330,7 +330,6 @@
             {
                 return;
             }
-
 
             camp.Dead = true;
             camp.NextRespawnTime = Environment.TickCount + camp.RespawnTime - 3000;

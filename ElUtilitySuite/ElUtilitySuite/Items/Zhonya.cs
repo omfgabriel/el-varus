@@ -1,8 +1,10 @@
-﻿namespace ElUtilitySuite
+﻿namespace ElUtilitySuite.Items
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    using ElUtilitySuite.Utility;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -12,7 +14,7 @@
     /// <summary>
     ///     Casts Zhonya on dangerous spells.
     /// </summary>
-    public class Zhonya
+    public class Zhonya : IPlugin
     {
         #region Static Fields
 
@@ -509,7 +511,7 @@
         /// <summary>
         ///     Initializes this instance.
         /// </summary>
-        public static void Init()
+        public void Load()
         {
             zhyonyaItem = new Items.Item(Game.MapId == GameMapId.SummonersRift ? 3157 : 3090);
 
@@ -586,7 +588,8 @@
                 return;
             }
 
-            if (Player.HealthPercent < ZhonyaBelowHp || (Player.Health - args.Damage) / Player.MaxHealth * 100 < ZhonyaBelowHp)
+            if (Player.HealthPercent < ZhonyaBelowHp
+                || (Player.Health - args.Damage) / Player.MaxHealth * 100 < ZhonyaBelowHp)
             {
                 zhyonyaItem.Cast();
             }

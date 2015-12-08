@@ -2,12 +2,21 @@
 {
     using System;
     using System.Linq;
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Security.Permissions;
 
     using LeagueSharp;
     using LeagueSharp.Common;
 
     internal class Entry
     {
+        #region Delegates
+
+        internal delegate T ObjectActivator<out T>(params object[] args);
+
+        #endregion
+
         #region Public Properties
 
         public static bool IsHowlingAbyss
@@ -68,31 +77,48 @@
             return target;
         }
 
+        [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
+        public static ObjectActivator<T> GetActivator<T>(ConstructorInfo ctor)
+        {
+            var paramsInfo = ctor.GetParameters();
+            var param = Expression.Parameter(typeof(object[]), "args");
+            var argsExp = new Expression[paramsInfo.Length];
+
+            for (var i = 0; i < paramsInfo.Length; i++)
+            {
+                var paramCastExp = Expression.Convert(
+                    Expression.ArrayIndex(param, Expression.Constant(i)),
+                    paramsInfo[i].ParameterType);
+
+                argsExp[i] = paramCastExp;
+            }
+
+            return
+                (ObjectActivator<T>)
+                Expression.Lambda(typeof(ObjectActivator<T>), Expression.New(ctor, argsExp), param).Compile();
+        }
+
         public static void OnLoad(EventArgs args)
         {
             try
             {
-                //Lel let's re-do this another time, kappa 123 after the beep.
-                new RecallTracker();
-                Heal.Load();
-                Ignite.Load();
-                Barrier.Load();
-                Potions.Load();
-                Smite.Load();
-                Offensive.Load();
-                Defensive.Load();
-                ProtectYourself.Load();
-                Zhonya.Init();
-                SpellCleanser.Init();
-                JungleTracker.Init();
-                InitializeMenu.Load();
-                CheckVersion.Init();
+                var plugins =
+                    Assembly.GetExecutingAssembly()
+                        .GetTypes()
+                        .Where(x => typeof(IPlugin).IsAssignableFrom(x) && !x.IsInterface)
+                        .Select(x => GetActivator<IPlugin>(x.GetConstructors().First())(null));
+
+                foreach (var plugin in plugins)
+                {
+                    plugin.Load();
+                }
+
                 Notifications.AddNotification(string.Format("El Utility Suite by jQuery v{0}", ScriptVersion), 10000);
 
                 var type = Type.GetType("ElUtilitySuite.Plugins." + Player.ChampionName);
                 if (type != null)
                 {
-                    Base.Load(Player.ChampionName);
+                    Base.Load();
                     Console.WriteLine("Loaded");
                 }
             }

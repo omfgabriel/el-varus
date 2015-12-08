@@ -1,11 +1,14 @@
-﻿namespace ElUtilitySuite
+﻿namespace ElUtilitySuite.Utility
 {
     using System.Linq;
+
+    using ElUtilitySuite.Items;
+    using ElUtilitySuite.Summoners;
 
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    public class InitializeMenu
+    public class InitializeMenu : IPlugin
     {
         #region Static Fields
 
@@ -26,7 +29,7 @@
 
         #region Public Methods and Operators
 
-        public static void Load()
+        public void Load()
         {
             Menu = new Menu("ElUtilitySuite", "ElUtilitySuite", true);
 

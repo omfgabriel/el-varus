@@ -2,13 +2,15 @@
 {
     using ElUtilitySuite.Plugins;
 
+    using LeagueSharp;
+
     internal class Base
     {
         #region Methods
 
-        internal static void Load(string champName)
+        internal static void Load()
         {
-            switch (champName)
+            switch (ObjectManager.Player.ChampionName)
             {
                 case "LeeSin":
                     LeeSin.Load();

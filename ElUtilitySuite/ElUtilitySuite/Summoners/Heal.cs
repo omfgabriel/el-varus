@@ -1,12 +1,14 @@
-﻿namespace ElUtilitySuite
+﻿namespace ElUtilitySuite.Summoners
 {
     using System;
     using System.Linq;
 
+    using ElUtilitySuite.Utility;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    public class Heal
+    public class Heal : IPlugin
     {
         #region Static Fields
 
@@ -37,7 +39,7 @@
                     .First(enemy => enemy.Team != Entry.Player.Team && enemy.ChampionName == championname);
         }
 
-        public static void Load()
+        public void Load()
         {
             try
             {

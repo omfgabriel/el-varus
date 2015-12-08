@@ -1,13 +1,15 @@
-﻿namespace ElUtilitySuite
+﻿namespace ElUtilitySuite.Items
 {
     using System;
+
+    using ElUtilitySuite.Utility;
 
     using LeagueSharp;
     using LeagueSharp.Common;
 
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
-    internal static class Potions
+    internal class Potions : IPlugin
     {
         #region Static Fields
 
@@ -17,7 +19,7 @@
 
         #region Public Methods and Operators
 
-        public static void Load()
+        public void Load()
         {
             try
             {

@@ -1,4 +1,4 @@
-﻿namespace ElUtilitySuite
+﻿namespace ElUtilitySuite.Utility
 {
     using System;
     using System.IO;
@@ -8,7 +8,7 @@
 
     using LeagueSharp;
 
-    internal class CheckVersion
+    internal class CheckVersion : IPlugin
     {
         #region Static Fields
 
@@ -18,7 +18,7 @@
 
         #region Public Methods and Operators
 
-        public static void Init()
+        public void Load()
         {
             try
             {

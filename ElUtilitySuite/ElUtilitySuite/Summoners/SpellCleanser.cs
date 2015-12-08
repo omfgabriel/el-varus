@@ -1,8 +1,10 @@
-﻿namespace ElUtilitySuite
+﻿namespace ElUtilitySuite.Summoners
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    using ElUtilitySuite.Utility;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -14,7 +16,7 @@
     /// <summary>
     ///     Casts Cleanse on dangerous spells.
     /// </summary>
-    public class SpellCleanser
+    public class SpellCleanser : IPlugin
     {
         #region Static Fields
 
@@ -272,9 +274,8 @@
 
         #region Public Methods and Operators
 
-        public static void Init()
+        public void Load()
         {
-
             slot1 = Entry.Player.Spellbook.GetSpell(SpellSlot.Summoner1);
             slot2 = Entry.Player.Spellbook.GetSpell(SpellSlot.Summoner2);
 

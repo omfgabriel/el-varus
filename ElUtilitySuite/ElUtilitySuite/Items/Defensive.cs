@@ -1,12 +1,34 @@
-﻿namespace ElUtilitySuite
+﻿namespace ElUtilitySuite.Items
 {
     using System;
     using System.Linq;
 
+    using ElUtilitySuite.Utility;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    internal static class Defensive
+    internal static class DefensiveExtensions
+    {
+        #region Public Methods and Operators
+
+        public static int CountHerosInRange(this Obj_AI_Hero target, bool checkteam, float range = 1200f)
+        {
+            var objListTeam = ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsValidTarget(range, false));
+
+            return objListTeam.Count(hero => checkteam ? hero.Team != target.Team : hero.Team == target.Team);
+        }
+
+        public static bool IsValidState(this Obj_AI_Hero target)
+        {
+            return !target.HasBuffOfType(BuffType.SpellShield) && !target.HasBuffOfType(BuffType.SpellImmunity)
+                   && !target.HasBuffOfType(BuffType.Invulnerability);
+        }
+
+        #endregion
+    }
+
+    internal class Defensive : IPlugin
     {
         #region Static Fields
 
@@ -18,13 +40,7 @@
 
         #region Public Methods and Operators
 
-        public static bool IsValidState(this Obj_AI_Hero target)
-        {
-            return !target.HasBuffOfType(BuffType.SpellShield) && !target.HasBuffOfType(BuffType.SpellImmunity)
-                   && !target.HasBuffOfType(BuffType.Invulnerability);
-        }
-
-        public static void Load()
+        public void Load()
         {
             try
             {
@@ -40,13 +56,6 @@
         #endregion
 
         #region Methods
-
-        private static int CountHerosInRange(this Obj_AI_Hero target, bool checkteam, float range = 1200f)
-        {
-            var objListTeam = ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsValidTarget(range, false));
-
-            return objListTeam.Count(hero => checkteam ? hero.Team != target.Team : hero.Team == target.Team);
-        }
 
         private static void DefensiveItemManager()
         {

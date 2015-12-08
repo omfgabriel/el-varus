@@ -1,12 +1,14 @@
-﻿namespace ElUtilitySuite
+﻿namespace ElUtilitySuite.Summoners
 {
     using System;
     using System.Linq;
 
+    using ElUtilitySuite.Utility;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    public class Barrier
+    public class Barrier : IPlugin
     {
         #region Static Fields
 
@@ -22,7 +24,7 @@
 
         #region Public Methods and Operators
 
-        public static void Load()
+        public void Load()
         {
             try
             {

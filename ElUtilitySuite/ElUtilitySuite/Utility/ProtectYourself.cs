@@ -1,4 +1,4 @@
-﻿namespace ElUtilitySuite
+﻿namespace ElUtilitySuite.Utility
 {
     using System;
     using System.Linq;
@@ -8,7 +8,7 @@
 
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
-    public static class ProtectYourself
+    public class ProtectYourself : IPlugin
     {
         #region Static Fields
 
@@ -20,7 +20,7 @@
 
         #region Public Methods and Operators
 
-        public static void Load()
+        public void Load()
         {
             try
             {

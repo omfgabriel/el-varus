@@ -1,4 +1,4 @@
-﻿namespace ElUtilitySuite
+﻿namespace ElUtilitySuite.Trackers
 {
     //Recall tracker from BaseUlt
 
@@ -8,6 +8,8 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+
+    using ElUtilitySuite.Utility;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -20,7 +22,7 @@
 
     #endregion
 
-    internal class RecallTracker
+    internal class RecallTracker : IPlugin
     {
         #region Static Fields
 
@@ -40,13 +42,7 @@
 
         private readonly float BarY = Drawing.Height * 0.80f;
 
-        private readonly List<Obj_AI_Hero> enemies;
-
-        private readonly List<Obj_AI_Hero> Heroes;
-
         private readonly int SeperatorHeight = 5;
-
-        private readonly Font Text;
 
         private Utility.Map.MapType Map;
 
@@ -56,10 +52,28 @@
 
         public RecallTracker()
         {
-            this.Heroes = ObjectManager.Get<Obj_AI_Hero>().ToList();
-            this.enemies = this.Heroes.Where(x => x.IsEnemy).ToList();
+        }
 
-            this.EnemyInfo = this.enemies.Select(x => new EnemyInfo(x)).ToList();
+        #endregion
+
+        #region Properties
+
+        private List<Obj_AI_Hero> Enemies { get; set; }
+
+        private List<Obj_AI_Hero> Heroes { get; set; }
+
+        private Font Text { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public void Load()
+        {
+            this.Heroes = ObjectManager.Get<Obj_AI_Hero>().ToList();
+            this.Enemies = this.Heroes.Where(x => x.IsEnemy).ToList();
+
+            this.EnemyInfo = this.Enemies.Select(x => new EnemyInfo(x)).ToList();
             this.Map = Utility.Map.GetMap().Type;
 
             this.Text = new Font(
