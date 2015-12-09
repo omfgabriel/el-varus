@@ -48,7 +48,7 @@
 
                     if (serverVersion == Version)
                     {
-                        Game.PrintChat("<font color='#0dd629'>ElUtilitySuite</font> Your version is up-to-date, nice!");
+                        Game.PrintChat("<font color='#0dd629'><strong>ElUtilitySuite</strong></font> Your version is up-to-date, nice!");
                     }
                 }
             }

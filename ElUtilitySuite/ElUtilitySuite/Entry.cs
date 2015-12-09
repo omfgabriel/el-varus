@@ -113,7 +113,8 @@
                     plugin.Load();
                 }
 
-                Notifications.AddNotification(string.Format("El Utility Suite by jQuery v{0}", ScriptVersion), 10000);
+                Game.PrintChat("<font color='#0dd629'><strong>DATABASE</strong></font> Give it a +1 for ya boy jQuery man!");
+                Notifications.AddNotification(string.Format("ElUtilitySuite by jQuery v{0}", ScriptVersion), 10000);
 
                 var type = Type.GetType("ElUtilitySuite.Plugins." + Player.ChampionName);
                 if (type != null)
