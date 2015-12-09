@@ -958,7 +958,7 @@ namespace ElRengarRevamped
             /// Enables or disables the movement.
             /// </summary>
             /// <param name="b">if set to <c>true</c> the orbwalker will move.</param>
-            public void SetMovement(bool b)
+            public static void SetMovement(bool b)
             {
                 Move = b;
             }
@@ -1096,7 +1096,6 @@ namespace ElRengarRevamped
                 /*Jungle minions*/
                 if (this.ActiveMode == OrbwalkingMode.LaneClear || this.ActiveMode == OrbwalkingMode.Mixed)
                 {
-                    Console.WriteLine("sssss");
                     var jminions =
                         ObjectManager.Get<Obj_AI_Minion>()
                             .Where(
@@ -1107,21 +1106,8 @@ namespace ElRengarRevamped
 
                     if (jminions != null)
                     {
-                        if (IsMelee(this.Player) && Standards.IsActive("Jungle.Movement2"))
-                        {
-                            this.SetMovement(false);
-                        }
-                        else
-                        {
-                            if (IsMelee(this.Player))
-                            {
-                                this.SetMovement(true);
-                            }
-                        }
                         return jminions;
                     }
-
-                    this.SetMovement(true);
                 }
 
 
