@@ -220,12 +220,6 @@ namespace ElRengarRevamped
                 ItemData.Ravenous_Hydra_Melee_Only.GetItem().Cast();
             }
 
-            if (ItemData.Titanic_Hydra_Melee_Only.GetItem().IsReady()
-                && Orbwalking.GetRealAutoAttackRange(Player) > Player.Distance(target) && !RengarR)
-            {
-                ItemData.Titanic_Hydra_Melee_Only.GetItem().Cast();
-            }
-
             if (ItemData.Tiamat_Melee_Only.GetItem().IsReady()
                 && ItemData.Tiamat_Melee_Only.Range > Player.Distance(target))
             {
@@ -250,6 +244,12 @@ namespace ElRengarRevamped
                     && Orbwalking.GetRealAutoAttackRange(Player) > Player.Distance(target))
                 {
                     ItemData.Youmuus_Ghostblade.GetItem().Cast();
+                }
+
+                if (ItemData.Titanic_Hydra_Melee_Only.GetItem().IsReady()
+                    && Orbwalking.GetRealAutoAttackRange(Player) > Player.Distance(target) && !RengarR)
+                {
+                    ItemData.Titanic_Hydra_Melee_Only.GetItem().Cast();
                 }
             }
         }
