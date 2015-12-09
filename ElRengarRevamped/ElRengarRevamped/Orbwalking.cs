@@ -1096,6 +1096,7 @@ namespace ElRengarRevamped
                 /*Jungle minions*/
                 if (this.ActiveMode == OrbwalkingMode.LaneClear || this.ActiveMode == OrbwalkingMode.Mixed)
                 {
+                    Console.WriteLine("sssss");
                     var jminions =
                         ObjectManager.Get<Obj_AI_Minion>()
                             .Where(
@@ -1104,9 +1105,8 @@ namespace ElRengarRevamped
                                 && mob.CharData.BaseSkinName != "gangplankbarrel")
                             .MaxOrDefault(mob => mob.MaxHealth);
 
-                    if (jminions != null && jminions.IsValidTarget())
+                    if (jminions != null)
                     {
-                        Console.WriteLine("xxxx");
                         if (IsMelee(this.Player) && Standards.IsActive("Jungle.Movement2"))
                         {
                             this.SetMovement(false);
@@ -1120,7 +1120,10 @@ namespace ElRengarRevamped
                         }
                         return jminions;
                     }
+
+                    this.SetMovement(true);
                 }
+
 
                 /*Lane Clear minions*/
                 if (this.ActiveMode == OrbwalkingMode.LaneClear)
