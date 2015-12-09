@@ -958,7 +958,7 @@ namespace ElRengarRevamped
             /// Enables or disables the movement.
             /// </summary>
             /// <param name="b">if set to <c>true</c> the orbwalker will move.</param>
-            public static void SetMovement(bool b)
+            public void SetMovement(bool b)
             {
                 Move = b;
             }
@@ -1106,8 +1106,23 @@ namespace ElRengarRevamped
 
                     if (jminions != null)
                     {
+                        if (IsMelee(this.Player) && Standards.IsActive("Jungle.Movement2"))
+                        {
+                            this.SetMovement(false);
+                        }
+                        else
+                        {
+                            if (IsMelee(this.Player))
+                            {
+                                this.SetMovement(true);
+                            }
+                        }
                         return jminions;
                     }
+                }
+                else
+                {
+                    this.SetMovement(true);
                 }
 
 
