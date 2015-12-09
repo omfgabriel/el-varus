@@ -13,15 +13,11 @@
 
         #region Public Methods and Operators
 
+
         public static void Initialize()
         {
             Menu = new Menu("ElRengar", "ElRengar", true);
-            //Standards.Orbwalker = new Orbwalking.Orbwalker(OrbwalkingMenu());
-
-            var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
-            Standards.Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
-            Menu.AddSubMenu(orbwalkerMenu);
-
+            Standards.Orbwalker = new Orbwalking.Orbwalker(OrbwalkingMenu());
             TargetSelector.AddToMenu(TargetSelectorMenu());
 
             var comboMenu = Menu.AddSubMenu(new Menu("Modes", "Modes"));
@@ -124,10 +120,10 @@
 
         #region Methods
 
-        /*private static Menu OrbwalkingMenu()
+        private static Menu OrbwalkingMenu()
         {
             return Menu.AddSubMenu(new Menu("jQuery Orbwalker", "Orbwalker"));
-        }*/
+        }
 
         private static Menu TargetSelectorMenu()
         {

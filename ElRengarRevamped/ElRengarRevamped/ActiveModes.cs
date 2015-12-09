@@ -36,7 +36,7 @@ namespace ElRengarRevamped
                     Rengar._selectedEnemy = target;
                 }
 
-                if (Youmuu.IsReady() && Player.Distance(target) <= spells[Spells.Q].Range && target.IsValidTarget())
+                if (Youmuu.IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                 {
                     Youmuu.Cast(Player);
                 }
@@ -50,7 +50,7 @@ namespace ElRengarRevamped
                     switch (IsListActive("Combo.Prio").SelectedIndex)
                     {
                         case 0:
-                            if (!RengarR && Rengar.LastE + 200 < Environment.TickCount && target.IsValidTarget())
+                            if (!RengarR && Rengar.LastE + 200 < Environment.TickCount && target.IsValidTarget(spells[Spells.E].Range))
                             {
                                 var prediction = spells[Spells.E].GetPrediction(target);
                                 if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
@@ -68,8 +68,7 @@ namespace ElRengarRevamped
                                 }
                             }
                             else if (!RengarR && IsActive("Combo.Use.E") && spells[Spells.E].IsReady()
-                                     && Vector3.Distance(Player.ServerPosition, target.ServerPosition)
-                                     <= spells[Spells.E].Range)
+                                     && target.IsValidTarget(spells[Spells.E].Range))
                             {
                                 var prediction = spells[Spells.E].GetPrediction(target);
                                 if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0 && target.IsValidTarget())
@@ -89,10 +88,9 @@ namespace ElRengarRevamped
                             break;
                         case 1:
                             if (spells[Spells.W].IsReady() && !RengarR
-                                && Vector3.Distance(Player.ServerPosition, target.ServerPosition)
-                                < spells[Spells.W].Range && !Player.IsDashing() && !HasPassive)
+                                && target.IsValidTarget(spells[Spells.W].Range) && !Player.IsDashing() && !HasPassive)
                             {
-                                if (Rengar.LastW + 200 < Environment.TickCount && target.IsValidTarget())
+                                if (Rengar.LastW + 200 < Environment.TickCount)
                                 {
                                     CastW(target);
                                     return;
@@ -100,26 +98,21 @@ namespace ElRengarRevamped
                             }
                             break;
                         case 2:
-                            if (IsActive("Combo.Use.Q") && spells[Spells.Q].IsInRange(target) && target.IsValidTarget())
+                            if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range))
                             {
-                                if (Rengar.LastQ + 200 < Environment.TickCount)
-                                {
-                                    spells[Spells.Q].Cast();
-                                    return;
-                                }
+                                spells[Spells.Q].Cast();
+                                return;
                             }
                             break;
                     }
                 }
 
        
-                if (Ferocity <= 4 && Orbwalking.CanMove(100))
+                if (Ferocity <= 4) // && Orbwalking.CanMove(100)
                 {
-                    if (IsActive("Combo.Use.Q") && Rengar.LastQ + 200 < Environment.TickCount
-                        && target.Distance(Player) < spells[Spells.Q].Range && target.IsValidTarget(spells[Spells.Q].Range))
+                    if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range)) //Rengar.LastQ + 200 < Environment.TickCount && 
                     {
-
-                        if (target.IsValidTarget(spells[Spells.Q].Range) && !Orbwalking.IsAutoAttack(Player.LastCastedSpellName()))
+                        if (!Orbwalking.IsAutoAttack(Player.LastCastedSpellName()))
                         {
                             return;
                         }
@@ -132,14 +125,14 @@ namespace ElRengarRevamped
                         return;
                     }
 
-                   if (IsActive("Combo.Use.W") && !Player.IsDashing() && !HasPassive)
+                   if (IsActive("Combo.Use.W")) // && !Player.IsDashing() && !HasPassive
                     {
                         CastW(target);
                     }
                     
                     if (IsActive("Combo.Use.E"))
                     {
-                        if (!target.IsValidTarget(spells[Spells.E].Range) && !HasPassive)
+                        if (!target.IsValidTarget(spells[Spells.E].Range)) // && !HasPassive
                         {
                             return;
                         }
@@ -148,14 +141,16 @@ namespace ElRengarRevamped
                         return;
                     }
 
-                    if (IsActive("Combo.Use.E.OutOfRange") && Player.Distance(target) > Player.AttackRange + 100
-                        && !RengarR && Ferocity == 5)
+                    if (Ferocity == 5)
                     {
-                        var prediction = spells[Spells.E].GetPrediction(target);
-                        if (prediction.Hitchance >= HitChance.VeryHigh && prediction.CollisionObjects.Count == 0)
+                        if (IsActive("Combo.Use.E.OutOfRange") && target.IsValidTarget(spells[Spells.Q].Range + 100) && !RengarR)
                         {
-                            spells[Spells.E].Cast(target);
-                            return;
+                            var prediction = spells[Spells.E].GetPrediction(target);
+                            if (prediction.Hitchance >= HitChance.VeryHigh && prediction.CollisionObjects.Count == 0)
+                            {
+                                spells[Spells.E].Cast(target);
+                                return;
+                            }
                         }
                     }
                 }
@@ -191,11 +186,10 @@ namespace ElRengarRevamped
 
         private static void CastW(Obj_AI_Base target)
         {
-            if (!spells[Spells.W].IsReady() || !target.IsValidTarget(range: spells[Spells.W].Range) && !HasPassive)
+            if (!target.IsValidTarget(spells[Spells.W].Range)) 
             {
                 return;
             }
-
             spells[Spells.W].Cast();
         }
 
@@ -209,7 +203,7 @@ namespace ElRengarRevamped
 
             var prediction = spells[Spells.E].GetPrediction(target);
 
-            if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange && prediction.Hitchance != HitChance.Collision)
+            if (prediction.Hitchance >= HitChance.High)
             {
                 spells[Spells.E].Cast(prediction.CastPosition);
             }
@@ -222,6 +216,13 @@ namespace ElRengarRevamped
             {
                 ItemData.Ravenous_Hydra_Melee_Only.GetItem().Cast();
             }
+
+            if (ItemData.Titanic_Hydra_Melee_Only.GetItem().IsReady()
+                 && Orbwalking.GetRealAutoAttackRange(Player) > Player.Distance(target) && !RengarR)
+            {
+                ItemData.Titanic_Hydra_Melee_Only.GetItem().Cast();
+            }
+
             if (ItemData.Tiamat_Melee_Only.GetItem().IsReady()
                 && ItemData.Tiamat_Melee_Only.Range > Player.Distance(target))
             {
@@ -284,7 +285,7 @@ namespace ElRengarRevamped
                 {
                     case 0:
                         if (!HasPassive && IsActive("Harass.Use.E") && spells[Spells.E].IsReady()
-                            && Vector3.Distance(Player.ServerPosition, target.ServerPosition) <= spells[Spells.E].Range)
+                            && target.IsValidTarget(spells[Spells.E].Range))
                         {
                             var prediction = spells[Spells.E].GetPrediction(target);
                             if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
@@ -295,9 +296,7 @@ namespace ElRengarRevamped
                         break;
 
                     case 1:
-                        if (IsActive("Harass.Use.Q") && !ObjectManager.Player.Spellbook.IsAutoAttacking
-                            && !Player.IsWindingUp
-                            && Vector3.Distance(Player.ServerPosition, target.ServerPosition) <= spells[Spells.Q].Range)
+                        if (IsActive("Harass.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range))
                         {
                             spells[Spells.Q].Cast();
                         }
@@ -307,8 +306,7 @@ namespace ElRengarRevamped
 
             if (Ferocity <= 4)
             {
-                if (IsActive("Harass.Use.Q") && !ObjectManager.Player.Spellbook.IsAutoAttacking && !Player.IsWindingUp
-                    && Vector3.Distance(Player.ServerPosition, target.ServerPosition) <= spells[Spells.Q].Range)
+                if (IsActive("Harass.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range))
                 {
                     spells[Spells.Q].Cast();
                 }
@@ -319,7 +317,7 @@ namespace ElRengarRevamped
                 }
 
                 if (!HasPassive && IsActive("Harass.Use.E") && spells[Spells.E].IsReady()
-                    && Vector3.Distance(Player.ServerPosition, target.ServerPosition) <= spells[Spells.E].Range)
+                   && target.IsValidTarget(spells[Spells.E].Range))
                 {
                     var prediction = spells[Spells.E].GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
@@ -329,7 +327,7 @@ namespace ElRengarRevamped
                 }
 
                 if (IsActive("Harass.Use.W")
-                    && Vector3.Distance(Player.ServerPosition, target.ServerPosition) < spells[Spells.W].Range * 1 / 3)
+                   && target.IsValidTarget(spells[Spells.W].Range))
                 {
                     UseHydra();
                     spells[Spells.W].Cast();
@@ -337,7 +335,7 @@ namespace ElRengarRevamped
 
                 if (!IsActive("Harass.Use.W")
                     || !spells[Spells.W].IsReady()
-                    && Vector3.Distance(Player.ServerPosition, target.ServerPosition) < spells[Spells.W].Range)
+                    && target.IsValidTarget(spells[Spells.W].Range))
                 {
                     UseHydra();
                 }
@@ -363,28 +361,28 @@ namespace ElRengarRevamped
 
             if (Ferocity == 5 && IsActive("Jungle.Save.Ferocity"))
             {
-                if (Vector3.Distance(Player.ServerPosition, minion.ServerPosition) < spells[Spells.W].Range)
+                if (minion.IsValidTarget(spells[Spells.W].Range))
                 {
                     UseHydra();
                 }
                 return;
             }
 
-            if (IsActive("Jungle.Use.Q") && spells[Spells.Q].IsReady() && Rengar.LastQ + 200 < Environment.TickCount)
+            if (IsActive("Jungle.Use.Q") && spells[Spells.Q].IsReady() && Rengar.LastQ + 200 < Environment.TickCount && minion.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast();
                 return;
             }
 
             if (IsActive("Jungle.Use.W") && spells[Spells.W].IsReady()
-                && Vector3.Distance(Player.ServerPosition, minion.ServerPosition) <= 450)
+                && minion.IsValidTarget(spells[Spells.W].Range))
             {
                 UseHydra();
                 spells[Spells.W].Cast();
             }
 
             if (IsActive("Jungle.Use.E") && spells[Spells.E].IsReady()
-                && Vector3.Distance(Player.ServerPosition, minion.ServerPosition) < spells[Spells.E].Range)
+                && minion.IsValidTarget(spells[Spells.E].Range))
             {
                 spells[Spells.E].Cast(minion.Position);
             }
@@ -403,24 +401,21 @@ namespace ElRengarRevamped
                 return;
             }
 
-            if (Ferocity == 5 && IsActive("Clear.Save.Ferocity"))
-            {
-                if (Vector3.Distance(Player.ServerPosition, minion.ServerPosition) < spells[Spells.W].Range * 1 / 3)
-                {
-                    UseHydra();
-                }
-                return;
-            }
 
-            if (!Player.Spellbook.IsAutoAttacking && IsActive("Clear.Use.Q") && spells[Spells.Q].IsReady()
-                && Utils.GameTimeTickCount - Rengar.LastAutoAttack < 5700 && Player.CanMove)
+            if (minion.IsValidTarget(spells[Spells.W].Range))
+            {
+                UseHydra();
+            }   
+
+            if (IsActive("Clear.Use.Q") && spells[Spells.Q].IsReady()
+                && minion.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast();
                 return;
             }
 
             if (IsActive("Clear.Use.W") && spells[Spells.W].IsReady()
-                && Vector3.Distance(Player.ServerPosition, minion.ServerPosition) < spells[Spells.W].Range * 1 / 3)
+                && minion.IsValidTarget(spells[Spells.W].Range))
             {
                 UseHydra();
                 spells[Spells.W].Cast();
@@ -428,7 +423,7 @@ namespace ElRengarRevamped
 
             if (IsActive("Clear.Use.E") && spells[Spells.E].GetDamage(minion) > minion.Health
                 && spells[Spells.E].IsReady()
-                && Vector3.Distance(Player.ServerPosition, minion.ServerPosition) < spells[Spells.E].Range)
+                && minion.IsValidTarget(spells[Spells.E].Range))
             {
                 spells[Spells.E].Cast(minion.Position);
             }

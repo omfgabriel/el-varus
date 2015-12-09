@@ -71,7 +71,9 @@
                 Ignite = Player.GetSpellSlot("summonerdot");
                 Notifications.AddNotification(string.Format("ElRengarRevamped by jQuery v{0}", ScriptVersion), 6000);
                 Game.PrintChat(
-                    "[00:00] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
+                    "[00:00] <font color='#CC0000'>DATABASE!</font> Make sure to update in the database! (only if you liked it!)");
+                Game.PrintChat(
+                    "[00:01] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
                 spells[Spells.E].SetSkillshot(0.25f, 70f, 1500f, true, SkillshotType.SkillshotLine);
 
                 MenuInit.Initialize();
@@ -138,7 +140,7 @@
 
             if (sender.IsMe && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
-                if (spells[Spells.Q].IsReady() && target.Distance(Player) < Player.AttackRange && HasPassive
+                if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range) && HasPassive
                     && Player.IsDashing() && Ferocity == 5 && IsListActive("Combo.Prio").SelectedIndex == 2)
                 {
                     spells[Spells.Q].Cast();
@@ -188,7 +190,7 @@
                         spells[Spells.Q].Cast();
                         if (target.IsValidTarget())
                         {
-                            if (Player.Distance(target) < spells[Spells.Q].Range + 100)
+                            if (target.IsValidTarget(spells[Spells.Q].Range + 100))
                             {
                                 Utility.DelayAction.Add(
                                     50,
@@ -209,7 +211,7 @@
                         break;
                 }
 
-                if (Vector3.Distance(Player.ServerPosition, target.ServerPosition) < spells[Spells.W].Range)
+                if (target.IsValidTarget(spells[Spells.W].Range))
                 {
                     UseHydra();
                 }

@@ -619,7 +619,6 @@ namespace ElRengarRevamped
         /// </summary>
         public static void ResetAutoAttackTimer()
         {
-            Console.WriteLine("AA RESET");
             LastAATick = 0;
         }
 
@@ -1037,7 +1036,7 @@ namespace ElRengarRevamped
                                 1000 * (int)Math.Max(0, this.Player.Distance(minion) - this.Player.BoundingRadius) / (int)GetMyProjectileSpeed();
                         var predHealth = HealthPrediction.GetHealthPrediction(minion, t, this.FarmDelay);
 
-                        if (minion.Team != GameObjectTeam.Neutral && (_config.Item("AttackPetsnTraps").GetValue<bool>() && minion.BaseSkinName != "jarvanivstandard" || MinionManager.IsMinion(minion, _config.Item("AttackWards").GetValue<bool>())))
+                        if (minion.Team != GameObjectTeam.Neutral && (_config.Item("AttackPetsnTraps").GetValue<bool>() && minion.CharData.BaseSkinName != "jarvanivstandard" || MinionManager.IsMinion(minion, _config.Item("AttackWards").GetValue<bool>())))
                         {
                             if (predHealth <= 0)
                             {
@@ -1107,6 +1106,7 @@ namespace ElRengarRevamped
 
                     if (jminions != null && jminions.IsValidTarget())
                     {
+                        Console.WriteLine("xxxx");
                         if (IsMelee(this.Player) && Standards.IsActive("Jungle.Movement2"))
                         {
                             this.SetMovement(false);
