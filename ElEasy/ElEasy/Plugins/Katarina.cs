@@ -406,8 +406,6 @@ namespace ElEasy.Plugins
                     {
                         if (spells[Spells.R].IsReady())
                         {
-                            Orbwalker.SetMovement(false);
-                            Orbwalker.SetAttack(false);
                             spells[Spells.R].Cast();
                             return;
                         }
@@ -424,8 +422,8 @@ namespace ElEasy.Plugins
             }
 
             isChanneling = true;
-            Orbwalker.SetMovement(false);
-            Orbwalker.SetAttack(false);
+            //Orbwalker.SetMovement(false);
+            //Orbwalker.SetAttack(false);
             Utility.DelayAction.Add(1, () => isChanneling = false);
         }
 
@@ -491,8 +489,6 @@ namespace ElEasy.Plugins
                         case 0:
                             if (target.Health - rdmg < 0 && !spells[Spells.E].IsReady())
                             {
-                                Orbwalker.SetMovement(false);
-                                Orbwalker.SetAttack(false);
                                 spells[Spells.R].Cast();
                                 rStart = Environment.TickCount;
                                 return;
@@ -503,8 +499,6 @@ namespace ElEasy.Plugins
                             if (!spells[Spells.E].IsReady()
                                 || forceR && Player.CountEnemiesInRange(spells[Spells.R].Range) <= forceRCount)
                             {
-                                Orbwalker.SetMovement(false);
-                                Orbwalker.SetAttack(false);
                                 spells[Spells.R].Cast();
                                 rStart = Environment.TickCount;
                                 return;
@@ -785,12 +779,39 @@ namespace ElEasy.Plugins
             }
         }
 
+        private static void ShouldCancel()
+        {
+            if (Player.CountEnemiesInRange(500) < 1)
+            {
+                var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
+
+                if (target == null)
+                    return;
+
+                spells[Spells.R].LastCastAttemptT = 0;
+                Player.IssueOrder(GameObjectOrder.MoveTo, target);
+            }
+        }
+
+
         private static void OnUpdate(EventArgs args)
         {
             if (Player.IsDead)
             {
                 return;
             }
+
+
+            if (Player.IsChannelingImportantSpell() || Player.HasBuff("KatarinaR"))
+            {
+                Orbwalker.SetAttack(false);
+                Orbwalker.SetMovement(false);
+                ShouldCancel();
+                return;
+            }
+
+            Orbwalker.SetAttack(true);
+            Orbwalker.SetMovement(true);
 
             switch (Orbwalker.ActiveMode)
             {
