@@ -174,7 +174,6 @@ namespace ElEasy.Plugins
             return (float)damage;
         }
 
-
         private static float GetHealth(Obj_AI_Base target)
         {
             return target.Health;
@@ -183,12 +182,6 @@ namespace ElEasy.Plugins
         private static SpellDataInst GetItemSpell(InventorySlot invSlot)
         {
             return Player.Spellbook.Spells.FirstOrDefault(spell => (int)spell.Slot == invSlot.Slot + 4);
-        }
-
-        private static bool HasRBuff()
-        {
-            return Player.HasBuff("KatarinaR") || Player.IsChannelingImportantSpell()
-                   || Player.HasBuff("katarinarsound");
         }
 
         private static float IgniteDamage(Obj_AI_Hero target)
@@ -779,21 +772,6 @@ namespace ElEasy.Plugins
             }
         }
 
-        private static void ShouldCancel()
-        {
-            if (Player.CountEnemiesInRange(500) < 1)
-            {
-                var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
-
-                if (target == null)
-                    return;
-
-                spells[Spells.R].LastCastAttemptT = 0;
-                Player.IssueOrder(GameObjectOrder.MoveTo, target);
-            }
-        }
-
-
         private static void OnUpdate(EventArgs args)
         {
             if (Player.IsDead)
@@ -801,56 +779,78 @@ namespace ElEasy.Plugins
                 return;
             }
 
-
-            if (Player.IsChannelingImportantSpell() || Player.HasBuff("KatarinaR"))
+            try
             {
-                Orbwalker.SetAttack(false);
-                Orbwalker.SetMovement(false);
-                ShouldCancel();
-                return;
+                if (Player.IsChannelingImportantSpell() || Player.HasBuff("KatarinaR"))
+                {
+                    Orbwalker.SetAttack(false);
+                    Orbwalker.SetMovement(false);
+                    ShouldCancel();
+                    return;
+                }
+
+                Orbwalker.SetAttack(true);
+                Orbwalker.SetMovement(true);
+
+                switch (Orbwalker.ActiveMode)
+                {
+                    case Orbwalking.OrbwalkingMode.Combo:
+                        OnCombo();
+                        break;
+                    case Orbwalking.OrbwalkingMode.Mixed:
+                        OnHarass();
+                        break;
+
+                    case Orbwalking.OrbwalkingMode.LaneClear:
+                        OnLaneclear();
+                        OnJungleclear();
+                        break;
+
+                    case Orbwalking.OrbwalkingMode.LastHit:
+                        OnLasthit();
+                        break;
+                }
+
+                if (Menu.Item("ElEasy.Katarina.Killsteal").GetValue<bool>())
+                {
+                    KillSteal();
+                }
+
+                if (Menu.Item("ElEasy.Katarina.AutoHarass.Activated", true).GetValue<KeyBind>().Active)
+                {
+                    OnAutoHarass();
+                }
+
+                if (Menu.Item("ElEasy.Katarina.Wardjump").GetValue<KeyBind>().Active)
+                {
+                    WardjumpToMouse();
+                }
             }
-
-            Orbwalker.SetAttack(true);
-            Orbwalker.SetMovement(true);
-
-            switch (Orbwalker.ActiveMode)
+            catch (Exception e)
             {
-                case Orbwalking.OrbwalkingMode.Combo:
-                    OnCombo();
-                    break;
-                case Orbwalking.OrbwalkingMode.Mixed:
-                    OnHarass();
-                    break;
-
-                case Orbwalking.OrbwalkingMode.LaneClear:
-                    OnLaneclear();
-                    OnJungleclear();
-                    break;
-
-                case Orbwalking.OrbwalkingMode.LastHit:
-                    OnLasthit();
-                    break;
-            }
-
-            if (Menu.Item("ElEasy.Katarina.Killsteal").GetValue<bool>())
-            {
-                KillSteal();
-            }
-
-            if (Menu.Item("ElEasy.Katarina.AutoHarass.Activated", true).GetValue<KeyBind>().Active)
-            {
-                OnAutoHarass();
-            }
-
-            if (Menu.Item("ElEasy.Katarina.Wardjump").GetValue<KeyBind>().Active)
-            {
-                WardjumpToMouse();
+                Console.WriteLine(e);
             }
         }
 
         private static void Orbwalk(Vector3 pos, Obj_AI_Hero target = null)
         {
             Player.IssueOrder(GameObjectOrder.MoveTo, pos);
+        }
+
+        private static void ShouldCancel()
+        {
+            if (Player.CountEnemiesInRange(500) < 1)
+            {
+                var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
+
+                if (target == null)
+                {
+                    return;
+                }
+
+                spells[Spells.R].LastCastAttemptT = 0;
+                Player.IssueOrder(GameObjectOrder.MoveTo, target);
+            }
         }
 
         private static void UseItems(Obj_AI_Base target)

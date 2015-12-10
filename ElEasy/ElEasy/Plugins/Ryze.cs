@@ -227,7 +227,8 @@
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
                 var prediction = spells[Spells.Q].GetPrediction(target);
-                if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange && prediction.Hitchance != HitChance.Collision)
+                if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange
+                    && prediction.Hitchance != HitChance.Collision)
                 {
                     spells[Spells.Q].Cast(target);
                 }
@@ -264,12 +265,12 @@
                 var prediction = spells[Spells.Q].GetPrediction(target);
                 if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
-                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange && prediction.Hitchance != HitChance.Collision)
+                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange
+                        && prediction.Hitchance != HitChance.Collision)
                     {
                         spells[Spells.Q].Cast(target);
                     }
                 }
-               
 
                 /*if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
@@ -304,7 +305,8 @@
                 if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
                     var prediction = spells[Spells.Q].GetPrediction(target);
-                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange && prediction.Hitchance != HitChance.Collision)
+                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange
+                        && prediction.Hitchance != HitChance.Collision)
                     {
                         spells[Spells.Q].Cast(target);
                     }
@@ -318,7 +320,8 @@
                 if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
                     var prediction = spells[Spells.Q].GetPrediction(target);
-                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange && prediction.Hitchance != HitChance.Collision)
+                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange
+                        && prediction.Hitchance != HitChance.Collision)
                     {
                         spells[Spells.Q].Cast(target);
                     }
@@ -339,7 +342,8 @@
                 if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
                     var prediction = spells[Spells.Q].GetPrediction(target);
-                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange && prediction.Hitchance != HitChance.Collision)
+                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange
+                        && prediction.Hitchance != HitChance.Collision)
                     {
                         spells[Spells.Q].Cast(target);
                     }

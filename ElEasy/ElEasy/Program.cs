@@ -7,6 +7,18 @@
 
     internal class Program
     {
+        #region Public Properties
+
+        public static Obj_AI_Hero Player
+        {
+            get
+            {
+                return ObjectManager.Player;
+            }
+        }
+
+        #endregion
+
         #region Methods
 
         private static void Main(string[] args)
@@ -18,9 +30,12 @@
         {
             try
             {
-                Console.WriteLine(ObjectManager.Player.CharData.BaseSkinName);
-                Base.Load(ObjectManager.Player.CharData.BaseSkinName);
-                Notifications.AddNotification("ElEasy - " + ObjectManager.Player.CharData.BaseSkinName + " 1.0.1.8", 8000);
+                var type = Type.GetType("ElEasy.Plugins." + Player.ChampionName);
+                if (type != null)
+                {
+                    Base.Load();
+                    Notifications.AddNotification("ElEasy - " + Player.ChampionName + " 1.0.3.4", 8000);
+                }
             }
             catch (Exception e)
             {

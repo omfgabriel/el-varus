@@ -407,12 +407,13 @@
 
         private static void OnLastHit()
         {
-            var minion = MinionManager.GetMinions(
-                Player.Position,
-                spells[Spells.Q].Range + 100,
-                MinionTypes.All,
-                MinionTeam.NotAlly,
-                MinionOrderTypes.MaxHealth).FirstOrDefault(m => GetBonusDmg(m) > m.Health);
+            var minion =
+                MinionManager.GetMinions(
+                    Player.Position,
+                    spells[Spells.Q].Range + 100,
+                    MinionTypes.All,
+                    MinionTeam.NotAlly,
+                    MinionOrderTypes.MaxHealth).FirstOrDefault(m => GetBonusDmg(m) > m.Health);
 
             if (minion == null)
             {
@@ -425,7 +426,6 @@
                 Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
                 Orbwalker.SetAttack(true);
             }
-            
         }
 
         private static void OnUpdate(EventArgs args)

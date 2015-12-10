@@ -220,7 +220,9 @@
 
             if (useQ)
             {
-                if (InAutoAttackRange(target) && spells[Spells.Q].IsReady() && !target.HasBuff("BlackShield") || !target.HasBuff("SivirShield") || !target.HasBuff("BansheesVeil") || !target.HasBuff("ShroudofDarkness"))
+                if (InAutoAttackRange(target) && spells[Spells.Q].IsReady() && !target.HasBuff("BlackShield")
+                    || !target.HasBuff("SivirShield") || !target.HasBuff("BansheesVeil")
+                    || !target.HasBuff("ShroudofDarkness"))
                 {
                     spells[Spells.Q].Cast();
                 }
