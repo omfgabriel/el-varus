@@ -101,7 +101,7 @@ namespace ElRengarRevamped
                             }
                             break;
                         case 2:
-                            if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range))
+                            if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 100))
                             {
                                 spells[Spells.Q].Cast();
                                 return;
@@ -110,10 +110,9 @@ namespace ElRengarRevamped
                     }
                 }
 
-                if (Ferocity <= 4) // && Orbwalking.CanMove(100)
+                if (Ferocity <= 4)
                 {
-                    if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range))
-                        //Rengar.LastQ + 200 < Environment.TickCount && 
+                    if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 100))
                     {
                         if (!Orbwalking.IsAutoAttack(Player.LastCastedSpellName()))
                         {
@@ -128,14 +127,14 @@ namespace ElRengarRevamped
                         return;
                     }
 
-                    if (IsActive("Combo.Use.W")) // && !Player.IsDashing() && !HasPassive
+                    if (IsActive("Combo.Use.W")) 
                     {
                         CastW(target);
                     }
 
                     if (IsActive("Combo.Use.E"))
                     {
-                        if (!target.IsValidTarget(spells[Spells.E].Range)) // && !HasPassive
+                        if (!target.IsValidTarget(spells[Spells.E].Range))
                         {
                             return;
                         }
