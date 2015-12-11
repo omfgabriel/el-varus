@@ -48,29 +48,27 @@ namespace ElEasy.Plugins
 
         public static void Load()
         {
-            Ignite = Player.GetSpellSlot("summonerdot");
-            spells[Spells.R].SetCharged("KatarinaR", "KatarinaR", 550, 550, 1.0f);
+            try
+            {
+                Ignite = Player.GetSpellSlot("summonerdot");
+                spells[Spells.R].SetCharged("KatarinaR", "KatarinaR", 550, 550, 1.0f);
 
-            Initialize();
-            Game.OnUpdate += OnUpdate;
-            Drawing.OnDraw += OnDraw;
-            Obj_AI_Base.OnIssueOrder += Obj_AI_Hero_OnIssueOrder;
-            Orbwalking.BeforeAttack += BeforeAttack;
-            GameObject.OnCreate += GameObject_OnCreate;
-            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
+                Initialize();
+                Game.OnUpdate += OnUpdate;
+                Drawing.OnDraw += OnDraw;
+                Obj_AI_Base.OnIssueOrder += Obj_AI_Hero_OnIssueOrder;
+                GameObject.OnCreate += GameObject_OnCreate;
+                Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         #endregion
 
         #region Methods
-
-        private static void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
-        {
-            if (args.Unit.IsMe)
-            {
-                args.Process = !Player.HasBuff("KatarinaR");
-            }
-        }
 
         private static void CastE(Obj_AI_Base unit)
         {
@@ -409,20 +407,20 @@ namespace ElEasy.Plugins
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!sender.IsMe || args.SData.Name != "KatarinaR" || !Player.HasBuff("katarinarsound"))
-            {
-                return;
-            }
+            if (!sender.IsMe) return;
 
-            isChanneling = true;
-            //Orbwalker.SetMovement(false);
-            //Orbwalker.SetAttack(false);
-            Utility.DelayAction.Add(1, () => isChanneling = false);
+            if (args.SData.Name == "KatarinaR")
+            {
+                Orbwalker.SetAttack(false);
+                Orbwalker.SetMovement(false);
+                isChanneling = true;
+                Utility.DelayAction.Add(1, () => isChanneling = false);
+            }
         }
 
         private static void Obj_AI_Hero_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
         {
-            if (sender.IsMe && Environment.TickCount < rStart + 300 && args.Order == GameObjectOrder.MoveTo)
+            if (Player.IsCastingInterruptableSpell())
             {
                 args.Process = false;
             }
