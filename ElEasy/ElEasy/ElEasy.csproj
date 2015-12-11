@@ -54,7 +54,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssassinManager.cs" />
     <Compile Include="Base.cs" />
     <Compile Include="DrawDamage.cs" />
     <Compile Include="Plugins\Cassiopeia.cs" />
