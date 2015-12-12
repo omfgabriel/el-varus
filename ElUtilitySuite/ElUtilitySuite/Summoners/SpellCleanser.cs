@@ -21,32 +21,32 @@
         #region Static Fields
 
         /// <summary>
-        /// The cleanse spell
-        /// </summary>
-        private static Spell cleanseSpell;
-
-        /// <summary>
-        /// The mikaels
+        ///     The mikaels
         /// </summary>
         private static readonly Items.Item Mikaels = ItemData.Mikaels_Crucible.GetItem();
 
         /// <summary>
-        /// The QSS
+        ///     The cleanse spell
+        /// </summary>
+        private static Spell cleanseSpell;
+
+        /// <summary>
+        ///     The QSS
         /// </summary>
         private static Items.Item qss;
 
         /// <summary>
-        /// The slot1
+        ///     The slot1
         /// </summary>
         private static SpellDataInst slot1;
 
         /// <summary>
-        /// The slot2
+        ///     The slot2
         /// </summary>
         private static SpellDataInst slot2;
 
         /// <summary>
-        /// The summoner cleanse
+        ///     The summoner cleanse
         /// </summary>
         private static SpellSlot summonerCleanse;
 
@@ -55,7 +55,7 @@
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes the <see cref="SpellCleanser"/> class.
+        ///     Initializes the <see cref="SpellCleanser" /> class.
         /// </summary>
         static SpellCleanser()
         {
@@ -287,7 +287,7 @@
         #region Public Methods and Operators
 
         /// <summary>
-        /// Loads this instance.
+        ///     Loads this instance.
         /// </summary>
         public void Load()
         {
@@ -317,7 +317,7 @@
         #region Methods
 
         /// <summary>
-        /// Cleanses allies.
+        ///     Cleanses allies.
         /// </summary>
         private static void AllyCleanse()
         {
@@ -552,9 +552,9 @@
         }
 
         /// <summary>
-        /// Raises the <see cref="E:Update" /> event.
+        ///     Raises the <see cref="E:Update" /> event.
         /// </summary>
-        /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
+        /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private static void OnUpdate(EventArgs args)
         {
             try
@@ -638,7 +638,7 @@
             #region Public Methods and Operators
 
             /// <summary>
-            /// Gets the spell delay.
+            ///     Gets the spell delay.
             /// </summary>
             /// <returns></returns>
             public int GetSpellDelay()
@@ -653,7 +653,7 @@
                 return
                     (int)
                     ((spell != null ? spell.SData.CastFrame / 30 * 1000 : this.Delay)
-                     + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10);
+                     + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10) + Game.Ping;
             }
 
             #endregion
