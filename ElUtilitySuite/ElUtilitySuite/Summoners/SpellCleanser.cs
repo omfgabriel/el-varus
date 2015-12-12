@@ -645,9 +645,9 @@
             {
                 var spell =
                     ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(x => x.Spellbook.Spells.Any(y => String.Equals(y.Name, this.SDataName, StringComparison.CurrentCultureIgnoreCase)))
+                        .Where(x => x.Spellbook.Spells.Any(y => y.Name.ToLower() == this.SDataName.ToLower()))
                         .Select(
-                            x => x.Spellbook.Spells.FirstOrDefault(y => String.Equals(y.Name, this.SDataName, StringComparison.CurrentCultureIgnoreCase)))
+                            x => x.Spellbook.Spells.FirstOrDefault(y => y.Name.ToLower() == this.SDataName.ToLower()))
                         .FirstOrDefault();
 
                 return
