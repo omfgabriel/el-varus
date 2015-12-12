@@ -21,18 +21,33 @@
         #region Static Fields
 
         /// <summary>
-        ///     Initializes this instance.
+        /// The cleanse spell
         /// </summary>
         private static Spell cleanseSpell;
 
-        private static Items.Item mikaels = ItemData.Mikaels_Crucible.GetItem();
+        /// <summary>
+        /// The mikaels
+        /// </summary>
+        private static readonly Items.Item Mikaels = ItemData.Mikaels_Crucible.GetItem();
 
+        /// <summary>
+        /// The QSS
+        /// </summary>
         private static Items.Item qss;
 
+        /// <summary>
+        /// The slot1
+        /// </summary>
         private static SpellDataInst slot1;
 
+        /// <summary>
+        /// The slot2
+        /// </summary>
         private static SpellDataInst slot2;
 
+        /// <summary>
+        /// The summoner cleanse
+        /// </summary>
         private static SpellSlot summonerCleanse;
 
         #endregion
@@ -40,10 +55,7 @@
         #region Constructors and Destructors
 
         /// <summary>
-        ///     The Cleanse item
-        /// </summary>
-        /// <summary>
-        ///     Initializes the <see cref="Cleanse" /> class.
+        /// Initializes the <see cref="SpellCleanser"/> class.
         /// </summary>
         static SpellCleanser()
         {
@@ -274,6 +286,9 @@
 
         #region Public Methods and Operators
 
+        /// <summary>
+        /// Loads this instance.
+        /// </summary>
         public void Load()
         {
             slot1 = Entry.Player.Spellbook.GetSpell(SpellSlot.Summoner1);
@@ -301,31 +316,34 @@
 
         #region Methods
 
+        /// <summary>
+        /// Cleanses allies.
+        /// </summary>
         private static void AllyCleanse()
         {
             var delay = InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
 
-            foreach (var unit in
+            var unit =
                 ObjectManager.Get<Obj_AI_Hero>()
                     .Where(
                         x =>
                         x.IsAlly && !x.IsMe && x.IsValidTarget(900, false)
                         && InitializeMenu.Menu.Item("Protect.Cleanse.Kappa" + x.CharData.BaseSkinName).GetValue<bool>()
                         && InitializeMenu.Menu.Item("Protect.Cleanse.Mikaels.Activated").GetValue<bool>())
-                    .OrderByDescending(xe => xe.Health / xe.MaxHealth * 100))
+                    .OrderByDescending(xe => xe.Health / xe.MaxHealth * 100)
+                    .SelectMany(
+                        x =>
+                        x.Buffs.Where(b => Mikaels.IsReady())
+                            .Select(
+                                b =>
+                                InitializeMenu.Menu.Item(string.Format("Protect.Cleanse.{0}.Ally", b.Type.ToString())))
+                            .Where(buffMenuItem => buffMenuItem != null && buffMenuItem.GetValue<bool>()),
+                        (x, buffMenuItem) => x)
+                    .FirstOrDefault();
+
+            if (unit != null)
             {
-                foreach (var b in unit.Buffs)
-                {
-                    if (mikaels.IsReady())
-                    {
-                        var buffMenuItem =
-                            InitializeMenu.Menu.Item(string.Format("Protect.Cleanse.{0}.Ally", b.Type.ToString()));
-                        if (buffMenuItem != null && buffMenuItem.GetValue<bool>())
-                        {
-                            Utility.DelayAction.Add(delay, () => mikaels.Cast(unit));
-                        }
-                    }
-                }
+                Utility.DelayAction.Add(delay, () => Mikaels.Cast(unit));
             }
         }
 
@@ -360,8 +378,6 @@
                 return;
             }
 
-            var cleanseDelay = InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
-
             // Correct the end position
             var endPosition = missile.EndPosition;
 
@@ -375,7 +391,7 @@
                 && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
             {
                 Utility.DelayAction.Add(
-                    400 + (int)sdata.Delay + cleanseDelay,
+                    sdata.GetSpellDelay(),
                     () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                 return;
             }
@@ -389,25 +405,20 @@
             {
                 if (qss.IsReady())
                 {
-                    Utility.DelayAction.Add(400 + (int)sdata.Delay + cleanseDelay, () => qss.Cast());
+                    Utility.DelayAction.Add(sdata.GetSpellDelay(), () => qss.Cast());
                     return;
                 }
 
-                if (mikaels.IsReady())
+                if (Mikaels.IsReady())
                 {
-                    Utility.DelayAction.Add(400 + (int)sdata.Delay + cleanseDelay, () => mikaels.Cast());
+                    Utility.DelayAction.Add(sdata.GetSpellDelay(), () => Mikaels.Cast());
                     return;
                 }
 
-                if (Game.MapId == GameMapId.TwistedTreeline || Game.MapId == GameMapId.CrystalScar)
+                if (Game.MapId == GameMapId.TwistedTreeline
+                    || Game.MapId == GameMapId.CrystalScar && ItemData.Dervish_Blade.GetItem().IsReady())
                 {
-                    if (ItemData.Dervish_Blade.GetItem().IsReady())
-                    {
-                        Utility.DelayAction.Add(
-                            400 + (int)sdata.Delay + cleanseDelay,
-                            () => ItemData.Dervish_Blade.GetItem().Cast());
-                        return;
-                    }
+                    Utility.DelayAction.Add(sdata.GetSpellDelay(), () => ItemData.Dervish_Blade.GetItem().Cast());
                 }
             }
         }
@@ -453,39 +464,33 @@
             {
                 Console.WriteLine("Should cleanse");
 
-                var cleanseDelay = InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
-
                 if (summonerCleanse != SpellSlot.Unknown
                     && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
                 {
                     Utility.DelayAction.Add(
-                        400 + (int)spellData.Delay + cleanseDelay,
+                        spellData.GetSpellDelay(),
                         () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                     return;
                 }
 
                 if (qss.IsReady())
                 {
-                    Utility.DelayAction.Add(400 + (int)spellData.Delay + cleanseDelay, () => qss.Cast());
+                    Utility.DelayAction.Add(spellData.GetSpellDelay(), () => qss.Cast());
                     return;
                 }
 
-                if (mikaels.IsReady())
+                if (Mikaels.IsReady())
                 {
-                    Utility.DelayAction.Add(400 + (int)spellData.Delay + cleanseDelay, () => mikaels.Cast(Player));
+                    Utility.DelayAction.Add(spellData.GetSpellDelay(), () => Mikaels.Cast(Player));
                     return;
                 }
 
-                if (Game.MapId == GameMapId.TwistedTreeline || Game.MapId == GameMapId.CrystalScar)
+                if (Game.MapId == GameMapId.TwistedTreeline
+                    || Game.MapId == GameMapId.CrystalScar && ItemData.Dervish_Blade.GetItem().IsReady())
                 {
-                    if (ItemData.Dervish_Blade.GetItem().IsReady())
-                    {
-                        Utility.DelayAction.Add(
-                            400 + (int)spellData.Delay + cleanseDelay,
-                            () => ItemData.Dervish_Blade.GetItem().Cast());
-                        return;
-                    }
+                    Utility.DelayAction.Add(spellData.GetSpellDelay(), () => ItemData.Dervish_Blade.GetItem().Cast());
                 }
+
                 return;
             }
 
@@ -517,42 +522,39 @@
                            Player.ServerPosition.To2D().ProjectOn(args.Start.To2D(), endPosition.To2D()).SegmentPoint))
                 || (!isLinear && Player.Distance(endPosition) <= width + Player.BoundingRadius))
             {
-                var cleanseDelay = InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
-
                 if (summonerCleanse != SpellSlot.Unknown
                     && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
                 {
                     Utility.DelayAction.Add(
-                        400 + (int)spellData.Delay + cleanseDelay,
+                        spellData.GetSpellDelay(),
                         () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                     return;
                 }
 
                 if (qss.IsReady())
                 {
-                    Utility.DelayAction.Add(400 + (int)spellData.Delay + cleanseDelay, () => qss.Cast());
+                    Utility.DelayAction.Add(spellData.GetSpellDelay(), () => qss.Cast());
                     return;
                 }
 
-                if (mikaels.IsReady())
+                if (Mikaels.IsReady())
                 {
-                    Utility.DelayAction.Add(400 + (int)spellData.Delay + cleanseDelay, () => mikaels.Cast());
+                    Utility.DelayAction.Add(spellData.GetSpellDelay(), () => Mikaels.Cast());
                     return;
                 }
 
-                if (Game.MapId == GameMapId.TwistedTreeline || Game.MapId == GameMapId.CrystalScar)
+                if (Game.MapId == GameMapId.TwistedTreeline
+                    || Game.MapId == GameMapId.CrystalScar && ItemData.Dervish_Blade.GetItem().IsReady())
                 {
-                    if (ItemData.Dervish_Blade.GetItem().IsReady())
-                    {
-                        Utility.DelayAction.Add(
-                            400 + (int)spellData.Delay + cleanseDelay,
-                            () => ItemData.Dervish_Blade.GetItem().Cast());
-                        return;
-                    }
+                    Utility.DelayAction.Add(spellData.GetSpellDelay(), () => ItemData.Dervish_Blade.GetItem().Cast());
                 }
             }
         }
 
+        /// <summary>
+        /// Raises the <see cref="E:Update" /> event.
+        /// </summary>
+        /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
         private static void OnUpdate(EventArgs args)
         {
             try
@@ -630,6 +632,29 @@
             ///     The name of the s data.
             /// </value>
             public string SDataName { get; set; }
+
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            /// Gets the spell delay.
+            /// </summary>
+            /// <returns></returns>
+            public int GetSpellDelay()
+            {
+                var spell =
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(x => x.Spellbook.Spells.Any(y => y.Name.ToLower() == this.SDataName.ToLower()))
+                        .Select(
+                            x => x.Spellbook.Spells.FirstOrDefault(y => y.Name.ToLower() == this.SDataName.ToLower()))
+                        .FirstOrDefault();
+
+                return
+                    (int)
+                    ((spell != null ? spell.SData.CastFrame / 30 * 1000 + this.Delay : this.Delay)
+                     + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10);
+            }
 
             #endregion
         }
