@@ -82,7 +82,7 @@
                 {
                     healMenu.AddItem(new MenuItem("Heal.Activated", "Heal").SetValue(true));
                     healMenu.AddItem(new MenuItem("Heal.HP", "Health percentage").SetValue(new Slider(20, 1)));
-                    healMenu.AddItem(new MenuItem("Heal.Damage", "Heal on Dmg dealt %").SetValue(new Slider(20, 1)));
+                    healMenu.AddItem(new MenuItem("Heal.Damage", "Heal on damage dealt %").SetValue(new Slider(20, 1)));
                     healMenu.AddItem(new MenuItem("seperator21", ""));
                     foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
                     {
@@ -99,7 +99,7 @@
                 {
                     barrierMenu.AddItem(new MenuItem("Barrier.Activated", "Barrier activated").SetValue(true));
                     barrierMenu.AddItem(new MenuItem("Barrier.HP", "Barrier percentage").SetValue(new Slider(20, 1)));
-                    barrierMenu.AddItem(new MenuItem("Barrier.Damage", "Barrier on Dmg dealt %").SetValue(new Slider(20, 1)));
+                    barrierMenu.AddItem(new MenuItem("Barrier.Damage", "Barrier on damage dealt %").SetValue(new Slider(20, 1)));
                 }
             }
 
@@ -129,7 +129,7 @@
             {
                 foreach (var a in ObjectManager.Get<Obj_AI_Hero>().Where(ally => ally.Team == Entry.Player.Team))
                 {
-                    spellCleanserMenu.SubMenu("Mikaels settings")
+                    spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                         .AddItem(
                             new MenuItem(
                                 "Protect.Cleanse.Kappa" + a.CharData.BaseSkinName,
@@ -137,50 +137,50 @@
                         .SetValue(true);
                 }
 
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Activated")
                     .AddItem(new MenuItem("Protect.Cleanse.Mikaels.Activated", "Activate Mikaels").SetValue(true));
 
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Stun.Ally", "Stuns").SetValue(true));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Charm.Ally", "Charms").SetValue(true));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Taunt.Ally", "Taunts").SetValue(false));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Fear.Ally", "Fears").SetValue(false));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Snare.Ally", "Snares").SetValue(false));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Silence.Ally", "Silences").SetValue(true));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Suppression.Ally", "Suppressions").SetValue(true));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Polymorph.Ally", "Polymorphs").SetValue(false));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Blind.Ally", "Blinds").SetValue(false));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Slow.Ally", "Slows").SetValue(false));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Posion.Ally", "Posion").SetValue(false));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Knockup.Ally", "Knockups").SetValue(false));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Knockback.Ally", "Knockbacks").SetValue(false));
-                spellCleanserMenu.SubMenu("Mikaels settings")
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Flee.Ally", "Flee").SetValue(false));
 
@@ -188,7 +188,8 @@
                     .SetValue(new Slider(0, 0, 25));
                 spellCleanserMenu.AddItem(new MenuItem("New.cmode", "Mode: "))
                     .SetValue(new StringList(new[] { "Always", "Combo" }, 1));
-                var cleanseSpellMenu = new Menu("Spells", "SpellPick");
+
+                var cleanseSpellMenu = new Menu("Cleanse Spells Settings", "SpellPick");
                 {
                     foreach (var spell in
                         SpellCleanser.Spells.Where(
