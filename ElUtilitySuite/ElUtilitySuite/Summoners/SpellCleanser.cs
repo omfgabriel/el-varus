@@ -645,14 +645,14 @@
             {
                 var spell =
                     ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(x => x.Spellbook.Spells.Any(y => y.Name.ToLower() == this.SDataName.ToLower()))
+                        .Where(x => x.Spellbook.Spells.Any(y => String.Equals(y.Name, this.SDataName, StringComparison.CurrentCultureIgnoreCase)))
                         .Select(
-                            x => x.Spellbook.Spells.FirstOrDefault(y => y.Name.ToLower() == this.SDataName.ToLower()))
+                            x => x.Spellbook.Spells.FirstOrDefault(y => String.Equals(y.Name, this.SDataName, StringComparison.CurrentCultureIgnoreCase)))
                         .FirstOrDefault();
 
                 return
                     (int)
-                    ((spell != null ? spell.SData.CastFrame / 30 * 1000 + this.Delay : this.Delay)
+                    ((spell != null ? spell.SData.CastFrame / 30 * 1000 : this.Delay)
                      + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10);
             }
 
