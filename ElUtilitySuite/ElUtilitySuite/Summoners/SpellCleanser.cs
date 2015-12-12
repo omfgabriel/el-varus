@@ -301,10 +301,14 @@
                 cleanseSpell = new Spell(SpellSlot.Summoner1, 550f);
                 summonerCleanse = SpellSlot.Summoner1;
             }
-            if (cleanseNames.Contains(slot2.Name))
+            else if (cleanseNames.Contains(slot2.Name))
             {
                 cleanseSpell = new Spell(SpellSlot.Summoner2, 550f);
                 summonerCleanse = SpellSlot.Summoner2;
+            }
+            else
+            {
+                summonerCleanse = SpellSlot.Unknown;
             }
 
             GameObject.OnCreate += GameObjectOnCreate;
@@ -472,6 +476,8 @@
                         () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                     return;
                 }
+
+                Console.WriteLine("X");
 
                 if (qss.IsReady())
                 {
@@ -653,7 +659,7 @@
                 return
                     (int)
                     ((spell != null ? spell.SData.CastFrame / 30 * 1000 : this.Delay)
-                     + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10) + Game.Ping;
+                     + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10);
             }
 
             #endregion
