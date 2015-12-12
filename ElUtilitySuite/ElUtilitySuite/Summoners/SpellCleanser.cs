@@ -454,8 +454,6 @@
                 || args.SData.TargettingType == SpellDataTargetType.SelfAoe
                 && Player.Distance(sender) < spellData.CastRange)
             {
-                Console.WriteLine("Should cleanse");
-
                 if (summonerCleanse != SpellSlot.Unknown
                     && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
                 {
@@ -464,8 +462,6 @@
                         () => Entry.Player.Spellbook.CastSpell(cleanseSpell.Slot, Entry.Player));
                     return;
                 }
-
-                Console.WriteLine("X");
 
                 if (qss.IsReady())
                 {
