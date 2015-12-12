@@ -10,81 +10,80 @@
 
     public class Barrier : IPlugin
     {
-        #region Static Fields
+        /// <summary>
+        /// Gets or sets the barrier spell.
+        /// </summary>
+        /// <value>
+        /// The barrier spell.
+        /// </value>
+        public Spell BarrierSpell { get; set; }
 
-        public static Spell barrierSpell;
+        /// <summary>
+        /// Gets the player.
+        /// </summary>
+        /// <value>
+        /// The player.
+        /// </value>
+        private Obj_AI_Hero Player
+        {
+            get
+            {
+                return ObjectManager.Player;
+            }
+        }
 
-        private static SpellDataInst slot1;
-
-        private static SpellDataInst slot2;
-
-        private static SpellSlot summonerBarrier;
-
-        #endregion
-
-        #region Public Methods and Operators
-
+        /// <summary>
+        /// Loads this instance.
+        /// </summary>
         public void Load()
         {
-            try
+            var barrierSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name == "summonerbarrier"
+                               ? SpellSlot.Summoner1
+                               : this.Player.GetSpell(SpellSlot.Summoner2).Name == "summonerbarrier"
+                                     ? SpellSlot.Summoner2
+                                     : SpellSlot.Unknown;
+
+            if (barrierSlot == SpellSlot.Unknown)
             {
-                slot1 = Entry.Player.Spellbook.GetSpell(SpellSlot.Summoner1);
-                slot2 = Entry.Player.Spellbook.GetSpell(SpellSlot.Summoner2);
-
-                //Soon riot will introduce multiple heals, mark my words.
-                var barrierNames = new[] { "summonerbarrier" };
-
-                if (barrierNames.Contains(slot1.Name))
-                {
-                    barrierSpell = new Spell(SpellSlot.Summoner1);
-                    summonerBarrier = SpellSlot.Summoner1;
-                }
-                else if (barrierNames.Contains(slot2.Name))
-                {
-                    barrierSpell = new Spell(SpellSlot.Summoner2);
-                    summonerBarrier = SpellSlot.Summoner2;
-                }
-                else
-                {
-                    Console.WriteLine("You don't have barrier faggot");
-                    return;
-                }
-
-                Game.PrintChat("<font color='#CC0000'>Sorry!</font> Barrier is not supported yet");
-                //Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
-                //DamagePrediction.OnTargettedSpellWillKill += DamagePrediction_OnTargettedSpellWillKill;
+                return;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred: '{0}'", e);
-            }
+
+            this.BarrierSpell = new Spell(barrierSlot, 550);
+
+            AttackableUnit.OnDamage += this.AttackableUnit_OnDamage;
         }
 
-        #endregion
-
-        #region Methods
-
-        private static void DamagePrediction_OnTargettedSpellWillKill(
-            Obj_AI_Hero sender,
-            Obj_AI_Hero target,
-            SpellData sData)
+        private void AttackableUnit_OnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
         {
-            if (InitializeMenu.Menu.Item("Barrier.Activated").GetValue<bool>())
+            if (!InitializeMenu.Menu.Item("Barrier.Activated").IsActive())
             {
-                if (!Entry.Player.InFountain() || !Entry.Player.IsRecalling())
-                {
-                    Entry.Player.Spellbook.CastSpell(summonerBarrier);
-                }
+                return;
+            }
+
+            var obj = ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId);
+
+            if (obj.Type != GameObjectType.obj_AI_Hero)
+            {
+                return;
+            }
+
+            var hero = (Obj_AI_Hero)obj;
+
+            if (hero.IsEnemy)
+            {
+                return;
+            }
+
+            if (
+                ObjectManager.Get<Obj_AI_Hero>()
+                    .Any(
+                        x =>
+                        x.IsMe && ((int)(args.Damage / x.MaxHealth * 100)
+                            > InitializeMenu.Menu.Item("Barrier.Damage").GetValue<Slider>().Value
+                            || x.HealthPercent < InitializeMenu.Menu.Item("Barrier.HP").GetValue<Slider>().Value)))
+            {
+                this.BarrierSpell.Cast();
             }
         }
-
-        private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
-        {
-            if (!(sender is Obj_AI_Hero) || !(args.Target is Obj_AI_Hero) || sender.IsAlly)
-            {
-            }
-        }
-
-        #endregion
     }
 }

@@ -92,6 +92,17 @@
                 }
             }
 
+
+            if (Entry.Player.GetSpellSlot("summonerbarrier") != SpellSlot.Unknown)
+            {
+                var barrierMenu = Menu.AddSubMenu(new Menu("Barrier", "Barrier"));
+                {
+                    barrierMenu.AddItem(new MenuItem("Barrier.Activated", "Barrier activated").SetValue(true));
+                    barrierMenu.AddItem(new MenuItem("Barrier.HP", "Barrier percentage").SetValue(new Slider(20, 1)));
+                    barrierMenu.AddItem(new MenuItem("Barrier.Damage", "Barrier on Dmg dealt %").SetValue(new Slider(20, 1)));
+                }
+            }
+
             if (Entry.Player.GetSpellSlot("summonerdot") != SpellSlot.Unknown)
             {
                 var igniteMenu = Menu.AddSubMenu(new Menu("Ignite", "Ignite"));
