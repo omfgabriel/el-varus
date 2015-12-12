@@ -274,7 +274,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        private static Obj_AI_Hero Player
+        private Obj_AI_Hero Player
         {
             get
             {
@@ -291,25 +291,13 @@
         /// </summary>
         public void Load()
         {
-            slot1 = Entry.Player.Spellbook.GetSpell(SpellSlot.Summoner1);
-            slot2 = Entry.Player.Spellbook.GetSpell(SpellSlot.Summoner2);
+            var cleanseSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name == "summonerboost"
+                                 ? SpellSlot.Summoner1
+                                 : this.Player.GetSpell(SpellSlot.Summoner2).Name == "summonerboost"
+                                       ? SpellSlot.Summoner2
+                                       : SpellSlot.Unknown;
 
-            var cleanseNames = new[] { "summonerboost" };
-
-            if (cleanseNames.Contains(slot1.Name))
-            {
-                cleanseSpell = new Spell(SpellSlot.Summoner1, 550f);
-                summonerCleanse = SpellSlot.Summoner1;
-            }
-            else if (cleanseNames.Contains(slot2.Name))
-            {
-                cleanseSpell = new Spell(SpellSlot.Summoner2, 550f);
-                summonerCleanse = SpellSlot.Summoner2;
-            }
-            else
-            {
-                summonerCleanse = SpellSlot.Unknown;
-            }
+            cleanseSpell = new Spell(cleanseSlot);
 
             GameObject.OnCreate += GameObjectOnCreate;
             Obj_AI_Base.OnProcessSpellCast += ObjAiBaseOnProcessSpellCast;
@@ -323,7 +311,7 @@
         /// <summary>
         ///     Cleanses allies.
         /// </summary>
-        private static void AllyCleanse()
+        private void AllyCleanse()
         {
             var delay = InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
 
@@ -356,7 +344,7 @@
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private static void GameObjectOnCreate(GameObject sender, EventArgs args)
+        private void GameObjectOnCreate(GameObject sender, EventArgs args)
         {
             if (!sender.IsValid<MissileClient>() || sender.IsAlly)
             {
@@ -432,7 +420,7 @@
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
-        private static void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsAlly)
             {
@@ -561,7 +549,7 @@
         ///     Raises the <see cref="E:Update" /> event.
         /// </summary>
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private static void OnUpdate(EventArgs args)
+        private void OnUpdate(EventArgs args)
         {
             try
             {
