@@ -1,6 +1,5 @@
 ﻿namespace ElUtilitySuite.Summoners
 {
-    using System;
     using System.Linq;
 
     using ElUtilitySuite.Utility;
@@ -10,19 +9,25 @@
 
     public class Barrier : IPlugin
     {
+        #region Public Properties
+
         /// <summary>
-        /// Gets or sets the barrier spell.
+        ///     Gets or sets the barrier spell.
         /// </summary>
         /// <value>
-        /// The barrier spell.
+        ///     The barrier spell.
         /// </value>
         public Spell BarrierSpell { get; set; }
 
+        #endregion
+
+        #region Properties
+
         /// <summary>
-        /// Gets the player.
+        ///     Gets the player.
         /// </summary>
         /// <value>
-        /// The player.
+        ///     The player.
         /// </value>
         private Obj_AI_Hero Player
         {
@@ -32,16 +37,20 @@
             }
         }
 
+        #endregion
+
+        #region Public Methods and Operators
+
         /// <summary>
-        /// Loads this instance.
+        ///     Loads this instance.
         /// </summary>
         public void Load()
         {
             var barrierSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name == "summonerbarrier"
-                               ? SpellSlot.Summoner1
-                               : this.Player.GetSpell(SpellSlot.Summoner2).Name == "summonerbarrier"
-                                     ? SpellSlot.Summoner2
-                                     : SpellSlot.Unknown;
+                                  ? SpellSlot.Summoner1
+                                  : this.Player.GetSpell(SpellSlot.Summoner2).Name == "summonerbarrier"
+                                        ? SpellSlot.Summoner2
+                                        : SpellSlot.Unknown;
 
             if (barrierSlot == SpellSlot.Unknown)
             {
@@ -52,6 +61,10 @@
 
             AttackableUnit.OnDamage += this.AttackableUnit_OnDamage;
         }
+
+        #endregion
+
+        #region Methods
 
         private void AttackableUnit_OnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
         {
@@ -78,12 +91,16 @@
                 ObjectManager.Get<Obj_AI_Hero>()
                     .Any(
                         x =>
-                        x.IsMe && ((int)(args.Damage / x.MaxHealth * 100)
+                        x.IsMe
+                        && ((int)(args.Damage / x.MaxHealth * 100)
                             > InitializeMenu.Menu.Item("Barrier.Damage").GetValue<Slider>().Value
-                            || x.HealthPercent < InitializeMenu.Menu.Item("Barrier.HP").GetValue<Slider>().Value)))
+                            || x.HealthPercent < InitializeMenu.Menu.Item("Barrier.HP").GetValue<Slider>().Value)
+                        && x.CountEnemiesInRange(1000) >= 1))
             {
                 this.BarrierSpell.Cast();
             }
         }
+
+        #endregion
     }
 }

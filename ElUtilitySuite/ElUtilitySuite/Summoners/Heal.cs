@@ -1,6 +1,5 @@
 ﻿namespace ElUtilitySuite.Summoners
 {
-    using System;
     using System.Linq;
 
     using ElUtilitySuite.Utility;
@@ -10,19 +9,25 @@
 
     public class Heal : IPlugin
     {
+        #region Public Properties
+
         /// <summary>
-        /// Gets or sets the heal spell.
+        ///     Gets or sets the heal spell.
         /// </summary>
         /// <value>
-        /// The heal spell.
+        ///     The heal spell.
         /// </value>
         public Spell HealSpell { get; set; }
 
+        #endregion
+
+        #region Properties
+
         /// <summary>
-        /// Gets the player.
+        ///     Gets the player.
         /// </summary>
         /// <value>
-        /// The player.
+        ///     The player.
         /// </value>
         private Obj_AI_Hero Player
         {
@@ -32,8 +37,12 @@
             }
         }
 
+        #endregion
+
+        #region Public Methods and Operators
+
         /// <summary>
-        /// Loads this instance.
+        ///     Loads this instance.
         /// </summary>
         public void Load()
         {
@@ -52,6 +61,10 @@
 
             AttackableUnit.OnDamage += this.AttackableUnit_OnDamage;
         }
+
+        #endregion
+
+        #region Methods
 
         private void AttackableUnit_OnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
         {
@@ -79,13 +92,15 @@
                     .Any(
                         x =>
                         x.IsAlly && InitializeMenu.Menu.Item(string.Format("healon{0}", x.ChampionName)).IsActive()
-                        && ((int) (args.Damage / x.MaxHealth * 100)
+                        && ((int)(args.Damage / x.MaxHealth * 100)
                             > InitializeMenu.Menu.Item("Heal.Damage").GetValue<Slider>().Value
                             || x.HealthPercent < InitializeMenu.Menu.Item("Heal.HP").GetValue<Slider>().Value)
-                        && x.Distance(this.Player) < 850))
+                        && x.Distance(this.Player) < 850 && x.CountEnemiesInRange(1000) >= 1))
             {
                 this.HealSpell.Cast();
             }
         }
+
+        #endregion
     }
 }
