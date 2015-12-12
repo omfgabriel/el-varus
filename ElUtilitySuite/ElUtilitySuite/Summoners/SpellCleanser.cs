@@ -246,6 +246,36 @@
                                  {
                                      ChampionName = "irelia", SDataName = "ireliaequilibriumstrike", MissileName = "",
                                      Delay = 250, MissileSpeed = int.MaxValue, CastRange = 450f
+                                 },
+                             new CleanseSpell
+                                 {
+                                     ChampionName = "taric", SDataName = "dazzle", MissileName = "",
+                                     Delay = 250, MissileSpeed = 1400, CastRange = 625f
+                                 },
+                             new CleanseSpell
+                                 {
+                                     ChampionName = "thresh", SDataName = "threshq", MissileName = "threshqmissile",
+                                     Delay = 500, MissileSpeed = 1900, CastRange = 1175f
+                                 },
+                             new CleanseSpell
+                                 {
+                                     ChampionName = "swain", SDataName = "swainshadowgrasp", MissileName = "swainshadowgrasp",
+                                     Delay = 1100, MissileSpeed = int.MaxValue, CastRange = 1040f
+                                 },
+                              new CleanseSpell
+                                 {
+                                     ChampionName = "sona", SDataName = "sonar", MissileName = "sonar",
+                                     Delay = 250, MissileSpeed = 2400, CastRange = 1000f
+                                 },
+                              new CleanseSpell
+                                 {
+                                     ChampionName = "renekton", SDataName = "renektonpreexecute", MissileName = "",
+                                     Delay = 250, MissileSpeed = int.MaxValue, CastRange = 275f
+                                 },
+                               new CleanseSpell
+                                 {
+                                     ChampionName = "nasus", SDataName = "nasusw", MissileName = "",
+                                     Delay = 250, MissileSpeed = int.MaxValue, CastRange = 600f
                                  }
                          };
 
