@@ -44,7 +44,7 @@
 
         #region Fields
 
-        private readonly string[] cantCleanseWithSummonerSpells = { "zedr" };
+        private readonly string[] cantCleanseWithSummonerSpells = { "zedr", "alzaharnethergrasp", "infiniteduress" };
 
         #endregion
 
@@ -313,6 +313,11 @@
                                  {
                                      ChampionName = "galio", SDataName = "galioidolofdurand", MissileName = "", Delay = 0,
                                      MissileSpeed = int.MaxValue, CastRange = 600f
+                                 },
+                              new CleanseSpell
+                                 {
+                                     ChampionName = "warwick", SDataName = "infiniteduress", MissileName = "", Delay = 250,
+                                     MissileSpeed = int.MaxValue, CastRange = 700f
                                  }
                          };
             
