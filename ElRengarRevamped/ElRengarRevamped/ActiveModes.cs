@@ -65,7 +65,6 @@ namespace ElRengarRevamped
                                             LastSwitch = Utils.GameTimeTickCount;
                                         }
                                     }
-                                    return;
                                 }
                             }
                             else if (!RengarR && IsActive("Combo.Use.E") && spells[Spells.E].IsReady()
@@ -85,7 +84,6 @@ namespace ElRengarRevamped
                                             LastSwitch = Utils.GameTimeTickCount;
                                         }
                                     }
-                                    return;
                                 }
                             }
                             break;
@@ -96,7 +94,6 @@ namespace ElRengarRevamped
                                 if (Rengar.LastW + 200 < Environment.TickCount)
                                 {
                                     CastW(target);
-                                    return;
                                 }
                             }
                             break;
@@ -104,7 +101,6 @@ namespace ElRengarRevamped
                             if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 100))
                             {
                                 spells[Spells.Q].Cast();
-                                return;
                             }
                             break;
                     }
@@ -147,7 +143,6 @@ namespace ElRengarRevamped
                             if (prediction.Hitchance >= HitChance.VeryHigh && prediction.CollisionObjects.Count == 0)
                             {
                                 spells[Spells.E].Cast(target);
-                                return;
                             }
                         }
                     }
