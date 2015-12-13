@@ -161,12 +161,12 @@
 
                 if (justDoIt)
                 {
-                    if (spells[Spells.E].IsReady() && Player.IsDashing())
+                    if (spells[Spells.E].IsReady())
                     {
                         spells[Spells.E].Cast(target);
                     }
 
-                    if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && Player.IsDashing())
+                    if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady())
                     {
                         spells[Spells.Q].Cast();
                     }
