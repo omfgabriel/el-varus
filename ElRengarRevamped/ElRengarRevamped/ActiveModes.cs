@@ -98,7 +98,7 @@ namespace ElRengarRevamped
                             }
                             break;
                         case 2:
-                            if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 100))
+                            if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 50))
                             {
                                 spells[Spells.Q].Cast();
                             }
@@ -108,7 +108,7 @@ namespace ElRengarRevamped
 
                 if (Ferocity <= 4)
                 {
-                    if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 100))
+                    if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 50))
                     {
                         if (Orbwalking.IsAutoAttack(Player.LastCastedSpellName()))
                         {
@@ -131,7 +131,7 @@ namespace ElRengarRevamped
 
                     if (Ferocity == 5)
                     {
-                        if (IsActive("Combo.Use.E.OutOfRange") && target.IsValidTarget(spells[Spells.Q].Range + 100)
+                        if (IsActive("Combo.Use.E.OutOfRange") && target.IsValidTarget(spells[Spells.Q].Range + 50)
                             && !RengarR)
                         {
                             var prediction = spells[Spells.E].GetPrediction(target);

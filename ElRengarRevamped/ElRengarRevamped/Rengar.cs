@@ -140,17 +140,23 @@
 
             if (sender.IsMe && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
-                if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range) && HasPassive
-                    && Player.IsDashing() && Ferocity == 5 && IsListActive("Combo.Prio").SelectedIndex == 2)
+                if (Ferocity == 5 && Player.IsDashing()) //HasPassive
                 {
-                    spells[Spells.Q].Cast();
-                    return;
-                }
-
-                if (IsListActive("Combo.Prio").SelectedIndex == 0 && spells[Spells.E].IsReady() && Ferocity == 5
-                         && Player.IsDashing())
-                {
-                    spells[Spells.E].Cast(target);
+                    switch (IsListActive("Combo.Prio").SelectedIndex)
+                    {
+                        case 0:
+                            if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
+                            {
+                                spells[Spells.E].Cast(target);
+                            }
+                            break;
+                        case 2:
+                            if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                            {
+                                spells[Spells.Q].Cast();
+                            }
+                            break;
+                    }
                 }
 
                 if (justDoIt)
@@ -158,13 +164,11 @@
                     if (spells[Spells.E].IsReady() && Player.IsDashing())
                     {
                         spells[Spells.E].Cast(target);
-                        return;
                     }
 
                     if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && Player.IsDashing())
                     {
                         spells[Spells.Q].Cast();
-                        return;
                     }
                 }
 
@@ -176,7 +180,6 @@
                         {
                             spells[Spells.E].Cast(target);
                             ActiveModes.Kappa = 0;
-                            return;
                         }
                         break;
 
@@ -184,7 +187,6 @@
                         if (IsActive("Beta.Cast.Q") && RengarR)
                         {
                             spells[Spells.E].Cast(target);
-                            return;
                         }
 
                         spells[Spells.Q].Cast();
