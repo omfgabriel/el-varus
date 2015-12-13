@@ -36,19 +36,15 @@
         private static Items.Item qss;
 
         /// <summary>
-        ///     The slot1
-        /// </summary>
-        private static SpellDataInst slot1;
-
-        /// <summary>
-        ///     The slot2
-        /// </summary>
-        private static SpellDataInst slot2;
-
-        /// <summary>
         ///     The summoner cleanse
         /// </summary>
         private static SpellSlot summonerCleanse;
+
+        #endregion
+
+        #region Fields
+
+        private readonly string[] cantCleanseWithSummonerSpells = { "zedr" };
 
         #endregion
 
@@ -249,8 +245,8 @@
                                  },
                              new CleanseSpell
                                  {
-                                     ChampionName = "taric", SDataName = "dazzle", MissileName = "",
-                                     Delay = 250, MissileSpeed = 1400, CastRange = 625f
+                                     ChampionName = "taric", SDataName = "dazzle", MissileName = "", Delay = 250,
+                                     MissileSpeed = 1400, CastRange = 625f
                                  },
                              new CleanseSpell
                                  {
@@ -259,23 +255,24 @@
                                  },
                              new CleanseSpell
                                  {
-                                     ChampionName = "swain", SDataName = "swainshadowgrasp", MissileName = "swainshadowgrasp",
-                                     Delay = 1100, MissileSpeed = int.MaxValue, CastRange = 1040f
+                                     ChampionName = "swain", SDataName = "swainshadowgrasp",
+                                     MissileName = "swainshadowgrasp", Delay = 1100, MissileSpeed = int.MaxValue,
+                                     CastRange = 1040f
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
-                                     ChampionName = "sona", SDataName = "sonar", MissileName = "sonar",
-                                     Delay = 250, MissileSpeed = 2400, CastRange = 1000f
+                                     ChampionName = "sona", SDataName = "sonar", MissileName = "sonar", Delay = 250,
+                                     MissileSpeed = 2400, CastRange = 1000f
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
                                      ChampionName = "renekton", SDataName = "renektonpreexecute", MissileName = "",
                                      Delay = 250, MissileSpeed = int.MaxValue, CastRange = 275f
                                  },
-                               new CleanseSpell
+                             new CleanseSpell
                                  {
-                                     ChampionName = "nasus", SDataName = "nasusw", MissileName = "",
-                                     Delay = 250, MissileSpeed = int.MaxValue, CastRange = 600f
+                                     ChampionName = "nasus", SDataName = "nasusw", MissileName = "", Delay = 250,
+                                     MissileSpeed = int.MaxValue, CastRange = 600f
                                  }
                          };
 
@@ -321,17 +318,17 @@
         /// </summary>
         public void Load()
         {
-            var cleanseSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name == "summonerboost"
-                                 ? SpellSlot.Summoner1
-                                 : this.Player.GetSpell(SpellSlot.Summoner2).Name == "summonerboost"
-                                       ? SpellSlot.Summoner2
-                                       : SpellSlot.Unknown;
+            summonerCleanse = this.Player.GetSpell(SpellSlot.Summoner1).Name == "summonerboost"
+                                  ? SpellSlot.Summoner1
+                                  : this.Player.GetSpell(SpellSlot.Summoner2).Name == "summonerboost"
+                                        ? SpellSlot.Summoner2
+                                        : SpellSlot.Unknown;
 
-            cleanseSpell = new Spell(cleanseSlot);
+            cleanseSpell = new Spell(summonerCleanse);
 
-            GameObject.OnCreate += GameObjectOnCreate;
-            Obj_AI_Base.OnProcessSpellCast += ObjAiBaseOnProcessSpellCast;
-            Game.OnUpdate += OnUpdate;
+            GameObject.OnCreate += this.GameObjectOnCreate;
+            Obj_AI_Base.OnProcessSpellCast += this.ObjAiBaseOnProcessSpellCast;
+            Game.OnUpdate += this.OnUpdate;
         }
 
         #endregion
@@ -345,27 +342,27 @@
         {
             var delay = InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
 
-            var unit =
+            foreach (var unit in
                 ObjectManager.Get<Obj_AI_Hero>()
                     .Where(
                         x =>
                         x.IsAlly && !x.IsMe && x.IsValidTarget(900, false)
                         && InitializeMenu.Menu.Item("Protect.Cleanse.Kappa" + x.CharData.BaseSkinName).GetValue<bool>()
                         && InitializeMenu.Menu.Item("Protect.Cleanse.Mikaels.Activated").GetValue<bool>())
-                    .OrderByDescending(xe => xe.Health / xe.MaxHealth * 100)
-                    .SelectMany(
-                        x =>
-                        x.Buffs.Where(b => Mikaels.IsReady())
-                            .Select(
-                                b =>
-                                InitializeMenu.Menu.Item(string.Format("Protect.Cleanse.{0}.Ally", b.Type.ToString())))
-                            .Where(buffMenuItem => buffMenuItem != null && buffMenuItem.GetValue<bool>()),
-                        (x, buffMenuItem) => x)
-                    .FirstOrDefault();
-
-            if (unit != null)
+                    .OrderByDescending(xe => xe.Health / xe.MaxHealth * 100))
             {
-                Utility.DelayAction.Add(delay, () => Mikaels.Cast(unit));
+                foreach (var b in unit.Buffs)
+                {
+                    if (Mikaels.IsReady())
+                    {
+                        var buffMenuItem =
+                            InitializeMenu.Menu.Item(string.Format("Protect.Cleanse.{0}.Ally", b.Type.ToString()));
+                        if (buffMenuItem != null && buffMenuItem.GetValue<bool>())
+                        {
+                            Utility.DelayAction.Add(delay, () => Mikaels.Cast(unit));
+                        }
+                    }
+                }
             }
         }
 
@@ -418,10 +415,10 @@
                 return;
             }
 
-            if (missile.SData.LineWidth + Player.BoundingRadius
-                > Player.ServerPosition.To2D()
+            if (missile.SData.LineWidth + this.Player.BoundingRadius
+                > this.Player.ServerPosition.To2D()
                       .Distance(
-                          Player.ServerPosition.To2D()
+                          this.Player.ServerPosition.To2D()
                       .ProjectOn(missile.StartPosition.To2D(), endPosition.To2D())
                       .SegmentPoint))
             {
@@ -472,7 +469,7 @@
                 return;
             }
 
-            if (Player.Distance(args.Start) > spellData.CastRange)
+            if (this.Player.Distance(args.Start) > spellData.CastRange)
             {
                 return;
             }
@@ -482,10 +479,11 @@
                 || args.SData.TargettingType == SpellDataTargetType.SelfAndUnit && args.Target.IsMe
                 || args.SData.TargettingType == SpellDataTargetType.Self
                 || args.SData.TargettingType == SpellDataTargetType.SelfAoe
-                && Player.Distance(sender) < spellData.CastRange)
+                && this.Player.Distance(sender) < spellData.CastRange)
             {
                 if (summonerCleanse != SpellSlot.Unknown
-                    && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
+                    && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready
+                    && !this.cantCleanseWithSummonerSpells.Contains(spellData.SDataName))
                 {
                     Utility.DelayAction.Add(
                         spellData.GetSpellDelay(),
@@ -501,7 +499,7 @@
 
                 if (Mikaels.IsReady())
                 {
-                    Utility.DelayAction.Add(spellData.GetSpellDelay(), () => Mikaels.Cast(Player));
+                    Utility.DelayAction.Add(spellData.GetSpellDelay(), () => Mikaels.Cast(this.Player));
                     return;
                 }
 
@@ -536,14 +534,17 @@
                             : (args.SData.CastRadius < 1 ? args.SData.CastRadiusSecondary : args.SData.CastRadius);
 
             if ((isLinear
-                 && width + Player.BoundingRadius
-                 > Player.ServerPosition.To2D()
+                 && width + this.Player.BoundingRadius
+                 > this.Player.ServerPosition.To2D()
                        .Distance(
-                           Player.ServerPosition.To2D().ProjectOn(args.Start.To2D(), endPosition.To2D()).SegmentPoint))
-                || (!isLinear && Player.Distance(endPosition) <= width + Player.BoundingRadius))
+                           this.Player.ServerPosition.To2D()
+                       .ProjectOn(args.Start.To2D(), endPosition.To2D())
+                       .SegmentPoint))
+                || (!isLinear && this.Player.Distance(endPosition) <= width + this.Player.BoundingRadius))
             {
                 if (summonerCleanse != SpellSlot.Unknown
-                    && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready)
+                    && Entry.Player.Spellbook.CanUseSpell(cleanseSpell.Slot) == SpellState.Ready
+                    && !this.cantCleanseWithSummonerSpells.Contains(spellData.SDataName))
                 {
                     Utility.DelayAction.Add(
                         spellData.GetSpellDelay(),
@@ -590,7 +591,7 @@
 
                 if (InitializeMenu.Menu.Item("Protect.Cleanse.Mikaels.Activated").GetValue<bool>())
                 {
-                    AllyCleanse();
+                    this.AllyCleanse();
                 }
             }
             catch (Exception e)
