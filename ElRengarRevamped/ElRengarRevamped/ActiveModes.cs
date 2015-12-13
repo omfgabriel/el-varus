@@ -118,7 +118,7 @@ namespace ElRengarRevamped
 
                     if (RengarR)
                     {
-                        return;
+                        //return;
                     }
 
                     if (IsActive("Combo.Use.W")) 
