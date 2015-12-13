@@ -273,9 +273,49 @@
                                  {
                                      ChampionName = "nasus", SDataName = "nasusw", MissileName = "", Delay = 250,
                                      MissileSpeed = int.MaxValue, CastRange = 600f
+                                 },
+                              new CleanseSpell
+                                 {
+                                     ChampionName = "anivia", SDataName = "flashfrost", MissileName = "flashfrostspell", Delay = 250,
+                                     MissileSpeed = 850, CastRange = 1150f
+                                 },
+                              new CleanseSpell
+                                 {
+                                     ChampionName = "riven", SDataName = "rivenmartyr", MissileName = "", Delay = 0,
+                                     MissileSpeed = int.MaxValue, CastRange = 260f
+                                 },
+                              new CleanseSpell
+                                 {
+                                     ChampionName = "udyr", SDataName = "udyrbearstanceattack", MissileName = "", Delay = 250,
+                                     MissileSpeed = int.MaxValue, CastRange = 250f
+                                 },
+                              new CleanseSpell
+                                 {
+                                     ChampionName = "varus", SDataName = "varusr", MissileName = "varusrmissile", Delay = 250,
+                                     MissileSpeed = 1950, CastRange = 1300f
+                                 },
+                              new CleanseSpell
+                                 {
+                                     ChampionName = "zyra", SDataName = "zyragraspingroots", MissileName = "zyragraspingroots", Delay = 250,
+                                     MissileSpeed = 1400, CastRange = 1100f
+                                 },
+                              new CleanseSpell
+                                 {
+                                     ChampionName = "viktor", SDataName = "viktorgravitonfield", MissileName = "", Delay = 250,
+                                     MissileSpeed = 1750, CastRange = 815f
+                                 },
+                              new CleanseSpell
+                                 {
+                                     ChampionName = "yasuo", SDataName = "yasuoq3mis", MissileName = "", Delay = 250,
+                                     MissileSpeed = 1500, CastRange = 1000f
+                                 },
+                              new CleanseSpell
+                                 {
+                                     ChampionName = "galio", SDataName = "galioidolofdurand", MissileName = "", Delay = 0,
+                                     MissileSpeed = int.MaxValue, CastRange = 600f
                                  }
                          };
-
+            
             #endregion
         }
 
