@@ -114,12 +114,10 @@ namespace ElRengarRevamped
                 {
                     if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 100))
                     {
-                        if (!Orbwalking.IsAutoAttack(Player.LastCastedSpellName()))
+                        if (Orbwalking.IsAutoAttack(Player.LastCastedSpellName()))
                         {
-                            return;
+                            spells[Spells.Q].Cast();
                         }
-
-                        spells[Spells.Q].Cast();
                     }
 
                     if (RengarR)
@@ -134,13 +132,10 @@ namespace ElRengarRevamped
 
                     if (IsActive("Combo.Use.E"))
                     {
-                        if (!target.IsValidTarget(spells[Spells.E].Range))
+                        if (target.IsValidTarget(spells[Spells.E].Range))
                         {
-                            return;
+                            CastE(target);
                         }
-
-                        CastE(target);
-                        return;
                     }
 
                     if (Ferocity == 5)
