@@ -116,11 +116,6 @@ namespace ElRengarRevamped
                         }
                     }
 
-                    if (RengarR)
-                    {
-                        return;
-                    }
-
                     if (IsActive("Combo.Use.W")) 
                     {
                         CastW(target);
@@ -128,7 +123,7 @@ namespace ElRengarRevamped
 
                     if (IsActive("Combo.Use.E"))
                     {
-                        if (target.IsValidTarget(spells[Spells.E].Range))
+                        if (target.IsValidTarget(spells[Spells.E].Range) && !RengarR)
                         {
                             CastE(target);
                         }
