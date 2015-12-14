@@ -13,11 +13,6 @@ namespace ElRengarRevamped
     // ReSharper disable once ClassNeverInstantiated.Global
     public class ActiveModes : Standards
     {
-        #region Static Fields
-
-        public static int Kappa = 1;
-
-        #endregion
 
         #region Public Methods and Operators
 

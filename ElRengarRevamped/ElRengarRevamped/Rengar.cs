@@ -100,7 +100,7 @@
         {
             if (Ferocity == 5 && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
-                if (unit.IsMe && spells[Spells.Q].IsReady() && target is Obj_AI_Hero && target.IsValidTarget())
+                if (unit.IsMe && spells[Spells.Q].IsReady() && target is Obj_AI_Hero && target.IsValidTarget(spells[Spells.Q].Range + 50))
                 {
                     spells[Spells.Q].Cast();
                 }
@@ -140,7 +140,7 @@
 
             if (sender.IsMe && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
-                if (Ferocity == 5 && Player.IsDashing()) //HasPassive
+                if (Ferocity == 5 && Player.IsDashing())
                 {
                     switch (IsListActive("Combo.Prio").SelectedIndex)
                     {
@@ -176,10 +176,9 @@
                 switch (IsListActive("Combo.Prio").SelectedIndex)
                 {
                     case 0:
-                        if (spells[Spells.E].IsReady() && spells[Spells.E].CanCast(target) && Ferocity == 5)
+                        if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range) && Ferocity == 5)
                         {
                             spells[Spells.E].Cast(target);
-                            ActiveModes.Kappa = 0;
                         }
                         break;
 
@@ -192,21 +191,19 @@
                         spells[Spells.Q].Cast();
                         if (target.IsValidTarget())
                         {
-                            if (target.IsValidTarget(spells[Spells.Q].Range + 100))
+                            if (target.IsValidTarget(spells[Spells.Q].Range + 50))
                             {
                                 Utility.DelayAction.Add(
                                     50,
                                     () =>
                                         {
-                                            if (Vector3.Distance(Player.ServerPosition, target.ServerPosition)
-                                                < spells[Spells.W].Range)
+                                            if (target.IsValidTarget(spells[Spells.W].Range))
                                             {
                                                 spells[Spells.W].Cast();
                                             }
 
                                             spells[Spells.E].Cast(target.ServerPosition);
                                             UseHydra();
-                                            Console.WriteLine("Casted Q Prio");
                                         });
                             }
                         }
