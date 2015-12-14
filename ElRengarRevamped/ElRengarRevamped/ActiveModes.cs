@@ -384,10 +384,13 @@ namespace ElRengarRevamped
             {
                 return;
             }
-
-            if (minion.IsValidTarget(spells[Spells.W].Range))
+            if (Ferocity == 5 && IsActive("Clear.Save.Ferocity"))
             {
-                UseHydra();
+                if (minion.IsValidTarget(spells[Spells.W].Range))
+                {
+                    UseHydra();
+                }
+                return;
             }
 
             if (IsActive("Clear.Use.Q") && spells[Spells.Q].IsReady() && minion.IsValidTarget(spells[Spells.Q].Range))
