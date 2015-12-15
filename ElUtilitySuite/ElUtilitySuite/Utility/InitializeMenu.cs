@@ -73,7 +73,7 @@
                 smiteMenu.SubMenu("Drawings")
                     .AddItem(new MenuItem("ElSmite.Draw.Text", "Draw smite text").SetValue(true));
                 smiteMenu.SubMenu("Drawings")
-                    .AddItem(new MenuItem("ElSmite.Draw.Damage", "Draw smite Damage").SetValue(true));
+                    .AddItem(new MenuItem("ElSmite.Draw.Damage", "Draw smite Damage").SetValue(false));
             }
 
             if (Entry.Player.GetSpellSlot("summonerheal") != SpellSlot.Unknown)
@@ -230,7 +230,7 @@
                 Menu.AddSubMenu(spellCleanserMenu);
             }
 
-            var protectMenu = Menu.AddSubMenu(new Menu("Anti-Stealth", "AntiStealth"));
+            var protectMenu = Menu.AddSubMenu(new Menu("Anti Stealth", "AntiStealth"));
             {
                 protectMenu.AddItem(new MenuItem("AntiStealthActive", "Place Pink Ward on Unit Stealth").SetValue(true));
             }
