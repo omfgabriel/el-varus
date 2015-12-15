@@ -92,14 +92,14 @@
                 }
             }
 
-
             if (Entry.Player.GetSpellSlot("summonerbarrier") != SpellSlot.Unknown)
             {
                 var barrierMenu = Menu.AddSubMenu(new Menu("Barrier", "Barrier"));
                 {
                     barrierMenu.AddItem(new MenuItem("Barrier.Activated", "Barrier activated").SetValue(true));
                     barrierMenu.AddItem(new MenuItem("Barrier.HP", "Barrier percentage").SetValue(new Slider(20, 1)));
-                    barrierMenu.AddItem(new MenuItem("Barrier.Damage", "Barrier on damage dealt %").SetValue(new Slider(20, 1)));
+                    barrierMenu.AddItem(
+                        new MenuItem("Barrier.Damage", "Barrier on damage dealt %").SetValue(new Slider(20, 1)));
                 }
             }
 
@@ -230,19 +230,9 @@
                 Menu.AddSubMenu(spellCleanserMenu);
             }
 
-            var protectMenu = Menu.AddSubMenu(new Menu("Stealth", "ProtectYourself"));
+            var protectMenu = Menu.AddSubMenu(new Menu("Anti-Stealth", "AntiStealth"));
             {
-                protectMenu.SubMenu("Rengar")
-                    .AddItem(new MenuItem("Protect.Rengar2", "Rengar antigapcloser - Beta").SetValue(false));
-                protectMenu.SubMenu("Rengar")
-                    .AddItem(new MenuItem("Protect.Rengar.Pinkward", "Pinkward").SetValue(true));
-                protectMenu.SubMenu("Rengar")
-                    .AddItem(new MenuItem("Protect.Rengar.PinkwardTrinket", "Pink trinket").SetValue(true));
-                protectMenu.SubMenu("Akali").AddItem(new MenuItem("Protect.Akali", "Autopink Akali W").SetValue(true));
-                protectMenu.SubMenu("Akali").AddItem(new MenuItem("Protect.Akali.PinkWard", "Pinkward").SetValue(true));
-                protectMenu.SubMenu("Akali").AddItem(new MenuItem("Protect.Akali.Trinket", "Trinket").SetValue(true));
-                protectMenu.SubMenu("Akali")
-                    .AddItem(new MenuItem("Protect.Akali.HP", "Pink when Akali's HP:").SetValue(new Slider(50)));
+                protectMenu.AddItem(new MenuItem("AntiStealthActive", "Place Pink Ward on Unit Stealth").SetValue(true));
             }
 
             #region Credits to Oracle
