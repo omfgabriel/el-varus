@@ -230,7 +230,7 @@
                 Menu.AddSubMenu(spellCleanserMenu);
             }
 
-            var protectMenu = Menu.AddSubMenu(new Menu("Anti Stealth", "AntiStealth"));
+            var protectMenu = Menu.AddSubMenu(new Menu("Anti-Stealth", "AntiStealth"));
             {
                 protectMenu.AddItem(new MenuItem("AntiStealthActive", "Place Pink Ward on Unit Stealth").SetValue(true));
             }
