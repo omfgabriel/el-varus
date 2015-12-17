@@ -417,13 +417,13 @@
                         return;
                     }
 
-                    var qdelay = MenuInit.Menu.Item("Beta.Cast.Q.Delay").GetValue<Slider>().Value;
-                    var qcastRange = MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value;
-
-                    if (explode.Distance(Player.ServerPosition) <= qcastRange && Ferocity == 5 && RengarR)
+                    if (Ferocity == 5 && RengarR)
                     {
-                        Utility.DelayAction.Add(qdelay, () => spells[Spells.Q].Cast());
-                        justDoIt = true;
+                        if (explode.Distance(Player.ServerPosition) <= MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value)
+                        {
+                            Utility.DelayAction.Add(MenuInit.Menu.Item("Beta.Cast.Q.Delay").GetValue<Slider>().Value, () => spells[Spells.Q].Cast());
+                            justDoIt = true;
+                        }
                     }
                 }
 
@@ -464,17 +464,16 @@
             {
                 if (IsListActive("Combo.Prio").SelectedIndex == 2 && spells[Spells.Q].IsReady())
                 {
-                    if (Ferocity <= 4)
-                    {
-                        spells[Spells.Q].Cast();
-                    }
-
                     if (Ferocity == 5)
                     {
                         if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || HasPassive)
                         {
                             spells[Spells.Q].Cast();
                         }
+                    }
+                    else
+                    {
+                        spells[Spells.Q].Cast();
                     }
                 }
             }

@@ -35,8 +35,6 @@
 
         protected static SpellSlot Ignite;
 
-        protected static int SendTime = 0;
-
         protected static SpellSlot Smite;
 
         protected static Items.Item Youmuu;

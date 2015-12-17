@@ -245,7 +245,7 @@ namespace ElRengarRevamped
 
             if (TargetSelector.GetSelectedTarget() != null)
             {
-                if (Vector3.Distance(Player.ServerPosition, target.ServerPosition) < spells[Spells.R].Range)
+                if (target.IsValidTarget(spells[Spells.R].Range))
                 {
                     target = TargetSelector.GetSelectedTarget();
                     TargetSelector.SetTarget(target);
@@ -254,7 +254,7 @@ namespace ElRengarRevamped
             }
 
             target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Physical);
-            if (!target.IsValidTarget())
+            if (!target.IsValidTarget(spells[Spells.R].Range))
             {
                 return;
             }
@@ -288,7 +288,7 @@ namespace ElRengarRevamped
 
             if (Ferocity <= 4)
             {
-                if (IsActive("Harass.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range))
+                if (IsActive("Harass.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 50))
                 {
                     spells[Spells.Q].Cast();
                 }
@@ -349,7 +349,7 @@ namespace ElRengarRevamped
             }
 
             if (IsActive("Jungle.Use.Q") && spells[Spells.Q].IsReady() && Rengar.LastQ + 200 < Environment.TickCount
-                && minion.IsValidTarget(spells[Spells.Q].Range))
+                && minion.IsValidTarget(spells[Spells.Q].Range + 50))
             {
                 spells[Spells.Q].Cast();
                 return;
