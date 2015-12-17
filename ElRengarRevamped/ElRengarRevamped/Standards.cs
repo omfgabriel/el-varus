@@ -81,35 +81,11 @@
             }
         }
 
-        protected static bool RengarE
-        {
-            get
-            {
-                return Player.Buffs.Any(x => x.Name.Contains("rengare"));
-            }
-        }
-
-        protected static bool RengarQ
-        {
-            get
-            {
-                return Player.Buffs.Any(x => x.Name.Contains("rengarq"));
-            }
-        }
-
         protected static bool RengarR
         {
             get
             {
                 return Player.Buffs.Any(x => x.Name.Contains("RengarR"));
-            }
-        }
-
-        protected static int TickCount
-        {
-            get
-            {
-                return (int)(Game.Time * 0x3e8);
             }
         }
 

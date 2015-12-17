@@ -151,7 +151,7 @@
                             }
                             break;
                         case 2:
-                            if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                            if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range + 50))
                             {
                                 spells[Spells.Q].Cast();
                             }
@@ -172,7 +172,6 @@
                     }
                 }
 
-                SendTime = TickCount;
                 switch (IsListActive("Combo.Prio").SelectedIndex)
                 {
                     case 0:
@@ -189,24 +188,23 @@
                         }
 
                         spells[Spells.Q].Cast();
-                        if (target.IsValidTarget())
-                        {
-                            if (target.IsValidTarget(spells[Spells.Q].Range + 50))
-                            {
-                                Utility.DelayAction.Add(
-                                    50,
-                                    () =>
-                                        {
-                                            if (target.IsValidTarget(spells[Spells.W].Range))
-                                            {
-                                                spells[Spells.W].Cast();
-                                            }
 
-                                            spells[Spells.E].Cast(target.ServerPosition);
-                                            UseHydra();
-                                        });
-                            }
+                        if (target.IsValidTarget(spells[Spells.Q].Range + 50))
+                        {
+                            Utility.DelayAction.Add(
+                                50,
+                                () =>
+                                    {
+                                        if (target.IsValidTarget(spells[Spells.W].Range))
+                                        {
+                                            spells[Spells.W].Cast();
+                                        }
+
+                                        spells[Spells.E].Cast(target.ServerPosition);
+                                        UseHydra();
+                                    });
                         }
+                        
                         break;
                 }
 
@@ -462,24 +460,22 @@
 
         private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            if (args.Target is Obj_AI_Hero && args.Target.IsValidTarget())
+            if (args.Target is Obj_AI_Hero && args.Target.IsValidTarget(spells[Spells.Q].Range + 50))
             {
-                if (Ferocity <= 4 && Orbwalking.InAutoAttackRange(args.Target)
-                    && IsListActive("Combo.Prio").SelectedIndex == 2)
+                if (IsListActive("Combo.Prio").SelectedIndex == 2 && spells[Spells.Q].IsReady())
                 {
-                    spells[Spells.Q].Cast();
-                }
+                    if (Ferocity <= 4)
+                    {
+                        spells[Spells.Q].Cast();
+                    }
 
-                if (Ferocity == 5 && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
-                    && Orbwalking.InAutoAttackRange(args.Target) && IsListActive("Combo.Prio").SelectedIndex == 2)
-                {
-                    spells[Spells.Q].Cast();
-                }
-
-                if (Ferocity == 5 && HasPassive && spells[Spells.Q].IsReady()
-                    && IsListActive("Combo.Prio").SelectedIndex == 2)
-                {
-                    spells[Spells.Q].Cast();
+                    if (Ferocity == 5)
+                    {
+                        if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || HasPassive)
+                        {
+                            spells[Spells.Q].Cast();
+                        }
+                    }
                 }
             }
         }

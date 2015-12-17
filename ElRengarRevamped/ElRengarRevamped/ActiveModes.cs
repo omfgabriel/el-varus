@@ -327,7 +327,7 @@ namespace ElRengarRevamped
             var minion =
                 MinionManager.GetMinions(
                     Player.ServerPosition,
-                    spells[Spells.W].Range + 100,
+                    spells[Spells.W].Range,
                     MinionTypes.All,
                     MinionTeam.Neutral,
                     MinionOrderTypes.MaxHealth).FirstOrDefault();
@@ -391,7 +391,6 @@ namespace ElRengarRevamped
             if (IsActive("Clear.Use.Q") && spells[Spells.Q].IsReady() && minion.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast();
-                return;
             }
 
             if (IsActive("Clear.Use.W") && spells[Spells.W].IsReady() && minion.IsValidTarget(spells[Spells.W].Range))
