@@ -284,14 +284,10 @@
             var enemiesInRange = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Count.Enemies").GetValue<Slider>().Value;
             var rHealth = ElAlistarMenu.Menu.Item("ElAlistar.Combo.HP.Enemies").GetValue<Slider>().Value;
 
-            var qmana = Player.Spellbook.GetSpell(SpellSlot.Q);
-            var wmana = Player.Spellbook.GetSpell(SpellSlot.W);
-
             if (useQ && useW && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady()
-                && Player.Mana > qmana.ManaCost + wmana.ManaCost)
+                && Player.Mana > Player.Spellbook.GetSpell(SpellSlot.Q).ManaCost + Player.Spellbook.GetSpell(SpellSlot.W).ManaCost && target.IsValidTarget(spells[Spells.W].Range))
             {
                 spells[Spells.W].Cast(target);
-                //var comboTime = Math.Max(0, Player.Distance(target) - 500) * 10 / 25 + 25;
                 var comboTime = Math.Max(0, Player.Distance(target) - 365) / 1.2f - 25;
 
                 Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
@@ -303,14 +299,12 @@
                 spells[Spells.R].Cast(Player);
             }
 
-            //Check if target is killable with W when Q is on CD
-            if (spells[Spells.W].IsReady() && !spells[Spells.Q].IsReady() && spells[Spells.W].IsInRange(target)
+            if (target.IsValidTarget(spells[Spells.W].Range) && spells[Spells.W].IsReady() && !spells[Spells.Q].IsReady() 
                 && GetWDamage(target) > target.Health)
             {
                 spells[Spells.W].Cast(target);
             }
 
-            // Ignite when killable
             if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
             {
                 Player.Spellbook.CastSpell(ignite, target);
