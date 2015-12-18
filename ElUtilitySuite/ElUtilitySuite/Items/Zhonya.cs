@@ -440,6 +440,21 @@
                                  {
                                      ChampionName = "mordekaiser", SDataName = "mordekaiserchildrenofthegrave",
                                      MissileName = "", Delay = 250, MissileSpeed = int.MaxValue, CastRange = 850f
+                                 },
+                             new ZhonyaSpell
+                                 {
+                                     ChampionName = "veigar", SDataName = "veigareventhorizon",
+                                     MissileName = "", Delay = 250, MissileSpeed = 1400, CastRange = 850f
+                                 },
+                             new ZhonyaSpell
+                                 {
+                                     ChampionName = "veigar", SDataName = "veigardarkmatter",
+                                     MissileName = "", Delay = 1200, MissileSpeed = int.MaxValue, CastRange = 900f
+                                 },
+                             new ZhonyaSpell
+                                 {
+                                     ChampionName = "shyvana", SDataName = "shyvanatransformcast",
+                                     MissileName = "shyvanatransformcast", Delay = 100, MissileSpeed = 1100, CastRange = 1000f
                                  }
                          };
 

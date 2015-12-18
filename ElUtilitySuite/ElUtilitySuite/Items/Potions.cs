@@ -26,14 +26,6 @@
         #region Properties
 
         /// <summary>
-        ///     Gets or sets the items.
-        /// </summary>
-        /// <value>
-        ///     The items.
-        /// </value>
-        private List<HealthItem> Items { get; set; }
-
-        /// <summary>
         ///     Gets the player.
         /// </summary>
         /// <value>
@@ -62,42 +54,57 @@
         }
 
         /// <summary>
+        ///     Gets or sets the items.
+        /// </summary>
+        /// <value>
+        ///     The items.
+        /// </value>
+        private List<HealthItem> Items { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     Loads this instance.
+        /// </summary>
+        public void Load()
+        {
+            this.Items = new List<HealthItem>
+                             {
+                                 new HealthItem { GetItem = () => ItemData.Health_Potion.GetItem() },
+                                 new HealthItem { GetItem = () => ItemData.Total_Biscuit_of_Rejuvenation2.GetItem() },
+                                 new HealthItem { GetItem = () => ItemData.Refillable_Potion.GetItem() },
+                                 new HealthItem { GetItem = () => ItemData.Hunters_Potion.GetItem() },
+                                 new HealthItem { GetItem = () => ItemData.Corrupting_Potion.GetItem() },
+                             };
+
+            Game.OnUpdate += this.OnUpdate;
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
         ///     Gets the player buffs
         /// </summary>
         /// <value>
         ///     The player buffs
         /// </value>
-        /// 
         private static bool CheckPlayerBuffs()
         {
-            return Player.HasBuff("RegenerationPotion") || Player.HasBuff("ItemMiniRegenPotion") || Player.HasBuff("ItemCrystalFlask") || Player.HasBuff("ItemCrystalFlaskJungle") || Player.HasBuff("ItemDarkCrystalFlask");
-        }
-
-        #endregion
-
-        /// <summary>
-        ///     Loads this instance.
-        /// </summary>
-        /// 
-        public void Load()
-        {
-            this.Items = new List<HealthItem>
-            {
-                new HealthItem { GetItem = () => ItemData.Health_Potion.GetItem() },
-                new HealthItem { GetItem = () => ItemData.Total_Biscuit_of_Rejuvenation2.GetItem() },
-                new HealthItem { GetItem = () => ItemData.Refillable_Potion.GetItem() },
-                new HealthItem { GetItem = () => ItemData.Hunters_Potion.GetItem() },
-                new HealthItem { GetItem = () => ItemData.Corrupting_Potion.GetItem() },
-            };
-
-            Game.OnUpdate += this.OnUpdate;
+            return Player.HasBuff("RegenerationPotion") || Player.HasBuff("ItemMiniRegenPotion")
+                   || Player.HasBuff("ItemCrystalFlask") || Player.HasBuff("ItemCrystalFlaskJungle")
+                   || Player.HasBuff("ItemDarkCrystalFlask");
         }
 
         private void OnUpdate(EventArgs args)
         {
             try
             {
-                if (!InitializeMenu.Menu.Item("Potions.Activated").IsActive() || Entry.Player.InFountain() || Entry.Player.IsRecalling() || Entry.Player.IsDead)
+                if (!InitializeMenu.Menu.Item("Potions.Activated").IsActive() || Entry.Player.InFountain()
+                    || Entry.Player.IsRecalling() || Entry.Player.IsDead)
                 {
                     return;
                 }
@@ -115,7 +122,6 @@
                     {
                         item.Cast();
                     }
-
                 }
             }
             catch (Exception e)
@@ -124,6 +130,7 @@
             }
         }
 
+        #endregion
 
         /// <summary>
         ///     Represents an item that can heal
