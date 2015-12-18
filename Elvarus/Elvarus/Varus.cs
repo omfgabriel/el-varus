@@ -134,14 +134,14 @@ namespace Elvarus
             var alwaysQ = ElVarusMenu.Menu.Item("ElVarus.combo.always.Q").GetValue<bool>();
 
 
-            if (comboE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            if (comboE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
                 spells[Spells.E].Cast(target);
             }
 
             Items(target);
 
-            if (spells[Spells.Q].IsReady() && comboQ)
+            if (spells[Spells.Q].IsReady() && comboQ && target.IsValidTarget(spells[Spells.Q].ChargedMaxRange))
             {
                 if (alwaysQ)
                 {
@@ -172,7 +172,7 @@ namespace Elvarus
                 }
             }
 
-            if (comboR && Player.CountEnemiesInRange(spells[Spells.R].Range) >= rCount && spells[Spells.R].IsReady())
+            if (comboR && Player.CountEnemiesInRange(spells[Spells.R].Range) >= rCount && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range))
             {
                 spells[Spells.R].CastOnBestTarget();
             }
