@@ -58,6 +58,14 @@
             }
         }
 
+        private static float TotalManaCost
+        {
+            get
+            {
+                return Player.Spellbook.GetSpell(SpellSlot.Q).ManaCost + Player.Spellbook.GetSpell(SpellSlot.W).ManaCost;
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
@@ -163,13 +171,6 @@
                 return V2E(insecPosition, target.Position, target.Distance(insecPosition) + 350).To3D();
             }
 
-            /*if (turrets.Any())
-            {
-                InsecLinePos = Drawing.WorldToScreen(turrets[0].Position);
-                return V2E(turrets[0].Position, target.Position, target.Distance(turrets[0].Position) + 230).To3D();
-            }*/
-
-         
             return new Vector3();
         }
 
@@ -277,35 +278,37 @@
                 return;
             }
 
-            var useQ = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Q").GetValue<bool>();
-            var useW = ElAlistarMenu.Menu.Item("ElAlistar.Combo.W").GetValue<bool>();
-            var useR = ElAlistarMenu.Menu.Item("ElAlistar.Combo.R").GetValue<bool>();
-            var useI = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Ignite").GetValue<bool>();
             var enemiesInRange = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Count.Enemies").GetValue<Slider>().Value;
             var rHealth = ElAlistarMenu.Menu.Item("ElAlistar.Combo.HP.Enemies").GetValue<Slider>().Value;
 
-            if (useQ && useW && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady()
-                && Player.Mana > Player.Spellbook.GetSpell(SpellSlot.Q).ManaCost + Player.Spellbook.GetSpell(SpellSlot.W).ManaCost && target.IsValidTarget(spells[Spells.W].Range))
+            if (Player.ManaPercent > TotalManaCost && target.IsValidTarget(spells[Spells.W].Range))
             {
-                spells[Spells.W].Cast(target);
-                var comboTime = Math.Max(0, Player.Distance(target) - 365) / 1.2f - 25;
+                if (ElAlistarMenu.Menu.Item("ElAlistar.Combo.Q").IsActive()
+                    && ElAlistarMenu.Menu.Item("ElAlistar.Combo.W").IsActive() && spells[Spells.Q].IsReady()
+                    && spells[Spells.W].IsReady())
+                {
+                    spells[Spells.W].Cast(target);
+                    var comboTime = Math.Max(0, Player.Distance(target) - 365) / 1.2f - 25;
 
-                Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
+                    Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
+                }
             }
 
-            if (useR && Player.CountEnemiesInRange(spells[Spells.W].Range) >= enemiesInRange
+            if (ElAlistarMenu.Menu.Item("ElAlistar.Combo.R").IsActive()
+                && Player.CountEnemiesInRange(spells[Spells.W].Range) >= enemiesInRange
                 && (Player.Health / Player.MaxHealth) * 100 >= rHealth)
             {
-                spells[Spells.R].Cast(Player);
+                spells[Spells.R].Cast();
             }
 
-            if (target.IsValidTarget(spells[Spells.W].Range) && spells[Spells.W].IsReady() && !spells[Spells.Q].IsReady() 
-                && GetWDamage(target) > target.Health)
+            if (target.IsValidTarget(spells[Spells.W].Range) && spells[Spells.W].IsReady()
+                && !spells[Spells.Q].IsReady() && GetWDamage(target) > target.Health)
             {
                 spells[Spells.W].Cast(target);
             }
 
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
+            if (ElAlistarMenu.Menu.Item("ElAlistar.Combo.Ignite").IsActive() && Player.Distance(target) <= 600
+                && IgniteDamage(target) >= target.Health)
             {
                 Player.Spellbook.CastSpell(ignite, target);
             }
@@ -362,26 +365,6 @@
                 Player.Spellbook.CastSpell(flashSlot, target.ServerPosition);
                 Utility.DelayAction.Add(50, () => spells[Spells.Q].Cast());
             }
-
-            /*if (ElAlistarMenu.Menu.Item("ElAlistar.Combo.Flash").GetValue<KeyBind>().Active
-                && spells[Spells.W].IsReady()) //spells[Spells.Q].IsReady()
-            {
-                Orbwalk(Game.CursorPos);
-
-                var target = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Click").GetValue<bool>()
-                                 ? TargetSelector.GetSelectedTarget()
-                                 : TargetSelector.GetTarget(1000, TargetSelector.DamageType.Magical);
-
-                if (!target.IsValidTarget())
-                {
-                    return;
-                }
-
-                Player.Spellbook.CastSpell(flashSlot, GetInsecPos((Obj_AI_Hero)(target)));
-                Utility.DelayAction.Add(50, () => spells[Spells.Q].Cast());
-                //Utility.DelayAction.Add(50, () => Player.Spellbook.CastSpell(SpellSlot.W, GetInsecPos((Obj_AI_Hero)(target))));
-                Utility.DelayAction.Add(550, () => spells[Spells.W].CastOnUnit(target));
-            }*/
 
             HealManager();
         }
