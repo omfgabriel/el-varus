@@ -76,6 +76,9 @@
             ignite = Player.GetSpellSlot("summonerdot");
             flashSlot = Player.GetSpellSlot("summonerflash");
 
+            Game.PrintChat(
+                        "[00:00] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
+
             ElAlistarMenu.Initialize();
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += Drawings.OnDraw;
