@@ -151,7 +151,7 @@
                             }
                             break;
                         case 2:
-                            if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range + 50))
+                            if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range + 150))
                             {
                                 spells[Spells.Q].Cast();
                             }
@@ -166,7 +166,7 @@
                         spells[Spells.E].Cast(target);
                     }
 
-                    if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady())
+                    if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range + 50))
                     {
                         spells[Spells.Q].Cast();
                     }
@@ -189,7 +189,7 @@
 
                         spells[Spells.Q].Cast();
 
-                        if (target.IsValidTarget(spells[Spells.Q].Range + 50))
+                        if (target.IsValidTarget(spells[Spells.Q].Range + 150))
                         {
                             Utility.DelayAction.Add(
                                 50,
