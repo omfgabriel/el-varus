@@ -196,7 +196,7 @@
                 return;
             }
 
-            if (Player.HasBuff("Recall") || Player.InFountain() || Player.Mana < playerMana
+            if (Player.IsRecalling() || Player.InFountain() || Player.Mana < playerMana
                 || !spells[Spells.E].IsReady() || !useHeal)
             {
                 return;
