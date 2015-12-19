@@ -832,7 +832,7 @@
 
                 return
                     (int)
-                    ((spell != null ? spell.SData.CastFrame / 30 * 1000 : this.Delay)
+                    (Game.Ping + (spell != null ? spell.SData.CastFrame / 30 * 1000 : this.Delay)
                      + Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10);
             }
 
