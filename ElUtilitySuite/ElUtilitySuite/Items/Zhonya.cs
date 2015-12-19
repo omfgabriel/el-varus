@@ -265,6 +265,12 @@
                                  },
                              new ZhonyaSpell
                                  {
+                                     ChampionName = "lux", SDataName = "luxmalicecannon",
+                                     MissileName = "luxmalicecannonmis", Delay = 1750, MissileSpeed = int.MaxValue,
+                                     CastRange = 3340f
+                                 },
+                             new ZhonyaSpell
+                                 {
                                      ChampionName = "malphite", SDataName = "ufslash", MissileName = "ufslash",
                                      Delay = 250, MissileSpeed = 2200, CastRange = 1000f
                                  },
@@ -443,28 +449,29 @@
                                  },
                              new ZhonyaSpell
                                  {
-                                     ChampionName = "veigar", SDataName = "veigareventhorizon",
-                                     MissileName = "", Delay = 250, MissileSpeed = 1400, CastRange = 850f
+                                     ChampionName = "veigar", SDataName = "veigareventhorizon", MissileName = "",
+                                     Delay = 250, MissileSpeed = 1400, CastRange = 850f
                                  },
                              new ZhonyaSpell
                                  {
-                                     ChampionName = "veigar", SDataName = "veigardarkmatter",
-                                     MissileName = "", Delay = 1200, MissileSpeed = int.MaxValue, CastRange = 900f
+                                     ChampionName = "veigar", SDataName = "veigardarkmatter", MissileName = "",
+                                     Delay = 1200, MissileSpeed = int.MaxValue, CastRange = 900f
                                  },
                              new ZhonyaSpell
                                  {
                                      ChampionName = "shyvana", SDataName = "shyvanatransformcast",
-                                     MissileName = "shyvanatransformcast", Delay = 100, MissileSpeed = 1100, CastRange = 1000f
+                                     MissileName = "shyvanatransformcast", Delay = 100, MissileSpeed = 1100,
+                                     CastRange = 1000f
                                  },
                              new ZhonyaSpell
                                  {
-                                     ChampionName = "vayne", SDataName = "vaynecondemnmissile",
-                                     MissileName = "", Delay = 500, MissileSpeed = int.MaxValue, CastRange = 450f
+                                     ChampionName = "vayne", SDataName = "vaynecondemnmissile", MissileName = "",
+                                     Delay = 500, MissileSpeed = int.MaxValue, CastRange = 450f
                                  },
                              new ZhonyaSpell
                                  {
-                                     ChampionName = "pantheon", SDataName = "pantheonw",
-                                     MissileName = "", Delay = 250, MissileSpeed = int.MaxValue, CastRange = 600f
+                                     ChampionName = "pantheon", SDataName = "pantheonw", MissileName = "", Delay = 250,
+                                     MissileSpeed = int.MaxValue, CastRange = 600f
                                  }
                          };
 
