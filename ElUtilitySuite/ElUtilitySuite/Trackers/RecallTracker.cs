@@ -9,8 +9,6 @@
     using System.Globalization;
     using System.Linq;
 
-    using ElUtilitySuite.Utility;
-
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -56,6 +54,12 @@
 
         #endregion
 
+        #region Public Properties
+
+        public Menu Menu { get; set; }
+
+        #endregion
+
         #region Properties
 
         private List<Obj_AI_Hero> Enemies { get; set; }
@@ -67,6 +71,23 @@
         #endregion
 
         #region Public Methods and Operators
+
+        /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+            var notificationsMenu = rootMenu.AddSubMenu(new Menu("Recall tracker", "Recall tracker"));
+            {
+                notificationsMenu.AddItem(new MenuItem("showRecalls", "Show Recalls").SetValue(true));
+                notificationsMenu.AddItem(new MenuItem("notifRecFinished", "Recall finished").SetValue(true));
+                notificationsMenu.AddItem(new MenuItem("notifRecAborted", "Recall aborted").SetValue(true));
+            }
+
+            this.Menu = notificationsMenu;
+        }
 
         public void Load()
         {
@@ -103,7 +124,7 @@
 
         private void Drawing_OnDraw(EventArgs args)
         {
-            if (!InitializeMenu.Menu.Item("showRecalls").GetValue<bool>() || Drawing.Direct3DDevice == null)
+            if (!this.Menu.Item("showRecalls").GetValue<bool>() || Drawing.Direct3DDevice == null)
             {
                 return;
             }
@@ -280,7 +301,7 @@
                 switch (recall.Status)
                 {
                     case Packet.S2C.Teleport.Status.Abort:
-                        if (InitializeMenu.Menu.Item("notifRecAborted").GetValue<bool>())
+                        if (this.Menu.Item("notifRecAborted").GetValue<bool>())
                         {
                             this.ShowNotification(
                                 enemyInfo.Player.ChampionName + ": Recall ABORTED",
@@ -290,7 +311,7 @@
 
                         break;
                     case Packet.S2C.Teleport.Status.Finish:
-                        if (InitializeMenu.Menu.Item("notifRecFinished").GetValue<bool>())
+                        if (this.Menu.Item("notifRecFinished").GetValue<bool>())
                         {
                             this.ShowNotification(
                                 enemyInfo.Player.ChampionName + ": Recall FINISHED",

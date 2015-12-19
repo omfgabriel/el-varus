@@ -3,8 +3,6 @@
     using System;
     using System.Linq;
 
-    using ElUtilitySuite.Utility;
-
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -16,14 +14,46 @@
 
         #endregion
 
+        #region Public Properties
+
+        public Menu Menu { get; set; }
+
+        #endregion
+
         #region Public Methods and Operators
+
+        /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+            this.Menu = rootMenu.AddSubMenu(new Menu("Offensive", "omenu"));
+
+            foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy))
+            {
+                this.Menu.SubMenu("Champion Settings")
+                    .AddItem(new MenuItem("ouseOn" + x.CharData.BaseSkinName, "Use for " + x.CharData.BaseSkinName))
+                    .SetValue(true);
+            }
+
+            this.CreateMenuItem("Muramana", "Muramana", 90, 30, true);
+            this.CreateMenuItem("Tiamat/Hydra", "Hydra", 90, 30);
+            this.CreateMenuItem("Titanic Hydra", "Titanic", 90, 30);
+            this.CreateMenuItem("Hextech Gunblade", "Hextech", 90, 30);
+            this.CreateMenuItem("Youmuu's Ghostblade", "Youmuus", 90, 30);
+            this.CreateMenuItem("Bilgewater's Cutlass", "Cutlass", 90, 30);
+            this.CreateMenuItem("Blade of the Ruined King", "Botrk", 70, 70);
+            this.CreateMenuItem("Frost Queen's Claim", "Frostclaim", 100, 30);
+        }
 
         public void Load()
         {
             try
             {
-                Game.OnUpdate += OnUpdate;
-                Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
+                Game.OnUpdate += this.OnUpdate;
+                Obj_AI_Base.OnProcessSpellCast += this.Obj_AI_Base_OnProcessSpellCast;
             }
             catch (Exception e)
             {
@@ -35,13 +65,39 @@
 
         #region Methods
 
-        private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private void CreateMenuItem(string displayname, string name, int evalue, int avalue, bool usemana = false)
+        {
+            var menuName = new Menu(name, name.ToLower());
+
+            menuName.AddItem(new MenuItem("use" + name, "Use " + displayname)).SetValue(true);
+            menuName.AddItem(new MenuItem("use" + name + "Pct", "Use on enemy HP %")).SetValue(new Slider(evalue));
+
+            if (!usemana)
+            {
+                menuName.AddItem(new MenuItem("use" + name + "Me", "Use on my HP %")).SetValue(new Slider(avalue));
+            }
+
+            if (usemana)
+            {
+                menuName.AddItem(new MenuItem("use" + name + "Mana", "Minimum mana % to use")).SetValue(new Slider(35));
+            }
+
+            if (name == "Muramana")
+            {
+                menuName.AddItem(
+                    new MenuItem("muraMode", " Muramana Mode: ").SetValue(
+                        new StringList(new[] { "Always", "Combo" }, 1)));
+            }
+
+            this.Menu.AddSubMenu(menuName);
+        }
+
+        private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsMe && (Items.HasItem(3042) || Items.HasItem(3043)))
             {
                 if (Entry.Player.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown
-                    && (InitializeMenu.Menu.Item("usecombo").GetValue<KeyBind>().Active
-                        || args.Target.Type == Entry.Player.Type))
+                    && (this.Menu.Item("usecombo").GetValue<KeyBind>().Active || args.Target.Type == Entry.Player.Type))
                 {
                     CanManamune = true;
                 }
@@ -53,20 +109,20 @@
             }
         }
 
-        private static void OffensiveItemManager()
+        private void OffensiveItemManager()
         {
-            if (InitializeMenu.Menu.Item("useMuramana").GetValue<bool>())
+            if (this.Menu.Item("useMuramana").GetValue<bool>())
             {
                 if (CanManamune)
                 {
-                    if (InitializeMenu.Menu.Item("muraMode").GetValue<StringList>().SelectedIndex != 1
-                        || InitializeMenu.Menu.Item("usecombo").GetValue<KeyBind>().Active)
+                    if (this.Menu.Item("muraMode").GetValue<StringList>().SelectedIndex != 1
+                        || Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active)
                     {
                         var manamune = Entry.Player.GetSpellSlot("Muramana");
                         if (manamune != SpellSlot.Unknown && !Entry.Player.HasBuff("Muramana"))
                         {
                             if (Entry.Player.Mana / Entry.Player.MaxMana * 100
-                                > InitializeMenu.Menu.Item("useMuramanaMana").GetValue<Slider>().Value)
+                                > this.Menu.Item("useMuramanaMana").GetValue<Slider>().Value)
                             {
                                 Entry.Player.Spellbook.CastSpell(manamune);
                             }
@@ -76,7 +132,7 @@
                     }
                 }
 
-                if (!CanManamune && !InitializeMenu.Menu.Item("usecombo").GetValue<KeyBind>().Active)
+                if (!CanManamune && !Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active)
                 {
                     var manamune = Entry.Player.GetSpellSlot("Muramana");
                     if (manamune != SpellSlot.Unknown && Entry.Player.HasBuff("Muramana"))
@@ -86,20 +142,20 @@
                 }
             }
 
-            if (InitializeMenu.Menu.Item("usecombo").GetValue<KeyBind>().Active)
+            if (Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active)
             {
-                UseItem("Frostclaim", 3092, 850f, true);
-                UseItem("Youmuus", 3142, 650f);
-                UseItem("Hydra", 3077, 250f);
-                UseItem("Hydra", 3074, 250f);
-                UseItem("Hextech", 3146, 700f, true);
-                UseItem("Cutlass", 3144, 450f, true);
-                UseItem("Botrk", 3153, 450f, true);
-                UseItem("Titanic", 3748, 450f);
+                this.UseItem("Frostclaim", 3092, 850f, true);
+                this.UseItem("Youmuus", 3142, 650f);
+                this.UseItem("Hydra", 3077, 250f);
+                this.UseItem("Hydra", 3074, 250f);
+                this.UseItem("Hextech", 3146, 700f, true);
+                this.UseItem("Cutlass", 3144, 450f, true);
+                this.UseItem("Botrk", 3153, 450f, true);
+                this.UseItem("Titanic", 3748, 450f);
             }
         }
 
-        private static void OnUpdate(EventArgs args)
+        private void OnUpdate(EventArgs args)
         {
             if (Entry.Player.IsDead)
             {
@@ -108,7 +164,7 @@
 
             try
             {
-                OffensiveItemManager();
+                this.OffensiveItemManager();
             }
             catch (Exception e)
             {
@@ -116,14 +172,14 @@
             }
         }
 
-        private static void UseItem(string name, int itemId, float range, bool targeted = false)
+        private void UseItem(string name, int itemId, float range, bool targeted = false)
         {
             if (!Items.HasItem(itemId) || !Items.CanUseItem(itemId))
             {
                 return;
             }
 
-            if (!InitializeMenu.Menu.Item("use" + name).GetValue<bool>())
+            if (!this.Menu.Item("use" + name).GetValue<bool>())
             {
                 return;
             }
@@ -145,8 +201,8 @@
                     var eHealthPercent = (int)((target.Health / target.MaxHealth) * 100);
                     var aHealthPercent = (int)((Entry.Player.Health / target.MaxHealth) * 100);
 
-                    if (eHealthPercent <= InitializeMenu.Menu.Item("use" + name + "Pct").GetValue<Slider>().Value
-                        && InitializeMenu.Menu.Item("ouseOn" + target.CharData.BaseSkinName).GetValue<bool>())
+                    if (eHealthPercent <= this.Menu.Item("use" + name + "Pct").GetValue<Slider>().Value
+                        && this.Menu.Item("ouseOn" + target.CharData.BaseSkinName).GetValue<bool>())
                     {
                         if (targeted && itemId == 3092)
                         {
@@ -175,8 +231,8 @@
                         }
                     }
 
-                    else if (aHealthPercent <= InitializeMenu.Menu.Item("use" + name + "Me").GetValue<Slider>().Value
-                             && InitializeMenu.Menu.Item("ouseOn" + target.CharData.BaseSkinName).GetValue<bool>())
+                    else if (aHealthPercent <= this.Menu.Item("use" + name + "Me").GetValue<Slider>().Value
+                             && this.Menu.Item("ouseOn" + target.CharData.BaseSkinName).GetValue<bool>())
                     {
                         if (targeted)
                         {

@@ -43,6 +43,8 @@
             }
         }
 
+        public static Menu Menu { get; set; }
+
         public static Obj_AI_Hero Player
         {
             get
@@ -108,10 +110,22 @@
                         .Where(x => typeof(IPlugin).IsAssignableFrom(x) && !x.IsInterface)
                         .Select(x => GetActivator<IPlugin>(x.GetConstructors().First())(null));
 
+                var menu = new Menu("ElUtilitySuite", "ElUtilitySuite", true);
+
                 foreach (var plugin in plugins)
                 {
+                    plugin.CreateMenu(menu);
                     plugin.Load();
                 }
+
+                menu.AddItem(new MenuItem("seperator1", ""));
+                menu.AddItem(new MenuItem("usecombo", "Combo (Active)").SetValue(new KeyBind(32, KeyBindType.Press)));
+                menu.AddItem(new MenuItem("seperator", ""));
+                menu.AddItem(new MenuItem("Versionnumber", string.Format("Version: {0}", ScriptVersion)));
+                menu.AddItem(new MenuItem("by.jQuery", "jQ / ChewyMoon"));
+                menu.AddToMainMenu();
+
+                Menu = menu;
 
                 Game.PrintChat("<font color='#0dd629'>DATABASE</font> Give it a +1 for ya boy jQuery man!");
 

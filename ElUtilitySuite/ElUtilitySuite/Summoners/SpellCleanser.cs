@@ -4,8 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using ElUtilitySuite.Utility;
-
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -274,59 +272,62 @@
                                      ChampionName = "nasus", SDataName = "nasusw", MissileName = "", Delay = 250,
                                      MissileSpeed = int.MaxValue, CastRange = 600f
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
-                                     ChampionName = "anivia", SDataName = "flashfrost", MissileName = "flashfrostspell", Delay = 250,
-                                     MissileSpeed = 850, CastRange = 1150f
+                                     ChampionName = "anivia", SDataName = "flashfrost", MissileName = "flashfrostspell",
+                                     Delay = 250, MissileSpeed = 850, CastRange = 1150f
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
                                      ChampionName = "riven", SDataName = "rivenmartyr", MissileName = "", Delay = 0,
                                      MissileSpeed = int.MaxValue, CastRange = 260f
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
-                                     ChampionName = "udyr", SDataName = "udyrbearstanceattack", MissileName = "", Delay = 250,
-                                     MissileSpeed = int.MaxValue, CastRange = 250f
+                                     ChampionName = "udyr", SDataName = "udyrbearstanceattack", MissileName = "",
+                                     Delay = 250, MissileSpeed = int.MaxValue, CastRange = 250f
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
-                                     ChampionName = "varus", SDataName = "varusr", MissileName = "varusrmissile", Delay = 250,
-                                     MissileSpeed = 1950, CastRange = 1300f
+                                     ChampionName = "varus", SDataName = "varusr", MissileName = "varusrmissile",
+                                     Delay = 250, MissileSpeed = 1950, CastRange = 1300f
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
-                                     ChampionName = "zyra", SDataName = "zyragraspingroots", MissileName = "zyragraspingroots", Delay = 250,
-                                     MissileSpeed = 1400, CastRange = 1100f
+                                     ChampionName = "zyra", SDataName = "zyragraspingroots",
+                                     MissileName = "zyragraspingroots", Delay = 250, MissileSpeed = 1400,
+                                     CastRange = 1100f
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
-                                     ChampionName = "viktor", SDataName = "viktorgravitonfield", MissileName = "", Delay = 250,
-                                     MissileSpeed = 1750, CastRange = 815f
+                                     ChampionName = "viktor", SDataName = "viktorgravitonfield", MissileName = "",
+                                     Delay = 250, MissileSpeed = 1750, CastRange = 815f
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
                                      ChampionName = "yasuo", SDataName = "yasuoq3mis", MissileName = "", Delay = 250,
                                      MissileSpeed = 1500, CastRange = 1000f
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
                                      ChampionName = "galio", SDataName = "galioidolofdurand", MissileName = "", Delay = 0,
                                      MissileSpeed = int.MaxValue, CastRange = 600f
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
                                      ChampionName = "warwick", SDataName = "infiniteduress", MissileName = "", Delay = 250,
                                      MissileSpeed = int.MaxValue, CastRange = 700f
                                  }
                          };
-            
+
             #endregion
         }
 
         #endregion
 
         #region Public Properties
+
+        public static Menu Menu { get; set; }
 
         /// <summary>
         ///     Gets or sets the spells.
@@ -359,6 +360,120 @@
         #region Public Methods and Operators
 
         /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+            var spellCleanserMenu = new Menu("Cleanse", "Cleanser");
+            {
+                foreach (var a in ObjectManager.Get<Obj_AI_Hero>().Where(ally => ally.Team == Entry.Player.Team))
+                {
+                    spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                        .AddItem(
+                            new MenuItem(
+                                "Protect.Cleanse.Kappa" + a.CharData.BaseSkinName,
+                                "Use for " + a.CharData.BaseSkinName))
+                        .SetValue(true);
+                }
+
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Activated")
+                    .AddItem(new MenuItem("Protect.Cleanse.Mikaels.Activated", "Activate Mikaels").SetValue(true));
+
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Stun.Ally", "Stuns").SetValue(true));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Charm.Ally", "Charms").SetValue(true));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Taunt.Ally", "Taunts").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Fear.Ally", "Fears").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Snare.Ally", "Snares").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Silence.Ally", "Silences").SetValue(true));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Suppression.Ally", "Suppressions").SetValue(true));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Polymorph.Ally", "Polymorphs").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Blind.Ally", "Blinds").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Slow.Ally", "Slows").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Posion.Ally", "Posion").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Knockup.Ally", "Knockups").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Knockback.Ally", "Knockbacks").SetValue(false));
+                spellCleanserMenu.SubMenu("Mikaels Ally Settings")
+                    .SubMenu("Buffs")
+                    .AddItem(new MenuItem("Protect.Cleanse.Flee.Ally", "Flee").SetValue(false));
+
+                spellCleanserMenu.AddItem(new MenuItem("New.Cleanse.Delay", "Cleanse delay "))
+                    .SetValue(new Slider(0, 0, 25));
+                spellCleanserMenu.AddItem(new MenuItem("New.cmode", "Mode: "))
+                    .SetValue(new StringList(new[] { "Always", "Combo" }, 1));
+
+                var cleanseSpellMenu = new Menu("Cleanse Spells Settings", "SpellPick");
+                {
+                    foreach (var spell in
+                        Spells.Where(
+                            x =>
+                            ObjectManager.Get<Obj_AI_Hero>()
+                                .Where(y => y.IsEnemy)
+                                .Any(y => y.ChampionName.ToLower() == x.ChampionName)))
+                    {
+                        var objAiHero =
+                            ObjectManager.Get<Obj_AI_Hero>()
+                                .FirstOrDefault(x => x.ChampionName.ToLower() == spell.ChampionName);
+
+                        if (objAiHero == null)
+                        {
+                            continue;
+                        }
+
+                        var firstOrDefault =
+                            objAiHero.Spellbook.Spells.FirstOrDefault(x => x.SData.Name.ToLower() == spell.SDataName);
+
+                        if (firstOrDefault != null)
+                        {
+                            cleanseSpellMenu.AddItem(
+                                new MenuItem(
+                                    string.Format("Cleanse{0}", spell.SDataName),
+                                    string.Format(
+                                        "{0} ({1}) - {2}",
+                                        char.ToUpper(spell.ChampionName[0]) + spell.ChampionName.Substring(1),
+                                        firstOrDefault.Slot,
+                                        spell.SDataName)).SetValue(true));
+                        }
+                    }
+                }
+
+                spellCleanserMenu.AddSubMenu(cleanseSpellMenu);
+                spellCleanserMenu.AddItem(new MenuItem("CleanseDangerous", "Cleanse on dangerous spell").SetValue(true));
+
+                rootMenu.AddSubMenu(spellCleanserMenu);
+                Menu = spellCleanserMenu;
+            }
+        }
+
+        /// <summary>
         ///     Loads this instance.
         /// </summary>
         public void Load()
@@ -385,23 +500,22 @@
         /// </summary>
         private void AllyCleanse()
         {
-            var delay = InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
+            var delay = Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10;
 
             foreach (var unit in
                 ObjectManager.Get<Obj_AI_Hero>()
                     .Where(
                         x =>
                         x.IsAlly && !x.IsMe && x.IsValidTarget(900, false)
-                        && InitializeMenu.Menu.Item("Protect.Cleanse.Kappa" + x.CharData.BaseSkinName).GetValue<bool>()
-                        && InitializeMenu.Menu.Item("Protect.Cleanse.Mikaels.Activated").GetValue<bool>())
+                        && Menu.Item("Protect.Cleanse.Kappa" + x.CharData.BaseSkinName).GetValue<bool>()
+                        && Menu.Item("Protect.Cleanse.Mikaels.Activated").GetValue<bool>())
                     .OrderByDescending(xe => xe.Health / xe.MaxHealth * 100))
             {
                 foreach (var b in unit.Buffs)
                 {
                     if (Mikaels.IsReady())
                     {
-                        var buffMenuItem =
-                            InitializeMenu.Menu.Item(string.Format("Protect.Cleanse.{0}.Ally", b.Type.ToString()));
+                        var buffMenuItem = Menu.Item(string.Format("Protect.Cleanse.{0}.Ally", b.Type.ToString()));
                         if (buffMenuItem != null && buffMenuItem.GetValue<bool>())
                         {
                             Utility.DelayAction.Add(delay, () => Mikaels.Cast(unit));
@@ -436,8 +550,8 @@
                 return;
             }
 
-            if (!InitializeMenu.Menu.Item(string.Format("Cleanse{0}", sdata.SDataName)).IsActive()
-                || !InitializeMenu.Menu.Item("CleanseDangerous").IsActive())
+            if (!Menu.Item(string.Format("Cleanse{0}", sdata.SDataName)).IsActive()
+                || !Menu.Item("CleanseDangerous").IsActive())
             {
                 return;
             }
@@ -508,8 +622,8 @@
                 return;
             }
 
-            if (!InitializeMenu.Menu.Item(string.Format("Cleanse{0}", spellData.SDataName)).IsActive()
-                || !InitializeMenu.Menu.Item("CleanseDangerous").IsActive())
+            if (!Menu.Item(string.Format("Cleanse{0}", spellData.SDataName)).IsActive()
+                || !Menu.Item("CleanseDangerous").IsActive())
             {
                 return;
             }
@@ -634,7 +748,7 @@
                     return;
                 }
 
-                if (InitializeMenu.Menu.Item("Protect.Cleanse.Mikaels.Activated").GetValue<bool>())
+                if (Menu.Item("Protect.Cleanse.Mikaels.Activated").GetValue<bool>())
                 {
                     this.AllyCleanse();
                 }
@@ -719,7 +833,7 @@
                 return
                     (int)
                     ((spell != null ? spell.SData.CastFrame / 30 * 1000 : this.Delay)
-                     + InitializeMenu.Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10);
+                     + Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10);
             }
 
             #endregion

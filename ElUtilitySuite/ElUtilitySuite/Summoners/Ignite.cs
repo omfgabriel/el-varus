@@ -3,8 +3,6 @@
     using System;
     using System.Linq;
 
-    using ElUtilitySuite.Utility;
-
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -14,7 +12,7 @@
 
         public static bool IgniteCheck(this Obj_AI_Base hero)
         {
-            if (InitializeMenu.Menu.Item("Ignite.shieldCheck").GetValue<bool>())
+            if (Ignite.Menu.Item("Ignite.shieldCheck").GetValue<bool>())
             {
                 return !hero.HasBuff("summonerdot") || !hero.HasBuff("summonerbarrier") || !hero.HasBuff("BlackShield")
                        || !hero.HasBuff("SivirShield") || !hero.HasBuff("BansheesVeil")
@@ -42,7 +40,34 @@
 
         #endregion
 
+        #region Public Properties
+
+        public static Menu Menu { get; set; }
+
+        #endregion
+
         #region Public Methods and Operators
+
+        /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+            if (Entry.Player.GetSpellSlot("summonerdot") == SpellSlot.Unknown)
+            {
+                return;
+            }
+
+            var igniteMenu = rootMenu.AddSubMenu(new Menu("Ignite", "Ignite"));
+            {
+                igniteMenu.AddItem(new MenuItem("Ignite.Activated", "Ignite").SetValue(true));
+                igniteMenu.AddItem(new MenuItem("Ignite.shieldCheck", "Check for shields").SetValue(true));
+            }
+
+            Menu = igniteMenu;
+        }
 
         public void Load()
         {
@@ -70,7 +95,7 @@
                     return;
                 }
 
-                Game.OnUpdate += OnUpdate;
+                Game.OnUpdate += this.OnUpdate;
             }
             catch (Exception e)
             {
@@ -82,9 +107,9 @@
 
         #region Methods
 
-        private static void IgniteKs()
+        private void IgniteKs()
         {
-            if (!InitializeMenu.Menu.Item("Ignite.Activated").GetValue<bool>())
+            if (!Menu.Item("Ignite.Activated").GetValue<bool>())
             {
                 return;
             }
@@ -101,7 +126,7 @@
             }
         }
 
-        private static void OnUpdate(EventArgs args)
+        private void OnUpdate(EventArgs args)
         {
             if (Entry.Player.IsDead)
             {
@@ -110,7 +135,7 @@
 
             try
             {
-                IgniteKs();
+                this.IgniteKs();
             }
             catch (Exception e)
             {

@@ -2,8 +2,6 @@
 {
     using System.Linq;
 
-    using ElUtilitySuite.Utility;
-
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -18,6 +16,8 @@
         ///     The barrier spell.
         /// </value>
         public Spell BarrierSpell { get; set; }
+
+        public Menu Menu { get; set; }
 
         #endregion
 
@@ -40,6 +40,29 @@
         #endregion
 
         #region Public Methods and Operators
+
+        /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+            if (Entry.Player.GetSpellSlot("summonerbarrier") == SpellSlot.Unknown)
+            {
+                return;
+            }
+
+            var barrierMenu = rootMenu.AddSubMenu(new Menu("Barrier", "Barrier"));
+            {
+                barrierMenu.AddItem(new MenuItem("Barrier.Activated", "Barrier activated").SetValue(true));
+                barrierMenu.AddItem(new MenuItem("Barrier.HP", "Barrier percentage").SetValue(new Slider(20, 1)));
+                barrierMenu.AddItem(
+                    new MenuItem("Barrier.Damage", "Barrier on damage dealt %").SetValue(new Slider(20, 1)));
+            }
+
+            this.Menu = barrierMenu;
+        }
 
         /// <summary>
         ///     Loads this instance.
@@ -68,7 +91,7 @@
 
         private void AttackableUnit_OnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
         {
-            if (!InitializeMenu.Menu.Item("Barrier.Activated").IsActive())
+            if (!this.Menu.Item("Barrier.Activated").IsActive())
             {
                 return;
             }
@@ -93,8 +116,8 @@
                         x =>
                         x.IsMe
                         && ((int)(args.Damage / x.MaxHealth * 100)
-                            > InitializeMenu.Menu.Item("Barrier.Damage").GetValue<Slider>().Value
-                            || x.HealthPercent < InitializeMenu.Menu.Item("Barrier.HP").GetValue<Slider>().Value)
+                            > this.Menu.Item("Barrier.Damage").GetValue<Slider>().Value
+                            || x.HealthPercent < this.Menu.Item("Barrier.HP").GetValue<Slider>().Value)
                         && x.CountEnemiesInRange(1000) >= 1))
             {
                 this.BarrierSpell.Cast();

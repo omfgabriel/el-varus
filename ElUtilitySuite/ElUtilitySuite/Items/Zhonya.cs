@@ -4,8 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using ElUtilitySuite.Utility;
-
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -490,6 +488,8 @@
         /// </value>
         public static List<ZhonyaSpell> Spells { get; set; }
 
+        public Menu Menu { get; set; }
+
         #endregion
 
         #region Properties
@@ -514,11 +514,11 @@
         /// <value>
         ///     The zhonya below hp menu value.
         /// </value>
-        private static int ZhonyaBelowHp
+        private int ZhonyaBelowHp
         {
             get
             {
-                return InitializeMenu.Menu.Item("ZhonyaHPSlider").GetValue<Slider>().Value;
+                return this.Menu.Item("ZhonyaHPSlider").GetValue<Slider>().Value;
             }
         }
 
@@ -528,11 +528,11 @@
         /// <value>
         ///     <c>true</c> if zhonya at low hp; otherwise, <c>false</c>.
         /// </value>
-        private static bool ZhonyaLowHp
+        private bool ZhonyaLowHp
         {
             get
             {
-                return InitializeMenu.Menu.Item("ZhonyaHP_BETA").IsActive();
+                return this.Menu.Item("ZhonyaHP_BETA").IsActive();
             }
         }
 
@@ -541,15 +541,69 @@
         #region Public Methods and Operators
 
         /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+            var zhonyaMenu = new Menu("Zhonya's Hourglass", "zhonya");
+            {
+                var zhonyaSpellMenu = new Menu("Spells", "SpellPick");
+                {
+                    foreach (var spell in
+                        Spells.Where(
+                            x =>
+                            ObjectManager.Get<Obj_AI_Hero>()
+                                .Where(y => y.IsEnemy)
+                                .Any(y => y.ChampionName.ToLower() == x.ChampionName)))
+                    {
+                        var objAiHero =
+                            ObjectManager.Get<Obj_AI_Hero>()
+                                .FirstOrDefault(x => x.ChampionName.ToLower() == spell.ChampionName);
+
+                        if (objAiHero == null)
+                        {
+                            continue;
+                        }
+
+                        var firstOrDefault =
+                            objAiHero.Spellbook.Spells.FirstOrDefault(x => x.SData.Name.ToLower() == spell.SDataName);
+
+                        if (firstOrDefault != null)
+                        {
+                            zhonyaSpellMenu.AddItem(
+                                new MenuItem(
+                                    string.Format("Zhonya{0}", spell.SDataName),
+                                    string.Format(
+                                        "{0} ({1}) - {2}",
+                                        char.ToUpper(spell.ChampionName[0]) + spell.ChampionName.Substring(1),
+                                        firstOrDefault.Slot,
+                                        spell.SDataName)).SetValue(true));
+                        }
+                    }
+                }
+
+                zhonyaMenu.AddSubMenu(zhonyaSpellMenu);
+                zhonyaMenu.AddItem(new MenuItem("ZhonyaDangerous", "Zhonya's on dangerous spell").SetValue(true));
+                zhonyaMenu.AddItem(new MenuItem("ZhonyaHP_BETA", "Use Zhonya on low HP (BETA)").SetValue(false));
+                zhonyaMenu.AddItem(new MenuItem("ZhonyaHPSlider", "HP Percent").SetValue(new Slider(10, 1, 50)));
+
+                rootMenu.AddSubMenu(zhonyaMenu);
+                this.Menu = zhonyaMenu;
+            }
+        }
+
+        /// <summary>
         ///     Initializes this instance.
         /// </summary>
         public void Load()
         {
             zhyonyaItem = new Items.Item(Game.MapId == GameMapId.SummonersRift ? 3157 : 3090);
 
-            GameObject.OnCreate += GameObjectOnCreate;
-            Obj_AI_Base.OnProcessSpellCast += ObjAiBaseOnProcessSpellCast;
-            AttackableUnit.OnDamage += ObjAiBaseOnOnDamage;
+            GameObject.OnCreate += this.GameObjectOnCreate;
+            Obj_AI_Base.OnProcessSpellCast += this.ObjAiBaseOnProcessSpellCast;
+            AttackableUnit.OnDamage += this.ObjAiBaseOnOnDamage;
         }
 
         #endregion
@@ -561,7 +615,7 @@
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private static void GameObjectOnCreate(GameObject sender, EventArgs args)
+        private void GameObjectOnCreate(GameObject sender, EventArgs args)
         {
             if (!sender.IsValid<MissileClient>() || sender.IsAlly)
             {
@@ -581,8 +635,8 @@
                 return;
             }
 
-            if (!InitializeMenu.Menu.Item(string.Format("Zhonya{0}", sdata.SDataName)).IsActive()
-                || !InitializeMenu.Menu.Item("ZhonyaDangerous").IsActive())
+            if (!this.Menu.Item(string.Format("Zhonya{0}", sdata.SDataName)).IsActive()
+                || !this.Menu.Item("ZhonyaDangerous").IsActive())
             {
                 return;
             }
@@ -612,16 +666,16 @@
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="AttackableUnitDamageEventArgs" /> instance containing the event data.</param>
-        private static void ObjAiBaseOnOnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
+        private void ObjAiBaseOnOnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
         {
             if (args.TargetNetworkId != Player.NetworkId
-                || !ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId).IsMe || !ZhonyaLowHp)
+                || !ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId).IsMe || !this.ZhonyaLowHp)
             {
                 return;
             }
 
-            if (Player.HealthPercent < ZhonyaBelowHp
-                || (Player.Health - args.Damage) / Player.MaxHealth * 100 < ZhonyaBelowHp)
+            if (Player.HealthPercent < this.ZhonyaBelowHp
+                || (Player.Health - args.Damage) / Player.MaxHealth * 100 < this.ZhonyaBelowHp)
             {
                 zhyonyaItem.Cast();
             }
@@ -632,7 +686,7 @@
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
-        private static void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsAlly)
             {
@@ -648,8 +702,8 @@
                 return;
             }
 
-            if (!InitializeMenu.Menu.Item(string.Format("Zhonya{0}", spellData.SDataName)).IsActive()
-                || !InitializeMenu.Menu.Item("ZhonyaDangerous").IsActive())
+            if (!this.Menu.Item(string.Format("Zhonya{0}", spellData.SDataName)).IsActive()
+                || !this.Menu.Item("ZhonyaDangerous").IsActive())
             {
                 return;
             }

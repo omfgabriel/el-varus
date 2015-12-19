@@ -4,8 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using ElUtilitySuite.Utility;
-
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -206,6 +204,8 @@
         /// </value>
         public static List<JungleCamp> JungleCamps { get; set; }
 
+        public Menu Menu { get; set; }
+
         #endregion
 
         #region Properties
@@ -222,6 +222,20 @@
 
         #region Public Methods and Operators
 
+        /// <summary>
+        ///     Creates the Menu.
+        /// </summary>
+        /// <param name="rootMenu">The root Menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+            var jngTimerMenu = new Menu("Jungle Timer", "JngTimer");
+            jngTimerMenu.AddItem(new MenuItem("DrawTimers", "Draw Jungle Timers").SetValue(true));
+            rootMenu.AddSubMenu(jngTimerMenu);
+
+            this.Menu = jngTimerMenu;
+        }
+
         public void Load()
         {
             Font = new Font(
@@ -234,7 +248,7 @@
 
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
-            Drawing.OnEndScene += Drawing_OnEndScene;
+            Drawing.OnEndScene += this.Drawing_OnEndScene;
 
             Drawing.OnPreReset += args => { Font.OnLostDevice(); };
 
@@ -244,30 +258,6 @@
         #endregion
 
         #region Methods
-
-        /// <summary>
-        ///     Fired when the scene is completely rendered.
-        /// </summary>
-        /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private static void Drawing_OnEndScene(EventArgs args)
-        {
-            if (!InitializeMenu.Menu.Item("DrawTimers").IsActive())
-            {
-                return;
-            }
-
-            foreach (var camp in DeadCamps.Where(x => x.NextRespawnTime - Environment.TickCount > 0))
-            {
-                var timeSpan = TimeSpan.FromMilliseconds(camp.NextRespawnTime - Environment.TickCount);
-
-                Font.DrawText(
-                    null,
-                    timeSpan.ToString(@"m\:ss"),
-                    (int)camp.MinimapPosition.X,
-                    (int)camp.MinimapPosition.Y,
-                    new ColorBGRA(255, 255, 255, 255));
-            }
-        }
 
         /// <summary>
         ///     Games the object_ on create.
@@ -333,6 +323,30 @@
 
             camp.Dead = true;
             camp.NextRespawnTime = Environment.TickCount + camp.RespawnTime - 3000;
+        }
+
+        /// <summary>
+        ///     Fired when the scene is completely rendered.
+        /// </summary>
+        /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
+        private void Drawing_OnEndScene(EventArgs args)
+        {
+            if (!this.Menu.Item("DrawTimers").IsActive())
+            {
+                return;
+            }
+
+            foreach (var camp in DeadCamps.Where(x => x.NextRespawnTime - Environment.TickCount > 0))
+            {
+                var timeSpan = TimeSpan.FromMilliseconds(camp.NextRespawnTime - Environment.TickCount);
+
+                Font.DrawText(
+                    null,
+                    timeSpan.ToString(@"m\:ss"),
+                    (int)camp.MinimapPosition.X,
+                    (int)camp.MinimapPosition.Y,
+                    new ColorBGRA(255, 255, 255, 255));
+            }
         }
 
         #endregion

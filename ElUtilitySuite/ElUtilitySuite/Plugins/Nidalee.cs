@@ -3,7 +3,6 @@
     using System;
 
     using ElUtilitySuite.Summoners;
-    using ElUtilitySuite.Utility;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -14,7 +13,7 @@
     {
         #region Static Fields
 
-        private static readonly Menu Menu = InitializeMenu.Menu;
+        private static readonly Menu Menu = Entry.Menu;
 
         private static Spell champSpell;
 
@@ -45,10 +44,9 @@
 
         private static void OnGameUpdate(EventArgs args)
         {
-            if (InitializeMenu.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
+            if (Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
             {
-                if (Smite.minion == null
-                    || !InitializeMenu.Menu.Item(Smite.minion.CharData.BaseSkinName).GetValue<bool>()
+                if (Smite.minion == null || !Menu.Item(Smite.minion.CharData.BaseSkinName).GetValue<bool>()
                     || !(Vector3.Distance(Entry.Player.ServerPosition, Smite.minion.ServerPosition) <= champSpell.Range))
                 {
                     return;
@@ -60,8 +58,8 @@
 
                 var pred = champSpell.GetPrediction(Smite.minion);
 
-                if (InitializeMenu.Menu.Item("Enabled-" + ObjectManager.Player.ChampionName).GetValue<bool>()
-                    && champSpell.IsReady() && Entry.Player.Spellbook.CanUseSpell(Smite.smite.Slot) == SpellState.Ready)
+                if (Menu.Item("Enabled-" + ObjectManager.Player.ChampionName).GetValue<bool>() && champSpell.IsReady()
+                    && Entry.Player.Spellbook.CanUseSpell(Smite.smite.Slot) == SpellState.Ready)
                 {
                     if (totalDamage >= Smite.minion.Health && pred.Hitchance >= HitChance.Medium)
                     {
@@ -69,8 +67,7 @@
                     }
                 }
 
-                if (InitializeMenu.Menu.Item("Enabled-" + ObjectManager.Player.ChampionName).GetValue<bool>()
-                    && champSpell.IsReady())
+                if (Menu.Item("Enabled-" + ObjectManager.Player.ChampionName).GetValue<bool>() && champSpell.IsReady())
                 {
                     if (Entry.Player.GetSpellDamage(Smite.minion, champSpell.Slot) >= Smite.minion.Health
                         && pred.Hitchance >= HitChance.Medium)

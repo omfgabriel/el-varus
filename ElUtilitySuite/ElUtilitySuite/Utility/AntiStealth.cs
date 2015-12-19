@@ -20,6 +20,12 @@
 
         #endregion
 
+        #region Public Properties
+
+        public Menu Menu { get; set; }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
@@ -35,6 +41,21 @@
         #region Public Methods and Operators
 
         /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+            var protectMenu = rootMenu.AddSubMenu(new Menu("Anti-Stealth", "AntiStealth"));
+            {
+                protectMenu.AddItem(new MenuItem("AntiStealthActive", "Place Pink Ward on Unit Stealth").SetValue(true));
+            }
+
+            this.Menu = protectMenu;
+        }
+
+        /// <summary>
         ///     Loads this instance.
         /// </summary>
         public void Load()
@@ -42,7 +63,8 @@
             this.Items = new List<AntiStealthRevealItem>
                              {
                                  new AntiStealthRevealItem { GetItem = () => ItemData.Vision_Ward.GetItem() },
-                                 new AntiStealthRevealItem { GetItem = () => ItemData.Greater_Vision_Totem_Trinket.GetItem() }
+                                 new AntiStealthRevealItem
+                                     { GetItem = () => ItemData.Greater_Vision_Totem_Trinket.GetItem() }
                              };
 
             GameObject.OnIntegerPropertyChange += this.GameObject_OnIntegerPropertyChange;
@@ -61,7 +83,8 @@
             GameObject sender,
             GameObjectIntegerPropertyChangeEventArgs args)
         {
-            if (!(sender is Obj_AI_Hero) || args.Property != "ActionState" || !InitializeMenu.Menu.Item("AntiStealthActive").IsActive())
+            if (!(sender is Obj_AI_Hero) || args.Property != "ActionState"
+                || !this.Menu.Item("AntiStealthActive").IsActive())
             {
                 return;
             }

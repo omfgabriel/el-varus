@@ -4,8 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using ElUtilitySuite.Utility;
-
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -20,6 +18,12 @@
         /// </summary>
         /// <returns></returns>
         private delegate Items.Item GetHealthItemDelegate();
+
+        #endregion
+
+        #region Public Properties
+
+        public Menu Menu { get; set; }
 
         #endregion
 
@@ -40,20 +44,6 @@
         }
 
         /// <summary>
-        ///     Gets the set player hp menu value.
-        /// </summary>
-        /// <value>
-        ///     The player hp hp menu value.
-        /// </value>
-        private static int PlayerHp
-        {
-            get
-            {
-                return InitializeMenu.Menu.Item("Potions.Player.Health").GetValue<Slider>().Value;
-            }
-        }
-
-        /// <summary>
         ///     Gets or sets the items.
         /// </summary>
         /// <value>
@@ -61,9 +51,46 @@
         /// </value>
         private List<HealthItem> Items { get; set; }
 
+        /// <summary>
+        ///     Gets the set player hp menu value.
+        /// </summary>
+        /// <value>
+        ///     The player hp hp menu value.
+        /// </value>
+        private int PlayerHp
+        {
+            get
+            {
+                return this.Menu.Item("Potions.Player.Health").GetValue<Slider>().Value;
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
+
+        /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+            var potionsMenu = rootMenu.AddSubMenu(new Menu("Potions", "Potions"));
+            {
+                potionsMenu.AddItem(new MenuItem("Potions.Activated", "Potions activated").SetValue(true));
+                potionsMenu.AddItem(new MenuItem("Potions.Health", "Health potions").SetValue(true));
+                potionsMenu.AddItem(new MenuItem("Potions.Biscuit", "Biscuits").SetValue(true));
+                potionsMenu.AddItem(new MenuItem("Potions.RefillablePotion", "Refillable Potion").SetValue(true));
+                potionsMenu.AddItem(new MenuItem("Potions.HuntersPotion", "Hunters Potion").SetValue(true));
+                potionsMenu.AddItem(new MenuItem("Potions.CorruptingPotion", "Corrupting Potion").SetValue(true));
+
+                potionsMenu.AddItem(new MenuItem("seperator.Potions", ""));
+                potionsMenu.AddItem(new MenuItem("Potions.Player.Health", "Health percentage").SetValue(new Slider(20)));
+            }
+
+            this.Menu = potionsMenu;
+        }
 
         /// <summary>
         ///     Loads this instance.
@@ -103,13 +130,13 @@
         {
             try
             {
-                if (!InitializeMenu.Menu.Item("Potions.Activated").IsActive() || Entry.Player.InFountain()
+                if (!this.Menu.Item("Potions.Activated").IsActive() || Entry.Player.InFountain()
                     || Entry.Player.IsRecalling() || Entry.Player.IsDead)
                 {
                     return;
                 }
 
-                if (Player.HealthPercent < PlayerHp)
+                if (Player.HealthPercent < this.PlayerHp)
                 {
                     if (CheckPlayerBuffs())
                     {

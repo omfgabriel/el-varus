@@ -3,8 +3,6 @@
     using System;
     using System.Linq;
 
-    using ElUtilitySuite.Utility;
-
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -38,6 +36,12 @@
 
         #endregion
 
+        #region Properties
+
+        private Menu Menu { get; set; }
+
+        #endregion
+
         #region Public Methods and Operators
 
         public static double SmiteDamage()
@@ -49,6 +53,59 @@
                              };
 
             return Entry.Player.Spellbook.CanUseSpell(smite.Slot) == SpellState.Ready ? damage.Max() : 0;
+        }
+
+        /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+            var smiteMenu = rootMenu.AddSubMenu(new Menu("Smite", "Smite"));
+            {
+                smiteMenu.AddItem(
+                    new MenuItem("ElSmite.Activated", "Activated").SetValue(
+                        new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle, true)));
+
+                if (Entry.IsSummonersRift)
+                {
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Dragon", "Dragon").SetValue(true));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
+
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(false));
+
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Krug", "Krug").SetValue(false));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Razorbeak", "Chicken camp").SetValue(false));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("Sru_Crab", "Crab").SetValue(false));
+                }
+
+                if (Entry.IsTwistedTreeline)
+                {
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_Spiderboss", "Vilemaw Enabled").SetValue(true));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_NGolem", "Golem Enabled").SetValue(true));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_NWolf", "Wolf Enabled").SetValue(true));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_NWraith", "Wraith Enabled").SetValue(true));
+                }
+
+                //Killsteal submenu
+                smiteMenu.SubMenu("Killsteal")
+                    .AddItem(new MenuItem("ElSmite.KS.Activated", "Use smite to killsteal").SetValue(true));
+
+                //Drawings
+                smiteMenu.SubMenu("Drawings")
+                    .AddItem(new MenuItem("ElSmite.Draw.Range", "Draw smite Range").SetValue(new Circle()));
+                smiteMenu.SubMenu("Drawings")
+                    .AddItem(new MenuItem("ElSmite.Draw.Text", "Draw smite text").SetValue(true));
+                smiteMenu.SubMenu("Drawings")
+                    .AddItem(new MenuItem("ElSmite.Draw.Damage", "Draw smite Damage").SetValue(false));
+            }
+
+            this.Menu = smiteMenu;
         }
 
         public void Load()
@@ -79,8 +136,8 @@
                     return;
                 }
 
-                Drawing.OnDraw += OnDraw;
-                Game.OnUpdate += OnUpdate;
+                Drawing.OnDraw += this.OnDraw;
+                Game.OnUpdate += this.OnUpdate;
             }
             catch (Exception e)
             {
@@ -92,9 +149,26 @@
 
         #region Methods
 
-        private static void JungleSmite()
+        private static double SmiteChampDamage()
         {
-            if (!InitializeMenu.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
+            if (smite.Slot == Entry.Player.GetSpellSlot("s5_summonersmiteduel"))
+            {
+                var damage = new[] { 54 + 6 * Entry.Player.Level };
+                return Entry.Player.Spellbook.CanUseSpell(smite.Slot) == SpellState.Ready ? damage.Max() : 0;
+            }
+
+            if (smite.Slot == Entry.Player.GetSpellSlot("s5_summonersmiteplayerganker"))
+            {
+                var damage = new[] { 20 + 8 * Entry.Player.Level };
+                return Entry.Player.Spellbook.CanUseSpell(smite.Slot) == SpellState.Ready ? damage.Max() : 0;
+            }
+
+            return 0;
+        }
+
+        private void JungleSmite()
+        {
+            if (!this.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
             {
                 return;
             }
@@ -112,7 +186,7 @@
                 return;
             }
 
-            if (InitializeMenu.Menu.Item(minion.CharData.BaseSkinName).GetValue<bool>())
+            if (this.Menu.Item(minion.CharData.BaseSkinName).GetValue<bool>())
             {
                 if (SmiteDamage() > minion.Health)
                 {
@@ -121,13 +195,13 @@
             }
         }
 
-        private static void OnDraw(EventArgs args)
+        private void OnDraw(EventArgs args)
         {
-            var smiteActive = InitializeMenu.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active;
-            var drawSmite = InitializeMenu.Menu.Item("ElSmite.Draw.Range").GetValue<Circle>();
-            var drawText = InitializeMenu.Menu.Item("ElSmite.Draw.Text").GetValue<bool>();
+            var smiteActive = this.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active;
+            var drawSmite = this.Menu.Item("ElSmite.Draw.Range").GetValue<Circle>();
+            var drawText = this.Menu.Item("ElSmite.Draw.Text").GetValue<bool>();
             var playerPos = Drawing.WorldToScreen(ObjectManager.Player.Position);
-            var drawDamage = InitializeMenu.Menu.Item("ElSmite.Draw.Damage").GetValue<bool>();
+            var drawDamage = this.Menu.Item("ElSmite.Draw.Damage").GetValue<bool>();
 
             if (smiteActive)
             {
@@ -300,7 +374,7 @@
             }
         }
 
-        private static void OnUpdate(EventArgs args)
+        private void OnUpdate(EventArgs args)
         {
             if (Entry.Player.IsDead)
             {
@@ -309,8 +383,8 @@
 
             try
             {
-                JungleSmite();
-                SmiteKill();
+                this.JungleSmite();
+                this.SmiteKill();
             }
             catch (Exception e)
             {
@@ -318,26 +392,9 @@
             }
         }
 
-        private static double SmiteChampDamage()
+        private void SmiteKill()
         {
-            if (smite.Slot == Entry.Player.GetSpellSlot("s5_summonersmiteduel"))
-            {
-                var damage = new[] { 54 + 6 * Entry.Player.Level };
-                return Entry.Player.Spellbook.CanUseSpell(smite.Slot) == SpellState.Ready ? damage.Max() : 0;
-            }
-
-            if (smite.Slot == Entry.Player.GetSpellSlot("s5_summonersmiteplayerganker"))
-            {
-                var damage = new[] { 20 + 8 * Entry.Player.Level };
-                return Entry.Player.Spellbook.CanUseSpell(smite.Slot) == SpellState.Ready ? damage.Max() : 0;
-            }
-
-            return 0;
-        }
-
-        private static void SmiteKill()
-        {
-            if (!InitializeMenu.Menu.Item("ElSmite.KS.Activated").GetValue<bool>())
+            if (!this.Menu.Item("ElSmite.KS.Activated").GetValue<bool>())
             {
                 return;
             }

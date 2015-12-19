@@ -2,8 +2,6 @@
 {
     using System.Linq;
 
-    using ElUtilitySuite.Utility;
-
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -18,6 +16,8 @@
         ///     The heal spell.
         /// </value>
         public Spell HealSpell { get; set; }
+
+        public Menu Menu { get; set; }
 
         #endregion
 
@@ -40,6 +40,34 @@
         #endregion
 
         #region Public Methods and Operators
+
+        /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+            if (Entry.Player.GetSpellSlot("summonerheal") == SpellSlot.Unknown)
+            {
+                return;
+            }
+
+            var healMenu = rootMenu.AddSubMenu(new Menu("Heal", "Heal"));
+            {
+                healMenu.AddItem(new MenuItem("Heal.Activated", "Heal").SetValue(true));
+                healMenu.AddItem(new MenuItem("Heal.HP", "Health percentage").SetValue(new Slider(20, 1)));
+                healMenu.AddItem(new MenuItem("Heal.Damage", "Heal on damage dealt %").SetValue(new Slider(20, 1)));
+                healMenu.AddItem(new MenuItem("seperator21", ""));
+                foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
+                {
+                    healMenu.AddItem(new MenuItem("healon" + x.ChampionName, "Use for " + x.ChampionName))
+                        .SetValue(true);
+                }
+            }
+
+            this.Menu = healMenu;
+        }
 
         /// <summary>
         ///     Loads this instance.
@@ -68,7 +96,7 @@
 
         private void AttackableUnit_OnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
         {
-            if (!InitializeMenu.Menu.Item("Heal.Activated").IsActive())
+            if (!this.Menu.Item("Heal.Activated").IsActive())
             {
                 return;
             }
@@ -91,10 +119,10 @@
                 ObjectManager.Get<Obj_AI_Hero>()
                     .Any(
                         x =>
-                        x.IsAlly && InitializeMenu.Menu.Item(string.Format("healon{0}", x.ChampionName)).IsActive()
+                        x.IsAlly && this.Menu.Item(string.Format("healon{0}", x.ChampionName)).IsActive()
                         && ((int)(args.Damage / x.MaxHealth * 100)
-                            > InitializeMenu.Menu.Item("Heal.Damage").GetValue<Slider>().Value
-                            || x.HealthPercent < InitializeMenu.Menu.Item("Heal.HP").GetValue<Slider>().Value)
+                            > this.Menu.Item("Heal.Damage").GetValue<Slider>().Value
+                            || x.HealthPercent < this.Menu.Item("Heal.HP").GetValue<Slider>().Value)
                         && x.Distance(this.Player) < 850 && x.CountEnemiesInRange(1000) >= 1))
             {
                 this.HealSpell.Cast();

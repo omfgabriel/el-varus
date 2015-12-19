@@ -7,6 +7,9 @@
     using System.Text.RegularExpressions;
 
     using LeagueSharp;
+    using LeagueSharp.Common;
+
+    using Version = System.Version;
 
     internal class CheckVersion : IPlugin
     {
@@ -17,6 +20,15 @@
         #endregion
 
         #region Public Methods and Operators
+
+        /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+        }
 
         public void Load()
         {
