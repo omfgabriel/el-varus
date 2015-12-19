@@ -425,8 +425,8 @@
                     .SubMenu("Buffs")
                     .AddItem(new MenuItem("Protect.Cleanse.Flee.Ally", "Flee").SetValue(false));
 
-                spellCleanserMenu.AddItem(new MenuItem("New.Cleanse.Delay", "Cleanse delay "))
-                    .SetValue(new Slider(0, 0, 25));
+                spellCleanserMenu.AddItem(new MenuItem("New.Cleanse.Delay", "Cleanse delay (MS)"))
+                    .SetValue(new Slider(150, 0, 500));
                 spellCleanserMenu.AddItem(new MenuItem("New.cmode", "Mode: "))
                     .SetValue(new StringList(new[] { "Always", "Combo" }, 1));
 
@@ -833,7 +833,7 @@
                 return
                     (int)
                     (Game.Ping + (spell != null ? spell.SData.CastFrame / 30 * 1000 : this.Delay)
-                     + Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value * 10);
+                     + Menu.Item("New.Cleanse.Delay").GetValue<Slider>().Value);
             }
 
             #endregion
