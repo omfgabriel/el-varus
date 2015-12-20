@@ -55,7 +55,7 @@
                     if (serverVersion > Version)
                     {
                         Game.PrintChat(
-                            "<font color='#cc0000'>ElUtilitySuite</font> There is a new version available, please recompile.");
+                            "<font color='#cc0000'>ElUtilitySuite</font> There is a new version available, please recompile and F5.");
                     }
 
                     if (serverVersion == Version)
