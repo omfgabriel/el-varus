@@ -97,12 +97,16 @@
             var miscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
             {
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.Off", "Turn drawings off").SetValue(false));
+                miscMenu.AddItem(new MenuItem("Misc.Drawings.Exclamation", "Draw exclamation mark range").SetValue(new Circle()));
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.Prioritized", "Draw Prioritized").SetValue(true));
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.W", "Draw W").SetValue(new Circle()));
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.E", "Draw E").SetValue(new Circle()));
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.Minimap", "Draw R on minimap").SetValue(true));
+
             }
 
+
+            
             var credits = Menu.AddSubMenu(new Menu("Credits", "jQuery"));
             {
                 credits.AddItem(new MenuItem("Paypal", "if you would like to donate via paypal:"));

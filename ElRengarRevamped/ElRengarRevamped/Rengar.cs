@@ -219,6 +219,8 @@
         {
             var drawW = MenuInit.Menu.Item("Misc.Drawings.W").GetValue<Circle>();
             var drawE = MenuInit.Menu.Item("Misc.Drawings.E").GetValue<Circle>();
+            var drawExclamation = MenuInit.Menu.Item("Misc.Drawings.Exclamation").GetValue<Circle>(); //Exclamation mark
+
 
             var drawSearchRange = MenuInit.Menu.Item("Beta.Search.Range").GetValue<Circle>();
             var searchrange = MenuInit.Menu.Item("Beta.searchrange").GetValue<Slider>().Value;
@@ -250,6 +252,14 @@
                 if (drawsearchrangeQ.Active && spells[Spells.R].Level > 0)
                 {
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, searchrangeQCastRange, Color.Orange);
+                }
+            }
+
+            if (RengarR && drawExclamation.Active)
+            {
+                if (spells[Spells.R].Level > 0)
+                {
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, 1250f, Color.OrangeRed);
                 }
             }
 
