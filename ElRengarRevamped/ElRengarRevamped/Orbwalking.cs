@@ -1093,7 +1093,6 @@ namespace ElRengarRevamped
                 }
 
                 /*Jungle minions*/
-                /*Jungle minions*/
                 if (this.ActiveMode == OrbwalkingMode.LaneClear || this.ActiveMode == OrbwalkingMode.Mixed)
                 {
                     var jminions =

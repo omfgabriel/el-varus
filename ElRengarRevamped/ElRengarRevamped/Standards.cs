@@ -12,9 +12,9 @@
     {
         #region Static Fields
 
-        private static readonly int[] BlueSmite = { 3706, 3710, 3709, 3708, 3707 };
+        private static readonly int[] BlueSmite = { 3706, 1400, 1401, 1402, 1403 };
 
-        private static readonly int[] RedSmite = { 3715, 3718, 3717, 3716, 3714 };
+        private static readonly int[] RedSmite = { 3715, 1415, 1414, 1413, 1412 };
 
         protected static readonly Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
                                                                          {
@@ -138,8 +138,7 @@
                 return;
             }
 
-            if (!ItemData.Tiamat_Melee_Only.GetItem().IsReady()
-                && !ItemData.Ravenous_Hydra_Melee_Only.GetItem().IsReady())
+            if (!ItemData.Tiamat_Melee_Only.GetItem().IsReady() && !ItemData.Ravenous_Hydra_Melee_Only.GetItem().IsReady())
             {
                 return;
             }

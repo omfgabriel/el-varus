@@ -26,9 +26,9 @@ namespace ElRengarRevamped
                     return;
                 }
 
-                if (Rengar._selectedEnemy.IsValidTarget())
+                if (Rengar.SelectedEnemy.IsValidTarget())
                 {
-                    Rengar._selectedEnemy = target;
+                    Rengar.SelectedEnemy = target;
                 }
 
                 if (Youmuu.IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
@@ -140,17 +140,17 @@ namespace ElRengarRevamped
 
                 #region Summoner spells
 
+
+                if (IsActive("Combo.Use.Smite") && Smite != SpellSlot.Unknown && Player.Spellbook.CanUseSpell(Smite) == SpellState.Ready)
+                {
+                    Player.Spellbook.CastSpell(Smite, target);
+                }
+
                 if (IsActive("Combo.Use.Ignite") && Player.Distance(target) <= 600
                     && IgniteDamage(target) >= target.Health)
                 {
                     Player.Spellbook.CastSpell(Ignite, target);
                     return;
-                }
-
-                if (IsActive("Combo.Use.Smite") && Smite != SpellSlot.Unknown
-                    && Player.Spellbook.CanUseSpell(Smite) == SpellState.Ready)
-                {
-                    Player.Spellbook.CastSpell(Smite, target);
                 }
 
                 #endregion

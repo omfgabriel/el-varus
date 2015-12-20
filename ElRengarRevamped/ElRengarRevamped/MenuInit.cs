@@ -13,7 +13,6 @@
 
         #region Public Methods and Operators
 
-
         public static void Initialize()
         {
             Menu = new Menu("ElRengar", "ElRengar", true);
@@ -30,7 +29,8 @@
                 comboMenu.SubMenu("Combo").AddItem(new MenuItem("Combo.Use.Q", "Use Q").SetValue(true));
                 comboMenu.SubMenu("Combo").AddItem(new MenuItem("Combo.Use.W", "Use W").SetValue(true));
                 comboMenu.SubMenu("Combo").AddItem(new MenuItem("Combo.Use.E", "Use E").SetValue(true));
-                comboMenu.SubMenu("Combo").AddItem(new MenuItem("Combo.Switch.E", "Switch E prio to Q after E cast").SetValue(true));
+                comboMenu.SubMenu("Combo")
+                    .AddItem(new MenuItem("Combo.Switch.E", "Switch E prio to Q after E cast").SetValue(true));
                 comboMenu.SubMenu("Combo")
                     .AddItem(new MenuItem("Combo.Use.E.OutOfRange", "Use E when out of range").SetValue(false));
                 comboMenu.SubMenu("Combo")
@@ -97,16 +97,14 @@
             var miscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
             {
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.Off", "Turn drawings off").SetValue(false));
-                miscMenu.AddItem(new MenuItem("Misc.Drawings.Exclamation", "Draw exclamation mark range").SetValue(new Circle()));
+                miscMenu.AddItem(
+                    new MenuItem("Misc.Drawings.Exclamation", "Draw exclamation mark range").SetValue(new Circle()));
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.Prioritized", "Draw Prioritized").SetValue(true));
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.W", "Draw W").SetValue(new Circle()));
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.E", "Draw E").SetValue(new Circle()));
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.Minimap", "Draw R on minimap").SetValue(true));
-
             }
 
-
-            
             var credits = Menu.AddSubMenu(new Menu("Credits", "jQuery"));
             {
                 credits.AddItem(new MenuItem("Paypal", "if you would like to donate via paypal:"));
