@@ -28,7 +28,6 @@ namespace ElEasy.Plugins
                                                                            { Spells.R, new Spell(SpellSlot.R, 550) }
                                                                        };
 
-
         private static long lastECast;
 
         private static int lastPlaced;
@@ -347,10 +346,9 @@ namespace ElEasy.Plugins
             {
                 if (target != null)
                 {
-
                     if (target.IsValidTarget(spells[Spells.E].Range)
-                        && (spells[Spells.E].GetDamage(target) + spells[Spells.Q].GetDamage(target)
-                            + MarkDmg(target) + spells[Spells.W].GetDamage(target)) > target.Health + 20)
+                        && (spells[Spells.E].GetDamage(target) + spells[Spells.Q].GetDamage(target) + MarkDmg(target)
+                            + spells[Spells.W].GetDamage(target)) > target.Health + 20)
                     {
                         if (spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady())
                         {
@@ -398,8 +396,7 @@ namespace ElEasy.Plugins
 
                     if (spells[Spells.Q].GetDamage(target) > target.Health + 20)
                     {
-                        if (spells[Spells.Q].IsReady()
-                            && target.IsValidTarget(spells[Spells.Q].Range))
+                        if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                         {
                             CancelUlt(target);
                             spells[Spells.Q].Cast(target);
@@ -429,9 +426,9 @@ namespace ElEasy.Plugins
                         }
                     }
 
-                    if (Player.Distance(target.ServerPosition) <= spells[Spells.E].Range &&
-                        (Player.GetSpellDamage(target, SpellSlot.R) * 5) > target.Health + 20 &&
-                        Menu.Item("ElEasy.Katarina.Killsteal.R").GetValue<bool>())
+                    if (Player.Distance(target.ServerPosition) <= spells[Spells.E].Range
+                        && (Player.GetSpellDamage(target, SpellSlot.R) * 5) > target.Health + 20
+                        && Menu.Item("ElEasy.Katarina.Killsteal.R").GetValue<bool>())
                     {
                         if (spells[Spells.R].IsReady())
                         {
