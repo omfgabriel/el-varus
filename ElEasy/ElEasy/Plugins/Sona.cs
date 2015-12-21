@@ -46,7 +46,7 @@
             var gapCloserActive = Menu.Item("ElEasy.Sona.GapCloser.Activated").GetValue<bool>();
 
             if (gapCloserActive && spells[Spells.R].IsReady()
-                && gapcloser.Sender.Distance(Player) < spells[Spells.R].Range)
+                && gapcloser.Sender.IsValidTarget(spells[Spells.R].Range))
             {
                 spells[Spells.R].Cast(gapcloser.Sender);
             }
@@ -61,7 +61,7 @@
             }
             var active = Menu.Item("ElEasy.Sona.Autoharass.Activated").GetValue<KeyBind>().Active;
 
-            if (active && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+            if (active && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast(target);
             }
@@ -80,18 +80,16 @@
                 return;
             }
 
-            //self heal
             if ((Player.Health / Player.MaxHealth) * 100 <= playerHp)
             {
-                spells[Spells.W].CastOnUnit(Player);
+                spells[Spells.W].Cast();
             }
 
-            //ally
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsAlly && !h.IsMe))
             {
                 if ((hero.Health / hero.MaxHealth) * 100 <= allyHp && spells[Spells.W].IsInRange(hero))
                 {
-                    spells[Spells.W].CastOnUnit(Player);
+                    spells[Spells.W].Cast();
                 }
             }
         }
@@ -204,30 +202,24 @@
             var useI = Menu.Item("ElEasy.Sona.Combo.Ignite").GetValue<bool>();
             var hitByR = Menu.Item("ElEasy.Sona.Combo.Count.R").GetValue<Slider>().Value;
 
-            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast(target);
             }
 
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
-                spells[Spells.E].CastOnUnit(Player);
+                spells[Spells.E].Cast();
             }
 
-            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+            if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
             {
-                spells[Spells.W].CastOnUnit(Player);
+                spells[Spells.W].Cast();
             }
 
-            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(rTarget))
+            if (useR && spells[Spells.R].IsReady() && rTarget.IsValidTarget(spells[Spells.R].Range))
             {
                 spells[Spells.R].CastIfWillHit(rTarget, hitByR);
-
-                /*
-                var pred = spells[Spells.R].GetPrediction(rTarget).Hitchance;
-                if(pred >= HitChance.High)
-                    //spells[Spells.R].CastIfWillHit(rTarget, hitByR);
-              */
             }
 
             if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
@@ -298,7 +290,7 @@
                 return;
             }
 
-            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast(target);
             }

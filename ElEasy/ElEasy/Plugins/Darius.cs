@@ -62,8 +62,6 @@
 
             if (spells[Spells.R].IsReady())
             {
-                //damage += Player.GetSpellDamage(enemy, SpellSlot.R);
-
                 damage +=
                     enemy.Buffs.Where(buff => buff.Name == "dariushemo")
                         .Sum(buff => Player.GetSpellDamage(enemy, SpellSlot.R, 1) * (1 + buff.Count / 5) - 1);
@@ -273,7 +271,6 @@
                 spells[Spells.W].Cast();
             }
 
-            // && spells[Spells.R].GetDamage(target) >= target.Health
             if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target))
             {
                 //Credits: https://github.com/TC-Crew/L-Assemblies/blob/master/Darius/ComboHandler.cs#L40

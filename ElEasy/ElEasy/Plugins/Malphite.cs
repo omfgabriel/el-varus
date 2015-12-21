@@ -204,12 +204,12 @@
                 return;
             }
 
-            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(qTarget))
+            if (useQ && spells[Spells.Q].IsReady() && qTarget.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast(qTarget);
             }
 
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(eTarget) && eTarget != null)
+            if (useE && spells[Spells.E].IsReady() && eTarget.IsValidTarget(spells[Spells.E].Range))
             {
                 spells[Spells.E].Cast();
             }
@@ -234,7 +234,7 @@
 
             var countEnemies = Menu.Item("ElEasy.Malphite.Combo.Count.R").GetValue<Slider>().Value;
 
-            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast(target);
             }
@@ -244,7 +244,7 @@
                 spells[Spells.W].Cast();
             }
 
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
                 spells[Spells.E].Cast();
             }
@@ -252,18 +252,21 @@
             switch (ultType)
             {
                 case 0:
-                    if (useR && spells[Spells.R].IsReady() && rTarget != null)
+                    if (useR && spells[Spells.R].IsReady() && rTarget.IsValidTarget(spells[Spells.R].Range))
                     {
-                        var pred = spells[Spells.R].GetPrediction(rTarget).Hitchance;
-                        if (pred >= HitChance.High)
+                        if (spells[Spells.R].GetDamage(target) > target.Health)
                         {
-                            spells[Spells.R].Cast(rTarget);
+                            var pred = spells[Spells.R].GetPrediction(rTarget).Hitchance;
+                            if (pred >= HitChance.High)
+                            {
+                                spells[Spells.R].Cast(rTarget);
+                            }
                         }
                     }
                     break;
 
                 case 1:
-                    if (useR && spells[Spells.R].IsReady() && rTarget != null)
+                    if (useR && spells[Spells.R].IsReady() && rTarget.IsValidTarget(spells[Spells.R].Range))
                     {
                         var pred = spells[Spells.R].GetPrediction(rTarget).Hitchance;
                         if (pred >= HitChance.High)
@@ -274,7 +277,7 @@
                     break;
             }
 
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
+            if (target.IsValidTarget(600) && IgniteDamage(target) >= target.Health && useI)
             {
                 Player.Spellbook.CastSpell(Ignite, target);
             }

@@ -499,11 +499,6 @@ namespace ElEasy.Plugins
                 }
             }
 
-            /*if (spells[Spells.R].Instance.Name != "KatarinaR")
-            {
-                return;
-            }*/
-
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
                 spells[Spells.Q].Cast(target);
@@ -522,7 +517,7 @@ namespace ElEasy.Plugins
                 return;
             }
 
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
+            if (target.IsValidTarget(600) && IgniteDamage(target) >= target.Health && useI)
             {
                 Player.Spellbook.CastSpell(Ignite, target);
                 return;

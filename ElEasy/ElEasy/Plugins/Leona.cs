@@ -20,7 +20,7 @@
                                                                                Spells.Q,
                                                                                new Spell(
                                                                                SpellSlot.Q,
-                                                                               Player.AttackRange + 25)
+                                                                               Orbwalking.GetRealAutoAttackRange(Player) + 150)
                                                                            },
                                                                            { Spells.W, new Spell(SpellSlot.W, 200) },
                                                                            { Spells.E, new Spell(SpellSlot.E, 700) },
@@ -228,12 +228,12 @@
                 }
             }
 
-            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+            if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
             {
                 spells[Spells.W].Cast();
             }
 
-            if (useE && spells[Spells.E].IsReady())
+            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
                 var pred = spells[Spells.E].GetPrediction(target).Hitchance;
                 if (pred >= HitChance.VeryHigh)
@@ -242,7 +242,7 @@
                 }
             }
 
-            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target)
+            if (useR && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range)
                 && Player.CountEnemiesInRange(spells[Spells.R].Range) >= countEnemies)
             {
                 var pred = spells[Spells.R].GetPrediction(target);
@@ -252,7 +252,7 @@
                 }
             }
 
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
+            if (target.IsValidTarget(600) && IgniteDamage(target) >= target.Health && useI)
             {
                 Player.Spellbook.CastSpell(Ignite, target);
             }
@@ -326,7 +326,7 @@
                 spells[Spells.Q].Cast();
             }
 
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
                 spells[Spells.E].Cast(target);
             }

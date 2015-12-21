@@ -292,7 +292,7 @@ namespace ElEasy.Plugins
                     var wDamage = spells[Spells.W].GetDamage(target);
                     //var eDamage = spells[Spells.E].GetDamage(target);
 
-                    if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health)
+                    if (target.IsValidTarget(600) && IgniteDamage(target) >= target.Health)
                     {
                         Player.Spellbook.CastSpell(Ignite, target);
                     }
@@ -574,7 +574,10 @@ namespace ElEasy.Plugins
                         .OrderByDescending(x => x.Health)
                         .FirstOrDefault();
 
-                spells[Spells.E].Cast(etarget);
+                if (etarget != null)
+                {
+                    spells[Spells.E].Cast(etarget.ServerPosition);
+                }
             }
 
             if (useW && spells[Spells.W].IsReady())
@@ -719,38 +722,6 @@ namespace ElEasy.Plugins
             }
 
             KillSteal();
-
-            var autor = new[] { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 };
-            int qOff = 0, wOff = 0, eOff = 0, rOff = 0;
-
-            var qL = Player.Spellbook.GetSpell(SpellSlot.Q).Level + qOff;
-            var wL = Player.Spellbook.GetSpell(SpellSlot.W).Level + wOff;
-            var eL = Player.Spellbook.GetSpell(SpellSlot.E).Level + eOff;
-            var rL = Player.Spellbook.GetSpell(SpellSlot.R).Level + rOff;
-            if (qL + wL + eL + rL < ObjectManager.Player.Level)
-            {
-                var level = new[] { 0, 0, 0, 0 };
-                for (var i = 0; i < ObjectManager.Player.Level; i++)
-                {
-                    level[autor[i] - 1] = level[autor[i] - 1] + 1;
-                }
-                if (qL < level[0])
-                {
-                    ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.Q);
-                }
-                if (wL < level[1])
-                {
-                    ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.W);
-                }
-                if (eL < level[2])
-                {
-                    ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.E);
-                }
-                if (rL < level[3])
-                {
-                    ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.R);
-                }
-            }
         }
 
         private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
