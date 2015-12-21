@@ -427,7 +427,7 @@
 
                     if (Ferocity == 5 && RengarR)
                     {
-                        if (target.Distance(Player.ServerPosition) <= MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value)
+                        if (target.IsValidTarget(MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value))
                         {
                             Utility.DelayAction.Add(MenuInit.Menu.Item("Beta.Cast.Q.Delay").GetValue<Slider>().Value, () => spells[Spells.Q].Cast());
                             JustDoIt = true;

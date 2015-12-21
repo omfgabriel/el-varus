@@ -105,10 +105,11 @@ namespace ElRengarRevamped
                 {
                     if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 50))
                     {
-                        if (Orbwalking.IsAutoAttack(Player.LastCastedSpellName()))
+                        spells[Spells.Q].Cast();
+                        /*if (Orbwalking.IsAutoAttack(Player.LastCastedSpellName()))
                         {
                             spells[Spells.Q].Cast();
-                        }
+                        }*/
                     }
 
                     if (IsActive("Combo.Use.W")) 
