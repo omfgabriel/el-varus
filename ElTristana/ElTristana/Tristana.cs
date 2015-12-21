@@ -424,7 +424,7 @@ namespace ElTristana
         {
             if (IsActive("ElTristana.Antigapcloser"))
             {
-                if (gapcloser.Sender.IsValidTarget(spells[Spells.R].Range) && spells[Spells.R].IsReady())
+                if (gapcloser.Sender.IsValidTarget(250f) && spells[Spells.R].IsReady())
                 {
                     spells[Spells.R].Cast(gapcloser.Sender);
                 }
