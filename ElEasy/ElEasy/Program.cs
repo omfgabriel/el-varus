@@ -30,11 +30,13 @@
         {
             try
             {
-                var type = Type.GetType("ElEasy.Plugins." + Player.ChampionName);
+                var type = Type.GetType("ElEasy.Plugins." + Player.ChampionName );
                 if (type != null)
                 {
                     Base.Load();
-                    Notifications.AddNotification("ElEasy - " + Player.ChampionName + " 1.0.3.4", 8000);
+                    Game.PrintChat("<font color='#f9eb0b'>ElEasy</font> - " + Player.ChampionName + " loaded, have fun gl and don't flame");
+                    Game.PrintChat(
+                    "[00:01] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
                 }
             }
             catch (Exception e)

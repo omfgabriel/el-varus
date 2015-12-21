@@ -28,7 +28,6 @@ namespace ElEasy.Plugins
                                                                            { Spells.R, new Spell(SpellSlot.R, 550) }
                                                                        };
 
-        private static bool isChanneling;
 
         private static long lastECast;
 
@@ -69,6 +68,15 @@ namespace ElEasy.Plugins
         #endregion
 
         #region Methods
+
+        private static void CancelUlt(Obj_AI_Hero target)
+        {
+            if (Player.IsChannelingImportantSpell() || Player.HasBuff("katarinarsound"))
+            {
+                Player.IssueOrder(GameObjectOrder.MoveTo, target.ServerPosition);
+                spells[Spells.R].LastCastAttemptT = 0;
+            }
+        }
 
         private static void CastE(Obj_AI_Base unit)
         {
@@ -170,11 +178,6 @@ namespace ElEasy.Plugins
             }
 
             return (float)damage;
-        }
-
-        private static float GetHealth(Obj_AI_Base target)
-        {
-            return target.Health;
         }
 
         private static SpellDataInst GetItemSpell(InventorySlot invSlot)
@@ -337,66 +340,103 @@ namespace ElEasy.Plugins
 
         private static void KillSteal()
         {
-            foreach (var hero in
+            foreach (var target in
                 ObjectManager.Get<Obj_AI_Hero>()
-                    .Where(x => x.IsValidTarget(1000) && !x.HasBuffOfType(BuffType.Invulnerability))
+                    .Where(x => x.IsValidTarget(1375) && !x.HasBuffOfType(BuffType.Invulnerability))
                     .OrderByDescending(GetComboDamage))
             {
-                if (hero != null)
+                if (target != null)
                 {
-                    var qDamage = spells[Spells.Q].GetDamage(hero);
-                    var wDamage = spells[Spells.W].GetDamage(hero);
-                    var eDamage = spells[Spells.E].GetDamage(hero);
 
-                    var qMarkDamage = Player.CalcDamage(
-                        hero,
-                        Damage.DamageType.Magical,
-                        Player.FlatMagicDamageMod * 0.15 + Player.Level * 15);
-
-                    if (KatarinaQ(hero) && GetHealth(hero) - wDamage - qMarkDamage < 0 && spells[Spells.W].IsReady()
-                        && Player.Distance(hero) < spells[Spells.W].Range)
+                    if (target.IsValidTarget(spells[Spells.E].Range)
+                        && (spells[Spells.E].GetDamage(target) + spells[Spells.Q].GetDamage(target)
+                            + MarkDmg(target) + spells[Spells.W].GetDamage(target)) > target.Health + 20)
                     {
-                        spells[Spells.W].Cast();
-                        return;
+                        if (spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady())
+                        {
+                            CancelUlt(target);
+                            spells[Spells.Q].Cast(target);
+                            spells[Spells.E].Cast(target);
+                            spells[Spells.E].LastCastAttemptT = Utils.TickCount;
+                            if (Player.Distance(target.ServerPosition) < spells[Spells.W].Range)
+                            {
+                                spells[Spells.W].Cast();
+                            }
+                            return;
+                        }
                     }
 
-                    if (GetHealth(hero) - qDamage < 0 && spells[Spells.Q].IsReady()
-                        && Player.Distance(hero) < spells[Spells.Q].Range)
+                    if (Player.Distance(target.ServerPosition) <= spells[Spells.E].Range
+                        && (spells[Spells.E].GetDamage(target) + spells[Spells.W].GetDamage(target))
+                        > target.Health + 20)
                     {
-                        spells[Spells.Q].Cast(hero);
-                        return;
+                        if (spells[Spells.E].IsReady() && spells[Spells.W].IsReady())
+                        {
+                            CancelUlt(target);
+                            spells[Spells.E].Cast(target);
+
+                            if (target.IsValidTarget(spells[Spells.W].Range))
+                            {
+                                spells[Spells.W].Cast();
+                            }
+                            return;
+                        }
                     }
 
-                    if (GetHealth(hero) - eDamage < 0 && spells[Spells.E].IsReady())
+                    if (Player.Distance(target.ServerPosition) <= spells[Spells.E].Range
+                        && (spells[Spells.E].GetDamage(target) + spells[Spells.Q].GetDamage(target))
+                        > target.Health + 20)
                     {
-                        spells[Spells.E].Cast(hero);
-                        return;
+                        if (spells[Spells.E].IsReady() && spells[Spells.Q].IsReady())
+                        {
+                            CancelUlt(target);
+                            spells[Spells.E].Cast(target);
+                            spells[Spells.Q].Cast(target);
+                            return;
+                        }
                     }
 
-                    if (GetHealth(hero) - eDamage - wDamage < 0 && spells[Spells.E].IsReady()
-                        && spells[Spells.W].IsReady())
+                    if (spells[Spells.Q].GetDamage(target) > target.Health + 20)
                     {
-                        CastE(hero);
-                        spells[Spells.W].Cast();
-                        return;
+                        if (spells[Spells.Q].IsReady()
+                            && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            CancelUlt(target);
+                            spells[Spells.Q].Cast(target);
+                            return;
+                        }
                     }
 
-                    if (hero.Health - eDamage - wDamage - qDamage - IgniteDamage(hero) < 0 && spells[Spells.E].IsReady()
-                        && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady())
+                    if (target.IsValidTarget(spells[Spells.W].Range)
+                        && (spells[Spells.W].GetDamage(target) > target.Health + 20))
                     {
-                        CastE(hero);
-                        spells[Spells.Q].Cast(hero);
-                        spells[Spells.W].Cast();
-                        Player.Spellbook.CastSpell(Ignite, hero);
-                        return;
+                        if (spells[Spells.W].IsReady())
+                        {
+                            CancelUlt(target);
+                            spells[Spells.W].Cast();
+                            return;
+                        }
                     }
 
-                    if (Player.Distance(hero.ServerPosition) <= spells[Spells.E].Range
-                        && (Player.GetSpellDamage(hero, SpellSlot.R) * 5) > hero.Health + 20
-                        && Menu.Item("ElEasy.Katarina.Killsteal.R").GetValue<bool>())
+                    if (target.IsValidTarget(spells[Spells.E].Range)
+                        && (Player.GetSpellDamage(target, SpellSlot.E)) > target.Health + 20)
+                    {
+                        if (spells[Spells.E].IsReady())
+                        {
+                            CancelUlt(target);
+                            spells[Spells.E].Cast(target);
+                            return;
+                        }
+                    }
+
+                    if (Player.Distance(target.ServerPosition) <= spells[Spells.E].Range &&
+                        (Player.GetSpellDamage(target, SpellSlot.R) * 5) > target.Health + 20 &&
+                        Menu.Item("ElEasy.Katarina.Killsteal.R").GetValue<bool>())
                     {
                         if (spells[Spells.R].IsReady())
                         {
+                            Orbwalker.SetAttack(false);
+                            Orbwalker.SetMovement(false);
                             spells[Spells.R].Cast();
                             return;
                         }
@@ -405,16 +445,22 @@ namespace ElEasy.Plugins
             }
         }
 
+        private static double MarkDmg(Obj_AI_Base target)
+        {
+            return target.HasBuff("katarinaqmark") ? Player.GetSpellDamage(target, SpellSlot.Q, 1) : 0;
+        }
+
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!sender.IsMe) return;
+            if (!sender.IsMe)
+            {
+                return;
+            }
 
             if (args.SData.Name == "KatarinaR")
             {
                 Orbwalker.SetAttack(false);
                 Orbwalker.SetMovement(false);
-                isChanneling = true;
-                Utility.DelayAction.Add(1, () => isChanneling = false);
             }
         }
 
@@ -467,22 +513,16 @@ namespace ElEasy.Plugins
             var forceR = Menu.Item("ElEasy.Katarina.Combo.R.Force").GetValue<bool>();
             var forceRCount = Menu.Item("ElEasy.Katarina.Combo.R.Force.Count").GetValue<Slider>().Value;
 
-            var rdmg = spells[Spells.R].GetDamage(target, 1);
-
-            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) && !spells[Spells.Q].IsReady()
-                && !spells[Spells.W].IsReady() && !spells[Spells.E].IsReady())
+            if (useR && spells[Spells.R].IsReady())
             {
-                if (HeroManager.Enemies.Any(x => x.IsValidTarget(spells[Spells.R].Range))
-                    && spells[Spells.R].Instance.Name == "KatarinaR")
+                if (HeroManager.Enemies.Any(x => x.IsValidTarget(spells[Spells.R].Range)) && spells[Spells.R].IsReady())
                 {
                     switch (rSort.SelectedIndex)
                     {
                         case 0:
-                            if (target.Health - rdmg < 0 && !spells[Spells.E].IsReady())
+                            if (Player.CountEnemiesInRange(spells[Spells.R].Range) > 0 && spells[Spells.R].IsReady())
                             {
                                 spells[Spells.R].Cast();
-                                rStart = Environment.TickCount;
-                                return;
                             }
                             break;
 
@@ -491,36 +531,30 @@ namespace ElEasy.Plugins
                                 || forceR && Player.CountEnemiesInRange(spells[Spells.R].Range) <= forceRCount)
                             {
                                 spells[Spells.R].Cast();
-                                rStart = Environment.TickCount;
-                                return;
                             }
                             break;
                     }
                 }
             }
 
-            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast(target);
-                return;
             }
 
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
                 CastE(target);
-                return;
             }
 
-            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+            if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
             {
                 spells[Spells.W].Cast();
-                return;
             }
 
             if (target.IsValidTarget(600) && IgniteDamage(target) >= target.Health && useI)
             {
                 Player.Spellbook.CastSpell(Ignite, target);
-                return;
             }
         }
 
@@ -541,7 +575,7 @@ namespace ElEasy.Plugins
             {
                 if (spells[Spells.Q].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.Q].Range, Color.White);
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.Q].Range, Color.DeepPink);
                 }
             }
 
@@ -549,7 +583,7 @@ namespace ElEasy.Plugins
             {
                 if (spells[Spells.W].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.W].Range, Color.White);
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.W].Range, Color.DeepSkyBlue);
                 }
             }
 
@@ -595,16 +629,14 @@ namespace ElEasy.Plugins
                 case 1:
                     if (useQ && useW)
                     {
-                        if (spells[Spells.Q].IsReady())
+                        if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                         {
                             spells[Spells.Q].Cast(target);
-                            return;
                         }
 
-                        if (spells[Spells.W].IsInRange(target) && spells[Spells.W].IsReady())
+                        if (target.IsValidTarget(spells[Spells.W].Range) && spells[Spells.W].IsReady())
                         {
                             spells[Spells.W].Cast();
-                            return;
                         }
                     }
                     break;
@@ -612,22 +644,19 @@ namespace ElEasy.Plugins
                 case 2:
                     if (useQ && useW && useE)
                     {
-                        if (spells[Spells.Q].IsReady())
+                        if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                         {
                             spells[Spells.Q].Cast(target);
-                            return;
                         }
 
-                        if (spells[Spells.E].IsReady())
+                        if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
                         {
                             CastE(target);
-                            return;
                         }
 
-                        if (spells[Spells.W].IsReady())
+                        if (spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
                         {
                             spells[Spells.W].Cast();
-                            return;
                         }
                     }
                     break;
@@ -640,30 +669,32 @@ namespace ElEasy.Plugins
             var useW = Menu.Item("ElEasy.Katarina.JungleClear.W").GetValue<bool>();
             var useE = Menu.Item("ElEasy.Katarina.JungleClear.E").GetValue<bool>();
 
-            var minions = MinionManager.GetMinions(
-                ObjectManager.Player.ServerPosition,
-                spells[Spells.E].Range,
-                MinionTypes.All,
-                MinionTeam.Neutral,
-                MinionOrderTypes.MaxHealth);
-            if (minions.Count <= 0)
+            var minions =
+                MinionManager.GetMinions(
+                    ObjectManager.Player.ServerPosition,
+                    spells[Spells.E].Range,
+                    MinionTypes.All,
+                    MinionTeam.Neutral,
+                    MinionOrderTypes.MaxHealth).FirstOrDefault();
+
+            if (minions == null)
             {
                 return;
             }
 
             if (useQ && spells[Spells.Q].IsReady())
             {
-                spells[Spells.Q].Cast(minions[0]);
+                spells[Spells.Q].Cast(minions);
             }
 
-            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(minions[0]))
+            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(minions))
             {
                 spells[Spells.W].Cast();
             }
 
             if (useE && spells[Spells.E].IsReady())
             {
-                CastE(minions[0]);
+                CastE(minions);
             }
         }
 
@@ -673,36 +704,36 @@ namespace ElEasy.Plugins
             var useW = Menu.Item("ElEasy.Katarina.LaneClear.W").GetValue<bool>();
             var useE = Menu.Item("ElEasy.Katarina.LaneClear.E").GetValue<bool>();
 
-            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
-            if (minions.Count <= 0)
+            var minions =
+                MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.E].Range).FirstOrDefault();
+
+            if (minions == null)
             {
                 return;
             }
 
-            if (spells[Spells.Q].IsReady() && useQ)
+            if (spells[Spells.W].IsReady() && useW)
             {
-                var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.Q].Range);
+                if (minions.Health < spells[Spells.W].GetDamage(minions))
                 {
-                    foreach (var minion in
-                        allMinions)
-                    {
-                        if (minion.IsValidTarget())
-                        {
-                            spells[Spells.Q].CastOnUnit(minion);
-                            return;
-                        }
-                    }
+                    spells[Spells.W].Cast();
                 }
             }
 
-            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(minions[0]))
+            if (spells[Spells.Q].IsReady() && useQ)
             {
-                spells[Spells.W].Cast();
+                if (minions.Health < spells[Spells.Q].GetDamage(minions))
+                {
+                    spells[Spells.Q].CastOnUnit(minions);
+                }
             }
 
-            if (useE && spells[Spells.E].IsReady())
+            if (spells[Spells.E].IsReady() && useE)
             {
-                CastE(minions[0]);
+                if (minions.Health < spells[Spells.E].GetDamage(minions))
+                {
+                    CastE(minions);
+                }
             }
         }
 
@@ -712,68 +743,53 @@ namespace ElEasy.Plugins
             var useW = Menu.Item("ElEasy.Katarina.Lasthit.W").GetValue<bool>();
             var useE = Menu.Item("ElEasy.Katarina.Lasthit.E").GetValue<bool>();
 
-            if (spells[Spells.Q].IsReady() && useQ)
+            var minions =
+                MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.E].Range).FirstOrDefault();
+
+            if (minions == null)
             {
-                var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.Q].Range);
-                {
-                    foreach (var minion in
-                        allMinions.Where(
-                            minion => minion.Health <= ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q)))
-                    {
-                        if (minion.IsValidTarget())
-                        {
-                            spells[Spells.Q].CastOnUnit(minion);
-                            return;
-                        }
-                    }
-                }
+                return;
             }
 
             if (spells[Spells.W].IsReady() && useW)
             {
-                var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.W].Range);
+                if (minions.Health < spells[Spells.W].GetDamage(minions))
                 {
-                    foreach (var minion in
-                        allMinions.Where(
-                            minion => minion.Health <= ObjectManager.Player.GetSpellDamage(minion, SpellSlot.W)))
-                    {
-                        if (minion.IsValidTarget())
-                        {
-                            spells[Spells.W].Cast();
-                            return;
-                        }
-                    }
+                    spells[Spells.W].Cast();
+                }
+            }
+
+            if (spells[Spells.Q].IsReady() && useQ)
+            {
+                if (minions.Health < spells[Spells.Q].GetDamage(minions))
+                {
+                    spells[Spells.Q].CastOnUnit(minions);
                 }
             }
 
             if (spells[Spells.E].IsReady() && useE)
             {
-                foreach (var minion in
-                    ObjectManager.Get<Obj_AI_Minion>()
-                        .Where(
-                            minion =>
-                            minion.IsValidTarget() && minion.IsEnemy
-                            && minion.Distance(Player.ServerPosition) < spells[Spells.E].Range))
+                if (minions.Health < spells[Spells.E].GetDamage(minions))
                 {
-                    var edmg = spells[Spells.E].GetDamage(minion);
-
-                    if (minion.Health - edmg <= 0 && minion.Distance(Player.ServerPosition) <= spells[Spells.E].Range)
-                    {
-                        CastE(minion);
-                    }
+                    CastE(minions);
                 }
             }
         }
 
         private static void OnUpdate(EventArgs args)
         {
-            if (Player.IsDead)
-            {
-                return;
-            }
-
             try
             {
+                if (Player.IsDead)
+                {
+                    return;
+                }
+
+                if (Menu.Item("ElEasy.Katarina.Killsteal").GetValue<bool>())
+                {
+                    KillSteal();
+                }
+
                 if (Player.IsChannelingImportantSpell() || Player.HasBuff("KatarinaR"))
                 {
                     Orbwalker.SetAttack(false);
@@ -804,11 +820,6 @@ namespace ElEasy.Plugins
                         break;
                 }
 
-                if (Menu.Item("ElEasy.Katarina.Killsteal").GetValue<bool>())
-                {
-                    KillSteal();
-                }
-
                 if (Menu.Item("ElEasy.Katarina.AutoHarass.Activated", true).GetValue<KeyBind>().Active)
                 {
                     OnAutoHarass();
@@ -835,7 +846,6 @@ namespace ElEasy.Plugins
             if (Player.CountEnemiesInRange(500) < 1)
             {
                 var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
-
                 if (target == null)
                 {
                     return;
