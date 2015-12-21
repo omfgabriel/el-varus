@@ -512,27 +512,25 @@ namespace ElEasy.Plugins
 
             if (useR && spells[Spells.R].IsReady())
             {
-                if (HeroManager.Enemies.Any(x => x.IsValidTarget(spells[Spells.R].Range)) && spells[Spells.R].IsReady())
+                switch (rSort.SelectedIndex)
                 {
-                    switch (rSort.SelectedIndex)
-                    {
-                        case 0:
-                            if (Player.CountEnemiesInRange(spells[Spells.R].Range) > 0 && spells[Spells.R].IsReady())
-                            {
-                                spells[Spells.R].Cast();
-                            }
-                            break;
+                    case 0:
+                        if (Player.CountEnemiesInRange(spells[Spells.R].Range) > 0 && spells[Spells.R].IsReady())
+                        {
+                            spells[Spells.R].Cast();
+                        }
+                        break;
 
-                        case 1:
-                            if (!spells[Spells.E].IsReady()
-                                || forceR && Player.CountEnemiesInRange(spells[Spells.R].Range) <= forceRCount)
-                            {
-                                spells[Spells.R].Cast();
-                            }
-                            break;
-                    }
+                    case 1:
+                        if (!spells[Spells.E].IsReady()
+                            || forceR && Player.CountEnemiesInRange(spells[Spells.R].Range) <= forceRCount)
+                        {
+                            spells[Spells.R].Cast();
+                        }
+                        break;
                 }
             }
+
 
             if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
