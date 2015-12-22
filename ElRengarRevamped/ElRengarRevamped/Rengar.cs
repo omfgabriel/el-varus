@@ -474,6 +474,7 @@
                 {
                     if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || HasPassive)
                     {
+                        Orbwalking.ResetAutoAttackTimer();
                         Player.IssueOrder(GameObjectOrder.AttackUnit, args.Target);
                         //spells[Spells.Q].Cast();
                     }
