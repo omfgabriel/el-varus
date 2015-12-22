@@ -468,7 +468,7 @@
 
         private static void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            if (args.Target is Obj_AI_Hero && args.Target.IsValidTarget(spells[Spells.Q].Range + 150))
+            if (args.Target is Obj_AI_Hero && args.Target.IsValidTarget(spells[Spells.Q].Range))
             {
                 if (spells[Spells.Q].IsReady()) //IsListActive("Combo.Prio").SelectedIndex == 2 && 
                 {
