@@ -470,11 +470,12 @@
         {
             if (args.Target is Obj_AI_Hero && args.Target.IsValidTarget(spells[Spells.Q].Range + 150))
             {
-                if (IsListActive("Combo.Prio").SelectedIndex == 2 && spells[Spells.Q].IsReady())
+                if (spells[Spells.Q].IsReady()) //IsListActive("Combo.Prio").SelectedIndex == 2 && 
                 {
                     if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || HasPassive)
                     {
-                        spells[Spells.Q].Cast();
+                        Player.IssueOrder(GameObjectOrder.AttackUnit, args.Target);
+                        //spells[Spells.Q].Cast();
                     }
                 }
             }
