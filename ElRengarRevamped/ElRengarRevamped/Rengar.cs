@@ -472,11 +472,10 @@
             {
                 if (spells[Spells.Q].IsReady()) //IsListActive("Combo.Prio").SelectedIndex == 2 && 
                 {
-                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || HasPassive)
+                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !HasPassive)
                     {
-                        Orbwalking.ResetAutoAttackTimer();
-                        Player.IssueOrder(GameObjectOrder.AttackUnit, args.Target);
-                        //spells[Spells.Q].Cast();
+                        args.Process = false;
+                        spells[Spells.Q].Cast();
                     }
                 }
             }
