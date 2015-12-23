@@ -84,7 +84,6 @@
                 CustomEvents.Unit.OnDash += OnDash;
                 Drawing.OnEndScene += OnDrawEndScene;
                 Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
-                Orbwalking.BeforeAttack += BeforeAttack;
                 Orbwalking.AfterAttack += AfterAttack;
                 Game.OnWndProc += OnClick;
             }
@@ -100,9 +99,9 @@
 
         private static void AfterAttack(AttackableUnit unit, AttackableUnit target)
         {
-            if (Ferocity == 5 && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
-                if (unit.IsMe && spells[Spells.Q].IsReady() && target is Obj_AI_Hero && target.IsValidTarget(spells[Spells.Q].Range + 50))
+                if (unit.IsMe && spells[Spells.Q].IsReady() && target is Obj_AI_Hero && target.IsValidTarget(spells[Spells.Q].Range))
                 {
                     spells[Spells.Q].Cast();
                 }
@@ -458,22 +457,6 @@
             if (target != null)
             {
                 spells[Spells.W].Cast();
-            }
-        }
-
-        private static void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
-        {
-            if (args.Target is Obj_AI_Hero && args.Target.IsValidTarget(spells[Spells.Q].Range))
-            {
-                if (spells[Spells.Q].IsReady())
-                {
-                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !HasPassive)
-                    {
-                        Orbwalking.ResetAutoAttackTimer();
-                        Player.IssueOrder(GameObjectOrder.AttackUnit, args.Target);
-                        spells[Spells.Q].Cast();
-                    }
-                }
             }
         }
 
