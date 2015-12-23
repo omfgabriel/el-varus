@@ -17,7 +17,15 @@ namespace ElRengarRevamped
         {
             try
             {
-                var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Physical);
+                // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
+                //var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Physical);
+
+                var target = TargetSelector.GetSelectedTarget() != null
+                                 ? TargetSelector.GetSelectedTarget()
+                                 : TargetSelector.GetTarget(
+                                     spells[Spells.Q].Range,
+                                     TargetSelector.DamageType.Physical);
+
                 if (!target.IsValidTarget() || target == null)
                 {
                     return;
