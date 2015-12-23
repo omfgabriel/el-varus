@@ -6,14 +6,11 @@ namespace ElRengarRevamped
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    using SharpDX;
-
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
     // ReSharper disable once ClassNeverInstantiated.Global
     public class ActiveModes : Standards
     {
-
         #region Public Methods and Operators
 
         public static void Combo()
@@ -36,7 +33,8 @@ namespace ElRengarRevamped
                     Youmuu.Cast(Player);
                 }
 
-                if (IsActive("Combo.Use.Smite") && !RengarR && Smite != SpellSlot.Unknown && Player.Spellbook.CanUseSpell(Smite) == SpellState.Ready)
+                if (IsActive("Combo.Use.Smite") && !RengarR && Smite != SpellSlot.Unknown
+                    && Player.Spellbook.CanUseSpell(Smite) == SpellState.Ready)
                 {
                     Player.Spellbook.CastSpell(Smite, target);
                 }
@@ -113,7 +111,7 @@ namespace ElRengarRevamped
                         spells[Spells.Q].Cast();
                     }
 
-                    if (IsActive("Combo.Use.W")) 
+                    if (IsActive("Combo.Use.W"))
                     {
                         CastW(target);
                     }
