@@ -328,11 +328,6 @@
         {
             if (sender.IsMe)
             {
-                /*if (!args.SData.Name.ToLower().Contains("attack"))
-                {
-                    return;
-                }*/
-
                 if (args.SData.Name == "RengarR")
                 {
                     if (Items.CanUseItem(3142))
@@ -470,7 +465,7 @@
         {
             if (args.Target is Obj_AI_Hero && args.Target.IsValidTarget(spells[Spells.Q].Range))
             {
-                if (spells[Spells.Q].IsReady()) //IsListActive("Combo.Prio").SelectedIndex == 2 && 
+                if (spells[Spells.Q].IsReady())
                 {
                     if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !HasPassive)
                     {

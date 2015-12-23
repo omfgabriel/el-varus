@@ -36,6 +36,11 @@ namespace ElRengarRevamped
                     Youmuu.Cast(Player);
                 }
 
+                if (IsActive("Combo.Use.Smite") && !RengarR && Smite != SpellSlot.Unknown && Player.Spellbook.CanUseSpell(Smite) == SpellState.Ready)
+                {
+                    Player.Spellbook.CastSpell(Smite, target);
+                }
+
                 UseItems(target);
 
                 #region RengarR
@@ -106,10 +111,6 @@ namespace ElRengarRevamped
                     if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 50))
                     {
                         spells[Spells.Q].Cast();
-                        /*if (Orbwalking.IsAutoAttack(Player.LastCastedSpellName()))
-                        {
-                            spells[Spells.Q].Cast();
-                        }*/
                     }
 
                     if (IsActive("Combo.Use.W")) 
@@ -140,12 +141,6 @@ namespace ElRengarRevamped
                 }
 
                 #region Summoner spells
-
-
-                if (IsActive("Combo.Use.Smite") && !RengarR && Smite != SpellSlot.Unknown && Player.Spellbook.CanUseSpell(Smite) == SpellState.Ready)
-                {
-                    Player.Spellbook.CastSpell(Smite, target);
-                }
 
                 if (IsActive("Combo.Use.Ignite") && Player.Distance(target) <= 600
                     && IgniteDamage(target) >= target.Health)
