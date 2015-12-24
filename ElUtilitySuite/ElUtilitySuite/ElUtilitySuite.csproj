@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Summoners\Barrier.cs" />
     <Compile Include="Base.cs" />
+    <Compile Include="Summoners\Cleanse.cs" />
     <Compile Include="Utility\AntiStealth.cs" />
     <Compile Include="Utility\CheckVersion.cs" />
     <Compile Include="Items\Defensive.cs" />
