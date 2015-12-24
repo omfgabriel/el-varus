@@ -207,7 +207,7 @@ namespace ElEasy.Plugins
             Menu.AddSubMenu(hitchanceMenu);
 
             var miscMenu = new Menu("Misc", "Misc");
-            miscMenu.AddItem(new MenuItem("ElEasy.Cassio.Draw.off", "Turn drawings off").SetValue(false));
+            miscMenu.AddItem(new MenuItem("ElEasy.Cassio.Draw.off", "Turn drawings off").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElEasy.Cassio.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Cassio.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Cassio.Draw.E", "Draw E").SetValue(new Circle()));

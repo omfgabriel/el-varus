@@ -106,7 +106,7 @@ namespace ElTristana
             #region 
 
             var miscMenu = new Menu("Misc", "Misc");
-            miscMenu.AddItem(new MenuItem("ElTristana.Draw.off", "Turn drawings off").SetValue(false));
+            miscMenu.AddItem(new MenuItem("ElTristana.Draw.off", "Turn drawings off").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElTristana.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElTristana.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElTristana.Draw.R", "Draw R").SetValue(new Circle()));

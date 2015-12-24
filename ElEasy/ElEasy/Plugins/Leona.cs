@@ -168,7 +168,7 @@
             Menu.AddSubMenu(settingsMenu);
 
             var miscMenu = new Menu("Misc", "Misc");
-            miscMenu.AddItem(new MenuItem("ElEasy.Leona.Draw.off", "Turn drawings off").SetValue(false));
+            miscMenu.AddItem(new MenuItem("ElEasy.Leona.Draw.off", "Turn drawings off").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElEasy.Leona.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Leona.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Leona.Draw.E", "Draw E").SetValue(new Circle()));

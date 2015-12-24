@@ -145,7 +145,7 @@
             Menu.AddSubMenu(interruptMenu);
 
             var miscMenu = new Menu("Misc", "Misc");
-            miscMenu.AddItem(new MenuItem("ElEasy.Malphite.Draw.off", "Turn drawings off").SetValue(false));
+            miscMenu.AddItem(new MenuItem("ElEasy.Malphite.Draw.off", "Turn drawings off").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElEasy.Malphite.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Malphite.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Malphite.Draw.R", "Draw R").SetValue(new Circle()));

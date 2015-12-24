@@ -161,7 +161,7 @@
             Menu.AddSubMenu(clearMenu);
 
             var miscMenu = new Menu("Misc", "Misc");
-            miscMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.off", "Turn drawings off").SetValue(false));
+            miscMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.off", "Turn drawings off").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.E", "Draw E").SetValue(new Circle()));
