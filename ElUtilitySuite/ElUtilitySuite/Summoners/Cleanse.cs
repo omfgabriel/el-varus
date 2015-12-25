@@ -9,7 +9,7 @@
 
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
-    internal class Cleanse
+    internal class Cleanse //: IPlugin
     {
         #region Constructors and Destructors
 
@@ -600,9 +600,9 @@
         {
             this.Menu = rootMenu.AddSubMenu(new Menu("Cleanse", "CleanseV3"));
 
-            var spellsMenu = this.Menu.AddSubMenu(new Menu("Spells", "CleanseV3Spells"));
+            var spellsMenu = new Menu("Spells", "CleanseV3Spells");
 
-            foreach (var spell in Spells)
+            foreach (var spell in Spells) //need to check champs in game :Fappa:
             {
                 spellsMenu.AddItem(new MenuItem(spell.Name, spell.MenuName).SetValue(spell.Cleanse));
             }
