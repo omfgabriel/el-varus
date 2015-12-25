@@ -24,7 +24,7 @@
     {
         #region Static Fields
 
-        public static Vector3 InsecClickPos;
+        public static Vector3 InsecClickPos;    
 
         public static Orbwalking.Orbwalker Orbwalker;
 
@@ -75,6 +75,9 @@
             Notifications.AddNotification("ElAlistarReborn by jQuery", 5000);
             ignite = Player.GetSpellSlot("summonerdot");
             flashSlot = Player.GetSpellSlot("summonerflash");
+
+            Game.PrintChat(
+                    "[00:01] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
 
             ElAlistarMenu.Initialize();
             Game.OnUpdate += OnUpdate;
@@ -266,35 +269,33 @@
 
         private static void OnCombo()
         {
-            var target = TargetSelector.GetSelectedTarget();
-            if (target == null || !target.IsValidTarget())
-            {
-                target = TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
-            }
-
-            if (!target.IsValidTarget(spells[Spells.W].Range))
+            var target = TargetSelector.GetSelectedTarget() != null
+                                 ? TargetSelector.GetSelectedTarget()
+                                 : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
+            if (!target.IsValidTarget() || target == null)
             {
                 return;
             }
 
-            var useQ = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Q").GetValue<bool>();
-            var useW = ElAlistarMenu.Menu.Item("ElAlistar.Combo.W").GetValue<bool>();
-            var useR = ElAlistarMenu.Menu.Item("ElAlistar.Combo.R").GetValue<bool>();
-            var useI = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Ignite").GetValue<bool>();
+            var useQ = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Q").IsActive();
+            var useW = ElAlistarMenu.Menu.Item("ElAlistar.Combo.W").IsActive();
+            var useR = ElAlistarMenu.Menu.Item("ElAlistar.Combo.R").IsActive();
+            var useI = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Ignite").IsActive();
             var enemiesInRange = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Count.Enemies").GetValue<Slider>().Value;
             var rHealth = ElAlistarMenu.Menu.Item("ElAlistar.Combo.HP.Enemies").GetValue<Slider>().Value;
 
             var qmana = Player.Spellbook.GetSpell(SpellSlot.Q);
             var wmana = Player.Spellbook.GetSpell(SpellSlot.W);
 
-            if (useQ && useW && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady()
-                && Player.Mana > qmana.ManaCost + wmana.ManaCost)
+            if (target.IsValidTarget(spells[Spells.W].Range))
             {
-                spells[Spells.W].Cast(target);
-                //var comboTime = Math.Max(0, Player.Distance(target) - 500) * 10 / 25 + 25;
-                var comboTime = Math.Max(0, Player.Distance(target) - 365) / 1.2f - 25;
-
-                Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
+                if (useQ && useW && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady()
+                    && Player.Mana > qmana.ManaCost + wmana.ManaCost)
+                {
+                    spells[Spells.W].Cast(target);
+                    var comboTime = Math.Max(0, Player.Distance(target) - 365) / 1.2f - 25;
+                    Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
+                }
             }
 
             if (useR && Player.CountEnemiesInRange(spells[Spells.W].Range) >= enemiesInRange
@@ -303,14 +304,12 @@
                 spells[Spells.R].Cast(Player);
             }
 
-            //Check if target is killable with W when Q is on CD
             if (spells[Spells.W].IsReady() && !spells[Spells.Q].IsReady() && spells[Spells.W].IsInRange(target)
                 && GetWDamage(target) > target.Health)
             {
                 spells[Spells.W].Cast(target);
             }
 
-            // Ignite when killable
             if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
             {
                 Player.Spellbook.CastSpell(ignite, target);
