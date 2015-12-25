@@ -18,13 +18,9 @@ namespace ElRengarRevamped
             try
             {
                 // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
-                //var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Physical);
-
                 var target = TargetSelector.GetSelectedTarget() != null
                                  ? TargetSelector.GetSelectedTarget()
-                                 : TargetSelector.GetTarget(
-                                     spells[Spells.Q].Range,
-                                     TargetSelector.DamageType.Physical);
+                                 : TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
 
                 if (!target.IsValidTarget() || target == null)
                 {
@@ -94,8 +90,7 @@ namespace ElRengarRevamped
                             }
                             break;
                         case 1:
-                            if (spells[Spells.W].IsReady() && !RengarR && target.IsValidTarget(spells[Spells.W].Range)
-                                && !Player.IsDashing() && !HasPassive)
+                            if (spells[Spells.W].IsReady() && !RengarR && target.IsValidTarget(spells[Spells.W].Range) && !Player.IsDashing() && !HasPassive)
                             {
                                 if (Rengar.LastW + 200 < Environment.TickCount)
                                 {
@@ -104,7 +99,7 @@ namespace ElRengarRevamped
                             }
                             break;
                         case 2:
-                            if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 50))
+                            if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range))
                             {
                                 spells[Spells.Q].Cast();
                             }
@@ -114,7 +109,7 @@ namespace ElRengarRevamped
 
                 if (Ferocity <= 4)
                 {
-                    if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 50))
+                    if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range))
                     {
                         spells[Spells.Q].Cast();
                     }
@@ -132,10 +127,9 @@ namespace ElRengarRevamped
                         }
                     }
 
-                    if (Ferocity == 5)
+                    if (Ferocity == 5 && !RengarR)
                     {
-                        if (IsActive("Combo.Use.E.OutOfRange") && target.IsValidTarget(spells[Spells.Q].Range + 50)
-                            && !RengarR)
+                        if (IsActive("Combo.Use.E.OutOfRange") && target.IsValidTarget(spells[Spells.Q].Range))
                         {
                             var prediction = spells[Spells.E].GetPrediction(target);
                             if (prediction.Hitchance >= HitChance.VeryHigh && prediction.CollisionObjects.Count == 0)
@@ -152,7 +146,6 @@ namespace ElRengarRevamped
                     && IgniteDamage(target) >= target.Health)
                 {
                     Player.Spellbook.CastSpell(Ignite, target);
-                    return;
                 }
 
                 #endregion
@@ -239,27 +232,16 @@ namespace ElRengarRevamped
 
         public static void Harass()
         {
-            var target = TargetSelector.GetSelectedTarget();
-            if (target == null || !target.IsValidTarget() || TargetSelector.GetSelectedTarget() == null)
-            {
-                target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Physical);
-            }
+            // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
+            var target = TargetSelector.GetSelectedTarget() != null
+                                ? TargetSelector.GetSelectedTarget()
+                                : TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
 
-            if (TargetSelector.GetSelectedTarget() != null)
-            {
-                if (target.IsValidTarget(spells[Spells.R].Range))
-                {
-                    target = TargetSelector.GetSelectedTarget();
-                    TargetSelector.SetTarget(target);
-                    Hud.SelectedUnit = target;
-                }
-            }
-
-            target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Physical);
-            if (!target.IsValidTarget(spells[Spells.R].Range))
+            if (!target.IsValidTarget() || target == null)
             {
                 return;
             }
+
 
             #region RengarR
 
@@ -274,7 +256,7 @@ namespace ElRengarRevamped
                             var prediction = spells[Spells.E].GetPrediction(target);
                             if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
                             {
-                                spells[Spells.E].Cast(target.ServerPosition);
+                                spells[Spells.E].Cast(target);
                             }
                         }
                         break;
@@ -290,7 +272,7 @@ namespace ElRengarRevamped
 
             if (Ferocity <= 4)
             {
-                if (IsActive("Harass.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range + 50))
+                if (IsActive("Harass.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range))
                 {
                     spells[Spells.Q].Cast();
                 }
@@ -343,7 +325,7 @@ namespace ElRengarRevamped
 
             if (Ferocity == 5 && IsActive("Jungle.Save.Ferocity"))
             {
-                if (minion.IsValidTarget(spells[Spells.W].Range))
+                if (minion.IsValidTarget(spells[Spells.W].Range) && !HasPassive)
                 {
                     UseHydra();
                 }
@@ -357,7 +339,7 @@ namespace ElRengarRevamped
                 return;
             }
 
-            if (IsActive("Jungle.Use.W") && spells[Spells.W].IsReady() && minion.IsValidTarget(spells[Spells.W].Range))
+            if (IsActive("Jungle.Use.W") && spells[Spells.W].IsReady() && minion.IsValidTarget(spells[Spells.W].Range) && !HasPassive)
             {
                 UseHydra();
                 spells[Spells.W].Cast();

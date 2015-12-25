@@ -152,7 +152,7 @@
                             }
                             break;
                         case 2:
-                            if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range + 150))
+                            if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                             {
                                 spells[Spells.Q].Cast();
                             }
@@ -167,7 +167,7 @@
                         spells[Spells.E].Cast(target);
                     }
 
-                    if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range + 50))
+                    if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                     {
                         spells[Spells.Q].Cast();
                     }
@@ -190,7 +190,7 @@
 
                         spells[Spells.E].Cast(target);
 
-                        if (target.IsValidTarget(spells[Spells.Q].Range + 150))
+                        if (target.IsValidTarget(spells[Spells.Q].Range))
                         {
                             Utility.DelayAction.Add(
                                 50,
@@ -383,7 +383,6 @@
             try
             {
                 SwitchCombo();
-                SmiteCombo();
                 Heal();
                 KillstealHandler();
                 switch (Orbwalker.ActiveMode)
@@ -412,7 +411,7 @@
                     var searchrange = MenuInit.Menu.Item("Beta.searchrange").GetValue<Slider>().Value;
                     var target =
                         ObjectManager.Get<Obj_AI_Hero>()
-                            .FirstOrDefault(h => h.IsEnemy && h.IsValidTarget(searchrange, false));
+                            .FirstOrDefault(h => h.IsEnemy && !h.IsDead && !h.IsZombie && h.IsValidTarget(searchrange));
 
                     if (!target.IsValidTarget())
                     {
@@ -471,6 +470,7 @@
                         MenuInit.Menu.Item("Combo.Prio").SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
                         LastSwitch = Utils.GameTimeTickCount;
                         break;
+
                     case 1:
                         MenuInit.Menu.Item("Combo.Prio").SetValue(new StringList(new[] { "E", "W", "Q" }, 0));
                         LastSwitch = Utils.GameTimeTickCount;
