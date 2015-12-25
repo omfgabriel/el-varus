@@ -220,11 +220,11 @@ namespace ElRengarRevamped
                     ItemData.Youmuus_Ghostblade.GetItem().Cast();
                 }
 
-                if (ItemData.Titanic_Hydra_Melee_Only.GetItem().IsReady()
+                /*if (ItemData.Titanic_Hydra_Melee_Only.GetItem().IsReady()
                     && Orbwalking.GetRealAutoAttackRange(Player) > Player.Distance(target) && !RengarR)
                 {
                     ItemData.Titanic_Hydra_Melee_Only.GetItem().Cast();
-                }
+                }*/
             }
         }
 
