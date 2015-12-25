@@ -148,7 +148,7 @@
                         case 0:
                             if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
                             {
-                                spells[Spells.E].Cast(target);
+                                spells[Spells.E].Cast(target.ServerPosition);
                             }
                             break;
                         case 2:
@@ -164,7 +164,7 @@
                 {
                     if (spells[Spells.E].IsReady())
                     {
-                        spells[Spells.E].Cast(target);
+                        spells[Spells.E].Cast(target.ServerPosition);
                     }
 
                     if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
@@ -176,9 +176,12 @@
                 switch (IsListActive("Combo.Prio").SelectedIndex)
                 {
                     case 0:
-                        if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range) && Ferocity == 5)
+                        if (Ferocity == 5)
                         {
-                            spells[Spells.E].Cast(target);
+                            if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
+                            {
+                                spells[Spells.E].Cast(target.ServerPosition);
+                            }
                         }
                         break;
 

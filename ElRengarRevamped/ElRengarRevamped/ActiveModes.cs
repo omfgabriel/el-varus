@@ -126,16 +126,16 @@ namespace ElRengarRevamped
                             CastE(target);
                         }
                     }
+                }
 
-                    if (Ferocity == 5 && !RengarR)
+                if (Ferocity == 5 && !RengarR)
+                {
+                    if (IsActive("Combo.Use.E.OutOfRange") && target.IsValidTarget(spells[Spells.Q].Range))
                     {
-                        if (IsActive("Combo.Use.E.OutOfRange") && target.IsValidTarget(spells[Spells.Q].Range))
+                        var prediction = spells[Spells.E].GetPrediction(target);
+                        if (prediction.Hitchance >= HitChance.VeryHigh && prediction.CollisionObjects.Count == 0)
                         {
-                            var prediction = spells[Spells.E].GetPrediction(target);
-                            if (prediction.Hitchance >= HitChance.VeryHigh && prediction.CollisionObjects.Count == 0)
-                            {
-                                spells[Spells.E].Cast(target);
-                            }
+                            spells[Spells.E].Cast(target);
                         }
                     }
                 }
