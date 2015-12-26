@@ -456,9 +456,16 @@
                                  }
                          };
 
-            Spells = Spells.Where(x => !x.QssIgnore).ToList();
+            Spells =
+                Spells.Where(
+                    x =>
+                    !x.QssIgnore
+                    && HeroManager.Enemies.Any(
+                        y => y.ChampionName.Equals(x.Champion, StringComparison.InvariantCultureIgnoreCase))).ToList();
 
             #endregion
+
+            #region Item Data
 
             Items = new List<CleanseItem>
                         {
@@ -529,18 +536,10 @@
                                 }
                         };
 
+            #endregion
+
             Items = Items.OrderBy(x => x.Priority).ToList();
         }
-
-        #endregion
-
-        #region Delegates
-
-        /// <summary>
-        ///     Delegate that returns a SpellSlot.
-        /// </summary>
-        /// <returns></returns>
-        public delegate SpellSlot GetSlotDelegate();
 
         #endregion
 
@@ -598,18 +597,28 @@
         /// <param name="rootMenu">The root menu.</param>
         public void CreateMenu(Menu rootMenu)
         {
-            this.Menu = rootMenu.AddSubMenu(new Menu("Cleanse", "CleanseV3"));
-
-            var spellsMenu = new Menu("Spells", "CleanseV3Spells");
-
-            foreach (var spell in Spells) //need to check champs in game :Fappa:
+            this.Menu = new Menu("Cleanse", "CleanseV3");
             {
-                spellsMenu.AddItem(new MenuItem(spell.Name, spell.MenuName).SetValue(spell.Cleanse));
+                var spellsMenu = new Menu("Spells", "CleanseV3Spells");
+                {
+                    foreach (
+                        var spell in
+                            Spells.Where(
+                                x =>
+                                HeroManager.Enemies.Any(
+                                    y => y.ChampionName.Equals(x.Champion, StringComparison.InvariantCultureIgnoreCase)))
+                        )
+                    {
+                        spellsMenu.AddItem(new MenuItem(spell.Name, spell.MenuName).SetValue(spell.Cleanse));
+                    }
+                }
+
+                this.Menu.AddSubMenu(spellsMenu);
+
+                this.Menu.AddItem(new MenuItem("CleanseActivated", "Use Cleanse").SetValue(true));
             }
 
-            this.Menu.AddSubMenu(spellsMenu);
-
-            this.Menu.AddItem(new MenuItem("CleanseActivated", "Use Cleanse").SetValue(true));
+            rootMenu.AddSubMenu(this.Menu);
         }
 
         /// <summary>
@@ -720,7 +729,7 @@
             /// <value>
             ///     The slot delegate.
             /// </value>
-            public GetSlotDelegate Slot { get; set; }
+            public Func<SpellSlot> Slot { get; set; }
 
             /// <summary>
             ///     Gets or sets the spell.
