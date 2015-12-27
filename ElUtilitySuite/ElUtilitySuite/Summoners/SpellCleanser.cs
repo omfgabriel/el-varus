@@ -14,7 +14,7 @@
     /// <summary>
     ///     Casts Cleanse on dangerous spells.
     /// </summary>
-    public class SpellCleanser : IPlugin
+    public class SpellCleanser //: IPlugin
     {
         #region Static Fields
 
