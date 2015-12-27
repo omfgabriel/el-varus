@@ -22,9 +22,9 @@ namespace ElSinged
     {
         private static String hero = "Singed";
         public static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
-        public static Orbwalking.Orbwalker _orbwalker;
+        public static Orbwalking.Orbwalker Orbwalker;
 
-        private static SpellSlot Ignite;
+        private static SpellSlot ignite;
         private static bool useQAgain;
 
 
@@ -66,7 +66,7 @@ namespace ElSinged
 
         private static float IgniteDamage(Obj_AI_Hero target)
         {
-            if (Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
+            if (ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(ignite) != SpellState.Ready)
             {
                 return 0f;
             }
@@ -84,7 +84,7 @@ namespace ElSinged
           
             Console.WriteLine("Injected");
                
-            Ignite = Player.GetSpellSlot("summonerdot");
+            ignite = Player.GetSpellSlot("summonerdot");
 
             Notifications.AddNotification("ElSinged by jQuery v1.0.0.3", 10000);
             spells[Spells.W].SetSkillshot(0.5f, 350, 700, false, SkillshotType.SkillshotCircle);
@@ -119,7 +119,7 @@ namespace ElSinged
         {
             var target = TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Magical);
 
-            switch (_orbwalker.ActiveMode)
+            switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
                     Combo(target);
@@ -146,8 +146,8 @@ namespace ElSinged
             {
                 foreach (var minion in minions)
                 {
-                    var minionHP = HealthPrediction.GetHealthPrediction(minion, (int)spells[Spells.E].Delay);
-                    if (spells[Spells.E].GetDamage(minion) > minion.Health && minionHP > 0 && minion.IsValidTarget(spells[Spells.E].Range) && clearE)
+                    var minionHp = HealthPrediction.GetHealthPrediction(minion, (int)spells[Spells.E].Delay);
+                    if (spells[Spells.E].GetDamage(minion) > minion.Health && minionHp > 0 && minion.IsValidTarget(spells[Spells.E].Range) && clearE)
                     {
                         spells[Spells.E].CastOnUnit(minion, true);
                     }
@@ -208,7 +208,7 @@ namespace ElSinged
 
         private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 if (spells[Spells.E].IsReady())
                 {
@@ -247,7 +247,7 @@ namespace ElSinged
             {
                 if (!exploit && checkTime <= Environment.TickCount && !PosionActivation && !PosionActive())
                 {
-                    spells[Spells.Q].Cast(Player);
+                    spells[Spells.Q].Cast();
                     PosionActivation = true;
                     Utility.DelayAction.Add(1000, () => PosionActivation = false);
                 }
@@ -273,26 +273,26 @@ namespace ElSinged
                 {
                     spells[Spells.W].CastIfHitchanceEquals(target, CustomHitChance);
                 }
-         
-                if (target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)) == false && comboW)
-                {
-                    spells[Spells.W].CastIfHitchanceEquals(target, CustomHitChance);
-                }
 
                 if (comboE && spells[Spells.E].IsReady())
                 {
                     spells[Spells.E].CastOnUnit(target);
                 }
 
+                if (target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)) == false && comboW)
+                {
+                    spells[Spells.W].CastIfHitchanceEquals(target, CustomHitChance);
+                }
+
                 if (Player.CountEnemiesInRange(spells[Spells.W].Range) >= comboCount && comboR)
                 {
-                    spells[Spells.R].Cast(Player);
+                    spells[Spells.R].Cast();
                 }
             }
 
             if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useIgnite)
             {
-                Player.Spellbook.CastSpell(Ignite, target);
+                Player.Spellbook.CastSpell(ignite, target);
             }
         }
         #endregion
