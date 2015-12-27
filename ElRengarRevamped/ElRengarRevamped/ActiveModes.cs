@@ -20,9 +20,9 @@ namespace ElRengarRevamped
                 // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
                 var target = TargetSelector.GetSelectedTarget() != null
                                  ? TargetSelector.GetSelectedTarget()
-                                 : TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
+                                 : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
 
-                if (!target.IsValidTarget() || target == null)
+                if (target == null || !target.IsValidTarget())
                 {
                     return;
                 }
@@ -52,13 +52,12 @@ namespace ElRengarRevamped
                     switch (IsListActive("Combo.Prio").SelectedIndex)
                     {
                         case 0:
-                            if (!RengarR && Rengar.LastE + 200 < Environment.TickCount
-                                && target.IsValidTarget(spells[Spells.E].Range))
+                            if (!RengarR && target.IsValidTarget(spells[Spells.E].Range))
                             {
                                 var prediction = spells[Spells.E].GetPrediction(target);
                                 if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
                                 {
-                                    if (spells[Spells.E].Cast(target) == Spell.CastStates.SuccessfullyCasted)
+                                    if (spells[Spells.E].Cast(target).IsCasted())
                                     {
                                         if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
                                         {
@@ -76,7 +75,7 @@ namespace ElRengarRevamped
                                 if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0
                                     && target.IsValidTarget())
                                 {
-                                    if (spells[Spells.E].Cast(target) == Spell.CastStates.SuccessfullyCasted)
+                                    if (spells[Spells.E].Cast(target).IsCasted())
                                     {
                                         if (IsActive("Combo.Switch.E")
                                             && Utils.GameTimeTickCount - LastSwitch >= 350)
@@ -90,9 +89,9 @@ namespace ElRengarRevamped
                             }
                             break;
                         case 1:
-                            if (spells[Spells.W].IsReady() && !RengarR && target.IsValidTarget(spells[Spells.W].Range) && !Player.IsDashing() && !HasPassive)
+                            if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady() && !RengarR && !Player.IsDashing() && !HasPassive)
                             {
-                                if (Rengar.LastW + 200 < Environment.TickCount)
+                                if (target.IsValidTarget(spells[Spells.W].Range))
                                 {
                                     CastW(target);
                                 }
@@ -142,7 +141,7 @@ namespace ElRengarRevamped
 
                 #region Summoner spells
 
-                if (IsActive("Combo.Use.Ignite") && Player.Distance(target) <= 600
+                if (IsActive("Combo.Use.Ignite") && target.IsValidTarget(600f)
                     && IgniteDamage(target) >= target.Health)
                 {
                     Player.Spellbook.CastSpell(Ignite, target);
@@ -219,12 +218,6 @@ namespace ElRengarRevamped
                 {
                     ItemData.Youmuus_Ghostblade.GetItem().Cast();
                 }
-
-                /*if (ItemData.Titanic_Hydra_Melee_Only.GetItem().IsReady()
-                    && Orbwalking.GetRealAutoAttackRange(Player) > Player.Distance(target) && !RengarR)
-                {
-                    ItemData.Titanic_Hydra_Melee_Only.GetItem().Cast();
-                }*/
             }
         }
 
@@ -237,7 +230,7 @@ namespace ElRengarRevamped
                                 ? TargetSelector.GetSelectedTarget()
                                 : TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
 
-            if (!target.IsValidTarget() || target == null)
+            if (target == null || !target.IsValidTarget())
             {
                 return;
             }
@@ -253,7 +246,7 @@ namespace ElRengarRevamped
                         if (!HasPassive && IsActive("Harass.Use.E") && spells[Spells.E].IsReady()
                             && target.IsValidTarget(spells[Spells.E].Range))
                         {
-                            var prediction = spells[Spells.E].GetPrediction(target);
+                            var prediction = spells[Spells.E].GetPrediction(target);    
                             if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
                             {
                                 spells[Spells.E].Cast(target);
@@ -288,7 +281,7 @@ namespace ElRengarRevamped
                     var prediction = spells[Spells.E].GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
                     {
-                        spells[Spells.E].Cast(target.ServerPosition);
+                        spells[Spells.E].Cast(target);
                     }
                 }
 

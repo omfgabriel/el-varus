@@ -128,8 +128,8 @@
             if (!sender.IsMe)
                 return;
 
-            var target = TargetSelector.GetTarget(1500, TargetSelector.DamageType.Physical);
-            if (!target.IsValidTarget())
+            var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+            if (target == null || !target.IsValidTarget())
             {
                 return;
             }
@@ -148,7 +148,7 @@
                         case 0:
                             if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
                             {
-                                spells[Spells.E].Cast(target.ServerPosition);
+                                spells[Spells.E].Cast(target);
                             }
                             break;
                         case 2:
@@ -164,7 +164,7 @@
                 {
                     if (spells[Spells.E].IsReady())
                     {
-                        spells[Spells.E].Cast(target.ServerPosition);
+                        spells[Spells.E].Cast(target);
                     }
 
                     if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
@@ -180,7 +180,7 @@
                         {
                             if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
                             {
-                                spells[Spells.E].Cast(target.ServerPosition);
+                                spells[Spells.E].Cast(target);
                             }
                         }
                         break;
@@ -334,7 +334,7 @@
                 {
                     if (Items.CanUseItem(3142))
                     {
-                        Utility.DelayAction.Add(1500, () => Items.UseItem(3142));
+                        Utility.DelayAction.Add(2500, () => Items.UseItem(3142));
                     }
                 }
 
