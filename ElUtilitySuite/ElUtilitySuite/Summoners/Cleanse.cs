@@ -77,7 +77,7 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Malzahar", Name = "alzaharmaleficvisions", MenuName = "Malzahar Aids",
+                                     Champion = "Malzahar", Name = "alzaharmaleficvisions", MenuName = "Malzahar Ficvisions",
                                      Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.E, Interval = .8
                                  },
@@ -127,7 +127,6 @@
                                  {
                                      Champion = "Tristana", Name = "tristanaechargesound",
                                      MenuName = "Tristana Explosive Charge", Evade = false, DoT = true,
-                                     // not really a dot but can be cleansed
                                      EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E, Interval = .8
                                  },
                              new CleanseSpell
