@@ -52,7 +52,7 @@ namespace ElRengarRevamped
                     switch (IsListActive("Combo.Prio").SelectedIndex)
                     {
                         case 0:
-                            if (!RengarR && target.IsValidTarget(spells[Spells.E].Range))
+                            if (!RengarR && IsActive("Combo.Use.E") && spells[Spells.E].IsReady() &&  target.IsValidTarget(spells[Spells.E].Range))
                             {
                                 var prediction = spells[Spells.E].GetPrediction(target);
                                 if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
@@ -60,25 +60,6 @@ namespace ElRengarRevamped
                                     if (spells[Spells.E].Cast(target).IsCasted())
                                     {
                                         if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
-                                        {
-                                            MenuInit.Menu.Item("Combo.Prio")
-                                                .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
-                                            LastSwitch = Utils.GameTimeTickCount;
-                                        }
-                                    }
-                                }
-                            }
-                            else if (!RengarR && IsActive("Combo.Use.E") && spells[Spells.E].IsReady()
-                                     && target.IsValidTarget(spells[Spells.E].Range))
-                            {
-                                var prediction = spells[Spells.E].GetPrediction(target);
-                                if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0
-                                    && target.IsValidTarget())
-                                {
-                                    if (spells[Spells.E].Cast(target).IsCasted())
-                                    {
-                                        if (IsActive("Combo.Switch.E")
-                                            && Utils.GameTimeTickCount - LastSwitch >= 350)
                                         {
                                             MenuInit.Menu.Item("Combo.Prio")
                                                 .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
@@ -325,11 +306,9 @@ namespace ElRengarRevamped
                 return;
             }
 
-            if (IsActive("Jungle.Use.Q") && spells[Spells.Q].IsReady() && Rengar.LastQ + 200 < Environment.TickCount
-                && minion.IsValidTarget(spells[Spells.Q].Range + 50))
+            if (IsActive("Jungle.Use.Q") && spells[Spells.Q].IsReady() && minion.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast();
-                return;
             }
 
             if (IsActive("Jungle.Use.W") && spells[Spells.W].IsReady() && minion.IsValidTarget(spells[Spells.W].Range) && !HasPassive)
