@@ -355,6 +355,24 @@
                                      Name = "vir", Evade = false, DoT = false, Cleanse = false, CleanseTimer = 0,
                                      EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
                                  },
+                              new CleanseSpell
+                                 {
+                                     Champion = "twistedfate", Name = "goldcardpreattack", MenuName = "Twisted Fate Gold (W)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.W
+                                 },
+                               new CleanseSpell
+                                 {
+                                     Champion = "amumu", Name = "bandagetoss", MenuName = "bandagetoss (Q)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Q
+                                 },
+                               new CleanseSpell
+                                 {
+                                     Champion = "amumu", Name = "curseofthesadmummy", MenuName = "curseofthesadmummy (R)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.R
+                                 },
                              new CleanseSpell
                                  {
                                      Name = "virknockup", Evade = false, DoT = false, Cleanse = false, CleanseTimer = 0,
