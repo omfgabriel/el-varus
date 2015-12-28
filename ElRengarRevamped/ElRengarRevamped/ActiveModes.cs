@@ -66,6 +66,7 @@ namespace ElRengarRevamped
                                             LastSwitch = Utils.GameTimeTickCount;
                                         }
                                     }
+                                    return;
                                 }
                             }
                             break;
