@@ -87,14 +87,14 @@ namespace ElRengarRevamped
 
                 if (Ferocity <= 4)
                 {
-                    if (IsActive("Combo.Use.Q") && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
-                    {
-                        spells[Spells.Q].Cast();
-                    }
-
                     if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady())
                     {
                         CastW(target);
+                    }
+
+                    if (IsActive("Combo.Use.Q") && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                    {
+                        spells[Spells.Q].Cast();
                     }
 
                     if (IsActive("Combo.Use.E") && spells[Spells.E].IsReady())
