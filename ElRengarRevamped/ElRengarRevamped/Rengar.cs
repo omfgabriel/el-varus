@@ -98,7 +98,7 @@
 
         private static void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !Player.HasBuff("rengarpassivebuff") && spells[Spells.Q].IsReady() && 
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !HasPassive && spells[Spells.Q].IsReady() && 
                 !(IsListActive("Combo.Prio").SelectedIndex == 0 && Ferocity == 5))
             {
                 var x = Prediction.GetPrediction(args.Target as Obj_AI_Base, Player.AttackCastDelay + 0.04f);
