@@ -83,6 +83,7 @@
                 Drawing.OnEndScene += OnDrawEndScene;
                 Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
                 Orbwalking.AfterAttack += AfterAttack;
+                Orbwalking.BeforeAttack += BeforeAttack;
                 Game.OnWndProc += OnClick;
             }
             catch (Exception e)
@@ -94,6 +95,21 @@
         #endregion
 
         #region Methods
+
+        private static void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !Player.HasBuff("rengarpassivebuff") && spells[Spells.Q].IsReady() && 
+                !(IsListActive("Combo.Prio").SelectedIndex == 0 && Ferocity == 5))
+            {
+                var x = Prediction.GetPrediction(args.Target as Obj_AI_Base, Player.AttackCastDelay + 0.04f);
+                if (Player.Position.To2D().Distance(x.UnitPosition.To2D())
+                    >= Player.BoundingRadius + Player.AttackRange + args.Target.BoundingRadius)
+                {
+                    args.Process = false;
+                    spells[Spells.Q].Cast();
+                }
+            }
+        }
 
         private static void AfterAttack(AttackableUnit unit, AttackableUnit target)
         {

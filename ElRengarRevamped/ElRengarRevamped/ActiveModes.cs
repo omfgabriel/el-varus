@@ -45,6 +45,7 @@ namespace ElRengarRevamped
 
                 UseItems(target);
 
+
                 #region RengarR
 
                 if (Ferocity == 5)
@@ -165,16 +166,17 @@ namespace ElRengarRevamped
 
         private static void UseItems(Obj_AI_Base target)
         {
-            if (ItemData.Ravenous_Hydra_Melee_Only.GetItem().IsReady()
-                && ItemData.Ravenous_Hydra_Melee_Only.Range > Player.Distance(target))
+            if (target.Distance(Player.ServerPosition) <= spells[Spells.W].Range)
             {
-                ItemData.Ravenous_Hydra_Melee_Only.GetItem().Cast();
-            }
+                if (Items.CanUseItem(3077))
+                {
+                    Items.UseItem(3077);
+                }
 
-            if (ItemData.Tiamat_Melee_Only.GetItem().IsReady()
-                && ItemData.Tiamat_Melee_Only.Range > Player.Distance(target))
-            {
-                ItemData.Tiamat_Melee_Only.GetItem().Cast();
+                if (Items.CanUseItem(3074))
+                {
+                    Items.UseItem(3074);
+                }
             }
 
             if (ItemData.Blade_of_the_Ruined_King.GetItem().IsReady()
