@@ -38,7 +38,7 @@ namespace ElRengarRevamped
                 }
 
                 if (IsActive("Combo.Use.Smite") && !RengarR && Smite != SpellSlot.Unknown
-                    && Player.Spellbook.CanUseSpell(Smite) == SpellState.Ready)
+                    && Player.Spellbook.CanUseSpell(Smite) == SpellState.Ready && !target.IsZombie)
                 {
                     Player.Spellbook.CastSpell(Smite, target);
                 }

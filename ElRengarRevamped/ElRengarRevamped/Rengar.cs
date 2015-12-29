@@ -99,7 +99,7 @@
         private static void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !HasPassive && spells[Spells.Q].IsReady() && 
-                !(IsListActive("Combo.Prio").SelectedIndex == 0 && Ferocity == 5))
+                !(IsListActive("Combo.Prio").SelectedIndex == 0 || IsListActive("Combo.Prio").SelectedIndex == 1 && Ferocity == 5))
             {
                 var x = Prediction.GetPrediction(args.Target as Obj_AI_Base, Player.AttackCastDelay + 0.04f);
                 if (Player.Position.To2D().Distance(x.UnitPosition.To2D())
