@@ -303,7 +303,7 @@ namespace ElRengarRevamped
                 return;
             }
 
-            if (IsActive("Jungle.Use.Q") && spells[Spells.Q].IsReady() && minion.IsValidTarget(spells[Spells.Q].Range))
+            if (IsActive("Jungle.Use.Q") && spells[Spells.Q].IsReady() && minion.IsValidTarget(spells[Spells.Q].Range + 100))
             {
                 spells[Spells.Q].Cast();
             }
@@ -315,6 +315,39 @@ namespace ElRengarRevamped
             }
 
             if (IsActive("Jungle.Use.E") && spells[Spells.E].IsReady() && minion.IsValidTarget(spells[Spells.E].Range))
+            {
+                spells[Spells.E].Cast(minion.Position);
+            }
+        }
+
+        public static void LastHit()
+        {
+            var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.W].Range).FirstOrDefault();
+            if (minion == null)
+            {
+                return;
+            }
+
+            if (Player.Spellbook.IsAutoAttacking || Player.IsWindingUp)
+            {
+                return;
+            }
+            if (Ferocity == 5 && IsActive("Clear.Save.Ferocity"))
+            {
+                if (minion.IsValidTarget(spells[Spells.W].Range))
+                {
+                    UseHydra();
+                }
+                return;
+            }
+
+            if (IsActive("Clear.Use.Q") && spells[Spells.Q].IsReady() && minion.IsValidTarget(spells[Spells.Q].Range) && spells[Spells.Q].GetDamage(minion) > minion.Health)
+            {
+                spells[Spells.Q].Cast();
+            }
+
+            if (IsActive("Clear.Use.E") && spells[Spells.E].GetDamage(minion) > minion.Health
+               && spells[Spells.E].IsReady() && minion.IsValidTarget(spells[Spells.E].Range))
             {
                 spells[Spells.E].Cast(minion.Position);
             }

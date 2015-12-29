@@ -403,6 +403,10 @@
                     case Orbwalking.OrbwalkingMode.Mixed:
                         ActiveModes.Harass();
                         break;
+
+                    case Orbwalking.OrbwalkingMode.LastHit:
+                        ActiveModes.LastHit();
+                        break;
                 }
 
                 if (IsActive("Beta.Cast.Q") && IsListActive("Combo.Prio").SelectedIndex == 2)
