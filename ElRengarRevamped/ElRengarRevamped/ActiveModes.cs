@@ -58,7 +58,7 @@ namespace ElRengarRevamped
                                 var prediction = spells[Spells.E].GetPrediction(target);
                                 if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
                                 {
-                                    if (spells[Spells.E].Cast(target) == Spell.CastStates.SuccessfullyCasted)
+                                    if (spells[Spells.E].Cast(target).IsCasted())
                                     {
                                         if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
                                         {
@@ -76,7 +76,7 @@ namespace ElRengarRevamped
                                 if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0
                                     && target.IsValidTarget())
                                 {
-                                    if (spells[Spells.E].Cast(target) == Spell.CastStates.SuccessfullyCasted)
+                                    if (spells[Spells.E].Cast(target).IsCasted())
                                     {
                                         if (IsActive("Combo.Switch.E")
                                             && Utils.GameTimeTickCount - LastSwitch >= 350)
