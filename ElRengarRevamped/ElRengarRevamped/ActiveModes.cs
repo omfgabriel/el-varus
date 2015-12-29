@@ -20,7 +20,7 @@ namespace ElRengarRevamped
                 // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
                 var target = TargetSelector.GetSelectedTarget() != null
                                  ? TargetSelector.GetSelectedTarget()
-                                 : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
+                                 : TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
 
                 if (target == null || !target.IsValidTarget())
                 {
@@ -34,7 +34,7 @@ namespace ElRengarRevamped
 
                 if (Youmuu.IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                 {
-                    Youmuu.Cast(Player);
+                    Youmuu.Cast();
                 }
 
                 if (IsActive("Combo.Use.Smite") && !RengarR && Smite != SpellSlot.Unknown
@@ -52,34 +52,14 @@ namespace ElRengarRevamped
                     switch (IsListActive("Combo.Prio").SelectedIndex)
                     {
                         case 0:
-                            if (!RengarR && Rengar.LastE + 200 < Environment.TickCount
-                                && target.IsValidTarget(spells[Spells.E].Range))
+                            if (!RengarR && target.IsValidTarget(spells[Spells.E].Range) && spells[Spells.E].IsReady())
                             {
                                 var prediction = spells[Spells.E].GetPrediction(target);
                                 if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
                                 {
                                     if (spells[Spells.E].Cast(target).IsCasted())
                                     {
-                                        if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
-                                        {
-                                            MenuInit.Menu.Item("Combo.Prio")
-                                                .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
-                                            LastSwitch = Utils.GameTimeTickCount;
-                                        }
-                                    }
-                                }
-                            }
-                            else if (!RengarR && IsActive("Combo.Use.E") && spells[Spells.E].IsReady()
-                                     && target.IsValidTarget(spells[Spells.E].Range))
-                            {
-                                var prediction = spells[Spells.E].GetPrediction(target);
-                                if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0
-                                    && target.IsValidTarget())
-                                {
-                                    if (spells[Spells.E].Cast(target).IsCasted())
-                                    {
-                                        if (IsActive("Combo.Switch.E")
-                                            && Utils.GameTimeTickCount - LastSwitch >= 350)
+                                       if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
                                         {
                                             MenuInit.Menu.Item("Combo.Prio")
                                                 .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
@@ -90,16 +70,13 @@ namespace ElRengarRevamped
                             }
                             break;
                         case 1:
-                            if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady() && !RengarR && !Player.IsDashing() && !HasPassive)
+                            if (IsActive("Combo.Use.W") && target.IsValidTarget(spells[Spells.W].Range) && spells[Spells.W].IsReady() && !RengarR && !Player.IsDashing() && !HasPassive)
                             {
-                                if (target.IsValidTarget(spells[Spells.W].Range))
-                                {
-                                    CastW(target);
-                                }
+                                CastW(target);
                             }
                             break;
                         case 2:
-                            if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range))
+                            if (IsActive("Combo.Use.Q") && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                             {
                                 spells[Spells.Q].Cast();
                             }
@@ -109,17 +86,17 @@ namespace ElRengarRevamped
 
                 if (Ferocity <= 4)
                 {
-                    if (IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range))
+                    if (IsActive("Combo.Use.Q") && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                     {
                         spells[Spells.Q].Cast();
                     }
 
-                    if (IsActive("Combo.Use.W"))
+                    if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady())
                     {
                         CastW(target);
                     }
 
-                    if (IsActive("Combo.Use.E"))
+                    if (IsActive("Combo.Use.E") && spells[Spells.E].IsReady())
                     {
                         if (target.IsValidTarget(spells[Spells.E].Range) && !RengarR)
                         {
@@ -130,7 +107,7 @@ namespace ElRengarRevamped
 
                 if (Ferocity == 5 && !RengarR)
                 {
-                    if (IsActive("Combo.Use.E.OutOfRange") && target.IsValidTarget(spells[Spells.Q].Range))
+                    if (IsActive("Combo.Use.E.OutOfRange") && target.IsValidTarget(spells[Spells.E].Range))
                     {
                         var prediction = spells[Spells.E].GetPrediction(target);
                         if (prediction.Hitchance >= HitChance.VeryHigh && prediction.CollisionObjects.Count == 0)
