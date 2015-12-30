@@ -533,7 +533,7 @@
 
             var kSableEnemy =
                 HeroManager.Enemies.FirstOrDefault(
-                    hero => hero.IsZombie && hero.IsValidTarget(500) && 20 + 8 * this.Player.Level >= hero.Health);
+                    hero => !hero.IsZombie && hero.IsValidTarget(500) && 20 + 8 * this.Player.Level >= hero.Health);
             if (kSableEnemy != null)
             {
                 this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, kSableEnemy);
