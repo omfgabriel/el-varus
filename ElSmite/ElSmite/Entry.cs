@@ -1,6 +1,7 @@
 ﻿namespace ElSmite
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using LeagueSharp;
@@ -15,29 +16,89 @@
     {
         #region Static Fields
 
-        public static Obj_AI_Minion minion;
-
-        public static Spell smite;
+        private static Obj_AI_Minion Minion;
 
         private static readonly string[] BuffsThatActuallyMakeSenseToSmite =
             {
                 "SRU_Red", "SRU_Blue", "SRU_Dragon",
                 "SRU_Baron", "SRU_Gromp", "SRU_Murkwolf",
-                "SRU_Razorbeak", "SRU_RiftHerald", "SRU_Krug", "Sru_Crab",
-                "TT_Spiderboss", "TTNGolem", "TTNWolf",
-                "TTNWraith"
+                "SRU_Razorbeak", "SRU_RiftHerald",
+                "SRU_Krug", "Sru_Crab", "TT_Spiderboss",
+                "TTNGolem", "TTNWolf", "TTNWraith"
             };
 
-        private static SpellDataInst slot1;
+        #endregion
 
-        private static SpellDataInst slot2;
+        #region Fields
 
-        private static SpellSlot smiteSlot;
+        /// <value>
+        ///     The spell type.
+        /// </value>
+        public SpellDataTargetType TargetType;
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        static Entry()
+        {
+            Spells = new List<Entry>
+                         {
+                             new Entry
+                                 {
+                                     ChampionName = "ChoGath", Range = 325f, Slot = SpellSlot.R, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Elise", Range = 475f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Fizz", Range = 550f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "LeeSin", Range = 1100f, Slot = SpellSlot.Q, Stage = 1,
+                                     TargetType = SpellDataTargetType.Self
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "MonkeyKing", Range = 375f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Nunu", Range = 300f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Olaf", Range = 325f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Pantheon", Range = 600f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 }
+                         };
+        }
 
         #endregion
 
         #region Public Properties
 
+        /// <summary>
+        ///     Gets Summoners Rift map
+        /// </summary>
+        /// <value>
+        ///     The SR map
+        /// </value>
+        /// 
+        /// 
         public static bool IsSummonersRift
         {
             get
@@ -46,6 +107,13 @@
             }
         }
 
+        /// <summary>
+        ///     Gets Twisted Treeline map
+        /// </summary>
+        /// <value>
+        ///     The TT map
+        /// </value>
+        /// 
         public static bool IsTwistedTreeline
         {
             get
@@ -54,6 +122,13 @@
             }
         }
 
+        /// <summary>
+        ///     Gets the player.
+        /// </summary>
+        /// <value>
+        ///     The player.
+        /// </value>
+        /// 
         public static Obj_AI_Hero Player
         {
             get
@@ -61,6 +136,13 @@
                 return ObjectManager.Player;
             }
         }
+
+        /// <summary>
+        ///     Gets the script Version
+        /// </summary>
+        /// <value>
+        ///     The Script Version
+        /// </value>
 
         public static string ScriptVersion
         {
@@ -70,7 +152,56 @@
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the slot.
+        /// </summary>
+        /// <value>
+        ///     The Smitespell
+        /// </value>
+        public static Spell SmiteSpell { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the spells.
+        /// </summary>
+        /// <value>
+        ///     The spells.
+        /// </value>
+        public static List<Entry> Spells { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the name.
+        /// </summary>
+        /// <value>
+        ///     The name.
+        /// </value>
+        public string ChampionName { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the range.
+        /// </summary>
+        /// <value>
+        ///     The range.
+        /// </value>
+        public float Range { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the slot.
+        /// </summary>
+        /// <value>
+        ///     The slot.
+        /// </value>
+        public SpellSlot Slot { get; set; }
+
+        /// <summary>
+        /// Gets or sets the slot.
+        /// </summary>
+        /// <value>
+        ///     The stage.
+        /// </value>
+        public int Stage { get; set; }
+
         #endregion
+
 
         #region Public Methods and Operators
 
@@ -78,43 +209,23 @@
         {
             try
             {
-                slot1 = Player.Spellbook.GetSpell(SpellSlot.Summoner1);
-                slot2 = Player.Spellbook.GetSpell(SpellSlot.Summoner2);
-                var smiteNames = new[]
-                                     {
-                                         "s5_summonersmiteplayerganker", "itemsmiteaoe", "s5_summonersmitequick",
-                                         "s5_summonersmiteduel", "summonersmite"
-                                     };
+                var smiteSlot = Player.GetSpell(SpellSlot.Summoner1).Name.Contains("smite")
+                                    ? SpellSlot.Summoner1
+                                    : Player.GetSpell(SpellSlot.Summoner2).Name.Contains("smite")
+                                          ? SpellSlot.Summoner2
+                                          : SpellSlot.Unknown;
 
-                if (smiteNames.Contains(slot1.Name))
+                if (smiteSlot == SpellSlot.Unknown)
                 {
-                    smite = new Spell(SpellSlot.Summoner1, 550f);
-                    smiteSlot = SpellSlot.Summoner1;
-                }
-                else if (smiteNames.Contains(slot2.Name))
-                {
-                    smite = new Spell(SpellSlot.Summoner2, 550f);
-                    smiteSlot = SpellSlot.Summoner2;
-                }
-                else
-                {
-                    Console.WriteLine("You don't have smite faggot");
                     return;
                 }
 
-                Notifications.AddNotification(string.Format("ElSmite by jQuery v{0}", ScriptVersion), 10000);
-                InitializeMenu.Load();
-                Game.OnUpdate += OnUpdate;
+                SmiteSpell = new Spell(smiteSlot, 500);
+
                 Drawing.OnDraw += OnDraw;
+                Game.OnUpdate += OnUpdate;
 
-                Console.WriteLine(Player.ChampionName);
-
-                var type = Type.GetType("ElSmite.Plugins." + Player.ChampionName);
-                if (type != null)
-                {
-                    Base.Load(Player.ChampionName);
-                    Console.WriteLine("Loaded");
-                }
+                InitializeMenu.Load();
             }
             catch (Exception e)
             {
@@ -124,18 +235,36 @@
 
         public static double SmiteDamage()
         {
-            var damage = new[]
-                             {
-                                 20 * Player.Level + 370, 30 * Player.Level + 330, 40 * +Player.Level + 240,
-                                 50 * Player.Level + 100
-                             };
-
-            return Player.Spellbook.CanUseSpell(smite.Slot) == SpellState.Ready ? damage.Max() : 0;
+            return Player.Spellbook.GetSpell(SmiteSpell.Slot).State == SpellState.Ready
+                       ? (float)Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite)
+                       : 0;
         }
 
         #endregion
 
         #region Methods
+
+        private static void ChampionSpellSmite(double damage, Obj_AI_Base mob)
+        {
+            foreach (var spell in
+                Spells.Where(x => x.ChampionName == Player.ChampionName))
+            {
+                if (Player.GetSpellDamage(mob, spell.Slot, spell.Stage) + damage >= mob.Health)
+                {
+                    if (mob.Distance(Player.ServerPosition) <= spell.Range + mob.BoundingRadius + Player.BoundingRadius)
+                    {
+                        if (spell.TargetType == SpellDataTargetType.Unit)
+                        {
+                            Player.Spellbook.CastSpell(spell.Slot, mob);
+                        }
+                        else if (spell.TargetType == SpellDataTargetType.Self)
+                        {
+                            Player.Spellbook.CastSpell(spell.Slot);
+                        }
+                    }
+                }
+            }
+        }
 
         private static void JungleSmite()
         {
@@ -144,24 +273,30 @@
                 return;
             }
 
-            minion =
+            Minion =
                 (Obj_AI_Minion)
                 MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 500, MinionTypes.All, MinionTeam.Neutral)
-                    .ToList()
                     .FirstOrDefault(
                         buff =>
                         buff.IsValidTarget() && BuffsThatActuallyMakeSenseToSmite.Contains(buff.CharData.BaseSkinName));
 
-            if (minion == null)
+            if (Minion == null)
             {
                 return;
             }
 
-            if (InitializeMenu.Menu.Item(minion.CharData.BaseSkinName).GetValue<bool>())
+            if (InitializeMenu.Menu.Item(Minion.CharData.BaseSkinName).IsActive())
             {
-                if (SmiteDamage() > minion.Health + 10)
+                if (Minion.Distance(Player.ServerPosition) <= 500 + Minion.BoundingRadius + Player.BoundingRadius)
                 {
-                    Player.Spellbook.CastSpell(smite.Slot, minion);
+                    if (InitializeMenu.Menu.Item("Smite.Spell").IsActive())
+                    {
+                        ChampionSpellSmite(SmiteDamage(), Minion);
+                    }
+                    if (SmiteDamage() > Minion.Health)
+                    {
+                        Player.Spellbook.CastSpell(SmiteSpell.Slot, Minion);
+                    }
                 }
             }
         }
@@ -170,18 +305,18 @@
         {
             var smiteActive = InitializeMenu.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active;
             var drawSmite = InitializeMenu.Menu.Item("ElSmite.Draw.Range").GetValue<Circle>();
-            var drawText = InitializeMenu.Menu.Item("ElSmite.Draw.Text").GetValue<bool>();
+            var drawText = InitializeMenu.Menu.Item("ElSmite.Draw.Text").IsActive();
             var playerPos = Drawing.WorldToScreen(ObjectManager.Player.Position);
-            var drawDamage = InitializeMenu.Menu.Item("ElSmite.Draw.Damage").GetValue<bool>();
+            var drawDamage = InitializeMenu.Menu.Item("ElSmite.Draw.Damage").IsActive();
 
             if (smiteActive)
             {
-                if (drawText && Player.Spellbook.CanUseSpell(smite.Slot) == SpellState.Ready)
+                if (drawText && Player.Spellbook.CanUseSpell(SmiteSpell.Slot) == SpellState.Ready)
                 {
                     Drawing.DrawText(playerPos.X - 70, playerPos.Y + 40, Color.GhostWhite, "Smite active");
                 }
 
-                if (drawText && Player.Spellbook.CanUseSpell(smite.Slot) != SpellState.Ready)
+                if (drawText && Player.Spellbook.CanUseSpell(SmiteSpell.Slot) != SpellState.Ready)
                 {
                     Drawing.DrawText(playerPos.X - 70, playerPos.Y + 40, Color.Red, "Smite cooldown");
                 }
@@ -349,12 +484,12 @@
                 }
             }
 
-            if (smiteActive && drawSmite.Active && Player.Spellbook.CanUseSpell(smite.Slot) == SpellState.Ready)
+            if (smiteActive && drawSmite.Active && Player.Spellbook.CanUseSpell(SmiteSpell.Slot) == SpellState.Ready)
             {
                 Render.Circle.DrawCircle(ObjectManager.Player.Position, 500, Color.Green);
             }
 
-            if (drawSmite.Active && Player.Spellbook.CanUseSpell(smite.Slot) != SpellState.Ready)
+            if (drawSmite.Active && Player.Spellbook.CanUseSpell(SmiteSpell.Slot) != SpellState.Ready)
             {
                 Render.Circle.DrawCircle(ObjectManager.Player.Position, 500, Color.Red);
             }
@@ -378,23 +513,6 @@
             }
         }
 
-        private static double SmiteChampDamage()
-        {
-            if (smite.Slot == Player.GetSpellSlot("s5_summonersmiteduel"))
-            {
-                var damage = new[] { 54 + 6 * Player.Level };
-                return Player.Spellbook.CanUseSpell(smite.Slot) == SpellState.Ready ? damage.Max() : 0;
-            }
-
-            if (smite.Slot == Player.GetSpellSlot("s5_summonersmiteplayerganker"))
-            {
-                var damage = new[] { 20 + 8 * Player.Level };
-                return Player.Spellbook.CanUseSpell(smite.Slot) == SpellState.Ready ? damage.Max() : 0;
-            }
-
-            return 0;
-        }
-
         private static void SmiteKill()
         {
             if (!InitializeMenu.Menu.Item("ElSmite.KS.Activated").GetValue<bool>())
@@ -402,11 +520,17 @@
                 return;
             }
 
+            if (Player.GetSpell(SmiteSpell.Slot).Name.ToLower() != "s5_summonersmiteplayerganker")
+            {
+                return;
+            }
+
             var kSableEnemy =
-                HeroManager.Enemies.FirstOrDefault(hero => hero.IsValidTarget(550) && SmiteChampDamage() >= hero.Health);
+                HeroManager.Enemies.FirstOrDefault(
+                    hero => !hero.IsZombie && hero.IsValidTarget(500) && 20 + 8 * Player.Level >= hero.Health);
             if (kSableEnemy != null)
             {
-                Player.Spellbook.CastSpell(smite.Slot, kSableEnemy);
+                Player.Spellbook.CastSpell(SmiteSpell.Slot, kSableEnemy);
             }
         }
 
