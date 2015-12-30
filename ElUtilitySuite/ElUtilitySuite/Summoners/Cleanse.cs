@@ -644,6 +644,7 @@
             return
                 Items.Where(item => item.WorksOn.Contains(buff.Type) && (!ally.IsMe && item.WorksOnAllies))
                     .OrderBy(x => x.Priority)
+                    .Where(x => x.Spell.IsReady())
                     .Select(x => x.Spell)
                     .FirstOrDefault();
         }
