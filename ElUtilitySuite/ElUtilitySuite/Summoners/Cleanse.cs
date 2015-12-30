@@ -766,7 +766,7 @@
             ///     Gets or sets what the spell works on.
             /// </summary>
             /// <value>
-            ///     The bugg types the spell works on.
+            ///     The buff types the spell works on.
             /// </value>
             public BuffType[] WorksOn { get; set; }
 

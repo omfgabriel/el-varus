@@ -128,13 +128,6 @@
                 Menu = menu;
 
                 Game.PrintChat("<font color='#0dd629'>DATABASE</font> Give it a +1 for ya boy jQuery man!");
-
-                var type = Type.GetType("ElUtilitySuite.Plugins." + Player.ChampionName);
-                if (type != null)
-                {
-                    Base.Load();
-                    Console.WriteLine("Loaded");
-                }
             }
             catch (Exception e)
             {

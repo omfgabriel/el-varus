@@ -64,7 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Summoners\Barrier.cs" />
-    <Compile Include="Base.cs" />
     <Compile Include="Summoners\Cleanse.cs" />
     <Compile Include="Utility\AntiStealth.cs" />
     <Compile Include="Utility\CheckVersion.cs" />
@@ -75,15 +74,6 @@
     <Compile Include="IPlugin.cs" />
     <Compile Include="Trackers\JungleTracker.cs" />
     <Compile Include="Items\Offensive.cs" />
-    <Compile Include="Plugins\Chogath.cs" />
-    <Compile Include="Plugins\Elise.cs" />
-    <Compile Include="Plugins\Fizz.cs" />
-    <Compile Include="Plugins\LeeSin.cs" />
-    <Compile Include="Plugins\MonkeyKing.cs" />
-    <Compile Include="Plugins\Nidalee.cs" />
-    <Compile Include="Plugins\Nunu.cs" />
-    <Compile Include="Plugins\Olaf.cs" />
-    <Compile Include="Plugins\Pantheon.cs" />
     <Compile Include="Items\Potions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -94,6 +84,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Plugins\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
