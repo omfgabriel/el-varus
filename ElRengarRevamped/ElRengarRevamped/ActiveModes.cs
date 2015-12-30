@@ -92,12 +92,12 @@ namespace ElRengarRevamped
                         CastW(target);
                     }
 
-                    if (IsActive("Combo.Use.Q") && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                    if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q") && target.IsValidTarget(spells[Spells.Q].Range))
                     {
                         spells[Spells.Q].Cast();
                     }
 
-                    if (IsActive("Combo.Use.E") && spells[Spells.E].IsReady())
+                    if (!HasPassive && IsActive("Combo.Use.E") && spells[Spells.E].IsReady())
                     {
                         if (target.IsValidTarget(spells[Spells.E].Range) && !RengarR)
                         {
@@ -330,10 +330,6 @@ namespace ElRengarRevamped
                 return;
             }
 
-            if (Player.Spellbook.IsAutoAttacking || Player.IsWindingUp)
-            {
-                return;
-            }
             if (Ferocity == 5 && IsActive("Clear.Save.Ferocity"))
             {
                 if (minion.IsValidTarget(spells[Spells.W].Range))
@@ -343,7 +339,7 @@ namespace ElRengarRevamped
                 return;
             }
 
-            if (IsActive("Clear.Use.Q") && spells[Spells.Q].IsReady() && minion.IsValidTarget(spells[Spells.Q].Range) && spells[Spells.Q].GetDamage(minion) > minion.Health)
+            if (IsActive("Clear.Use.Q") && spells[Spells.Q].IsReady() && minion.IsValidTarget(spells[Spells.Q].Range + 150) && spells[Spells.Q].GetDamage(minion) > minion.Health)
             {
                 spells[Spells.Q].Cast();
             }

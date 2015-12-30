@@ -2,14 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Linq;
 
     using LeagueSharp;
     using LeagueSharp.Common;
-
-    using SharpDX;
-
-    using Color = System.Drawing.Color;
 
     public enum Spells
     {
@@ -26,13 +23,25 @@
     {
         #region Static Fields
 
-        public static Obj_AI_Base SelectedEnemy;
-
         public static bool JustDoIt;
 
         public static int LastAutoAttack, Lastrengarq;
 
         public static int LastQ, LastE, LastW, LastSpell;
+
+        public static Obj_AI_Base SelectedEnemy;
+
+        #endregion
+
+        #region Properties
+
+        private static IEnumerable<Obj_AI_Hero> Enemies
+        {
+            get
+            {
+                return HeroManager.Enemies;
+            }
+        }
 
         #endregion
 
@@ -65,7 +74,6 @@
 
             try
             {
-
                 Youmuu = new Items.Item(3142, 0f);
 
                 Ignite = Player.GetSpellSlot("summonerdot");
@@ -96,27 +104,29 @@
 
         #region Methods
 
+        private static void AfterAttack(AttackableUnit unit, AttackableUnit target)
+        {
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            {
+                if (unit.IsMe && spells[Spells.Q].IsReady() && target is Obj_AI_Hero
+                    && target.IsValidTarget(spells[Spells.Q].Range))
+                {
+                    spells[Spells.Q].Cast();
+                }
+            }
+        }
+
         private static void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !HasPassive && spells[Spells.Q].IsReady() && 
-                !(IsListActive("Combo.Prio").SelectedIndex == 0 || IsListActive("Combo.Prio").SelectedIndex == 1 && Ferocity == 5))
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !HasPassive && spells[Spells.Q].IsReady()
+                && !(IsListActive("Combo.Prio").SelectedIndex == 0
+                     || IsListActive("Combo.Prio").SelectedIndex == 1 && Ferocity == 5))
             {
                 var x = Prediction.GetPrediction(args.Target as Obj_AI_Base, Player.AttackCastDelay + 0.04f);
                 if (Player.Position.To2D().Distance(x.UnitPosition.To2D())
                     >= Player.BoundingRadius + Player.AttackRange + args.Target.BoundingRadius)
                 {
                     args.Process = false;
-                    spells[Spells.Q].Cast();
-                }
-            }
-        }
-
-        private static void AfterAttack(AttackableUnit unit, AttackableUnit target)
-        {
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo) //Ferocity == 5 &&
-            {
-                if (unit.IsMe && spells[Spells.Q].IsReady() && target is Obj_AI_Hero && target.IsValidTarget(spells[Spells.Q].Range))
-                {
                     spells[Spells.Q].Cast();
                 }
             }
@@ -137,10 +147,28 @@
             }
         }
 
+        private static void KillstealHandler()
+        {
+            if (!IsActive("Killsteal.On"))
+            {
+                return;
+            }
+
+            var target =
+                Enemies.FirstOrDefault(
+                    x => x.IsValidTarget(spells[Spells.W].Range) && x.Health < spells[Spells.W].GetDamage(x));
+            if (target != null)
+            {
+                spells[Spells.W].Cast();
+            }
+        }
+
         private static void OnDash(Obj_AI_Base sender, Dash.DashItem args)
         {
             if (!sender.IsMe)
+            {
                 return;
+            }
 
             var target = TargetSelector.GetTarget(1500, TargetSelector.DamageType.Physical);
             if (!target.IsValidTarget())
@@ -150,12 +178,13 @@
 
             if (sender.IsMe)
             {
-                Orbwalking.LastAATick = Utils.GameTimeTickCount - Game.Ping / 2 - (int)Player.AttackCastDelay * 1000 + args.Duration;
+                Orbwalking.LastAATick = Utils.GameTimeTickCount - Game.Ping / 2 - (int)Player.AttackCastDelay * 1000
+                                        + args.Duration;
             }
 
             if (sender.IsMe && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
-                if (Ferocity == 5 && Player.IsDashing())
+                if (Ferocity == 5)
                 {
                     switch (IsListActive("Combo.Prio").SelectedIndex)
                     {
@@ -181,7 +210,8 @@
                         spells[Spells.E].Cast(target);
                     }
 
-                    if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                    if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady()
+                        && target.IsValidTarget(spells[Spells.Q].Range))
                     {
                         spells[Spells.Q].Cast();
                     }
@@ -209,15 +239,15 @@
                             Utility.DelayAction.Add(
                                 50,
                                 () =>
-                                {
-                                    if (target.IsValidTarget(spells[Spells.W].Range))
                                     {
-                                        spells[Spells.W].Cast();
-                                    }
+                                        if (target.IsValidTarget(spells[Spells.W].Range))
+                                        {
+                                            spells[Spells.W].Cast();
+                                        }
 
-                                    spells[Spells.E].Cast(target.ServerPosition);
-                                    UseHydra();
-                                });
+                                        spells[Spells.E].Cast(target);
+                                        UseHydra();
+                                    });
                         }
 
                         break;
@@ -235,7 +265,6 @@
             var drawW = MenuInit.Menu.Item("Misc.Drawings.W").GetValue<Circle>();
             var drawE = MenuInit.Menu.Item("Misc.Drawings.E").GetValue<Circle>();
             var drawExclamation = MenuInit.Menu.Item("Misc.Drawings.Exclamation").GetValue<Circle>(); //Exclamation mark
-
 
             var drawSearchRange = MenuInit.Menu.Item("Beta.Search.Range").GetValue<Circle>();
             var searchrange = MenuInit.Menu.Item("Beta.searchrange").GetValue<Slider>().Value;
@@ -336,7 +365,6 @@
             }
         }
 
-
         private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsMe)
@@ -360,16 +388,16 @@
                     Utility.DelayAction.Add(
                         50 + (int)(Player.AttackDelay * 100) + Game.Ping / 2 + 10,
                         delegate
-                        {
-                            if (Items.CanUseItem(3077))
                             {
-                                Items.UseItem(3077);
-                            }
-                            if (Items.CanUseItem(3074))
-                            {
-                                Items.UseItem(3074);
-                            }
-                        });
+                                if (Items.CanUseItem(3077))
+                                {
+                                    Items.UseItem(3077);
+                                }
+                                if (Items.CanUseItem(3074))
+                                {
+                                    Items.UseItem(3074);
+                                }
+                            });
                 }
 
                 switch (args.SData.Name.ToLower())
@@ -391,7 +419,6 @@
                 }
             }
         }
-
 
         private static void OnUpdate(EventArgs args)
         {
@@ -443,9 +470,12 @@
 
                     if (Ferocity == 5 && RengarR)
                     {
-                        if (target.Distance(Player.ServerPosition) <= MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value)
+                        if (target.Distance(Player.ServerPosition)
+                            <= MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value)
                         {
-                            Utility.DelayAction.Add(MenuInit.Menu.Item("Beta.Cast.Q.Delay").GetValue<Slider>().Value, () => spells[Spells.Q].Cast());
+                            Utility.DelayAction.Add(
+                                MenuInit.Menu.Item("Beta.Cast.Q.Delay").GetValue<Slider>().Value,
+                                () => spells[Spells.Q].Cast());
                             JustDoIt = true;
                         }
                     }
@@ -456,29 +486,6 @@
             catch (Exception e)
             {
                 Console.WriteLine(e);
-            }
-        }
-
-
-        private static IEnumerable<Obj_AI_Hero> Enemies
-        {
-            get
-            {
-                return HeroManager.Enemies;
-            }
-        }
-
-        private static void KillstealHandler()
-        {
-            if (!IsActive("Killsteal.On"))
-            {
-                return;
-            }
-
-            var target = Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.W].Range) && x.Health < spells[Spells.W].GetDamage(x));
-            if (target != null)
-            {
-                spells[Spells.W].Cast();
             }
         }
 
