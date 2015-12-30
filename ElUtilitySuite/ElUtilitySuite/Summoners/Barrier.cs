@@ -48,7 +48,7 @@
         /// <returns></returns>
         public void CreateMenu(Menu rootMenu)
         {
-            if (Entry.Player.GetSpellSlot("summonerbarrier") == SpellSlot.Unknown)
+            if (this.Player.GetSpellSlot("summonerbarrier") == SpellSlot.Unknown)
             {
                 return;
             }

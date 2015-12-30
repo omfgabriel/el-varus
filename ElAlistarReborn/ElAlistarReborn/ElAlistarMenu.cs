@@ -42,9 +42,6 @@
                 new MenuItem("ElAlistar.Combo.FlashQ", "Flash Q").SetValue(
                     new KeyBind("Z".ToCharArray()[0], KeyBindType.Press)));
 
-            /*comboMenu.AddItem(
-                new MenuItem("ElAlistar.Combo.Flash", "Flash Q and W to ally").SetValue(
-                    new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));*/
             comboMenu.AddItem(new MenuItem("ElAlistar.Combo.Click", "Left Click [on] TS [off]").SetValue(true));
 
             Menu.AddSubMenu(comboMenu);
@@ -58,7 +55,6 @@
             healMenu.AddItem(new MenuItem("ElAlistar.Heal.Activated", "Use heal").SetValue(true));
             healMenu.AddItem(new MenuItem("ElAlistar.Heal.Player.HP", "Player HP percentage").SetValue(new Slider(55)));
 
-            //heal ally
             healMenu.AddItem(new MenuItem("ElAlistar.Heal.Ally.Activated", "Heal ally").SetValue(true));
             healMenu.AddItem(new MenuItem("ElAlistar.Heal.Ally.HP", "Ally HP percentage").SetValue(new Slider(55)));
             healMenu.AddItem(new MenuItem("ElAlistar.Heal.Player.Mana", "Mana for heal").SetValue(new Slider(55)));

@@ -24,8 +24,6 @@
     {
         #region Static Fields
 
-        public static Vector3 InsecClickPos;    
-
         public static Orbwalking.Orbwalker Orbwalker;
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
@@ -39,12 +37,6 @@
         private static SpellSlot flashSlot;
 
         private static SpellSlot ignite;
-
-        private static Vector2 InsecLinePos;
-
-        private static Vector3 insecPos;
-
-        private static bool isNullInsecPos = true;
 
         #endregion
 
@@ -69,15 +61,13 @@
                 return;
             }
 
-            //float.MaxValue
             spells[Spells.W].SetTargetted(0.5f, 1.5f);
 
-            Notifications.AddNotification("ElAlistarReborn by jQuery", 5000);
             ignite = Player.GetSpellSlot("summonerdot");
             flashSlot = Player.GetSpellSlot("summonerflash");
 
             Game.PrintChat(
-                    "[00:01] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
+                "[00:01] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
 
             ElAlistarMenu.Initialize();
             Game.OnUpdate += OnUpdate;
@@ -107,75 +97,6 @@
             }
         }
 
-        private static List<Obj_AI_Hero> GetAllyHeroes(Obj_AI_Hero position, int range)
-        {
-            var temp = new List<Obj_AI_Hero>();
-
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
-            {
-                if (hero.IsAlly && !hero.IsMe && hero.Distance(position) < range)
-                {
-                    temp.Add(hero);
-                }
-            }
-            return temp;
-        }
-
-        private static List<Obj_AI_Hero> GetAllyInsec(List<Obj_AI_Hero> heroes)
-        {
-            var alliesAround = 0;
-            var tempObject = new Obj_AI_Hero();
-            foreach (var hero in heroes)
-            {
-                var localTemp = GetAllyHeroes(hero, 500).Count;
-                if (localTemp > alliesAround)
-                {
-                    tempObject = hero;
-                    alliesAround = localTemp;
-                }
-            }
-            return GetAllyHeroes(tempObject, 500);
-        }
-
-        private static Vector3 GetInsecPos(Obj_AI_Hero target)
-        {
-            if (ElAlistarMenu.Menu.Item("ElAlistar.Combo.Click").GetValue<bool>())
-            {
-                InsecLinePos = Drawing.WorldToScreen(InsecClickPos);
-                return V2E(InsecClickPos, target.Position, target.Distance(InsecClickPos) + 230).To3D();
-            }
-
-            if (isNullInsecPos)
-            {
-                isNullInsecPos = false;
-                insecPos = Player.Position;
-            }
-
-            var turrets = (from tower in ObjectManager.Get<Obj_Turret>()
-                           where
-                               tower.IsAlly && !tower.IsDead && target.Distance(tower.Position) < 1500
-                               && tower.Health > 0
-                           select tower).ToList();
-
-            if (GetAllyHeroes(target, 2000).Count > 0)
-            {
-                Console.WriteLine("xxxx");
-                var insecPosition = InterceptionPoint(GetAllyInsec(GetAllyHeroes(target, 2000)));
-                InsecLinePos = Drawing.WorldToScreen(insecPosition);
-
-                return V2E(insecPosition, target.Position, target.Distance(insecPosition) + 350).To3D();
-            }
-
-            /*if (turrets.Any())
-            {
-                InsecLinePos = Drawing.WorldToScreen(turrets[0].Position);
-                return V2E(turrets[0].Position, target.Position, target.Distance(turrets[0].Position) + 230).To3D();
-            }*/
-
-
-            return new Vector3();
-        }
-
         private static float GetWDamage(Obj_AI_Base enemy)
         {
             var damage = 0d;
@@ -190,17 +111,17 @@
 
         private static void HealManager()
         {
-            var useHeal = ElAlistarMenu.Menu.Item("ElAlistar.Heal.Activated").GetValue<bool>();
-            var useHealAlly = ElAlistarMenu.Menu.Item("ElAlistar.Heal.Ally.Activated").GetValue<bool>();
+            var useHeal = ElAlistarMenu.Menu.Item("ElAlistar.Heal.Activated").IsActive();
+            var useHealAlly = ElAlistarMenu.Menu.Item("ElAlistar.Heal.Ally.Activated").IsActive();
             var playerMana = ElAlistarMenu.Menu.Item("ElAlistar.Heal.Player.Mana").GetValue<Slider>().Value;
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || Player.IsRecalling() || Player.InFountain()
+                || Player.Mana < playerMana)
             {
                 return;
             }
 
-            if (Player.IsRecalling() || Player.InFountain() || Player.Mana < playerMana
-                || !spells[Spells.E].IsReady() || !useHeal)
+            if (!spells[Spells.E].IsReady() || !useHeal)
             {
                 return;
             }
@@ -208,18 +129,16 @@
             var playerHp = ElAlistarMenu.Menu.Item("ElAlistar.Heal.Player.HP").GetValue<Slider>().Value;
             var allyHp = ElAlistarMenu.Menu.Item("ElAlistar.Heal.Ally.HP").GetValue<Slider>().Value;
 
-            //self heal
             if ((Player.Health / Player.MaxHealth) * 100 < playerHp)
             {
-                spells[Spells.E].Cast(Player);
+                spells[Spells.E].Cast();
             }
 
-            //ally
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsAlly && !h.IsMe && !h.IsDead))
             {
                 if (useHealAlly && (hero.Health / hero.MaxHealth) * 100 <= allyHp && spells[Spells.E].IsInRange(hero))
                 {
-                    spells[Spells.E].Cast(Player);
+                    spells[Spells.E].Cast();
                 }
             }
         }
@@ -231,18 +150,6 @@
                 return 0f;
             }
             return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
-        }
-
-        private static Vector3 InterceptionPoint(List<Obj_AI_Hero> heroes)
-        {
-            var result = new Vector3();
-            foreach (var hero in heroes)
-            {
-                result += hero.Position;
-            }
-            result.X /= heroes.Count;
-            result.Y /= heroes.Count;
-            return result;
         }
 
         private static void Interrupter2_OnInterruptableTarget(
@@ -269,10 +176,12 @@
 
         private static void OnCombo()
         {
+            // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
             var target = TargetSelector.GetSelectedTarget() != null
-                                 ? TargetSelector.GetSelectedTarget()
-                                 : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
-            if (!target.IsValidTarget() || target == null)
+                             ? TargetSelector.GetSelectedTarget()
+                             : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
+
+            if (target == null || !target.IsValidTarget())
             {
                 return;
             }
@@ -292,22 +201,24 @@
                 if (useQ && useW && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady()
                     && Player.Mana > qmana.ManaCost + wmana.ManaCost)
                 {
-                    spells[Spells.W].Cast(target);
-                    var comboTime = Math.Max(0, Player.Distance(target) - 365) / 1.2f - 25;
-                    Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
+                    if (spells[Spells.W].Cast(target).IsCasted())
+                    {
+                        var comboTime = Math.Max(0, Player.Distance(target) - 365) / 1.2f - 25;
+                        Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
+                    }
                 }
             }
 
             if (useR && Player.CountEnemiesInRange(spells[Spells.W].Range) >= enemiesInRange
                 && (Player.Health / Player.MaxHealth) * 100 >= rHealth)
             {
-                spells[Spells.R].Cast(Player);
+                spells[Spells.R].Cast();
             }
 
             if (spells[Spells.W].IsReady() && !spells[Spells.Q].IsReady() && spells[Spells.W].IsInRange(target)
                 && GetWDamage(target) > target.Health)
             {
-                spells[Spells.W].Cast(target);
+                spells[Spells.W].Cast();
             }
 
             if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
@@ -318,20 +229,18 @@
 
         private static void OnHarass()
         {
-            var target = TargetSelector.GetSelectedTarget();
-            if (target == null || !target.IsValidTarget())
-            {
-                target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
-            }
+            var target = TargetSelector.GetSelectedTarget() != null
+                             ? TargetSelector.GetSelectedTarget()
+                             : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
 
-            if (!target.IsValidTarget(spells[Spells.Q].Range))
+            if (target == null || !target.IsValidTarget())
             {
                 return;
             }
 
-            var useQ = ElAlistarMenu.Menu.Item("ElAlistar.Harass.Q").GetValue<bool>();
+            var useQ = ElAlistarMenu.Menu.Item("ElAlistar.Harass.Q").IsActive();
 
-            if (useQ && spells[Spells.Q].IsReady())
+            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast(target);
             }
@@ -339,6 +248,11 @@
 
         private static void OnUpdate(EventArgs args)
         {
+            if (Player.IsDead)
+            {
+                return;
+            }
+
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -357,9 +271,9 @@
 
                 var target = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Click").GetValue<bool>()
                                  ? TargetSelector.GetSelectedTarget()
-                                 : TargetSelector.GetTarget(1000, TargetSelector.DamageType.Magical);
+                                 : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Magical);
 
-                if (!target.IsValidTarget())
+                if (!target.IsValidTarget(spells[Spells.W].Range))
                 {
                     return;
                 }
@@ -368,37 +282,12 @@
                 Utility.DelayAction.Add(50, () => spells[Spells.Q].Cast());
             }
 
-            /*if (ElAlistarMenu.Menu.Item("ElAlistar.Combo.Flash").GetValue<KeyBind>().Active
-                && spells[Spells.W].IsReady()) //spells[Spells.Q].IsReady()
-            {
-                Orbwalk(Game.CursorPos);
-
-                var target = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Click").GetValue<bool>()
-                                 ? TargetSelector.GetSelectedTarget()
-                                 : TargetSelector.GetTarget(1000, TargetSelector.DamageType.Magical);
-
-                if (!target.IsValidTarget())
-                {
-                    return;
-                }
-
-                Player.Spellbook.CastSpell(flashSlot, GetInsecPos((Obj_AI_Hero)(target)));
-                Utility.DelayAction.Add(50, () => spells[Spells.Q].Cast());
-                //Utility.DelayAction.Add(50, () => Player.Spellbook.CastSpell(SpellSlot.W, GetInsecPos((Obj_AI_Hero)(target))));
-                Utility.DelayAction.Add(550, () => spells[Spells.W].CastOnUnit(target));
-            }*/
-
             HealManager();
         }
 
         private static void Orbwalk(Vector3 pos, Obj_AI_Hero target = null)
         {
             Player.IssueOrder(GameObjectOrder.MoveTo, pos);
-        }
-
-        private static Vector2 V2E(Vector3 from, Vector3 direction, float distance)
-        {
-            return from.To2D() + distance * Vector3.Normalize(direction - from).To2D();
         }
 
         #endregion

@@ -9,7 +9,7 @@
 
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
-    internal class Cleanse //: IPlugin
+    internal class Cleanse : IPlugin
     {
         #region Constructors and Destructors
 
@@ -77,7 +77,7 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Malzahar", Name = "alzaharmaleficvisions", MenuName = "Malzahar Aids",
+                                     Champion = "Malzahar", Name = "alzaharmaleficvisions", MenuName = "Malzahar Ficvisions",
                                      Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.E, Interval = .8
                                  },
@@ -127,7 +127,6 @@
                                  {
                                      Champion = "Tristana", Name = "tristanaechargesound",
                                      MenuName = "Tristana Explosive Charge", Evade = false, DoT = true,
-                                     // not really a dot but can be cleansed
                                      EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E, Interval = .8
                                  },
                              new CleanseSpell
@@ -355,6 +354,24 @@
                                  {
                                      Name = "vir", Evade = false, DoT = false, Cleanse = false, CleanseTimer = 0,
                                      EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
+                                 },
+                              new CleanseSpell
+                                 {
+                                     Champion = "twistedfate", Name = "goldcardpreattack", MenuName = "Twisted Fate Gold (W)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.W
+                                 },
+                               new CleanseSpell
+                                 {
+                                     Champion = "amumu", Name = "bandagetoss", MenuName = "bandagetoss (Q)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Q
+                                 },
+                               new CleanseSpell
+                                 {
+                                     Champion = "amumu", Name = "curseofthesadmummy", MenuName = "curseofthesadmummy (R)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.R
                                  },
                              new CleanseSpell
                                  {
@@ -750,7 +767,7 @@
             ///     Gets or sets what the spell works on.
             /// </summary>
             /// <value>
-            ///     The bugg types the spell works on.
+            ///     The buff types the spell works on.
             /// </value>
             public BuffType[] WorksOn { get; set; }
 

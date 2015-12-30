@@ -30,9 +30,9 @@
 
         public static bool JustDoIt;
 
-        public static int LastQ, LastE, LastW;
+        public static int LastAutoAttack, Lastrengarq;
 
-        private static int lastSpell;
+        public static int LastQ, LastE, LastW, LastSpell;
 
         #endregion
 
@@ -44,14 +44,12 @@
             {
                 return;
             }
-
             var unit2 =
                 ObjectManager.Get<Obj_AI_Base>()
                     .FirstOrDefault(
                         a =>
                         (a.IsValid<Obj_AI_Hero>()) && a.IsEnemy && a.Distance(Game.CursorPos) < a.BoundingRadius + 80
                         && a.IsValidTarget());
-
             if (unit2 != null)
             {
                 SelectedEnemy = unit2;
@@ -85,6 +83,7 @@
                 Drawing.OnEndScene += OnDrawEndScene;
                 Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
                 Orbwalking.AfterAttack += AfterAttack;
+                Orbwalking.BeforeAttack += BeforeAttack;
                 Game.OnWndProc += OnClick;
             }
             catch (Exception e)
@@ -97,9 +96,24 @@
 
         #region Methods
 
+        private static void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !HasPassive && spells[Spells.Q].IsReady() && 
+                !(IsListActive("Combo.Prio").SelectedIndex == 0 || IsListActive("Combo.Prio").SelectedIndex == 1 && Ferocity == 5))
+            {
+                var x = Prediction.GetPrediction(args.Target as Obj_AI_Base, Player.AttackCastDelay + 0.04f);
+                if (Player.Position.To2D().Distance(x.UnitPosition.To2D())
+                    >= Player.BoundingRadius + Player.AttackRange + args.Target.BoundingRadius)
+                {
+                    args.Process = false;
+                    spells[Spells.Q].Cast();
+                }
+            }
+        }
+
         private static void AfterAttack(AttackableUnit unit, AttackableUnit target)
         {
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo) //Ferocity == 5 &&
             {
                 if (unit.IsMe && spells[Spells.Q].IsReady() && target is Obj_AI_Hero && target.IsValidTarget(spells[Spells.Q].Range))
                 {
@@ -148,7 +162,7 @@
                         case 0:
                             if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
                             {
-                                spells[Spells.E].Cast(target.ServerPosition);
+                                spells[Spells.E].Cast(target);
                             }
                             break;
                         case 2:
@@ -164,7 +178,7 @@
                 {
                     if (spells[Spells.E].IsReady())
                     {
-                        spells[Spells.E].Cast(target.ServerPosition);
+                        spells[Spells.E].Cast(target);
                     }
 
                     if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
@@ -176,39 +190,36 @@
                 switch (IsListActive("Combo.Prio").SelectedIndex)
                 {
                     case 0:
-                        if (Ferocity == 5)
+                        if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range) && Ferocity == 5)
                         {
-                            if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
-                            {
-                                spells[Spells.E].Cast(target.ServerPosition);
-                            }
+                            spells[Spells.E].Cast(target);
                         }
                         break;
 
-                    case 1:
+                    case 2:
                         if (IsActive("Beta.Cast.Q") && RengarR)
                         {
-                            spells[Spells.Q].Cast();
+                            spells[Spells.E].Cast(target);
                         }
 
-                        spells[Spells.E].Cast(target);
+                        spells[Spells.Q].Cast();
 
                         if (target.IsValidTarget(spells[Spells.Q].Range))
                         {
                             Utility.DelayAction.Add(
                                 50,
                                 () =>
+                                {
+                                    if (target.IsValidTarget(spells[Spells.W].Range))
                                     {
-                                        if (target.IsValidTarget(spells[Spells.W].Range))
-                                        {
-                                            spells[Spells.W].Cast();
-                                        }
+                                        spells[Spells.W].Cast();
+                                    }
 
-                                        spells[Spells.E].Cast(target);
-                                        UseHydra();
-                                    });
+                                    spells[Spells.E].Cast(target.ServerPosition);
+                                    UseHydra();
+                                });
                         }
-                        
+
                         break;
                 }
 
@@ -330,11 +341,16 @@
         {
             if (sender.IsMe)
             {
+                if (!args.SData.Name.ToLower().Contains("attack"))
+                {
+                    return;
+                }
+
                 if (args.SData.Name == "RengarR")
                 {
                     if (Items.CanUseItem(3142))
                     {
-                        Utility.DelayAction.Add(1500, () => Items.UseItem(3142));
+                        Utility.DelayAction.Add(2500, () => Items.UseItem(3142));
                     }
                 }
 
@@ -344,33 +360,33 @@
                     Utility.DelayAction.Add(
                         50 + (int)(Player.AttackDelay * 100) + Game.Ping / 2 + 10,
                         delegate
+                        {
+                            if (Items.CanUseItem(3077))
                             {
-                                if (Items.CanUseItem(3077))
-                                {
-                                    Items.UseItem(3077);
-                                }
-                                if (Items.CanUseItem(3074))
-                                {
-                                    Items.UseItem(3074);
-                                }
-                            });
+                                Items.UseItem(3077);
+                            }
+                            if (Items.CanUseItem(3074))
+                            {
+                                Items.UseItem(3074);
+                            }
+                        });
                 }
 
                 switch (args.SData.Name.ToLower())
                 {
                     case "rengarq":
                         LastQ = Environment.TickCount;
-                        lastSpell = Environment.TickCount;
+                        LastSpell = Environment.TickCount;
                         break;
 
                     case "rengare":
                         LastE = Environment.TickCount;
-                        lastSpell = Environment.TickCount;
+                        LastSpell = Environment.TickCount;
                         break;
 
                     case "rengarw":
                         LastW = Environment.TickCount;
-                        lastSpell = Environment.TickCount;
+                        LastSpell = Environment.TickCount;
                         break;
                 }
             }
@@ -386,6 +402,7 @@
             try
             {
                 SwitchCombo();
+                SmiteCombo();
                 Heal();
                 KillstealHandler();
                 switch (Orbwalker.ActiveMode)
@@ -402,6 +419,10 @@
                     case Orbwalking.OrbwalkingMode.Mixed:
                         ActiveModes.Harass();
                         break;
+
+                    case Orbwalking.OrbwalkingMode.LastHit:
+                        ActiveModes.LastHit();
+                        break;
                 }
 
                 if (IsActive("Beta.Cast.Q") && IsListActive("Combo.Prio").SelectedIndex == 2)
@@ -414,8 +435,7 @@
                     var searchrange = MenuInit.Menu.Item("Beta.searchrange").GetValue<Slider>().Value;
                     var target =
                         ObjectManager.Get<Obj_AI_Hero>()
-                            .FirstOrDefault(h => h.IsEnemy && !h.IsDead && !h.IsZombie && h.IsValidTarget(searchrange));
-
+                            .FirstOrDefault(h => h.IsEnemy && h.IsValidTarget(searchrange, false));
                     if (!target.IsValidTarget())
                     {
                         return;
@@ -423,7 +443,7 @@
 
                     if (Ferocity == 5 && RengarR)
                     {
-                        if (target.IsValidTarget(MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value))
+                        if (target.Distance(Player.ServerPosition) <= MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value)
                         {
                             Utility.DelayAction.Add(MenuInit.Menu.Item("Beta.Cast.Q.Delay").GetValue<Slider>().Value, () => spells[Spells.Q].Cast());
                             JustDoIt = true;
@@ -473,7 +493,6 @@
                         MenuInit.Menu.Item("Combo.Prio").SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
                         LastSwitch = Utils.GameTimeTickCount;
                         break;
-
                     case 1:
                         MenuInit.Menu.Item("Combo.Prio").SetValue(new StringList(new[] { "E", "W", "Q" }, 0));
                         LastSwitch = Utils.GameTimeTickCount;
