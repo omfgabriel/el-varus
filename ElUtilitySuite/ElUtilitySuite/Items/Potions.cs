@@ -35,7 +35,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        private static Obj_AI_Hero Player
+        private Obj_AI_Hero Player
         {
             get
             {
@@ -101,9 +101,9 @@
                              {
                                  new HealthItem { GetItem = () => ItemData.Health_Potion.GetItem() },
                                  new HealthItem { GetItem = () => ItemData.Total_Biscuit_of_Rejuvenation2.GetItem() },
-                                 new HealthItem { GetItem = () => ItemData.Refillable_Potion.GetItem() },
-                                 new HealthItem { GetItem = () => ItemData.Hunters_Potion.GetItem() },
-                                 new HealthItem { GetItem = () => ItemData.Corrupting_Potion.GetItem() },
+                                 new HealthItem { GetItem = () => ItemData.Refillable_Potion.GetItem() }, //2031
+                                 new HealthItem { GetItem = () => ItemData.Hunters_Potion.GetItem() }, //2032
+                                 new HealthItem { GetItem = () => ItemData.Corrupting_Potion.GetItem() } //2033
                              };
 
             Game.OnUpdate += this.OnUpdate;
@@ -119,26 +119,26 @@
         /// <value>
         ///     The player buffs
         /// </value>
-        private static bool CheckPlayerBuffs()
+        private bool CheckPlayerBuffs()
         {
-            return Player.HasBuff("RegenerationPotion") || Player.HasBuff("ItemMiniRegenPotion")
-                   || Player.HasBuff("ItemCrystalFlask") || Player.HasBuff("ItemCrystalFlaskJungle")
-                   || Player.HasBuff("ItemDarkCrystalFlask");
+            return this.Player.HasBuff("RegenerationPotion") || this.Player.HasBuff("ItemMiniRegenPotion")
+                   || this.Player.HasBuff("ItemCrystalFlask") || this.Player.HasBuff("ItemCrystalFlaskJungle")
+                   || this.Player.HasBuff("ItemDarkCrystalFlask");
         }
 
         private void OnUpdate(EventArgs args)
         {
             try
             {
-                if (!this.Menu.Item("Potions.Activated").IsActive() || Entry.Player.InFountain()
-                    || Entry.Player.IsRecalling() || Entry.Player.IsDead)
+                if (!this.Menu.Item("Potions.Activated").IsActive() || this.Player.InFountain()
+                    || this.Player.IsRecalling() || Entry.Player.IsDead)
                 {
                     return;
                 }
 
-                if (Player.HealthPercent < this.PlayerHp)
+                if (this.Player.HealthPercent < this.PlayerHp)
                 {
-                    if (CheckPlayerBuffs())
+                    if (this.CheckPlayerBuffs())
                     {
                         return;
                     }

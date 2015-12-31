@@ -265,7 +265,7 @@
         private void ChampionSpellSmite(float damage, Obj_AI_Base mob)
         {
             foreach (var spell in
-                Spells.Where(x => x.ChampionName == this.Player.ChampionName))
+                Spells.Where(x => x.ChampionName.Equals(this.Player.ChampionName, StringComparison.InvariantCultureIgnoreCase)))
             {
                 if (this.Player.GetSpellDamage(mob, spell.Slot, spell.Stage) + damage >= mob.Health)
                 {
