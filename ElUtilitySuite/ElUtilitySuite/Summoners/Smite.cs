@@ -229,9 +229,9 @@
         {
             try
             {
-                var smiteSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name.Contains("smite")
+                var smiteSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name.ToLower().Contains("smite")
                                     ? SpellSlot.Summoner1
-                                    : this.Player.GetSpell(SpellSlot.Summoner2).Name.Contains("smite")
+                                    : this.Player.GetSpell(SpellSlot.Summoner2).Name.ToLower().Contains("smite")
                                           ? SpellSlot.Summoner2
                                           : SpellSlot.Unknown;
 
@@ -240,7 +240,7 @@
                     return;
                 }
 
-                this.SmiteSpell = new Spell(smiteSlot, 500);
+                this.SmiteSpell = new Spell(smiteSlot);
 
                 Drawing.OnDraw += this.OnDraw;
                 Game.OnUpdate += this.OnUpdate;
@@ -251,7 +251,7 @@
             }
         }
 
-        public float SmiteDamage()
+        private float SmiteDamage()
         {
             return this.Player.Spellbook.GetSpell(this.SmiteSpell.Slot).State == SpellState.Ready
                        ? (float)this.Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite)
