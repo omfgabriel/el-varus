@@ -16,6 +16,7 @@
         public static void Load()
         {
             Menu = new Menu("ElSmite", "ElSmite", true);
+            Menu.AddItem(new MenuItem("Smite.Spell", "Use Spell + Smite combo").SetValue(true));
 
             var mainMenu = Menu.AddSubMenu(new Menu("Default", "Default"));
             {

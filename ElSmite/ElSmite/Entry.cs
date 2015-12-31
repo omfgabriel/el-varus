@@ -34,7 +34,7 @@
         /// <value>
         ///     The spell type.
         /// </value>
-        public SpellDataTargetType TargetType;
+        private SpellDataTargetType TargetType;
 
         #endregion
 
@@ -209,9 +209,9 @@
         {
             try
             {
-                var smiteSlot = Player.GetSpell(SpellSlot.Summoner1).Name.Contains("smite")
+                var smiteSlot = Player.GetSpell(SpellSlot.Summoner1).Name.ToLower().Contains("smite")
                                     ? SpellSlot.Summoner1
-                                    : Player.GetSpell(SpellSlot.Summoner2).Name.Contains("smite")
+                                    : Player.GetSpell(SpellSlot.Summoner2).Name.ToLower().Contains("smite")
                                           ? SpellSlot.Summoner2
                                           : SpellSlot.Unknown;
 
@@ -220,7 +220,7 @@
                     return;
                 }
 
-                SmiteSpell = new Spell(smiteSlot, 500);
+                SmiteSpell = new Spell(smiteSlot);
 
                 Drawing.OnDraw += OnDraw;
                 Game.OnUpdate += OnUpdate;
@@ -233,7 +233,7 @@
             }
         }
 
-        public static double SmiteDamage()
+        private static double SmiteDamage()
         {
             return Player.Spellbook.GetSpell(SmiteSpell.Slot).State == SpellState.Ready
                        ? (float)Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite)
