@@ -83,6 +83,11 @@
                                  {
                                      ChampionName = "Pantheon", Range = 600f, Slot = SpellSlot.E, Stage = 0,
                                      TargetType = SpellDataTargetType.Unit
+                                 },
+                              new Entry
+                                 {
+                                     ChampionName = "MasterYi", Range = 600f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
                                  }
                          };
         }
