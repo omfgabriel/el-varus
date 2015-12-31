@@ -77,9 +77,9 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Malzahar", Name = "alzaharmaleficvisions", MenuName = "Malzahar Ficvisions",
-                                     Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
-                                     Slot = SpellSlot.E, Interval = .8
+                                     Champion = "Malzahar", Name = "alzaharmaleficvisions",
+                                     MenuName = "Malzahar Ficvisions", Evade = false, DoT = true, EvadeTimer = 0,
+                                     Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E, Interval = .8
                                  },
                              new CleanseSpell
                                  {
@@ -126,8 +126,8 @@
                              new CleanseSpell
                                  {
                                      Champion = "Tristana", Name = "tristanaechargesound",
-                                     MenuName = "Tristana Explosive Charge", Evade = false, DoT = true,
-                                     EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E, Interval = .8
+                                     MenuName = "Tristana Explosive Charge", Evade = false, DoT = true, EvadeTimer = 0,
+                                     Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E, Interval = .8
                                  },
                              new CleanseSpell
                                  {
@@ -355,19 +355,18 @@
                                      Name = "vir", Evade = false, DoT = false, Cleanse = false, CleanseTimer = 0,
                                      EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
-                                     Champion = "twistedfate", Name = "goldcardpreattack", MenuName = "Twisted Fate Gold (W)",
-                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
-                                     Slot = SpellSlot.W
+                                     Champion = "twistedfate", Name = "goldcardpreattack",
+                                     MenuName = "Twisted Fate Gold (W)", Evade = false, DoT = false, EvadeTimer = 0,
+                                     Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W
                                  },
-                               new CleanseSpell
+                             new CleanseSpell
                                  {
-                                     Champion = "amumu", Name = "bandagetoss", MenuName = "bandagetoss (Q)",
-                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
-                                     Slot = SpellSlot.Q
+                                     Champion = "amumu", Name = "bandagetoss", MenuName = "bandagetoss (Q)", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
                                  },
-                               new CleanseSpell
+                             new CleanseSpell
                                  {
                                      Champion = "amumu", Name = "curseofthesadmummy", MenuName = "curseofthesadmummy (R)",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
@@ -618,13 +617,11 @@
             {
                 var spellsMenu = new Menu("Spells", "CleanseV3Spells");
                 {
-                    foreach (
-                        var spell in
-                            Spells.Where(
-                                x =>
-                                HeroManager.Enemies.Any(
-                                    y => y.ChampionName.Equals(x.Champion, StringComparison.InvariantCultureIgnoreCase)))
-                        )
+                    foreach (var spell in
+                        Spells.Where(
+                            x =>
+                            HeroManager.Enemies.Any(
+                                y => y.ChampionName.Equals(x.Champion, StringComparison.InvariantCultureIgnoreCase))))
                     {
                         spellsMenu.AddItem(new MenuItem(spell.Name, spell.MenuName).SetValue(spell.Cleanse));
                     }
@@ -661,7 +658,7 @@
             return
                 Items.Where(item => item.WorksOn.Contains(buff.Type) && (!ally.IsMe && item.WorksOnAllies))
                     .OrderBy(x => x.Priority)
-                    .Where(x => x.Spell.IsReady())
+                    .Where(x => x.Spell.IsReady() && x.Spell.IsInRange(ally))
                     .Select(x => x.Spell)
                     .FirstOrDefault();
         }
@@ -677,7 +674,7 @@
                 return;
             }
 
-            foreach (var ally in HeroManager.Allies)
+            foreach (var ally in HeroManager.Allies.Where(x => x.IsValidTarget(float.MaxValue, false)))
             {
                 foreach (var buff in
                     ally.Buffs.Where(
