@@ -185,7 +185,7 @@
 
                 smiteMenu.AddItem(new MenuItem("Smite.Spell", "Use spell").SetValue(true));
 
-                if (Entry.IsSummonersRift)
+                if (Game.MapId == GameMapId.SummonersRift)
                 {
                     smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Dragon", "Dragon").SetValue(true));
                     smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
@@ -201,7 +201,7 @@
                     smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("Sru_Crab", "Crab").SetValue(false));
                 }
 
-                if (Entry.IsTwistedTreeline)
+                if (Game.MapId == GameMapId.TwistedTreeline)
                 {
                     smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_Spiderboss", "Vilemaw Enabled").SetValue(true));
                     smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_NGolem", "Golem Enabled").SetValue(true));

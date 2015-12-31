@@ -1,5 +1,6 @@
 ﻿namespace ElUtilitySuite.Utility
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -63,8 +64,7 @@
             this.Items = new List<AntiStealthRevealItem>
                              {
                                  new AntiStealthRevealItem { GetItem = () => ItemData.Vision_Ward.GetItem() },
-                                 new AntiStealthRevealItem
-                                     { GetItem = () => ItemData.Greater_Vision_Totem_Trinket.GetItem() }
+                                 new AntiStealthRevealItem { GetItem = () => ItemData.Greater_Vision_Totem_Trinket.GetItem() }
                              };
 
             GameObject.OnIntegerPropertyChange += this.GameObject_OnIntegerPropertyChange;
@@ -83,8 +83,7 @@
             GameObject sender,
             GameObjectIntegerPropertyChangeEventArgs args)
         {
-            if (!(sender is Obj_AI_Hero) || args.Property != "ActionState"
-                || !this.Menu.Item("AntiStealthActive").IsActive())
+            if (!(sender is Obj_AI_Hero) || args.Property != "ActionState" || !this.Menu.Item("AntiStealthActive").IsActive())
             {
                 return;
             }

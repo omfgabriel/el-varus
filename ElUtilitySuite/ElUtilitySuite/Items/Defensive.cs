@@ -42,7 +42,36 @@
 
         #endregion
 
+        /// <summary>
+        ///     Gets the player.
+        /// </summary>
+        /// <value>
+        ///     The player.
+        /// </value>
+        private Obj_AI_Hero Player
+        {
+            get
+            {
+                return ObjectManager.Player;
+            }
+        }
+
         #region Public Methods and Operators
+
+        private Obj_AI_Hero Allies()
+        {
+            var target = this.Player;
+            foreach (var unit in
+                ObjectManager.Get<Obj_AI_Hero>()
+                    .Where(x => x.IsAlly && x.IsValidTarget(900, false))
+                    .OrderByDescending(xe => xe.Health / xe.MaxHealth * 100))
+            {
+                target = unit;
+            }
+
+            return target;
+        }
+
 
         /// <summary>
         ///     Creates the menu.
@@ -84,7 +113,7 @@
             try
             {
                 Game.OnUpdate += this.OnUpdate;
-                Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
+                Obj_AI_Base.OnProcessSpellCast += this.OnProcessSpellCast;
             }
             catch (Exception e)
             {
@@ -96,7 +125,7 @@
 
         #region Methods
 
-        private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy)
             {
@@ -135,7 +164,7 @@
             {
                 if (args.Target.Type == Entry.Player.Type)
                 {
-                    if (sender.Distance(Entry.Allies().ServerPosition, true) <= 900 * 900)
+                    if (sender.Distance(this.Allies().ServerPosition, true) <= 900 * 900)
                     {
                         AggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
 
@@ -189,7 +218,7 @@
                     return;
                 }
 
-                var target = Entry.Allies();
+                var target = this.Allies();
                 if (target.Distance(Entry.Player.ServerPosition, true) > 600 * 600)
                 {
                     return;
@@ -252,7 +281,7 @@
                 return;
             }
 
-            var target = itemRange > 5000 ? Entry.Player : Entry.Allies();
+            var target = itemRange > 5000 ? Entry.Player : this.Allies();
             if (target.Distance(Entry.Player.ServerPosition, true) > itemRange * itemRange || !target.IsValidState())
             {
                 return;

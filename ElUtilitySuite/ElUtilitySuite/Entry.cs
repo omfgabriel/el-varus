@@ -19,32 +19,14 @@
 
         #region Public Properties
 
-        public static bool IsHowlingAbyss
-        {
-            get
-            {
-                return Game.MapId == GameMapId.HowlingAbyss;
-            }
-        }
-
-        public static bool IsSummonersRift
-        {
-            get
-            {
-                return Game.MapId == GameMapId.SummonersRift;
-            }
-        }
-
-        public static bool IsTwistedTreeline
-        {
-            get
-            {
-                return Game.MapId == GameMapId.TwistedTreeline;
-            }
-        }
-
         public static Menu Menu { get; set; }
 
+        /// <summary>
+        ///     Gets the player.
+        /// </summary>
+        /// <value>
+        ///     The player.
+        /// </value>
         public static Obj_AI_Hero Player
         {
             get
@@ -53,6 +35,12 @@
             }
         }
 
+        /// <summary>
+        ///     Gets script version
+        /// </summary>
+        /// <value>
+        ///     The script version
+        /// </value>
         public static string ScriptVersion
         {
             get
@@ -64,20 +52,6 @@
         #endregion
 
         #region Public Methods and Operators
-
-        public static Obj_AI_Hero Allies()
-        {
-            var target = Player;
-            foreach (var unit in
-                ObjectManager.Get<Obj_AI_Hero>()
-                    .Where(x => x.IsAlly && x.IsValidTarget(900, false))
-                    .OrderByDescending(xe => xe.Health / xe.MaxHealth * 100))
-            {
-                target = unit;
-            }
-
-            return target;
-        }
 
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         public static ObjectActivator<T> GetActivator<T>(ConstructorInfo ctor)
@@ -122,7 +96,7 @@
                 menu.AddItem(new MenuItem("usecombo", "Combo (Active)").SetValue(new KeyBind(32, KeyBindType.Press)));
                 menu.AddItem(new MenuItem("seperator", ""));
                 menu.AddItem(new MenuItem("Versionnumber", string.Format("Version: {0}", ScriptVersion)));
-                menu.AddItem(new MenuItem("by.jQuery", "jQ / ChewyMoon"));
+                menu.AddItem(new MenuItem("by.jQuery", "jQuery / ChewyMoon"));
                 menu.AddToMainMenu();
 
                 Menu = menu;
