@@ -86,7 +86,7 @@ namespace Elvarus
             {
                 return;
             }
-            if (wTarget != null && ElVarusMenu.Menu.Item("ElVarus.Combo.W.Focus").GetValue<bool>())
+            if (wTarget != null && ElVarusMenu.Menu.Item("ElVarus.Combo.W.Focus").IsActive())
             {
                 TargetSelector.SetTarget(target);
                 Hud.SelectedUnit = target;
@@ -176,8 +176,8 @@ namespace Elvarus
                 return;
             }
 
-            var harassQ = ElVarusMenu.Menu.Item("ElVarus.Harass.Q").GetValue<bool>();
-            var harassE = ElVarusMenu.Menu.Item("ElVarus.Harass.E").GetValue<bool>();
+            var harassQ = ElVarusMenu.Menu.Item("ElVarus.Harass.Q").IsActive();
+            var harassE = ElVarusMenu.Menu.Item("ElVarus.Harass.E").IsActive();
             var minmana = ElVarusMenu.Menu.Item("minmanaharass").GetValue<Slider>().Value;
 
             if (Player.ManaPercent > minmana)
@@ -225,9 +225,9 @@ namespace Elvarus
             var ghost = ItemData.Youmuus_Ghostblade.GetItem();
             var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
 
-            var useYoumuu = ElVarusMenu.Menu.Item("ElVarus.Items.Youmuu").GetValue<bool>();
-            var useCutlass = ElVarusMenu.Menu.Item("ElVarus.Items.Cutlass").GetValue<bool>();
-            var useBlade = ElVarusMenu.Menu.Item("ElVarus.Items.Blade").GetValue<bool>();
+            var useYoumuu = ElVarusMenu.Menu.Item("ElVarus.Items.Youmuu").IsActive();
+            var useCutlass = ElVarusMenu.Menu.Item("ElVarus.Items.Cutlass").IsActive();
+            var useBlade = ElVarusMenu.Menu.Item("ElVarus.Items.Blade").IsActive();
 
             var useBladeEhp = ElVarusMenu.Menu.Item("ElVarus.Items.Blade.EnemyEHP").GetValue<Slider>().Value;
             var useBladeMhp = ElVarusMenu.Menu.Item("ElVarus.Items.Blade.EnemyMHP").GetValue<Slider>().Value;
@@ -258,11 +258,11 @@ namespace Elvarus
 
         private static void JungleClear()
         {
-            var useQ = ElVarusMenu.Menu.Item("useQFarmJungle").GetValue<bool>();
-            var useE = ElVarusMenu.Menu.Item("useEFarmJungle").GetValue<bool>();
+            var useQ = ElVarusMenu.Menu.Item("useQFarmJungle").IsActive();
+            var useE = ElVarusMenu.Menu.Item("useEFarmJungle").IsActive();
             var minmana = ElVarusMenu.Menu.Item("minmanaclear").GetValue<Slider>().Value;
             var minions = MinionManager.GetMinions(
-                ObjectManager.Player.ServerPosition,
+                Player.ServerPosition,
                 700,
                 MinionTypes.All,
                 MinionTeam.Neutral,
@@ -278,10 +278,9 @@ namespace Elvarus
                         {
                             spells[Spells.Q].StartCharging();
                         }
-                        else
-                        {
-                            spells[Spells.Q].CastOnUnit(minion);
-                        }
+
+                        if (spells[Spells.Q].IsCharging && spells[Spells.Q].Range >= spells[Spells.Q].ChargedMaxRange)
+                            spells[Spells.Q].Cast(minion);
                     }
 
                     if (spells[Spells.E].IsReady() && useE)
@@ -295,7 +294,7 @@ namespace Elvarus
         //Credits to God :cat_lazy:
         private static void Killsteal()
         {
-            if (ElVarusMenu.Menu.Item("ElVarus.KSSS").GetValue<bool>() && spells[Spells.Q].IsReady())
+            if (ElVarusMenu.Menu.Item("ElVarus.KSSS").IsActive() && spells[Spells.Q].IsReady())
             {
                 foreach (var target in
                     HeroManager.Enemies.Where(
@@ -319,8 +318,8 @@ namespace Elvarus
 
         private static void LaneClear()
         {
-            var useQ = ElVarusMenu.Menu.Item("useQFarm").GetValue<bool>();
-            var useE = ElVarusMenu.Menu.Item("useQFarm").GetValue<bool>();
+            var useQ = ElVarusMenu.Menu.Item("useQFarm").IsActive();
+            var useE = ElVarusMenu.Menu.Item("useQFarm").IsActive();
             var countMinions = ElVarusMenu.Menu.Item("ElVarus.Count.Minions").GetValue<Slider>().Value;
             var countMinionsE = ElVarusMenu.Menu.Item("ElVarus.Count.Minions.E").GetValue<Slider>().Value;
             var minmana = ElVarusMenu.Menu.Item("minmanaclear").GetValue<Slider>().Value;
