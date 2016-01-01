@@ -482,6 +482,8 @@
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.R
                                  }
+
+                             //pyromania_particle
                          };
 
             Spells =
