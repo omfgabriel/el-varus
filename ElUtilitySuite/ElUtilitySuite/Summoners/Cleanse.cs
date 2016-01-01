@@ -30,7 +30,7 @@
                              new CleanseSpell
                                  {
                                      Name = "stun", MenuName = "Stun", Evade = false, DoT = false, EvadeTimer = 0,
-                                     Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R, Interval = 1.0,
+                                     Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R, Interval = 1.0
                                  },
                              new CleanseSpell
                                  {
