@@ -16,8 +16,6 @@
     {
         #region Static Fields
 
-        private static Obj_AI_Minion Minion;
-
         private static readonly string[] BuffsThatActuallyMakeSenseToSmite =
             {
                 "SRU_Red", "SRU_Blue", "SRU_Dragon",
@@ -26,6 +24,8 @@
                 "SRU_Krug", "Sru_Crab", "TT_Spiderboss",
                 "TTNGolem", "TTNWolf", "TTNWraith"
             };
+
+        private static Obj_AI_Minion Minion;
 
         #endregion
 
@@ -84,9 +84,39 @@
                                      ChampionName = "Pantheon", Range = 600f, Slot = SpellSlot.E, Stage = 0,
                                      TargetType = SpellDataTargetType.Unit
                                  },
-                              new Entry
+                             new Entry
                                  {
                                      ChampionName = "MasterYi", Range = 600f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Volibear", Range = 400f, Slot = SpellSlot.W, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "XinZhao", Range = 600f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Mundo", Range = 1050f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "KhaZix", Range = 325f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Evelynn", Range = 225f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Shen", Range = 520f, Slot = SpellSlot.E, Stage = 0,
                                      TargetType = SpellDataTargetType.Unit
                                  }
                          };
@@ -102,8 +132,6 @@
         /// <value>
         ///     The SR map
         /// </value>
-        /// 
-        /// 
         public static bool IsSummonersRift
         {
             get
@@ -118,7 +146,6 @@
         /// <value>
         ///     The TT map
         /// </value>
-        /// 
         public static bool IsTwistedTreeline
         {
             get
@@ -133,7 +160,6 @@
         /// <value>
         ///     The player.
         /// </value>
-        /// 
         public static Obj_AI_Hero Player
         {
             get
@@ -148,7 +174,6 @@
         /// <value>
         ///     The Script Version
         /// </value>
-
         public static string ScriptVersion
         {
             get
@@ -198,7 +223,7 @@
         public SpellSlot Slot { get; set; }
 
         /// <summary>
-        /// Gets or sets the slot.
+        ///     Gets or sets the slot.
         /// </summary>
         /// <value>
         ///     The stage.
@@ -206,7 +231,6 @@
         public int Stage { get; set; }
 
         #endregion
-
 
         #region Public Methods and Operators
 
@@ -238,13 +262,6 @@
             }
         }
 
-        private static double SmiteDamage()
-        {
-            return Player.Spellbook.GetSpell(SmiteSpell.Slot).State == SpellState.Ready
-                       ? (float)Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite)
-                       : 0;
-        }
-
         #endregion
 
         #region Methods
@@ -252,7 +269,8 @@
         private static void ChampionSpellSmite(double damage, Obj_AI_Base mob)
         {
             foreach (var spell in
-                Spells.Where(x => x.ChampionName.Equals(Player.ChampionName, StringComparison.InvariantCultureIgnoreCase)))
+                Spells.Where(
+                    x => x.ChampionName.Equals(Player.ChampionName, StringComparison.InvariantCultureIgnoreCase)))
             {
                 if (Player.GetSpellDamage(mob, spell.Slot, spell.Stage) + damage >= mob.Health)
                 {
@@ -516,6 +534,13 @@
             {
                 Console.WriteLine("An error occurred: '{0}'", e);
             }
+        }
+
+        private static double SmiteDamage()
+        {
+            return Player.Spellbook.GetSpell(SmiteSpell.Slot).State == SpellState.Ready
+                       ? (float)Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite)
+                       : 0;
         }
 
         private static void SmiteKill()
