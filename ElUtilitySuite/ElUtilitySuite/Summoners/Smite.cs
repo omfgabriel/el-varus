@@ -90,7 +90,37 @@
                                  {
                                      ChampionName = "Pantheon", Range = 600f, Slot = SpellSlot.E, Stage = 0,
                                      TargetType = SpellDataTargetType.Unit
-                                 }
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Volibear", Range = 400f, Slot = SpellSlot.W, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "XinZhao", Range = 600f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Mundo", Range = 1050f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "KhaZix", Range = 325f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Evelynn", Range = 225f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Shen", Range = 520f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
                          };
         }
 
@@ -251,13 +281,6 @@
             }
         }
 
-        private float SmiteDamage()
-        {
-            return this.Player.Spellbook.GetSpell(this.SmiteSpell.Slot).State == SpellState.Ready
-                       ? (float)this.Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite)
-                       : 0;
-        }
-
         #endregion
 
         #region Methods
@@ -265,7 +288,8 @@
         private void ChampionSpellSmite(float damage, Obj_AI_Base mob)
         {
             foreach (var spell in
-                Spells.Where(x => x.ChampionName.Equals(this.Player.ChampionName, StringComparison.InvariantCultureIgnoreCase)))
+                Spells.Where(
+                    x => x.ChampionName.Equals(this.Player.ChampionName, StringComparison.InvariantCultureIgnoreCase)))
             {
                 if (this.Player.GetSpellDamage(mob, spell.Slot, spell.Stage) + damage >= mob.Health)
                 {
@@ -517,6 +541,13 @@
             {
                 Console.WriteLine("An error occurred: '{0}'", e);
             }
+        }
+
+        private float SmiteDamage()
+        {
+            return this.Player.Spellbook.GetSpell(this.SmiteSpell.Slot).State == SpellState.Ready
+                       ? (float)this.Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite)
+                       : 0;
         }
 
         private void SmiteKill()
