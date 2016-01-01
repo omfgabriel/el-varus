@@ -18,6 +18,8 @@
         /// </summary>
         static Cleanse()
         {
+            Console.WriteLine("NEW");
+
             #region Spell Data
 
             Spells = new List<CleanseSpell>
@@ -26,6 +28,11 @@
                                  {
                                      Name = "suppression", MenuName = "Suppresion", Evade = false, DoT = false,
                                      EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R, Interval = 1.0
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Name = "stun", MenuName = "Stun", Evade = false, DoT = false, EvadeTimer = 0,
+                                     Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R, Interval = 1.0,
                                  },
                              new CleanseSpell
                                  {
@@ -149,23 +156,15 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Name = "shyvanaimmolationaura", Evade = false, DoT = true, EvadeTimer = 0,
-                                     Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.W, Interval = 1.0
-                                 },
-                             new CleanseSpell
-                                 {
                                      Name = "missfortunescattershotslow", Evade = false, DoT = true, EvadeTimer = 0,
-                                     Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E, Interval = 0.5
+                                     Champion = "MissFortune", Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E,
+                                     Interval = 0.5
                                  },
                              new CleanseSpell
                                  {
                                      Name = "missfortunepassivestack", Evade = false, DoT = true, EvadeTimer = 0,
-                                     Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.R, Interval = 0.5
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "shyvanaimmolatedragon", Evade = false, DoT = true, EvadeTimer = 0,
-                                     Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.W, Interval = 1.0
+                                     Champion = "MissFortune", Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.R,
+                                     Interval = 0.5
                                  },
                              new CleanseSpell
                                  {
@@ -237,26 +236,6 @@
                                      MenuName = "Mordekaiser Children of the Grave", Evade = false, DoT = true,
                                      EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown,
                                      Interval = 1.5
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "burningagony", Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false,
-                                     CleanseTimer = 0, Slot = SpellSlot.Unknown, Interval = 1.0
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "garene", Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false,
-                                     CleanseTimer = 0, Slot = SpellSlot.E, Interval = 1.0
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "auraofdespair", Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false,
-                                     CleanseTimer = 0, Slot = SpellSlot.W, Interval = 1.0
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "hecarimw", Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false,
-                                     CleanseTimer = 0, Slot = SpellSlot.W, Interval = 1.0
                                  },
                              new CleanseSpell
                                  {
@@ -473,11 +452,13 @@
                          };
 
             Spells =
-                Spells.Where(
-                    x =>
-                    !x.QssIgnore
-                    && HeroManager.Enemies.Any(
-                        y => y.ChampionName.Equals(x.Champion, StringComparison.InvariantCultureIgnoreCase))).ToList();
+                Spells.Where(x => !x.QssIgnore)
+                    .Where(
+                        x =>
+                        string.IsNullOrEmpty(x.Champion)
+                        || HeroManager.Enemies.Any(
+                            y => y.ChampionName.Equals(x.Champion, StringComparison.InvariantCultureIgnoreCase)))
+                    .ToList();
 
             #endregion
 
@@ -617,13 +598,11 @@
             {
                 var spellsMenu = new Menu("Spells", "CleanseV3Spells");
                 {
-                    foreach (var spell in
-                        Spells.Where(
-                            x =>
-                            HeroManager.Enemies.Any(
-                                y => y.ChampionName.Equals(x.Champion, StringComparison.InvariantCultureIgnoreCase))))
+                    foreach (var spell in Spells)
                     {
-                        spellsMenu.AddItem(new MenuItem(spell.Name, spell.MenuName).SetValue(spell.Cleanse));
+                        spellsMenu.AddItem(
+                            new MenuItem(spell.Name, string.IsNullOrEmpty(spell.MenuName) ? spell.Name : spell.MenuName)
+                                .SetValue(spell.Cleanse));
                     }
                 }
 
@@ -656,7 +635,7 @@
         private static Spell GetBestCleanseItem(GameObject ally, BuffInstance buff)
         {
             return
-                Items.Where(item => item.WorksOn.Contains(buff.Type) && (!ally.IsMe && item.WorksOnAllies))
+                Items.Where(item => item.WorksOn.Contains(buff.Type))
                     .OrderBy(x => x.Priority)
                     .Where(x => x.Spell.IsReady() && x.Spell.IsInRange(ally))
                     .Select(x => x.Spell)
@@ -674,28 +653,26 @@
                 return;
             }
 
-            foreach (var ally in HeroManager.Allies.Where(x => x.IsValidTarget(float.MaxValue, false)))
+            foreach (var ally in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
             {
-                foreach (var buff in
-                    ally.Buffs.Where(
-                        x => Spells.Any(y => y.Name.Equals(x.Name, StringComparison.InvariantCultureIgnoreCase))))
+                foreach (var spell in Spells.Where(x => ally.HasBuff(x.Name)))
                 {
-                    if (!this.Menu.Item(buff.Name).IsActive())
+                    if (!this.Menu.Item(spell.Name).IsActive())
                     {
                         continue;
                     }
 
-                    var item = GetBestCleanseItem(ally, buff);
+                    var item = GetBestCleanseItem(
+                        ally,
+                        ally.Buffs.FirstOrDefault(
+                            x => x.Name.Equals(spell.Name, StringComparison.InvariantCultureIgnoreCase)));
 
                     if (item == null)
                     {
                         continue;
                     }
 
-                    Utility.DelayAction.Add(
-                        Spells.Find(x => x.Name.Equals(buff.Name, StringComparison.InvariantCultureIgnoreCase))
-                            .CleanseTimer,
-                        () => item.Cast(ally));
+                    item.Cast(ally);
                 }
             }
         }
