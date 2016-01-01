@@ -469,6 +469,18 @@
                                  {
                                      Name = "hecarimrampattackknockback", Evade = false, DoT = false, Cleanse = false,
                                      CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "Rammus", Name = "PuncturingTaunt", MenuName = "Puncturing Taunt",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.E
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "Warwick", Name = "InfiniteDuress", MenuName = "Warwick (R)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
+                                     Slot = SpellSlot.R
                                  }
                          };
 
