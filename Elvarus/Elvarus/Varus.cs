@@ -24,7 +24,7 @@ namespace Elvarus
     {
         #region Static Fields
 
-        public static Orbwalking.Orbwalker _orbwalker;
+        public static Orbwalking.Orbwalker Orbwalker;
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
                                                              {
@@ -48,7 +48,6 @@ namespace Elvarus
 
         #endregion
 
-
         #region Public Methods and Operators
 
         public static void Game_OnGameLoad(EventArgs args)
@@ -57,8 +56,6 @@ namespace Elvarus
             {
                 return;
             }
-
-            Notifications.AddNotification("ElVarus by jQuery v1.0.1.5", 10000);
 
             spells[Spells.Q].SetSkillshot(.25f, 70f, 1650f, false, SkillshotType.SkillshotLine);
             spells[Spells.E].SetSkillshot(0.35f, 120, 1500, false, SkillshotType.SkillshotCircle);
@@ -69,36 +66,6 @@ namespace Elvarus
             ElVarusMenu.Initialize();
             Game.OnUpdate += OnGameUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
-            //Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
-        }
-
-        public static float GetComboDamage(Obj_AI_Base enemy)
-        {
-            var damage = 0d;
-
-            if (spells[Spells.Q].IsReady())
-            {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.Q);
-            }
-
-            if (spells[Spells.W].IsReady())
-            {
-                damage +=
-                    enemy.Buffs.Where(buff => buff.Name == "VarusWDebuff")
-                        .Sum(buff => Player.GetSpellDamage(enemy, SpellSlot.W, 1) * (1 + buff.Count / 3) - 1);
-            }
-
-            if (spells[Spells.E].IsReady())
-            {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.E);
-            }
-
-            if (spells[Spells.R].IsReady())
-            {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.R);
-            }
-
-            return (float)damage;
         }
 
         #endregion
@@ -119,20 +86,18 @@ namespace Elvarus
             {
                 return;
             }
-            if (wTarget != null && ElVarusMenu.Menu.Item("ElVarus.Combo.W.Focus").GetValue<bool>())
+            if (wTarget != null && ElVarusMenu.Menu.Item("ElVarus.Combo.W.Focus").IsActive())
             {
                 TargetSelector.SetTarget(target);
                 Hud.SelectedUnit = target;
-                Console.WriteLine("Selected target: {0}", target.ChampionName);
             }
 
             var stackCount = ElVarusMenu.Menu.Item("ElVarus.Combo.Stack.Count").GetValue<Slider>().Value;
             var rCount = ElVarusMenu.Menu.Item("ElVarus.Combo.R.Count").GetValue<Slider>().Value;
-            var comboQ = ElVarusMenu.Menu.Item("ElVarus.Combo.Q").GetValue<bool>();
-            var comboE = ElVarusMenu.Menu.Item("ElVarus.Combo.E").GetValue<bool>();
-            var comboR = ElVarusMenu.Menu.Item("ElVarus.Combo.R").GetValue<bool>();
-            var alwaysQ = ElVarusMenu.Menu.Item("ElVarus.combo.always.Q").GetValue<bool>();
-
+            var comboQ = ElVarusMenu.Menu.Item("ElVarus.Combo.Q").IsActive();
+            var comboE = ElVarusMenu.Menu.Item("ElVarus.Combo.E").IsActive();
+            var comboR = ElVarusMenu.Menu.Item("ElVarus.Combo.R").IsActive();
+            var alwaysQ = ElVarusMenu.Menu.Item("ElVarus.combo.always.Q").IsActive();
 
             if (comboE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
@@ -172,32 +137,10 @@ namespace Elvarus
                 }
             }
 
-            if (comboR && Player.CountEnemiesInRange(spells[Spells.R].Range) >= rCount && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range))
+            if (comboR && Player.CountEnemiesInRange(spells[Spells.R].Range) >= rCount && spells[Spells.R].IsReady()
+                && target.IsValidTarget(spells[Spells.R].Range))
             {
                 spells[Spells.R].CastOnBestTarget();
-            }
-        }
-
-
-        //Credits to God :cat_lazy:
-        private static void Killsteal()
-        {
-            if (ElVarusMenu.Menu.Item("ElVarus.KSSS").GetValue<bool>() && spells[Spells.Q].IsReady())
-            {
-                foreach (var target in
-                    HeroManager.Enemies.Where(
-                        enemy =>
-                        enemy.IsValidTarget() && IsQKillable(enemy)
-                        && Player.Distance(enemy.Position) <= spells[Spells.Q].ChargedMaxRange))
-                {
-                    spells[Spells.Q].StartCharging();
-
-                    if (spells[Spells.Q].IsCharging)
-                    {
-                        _orbwalker.SetAttack(false);
-                        if (IsQKillable(target) && !target.IsInvulnerable) spells[Spells.Q].Cast(target);
-                    }
-                }
             }
         }
 
@@ -233,8 +176,8 @@ namespace Elvarus
                 return;
             }
 
-            var harassQ = ElVarusMenu.Menu.Item("ElVarus.Harass.Q").GetValue<bool>();
-            var harassE = ElVarusMenu.Menu.Item("ElVarus.Harass.E").GetValue<bool>();
+            var harassQ = ElVarusMenu.Menu.Item("ElVarus.Harass.Q").IsActive();
+            var harassE = ElVarusMenu.Menu.Item("ElVarus.Harass.E").IsActive();
             var minmana = ElVarusMenu.Menu.Item("minmanaharass").GetValue<Slider>().Value;
 
             if (Player.ManaPercent > minmana)
@@ -282,9 +225,9 @@ namespace Elvarus
             var ghost = ItemData.Youmuus_Ghostblade.GetItem();
             var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
 
-            var useYoumuu = ElVarusMenu.Menu.Item("ElVarus.Items.Youmuu").GetValue<bool>();
-            var useCutlass = ElVarusMenu.Menu.Item("ElVarus.Items.Cutlass").GetValue<bool>();
-            var useBlade = ElVarusMenu.Menu.Item("ElVarus.Items.Blade").GetValue<bool>();
+            var useYoumuu = ElVarusMenu.Menu.Item("ElVarus.Items.Youmuu").IsActive();
+            var useCutlass = ElVarusMenu.Menu.Item("ElVarus.Items.Cutlass").IsActive();
+            var useBlade = ElVarusMenu.Menu.Item("ElVarus.Items.Blade").IsActive();
 
             var useBladeEhp = ElVarusMenu.Menu.Item("ElVarus.Items.Blade.EnemyEHP").GetValue<Slider>().Value;
             var useBladeMhp = ElVarusMenu.Menu.Item("ElVarus.Items.Blade.EnemyMHP").GetValue<Slider>().Value;
@@ -315,11 +258,11 @@ namespace Elvarus
 
         private static void JungleClear()
         {
-            var useQ = ElVarusMenu.Menu.Item("useQFarmJungle").GetValue<bool>();
-            var useE = ElVarusMenu.Menu.Item("useEFarmJungle").GetValue<bool>();
+            var useQ = ElVarusMenu.Menu.Item("useQFarmJungle").IsActive();
+            var useE = ElVarusMenu.Menu.Item("useEFarmJungle").IsActive();
             var minmana = ElVarusMenu.Menu.Item("minmanaclear").GetValue<Slider>().Value;
             var minions = MinionManager.GetMinions(
-                ObjectManager.Player.ServerPosition,
+                Player.ServerPosition,
                 700,
                 MinionTypes.All,
                 MinionTeam.Neutral,
@@ -335,10 +278,9 @@ namespace Elvarus
                         {
                             spells[Spells.Q].StartCharging();
                         }
-                        else
-                        {
-                            spells[Spells.Q].CastOnUnit(minion);
-                        }
+
+                        if (spells[Spells.Q].IsCharging && spells[Spells.Q].Range >= spells[Spells.Q].ChargedMaxRange)
+                            spells[Spells.Q].Cast(minion);
                     }
 
                     if (spells[Spells.E].IsReady() && useE)
@@ -349,10 +291,35 @@ namespace Elvarus
             }
         }
 
+        //Credits to God :cat_lazy:
+        private static void Killsteal()
+        {
+            if (ElVarusMenu.Menu.Item("ElVarus.KSSS").IsActive() && spells[Spells.Q].IsReady())
+            {
+                foreach (var target in
+                    HeroManager.Enemies.Where(
+                        enemy =>
+                        enemy.IsValidTarget() && IsQKillable(enemy)
+                        && Player.Distance(enemy.Position) <= spells[Spells.Q].ChargedMaxRange))
+                {
+                    spells[Spells.Q].StartCharging();
+
+                    if (spells[Spells.Q].IsCharging)
+                    {
+                        Orbwalker.SetAttack(false);
+                        if (IsQKillable(target) && !target.IsInvulnerable)
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+                    }
+                }
+            }
+        }
+
         private static void LaneClear()
         {
-            var useQ = ElVarusMenu.Menu.Item("useQFarm").GetValue<bool>();
-            var useE = ElVarusMenu.Menu.Item("useQFarm").GetValue<bool>();
+            var useQ = ElVarusMenu.Menu.Item("useQFarm").IsActive();
+            var useE = ElVarusMenu.Menu.Item("useQFarm").IsActive();
             var countMinions = ElVarusMenu.Menu.Item("ElVarus.Count.Minions").GetValue<Slider>().Value;
             var countMinionsE = ElVarusMenu.Menu.Item("ElVarus.Count.Minions.E").GetValue<Slider>().Value;
             var minmana = ElVarusMenu.Menu.Item("minmanaclear").GetValue<Slider>().Value;
@@ -370,11 +337,11 @@ namespace Elvarus
 
             if (spells[Spells.Q].IsReady() && useQ)
             {
-                var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.Q].Range);
+                var allMinions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
                 {
                     foreach (var minion in
                         allMinions.Where(
-                            minion => minion.Health <= ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q)))
+                            minion => minion.Health <= Player.GetSpellDamage(minion, SpellSlot.Q)))
                     {
                         var killcount = 0;
 
@@ -421,7 +388,7 @@ namespace Elvarus
 
         private static void OnGameUpdate(EventArgs args)
         {
-            switch (_orbwalker.ActiveMode)
+            switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
                     Combo();
@@ -437,7 +404,7 @@ namespace Elvarus
 
             Killsteal();
 
-            if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 if (Player.Buffs.Count(buf => buf.Name == "Muramana") == 0)
                 {
