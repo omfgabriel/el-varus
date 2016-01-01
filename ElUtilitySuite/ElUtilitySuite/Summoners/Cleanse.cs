@@ -18,8 +18,6 @@
         /// </summary>
         static Cleanse()
         {
-            Console.WriteLine("NEW");
-
             #region Spell Data
 
             Spells = new List<CleanseSpell>
@@ -686,7 +684,7 @@
                         continue;
                     }
 
-                    item.Cast(ally);
+                    Utility.DelayAction.Add(spell.CleanseTimer, () => item.Cast(ally));
                 }
             }
         }
