@@ -20,7 +20,7 @@ namespace Elvarus
             Menu = new Menu("ElVarus", "menu", true);
 
             var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
-            Varus._orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+            Varus.Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
             Menu.AddSubMenu(orbwalkerMenu);
 
             var targetSelector = new Menu("Target Selector", "TargetSelector");
@@ -88,30 +88,6 @@ namespace Elvarus
             miscMenu.AddItem(new MenuItem("ElVarus.Draw.W", "Draw W").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElVarus.Draw.E", "Draw E").SetValue(new Circle()));
 
-            var dmgAfterE = new MenuItem("ElDiana.DrawComboDamage", "Draw combo damage").SetValue(true);
-            var drawFill =
-                new MenuItem("ElDiana.DrawColour", "Fill colour", true).SetValue(
-                    new Circle(true, Color.FromArgb(204, 204, 0, 0)));
-            miscMenu.AddItem(drawFill);
-            miscMenu.AddItem(dmgAfterE);
-
-            DrawDamage.DamageToUnit = Varus.GetComboDamage;
-            DrawDamage.Enabled = dmgAfterE.GetValue<bool>();
-            DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
-            DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
-
-            dmgAfterE.ValueChanged +=
-                delegate(object sender, OnValueChangeEventArgs eventArgs)
-                    {
-                        DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
-                    };
-
-            drawFill.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
-                {
-                    DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
-                    DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
-                };
-
             miscMenu.AddItem(new MenuItem("ElVarus.KSSS", "Killsteal").SetValue(true));
 
             Menu.AddSubMenu(miscMenu);
@@ -123,7 +99,7 @@ namespace Elvarus
             Menu.AddSubMenu(credits);
 
             Menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            Menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.1.6"));
+            Menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.2.2"));
             Menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             Menu.AddToMainMenu();
