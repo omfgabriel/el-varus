@@ -16,11 +16,7 @@
     {
         #region Static Fields
 
-        public static Obj_AI_Minion minion;
-
-        //public static Spell smite;
-
-        //public static SpellSlot smiteSlot;
+        public static Obj_AI_Minion Minion;
 
         private static readonly string[] BuffsThatActuallyMakeSenseToSmite =
             {
@@ -168,7 +164,7 @@
         /// </value>
         public Spell SmiteSpell { get; set; }
 
-        // <summary>
+        /// <summary>
         /// Gets or sets the slot.
         /// </summary>
         /// <value>
@@ -316,30 +312,30 @@
                 return;
             }
 
-            minion =
+            Minion =
                 (Obj_AI_Minion)
                 MinionManager.GetMinions(this.Player.ServerPosition, 900, MinionTypes.All, MinionTeam.Neutral)
                     .FirstOrDefault(
                         buff =>
                         buff.IsValidTarget() && BuffsThatActuallyMakeSenseToSmite.Contains(buff.CharData.BaseSkinName));
 
-            if (minion == null)
+            if (Minion == null)
             {
                 return;
             }
 
-            if (this.Menu.Item(minion.CharData.BaseSkinName).IsActive())
+            if (this.Menu.Item(Minion.CharData.BaseSkinName).IsActive())
             {
-                if (minion.Distance(this.Player.ServerPosition)
-                    <= 500 + minion.BoundingRadius + this.Player.BoundingRadius)
+                if (Minion.Distance(this.Player.ServerPosition)
+                    <= 500 + Minion.BoundingRadius + this.Player.BoundingRadius)
                 {
                     if (this.Menu.Item("Smite.Spell").IsActive())
                     {
-                        this.ChampionSpellSmite(this.SmiteDamage(), minion);
+                        this.ChampionSpellSmite(this.SmiteDamage(), Minion);
                     }
-                    if (this.SmiteDamage() > minion.Health)
+                    if (this.SmiteDamage() > Minion.Health)
                     {
-                        this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, minion);
+                        this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, Minion);
                     }
                 }
             }
@@ -546,7 +542,7 @@
         private float SmiteDamage()
         {
             return this.Player.Spellbook.GetSpell(this.SmiteSpell.Slot).State == SpellState.Ready
-                       ? (float)this.Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite)
+                       ? (float)this.Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite)
                        : 0;
         }
 
