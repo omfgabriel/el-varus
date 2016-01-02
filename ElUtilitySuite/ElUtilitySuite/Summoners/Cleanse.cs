@@ -22,11 +22,11 @@
 
             Spells = new List<CleanseSpell>
                          {
-                                new CleanseSpell
-                               {
-                                    Name = "stun", MenuName = "Stun", Evade = false, DoT = false, EvadeTimer = 0,
-                                   Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown, Interval = 1.0
-                                   },
+                             new CleanseSpell
+                                 {
+                                     Name = "stun", MenuName = "Stun", Evade = false, DoT = false, EvadeTimer = 0,
+                                     Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown, Interval = 1.0
+                                 },
                              new CleanseSpell
                                  {
                                      Name = "suppression", MenuName = "Suppresion", Evade = false, DoT = false,
