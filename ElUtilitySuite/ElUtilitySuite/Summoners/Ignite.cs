@@ -16,7 +16,8 @@
             {
                 return !hero.HasBuff("summonerdot") || !hero.HasBuff("summonerbarrier") || !hero.HasBuff("BlackShield")
                        || !hero.HasBuff("SivirShield") || !hero.HasBuff("BansheesVeil")
-                       || !hero.HasBuff("ShroudofDarkness");
+                       || !hero.HasBuff("ShroudofDarkness") || !hero.HasBuffOfType(BuffType.SpellShield) || !hero.HasBuffOfType(BuffType.SpellImmunity)
+                   || !hero.HasBuffOfType(BuffType.Invulnerability);
             }
 
             return true;
