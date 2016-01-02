@@ -46,12 +46,6 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Name = "itemsmitechallenge", MenuName = "Challenging Smite", Evade = false,
-                                     DoT = true, EvadeTimer = 0, Cleanse = true, CleanseTimer = 100,
-                                     Slot = SpellSlot.Unknown, Interval = 1.0
-                                 },
-                             new CleanseSpell
-                                 {
                                      Champion = "Gangplank", Name = "gangplankpassiveattackdot",
                                      MenuName = "Gangplank Passive Burn", Evade = false, DoT = true, EvadeTimer = 0,
                                      Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.Unknown, Interval = .8
@@ -449,7 +443,7 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Rammus", Name = "PuncturingTaunt", MenuName = "Puncturing Taunt",
+                                     Champion = "Rammus", Name = "puncturingtaunt", MenuName = "Rammus Taunt",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
                                      Slot = SpellSlot.E
                                  },
