@@ -635,9 +635,11 @@
         private static Spell GetBestCleanseItem(GameObject ally, BuffInstance buff)
         {
             return
-                Items.Where(item => item.WorksOn.Contains(buff.Type))
-                    .OrderBy(x => x.Priority)
-                    .Where(x => x.Spell.IsReady() && x.Spell.IsInRange(ally) && x.Spell.Slot != SpellSlot.Unknown)
+                Items.OrderBy(x => x.Priority)
+                    .Where(
+                        x =>
+                        x.WorksOn.Contains(buff.Type) && (ally.IsMe || x.WorksOnAllies)
+                        && (x.Spell.IsReady() && x.Spell.IsInRange(ally) && x.Spell.Slot != default(SpellSlot)))
                     .Select(x => x.Spell)
                     .FirstOrDefault();
         }
