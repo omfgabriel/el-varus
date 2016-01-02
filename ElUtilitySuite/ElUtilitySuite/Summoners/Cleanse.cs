@@ -25,12 +25,8 @@
                              new CleanseSpell
                                  {
                                      Name = "suppression", MenuName = "Suppresion", Evade = false, DoT = false,
-                                     EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown, Interval = 1.0
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "stun", MenuName = "Stun", Evade = false, DoT = false, EvadeTimer = 0,
-                                     Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown, Interval = 1.0
+                                     EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown,
+                                     Interval = 1.0
                                  },
                              new CleanseSpell
                                  {
@@ -641,7 +637,7 @@
             return
                 Items.Where(item => item.WorksOn.Contains(buff.Type))
                     .OrderBy(x => x.Priority)
-                    .Where(x => x.Spell.IsReady() && x.Spell.IsInRange(ally))
+                    .Where(x => x.Spell.IsReady() && x.Spell.IsInRange(ally) && x.Spell.Slot != SpellSlot.Unknown)
                     .Select(x => x.Spell)
                     .FirstOrDefault();
         }
