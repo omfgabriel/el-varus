@@ -664,10 +664,7 @@
                         continue;
                     }
 
-                    var item = GetBestCleanseItem(
-                        ally,
-                        ally.Buffs.FirstOrDefault(
-                            x => x.Name.Equals(spell.Name, StringComparison.InvariantCultureIgnoreCase)));
+                    var item = GetBestCleanseItem(ally, ally.GetBuff(spell.Name));
 
                     if (item == null)
                     {
