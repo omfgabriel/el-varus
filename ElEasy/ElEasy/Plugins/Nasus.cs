@@ -11,7 +11,7 @@
 
     using Color = System.Drawing.Color;
 
-    public class Nasus : Standards
+    internal class Nasus : IPlugin
     {
         #region Static Fields
 
@@ -23,20 +23,146 @@
                                                                                Spells.Q,
                                                                                new Spell(
                                                                                SpellSlot.Q,
-                                                                               Player.AttackRange + 50)
+                                                                               Orbwalking.GetRealAutoAttackRange(ObjectManager.Player) + 100)
                                                                            },
                                                                            { Spells.W, new Spell(SpellSlot.W, 600) },
                                                                            { Spells.E, new Spell(SpellSlot.E, 650) },
                                                                            { Spells.R, new Spell(SpellSlot.R) }
                                                                        };
 
+        private static SpellSlot Ignite;
+
+        private static Orbwalking.Orbwalker Orbwalker;
+
+        #endregion
+
+        #region Enums
+
+        public enum Spells
+        {
+            Q,
+
+            W,
+
+            E,
+
+            R
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        ///     Gets or sets the menu.
+        /// </summary>
+        /// <value>
+        ///     The menu.
+        /// </value>
+        private Menu Menu { get; set; }
+
+        /// <summary>
+        ///     Gets the player.
+        /// </summary>
+        /// <value>
+        ///     The player.
+        /// </value>
+        private Obj_AI_Hero Player
+        {
+            get
+            {
+                return ObjectManager.Player;
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
 
-        public static void Load()
+        /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
         {
-            Ignite = Player.GetSpellSlot("summonerdot");
+            this.Menu = new Menu("ElNasus", "ElNasus");
+            {
+                var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
+                Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+                this.Menu.AddSubMenu(orbwalkerMenu);
+
+                var targetSelector = new Menu("Target Selector", "TargetSelector");
+                TargetSelector.AddToMenu(targetSelector);
+                this.Menu.AddSubMenu(targetSelector);
+
+                var comboMenu = new Menu("Combo", "Combo");
+                {
+                    comboMenu.AddItem(new MenuItem("ElEasy.Nasus.Combo.Q", "Use Q").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Nasus.Combo.W", "Use W").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Nasus.Combo.E", "Use E").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Nasus.Combo.R", "Use R").SetValue(true));
+                    comboMenu.AddItem(
+                        new MenuItem("ElEasy.Nasus.Combo.Count.R", "Minimum champions in range for R").SetValue(
+                            new Slider(2, 1, 5)));
+                    comboMenu.AddItem(
+                        new MenuItem("ElEasy.Nasus.Combo.HP", "Minimum HP for R").SetValue(new Slider(55)));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Nasus.Combo.Ignite", "Use Ignite").SetValue(true));
+                }
+
+                this.Menu.AddSubMenu(comboMenu);
+
+                var harassMenu = new Menu("Harass", "Harass");
+                {
+                    harassMenu.AddItem(new MenuItem("ElEasy.Nasus.Harass.E", "Use E").SetValue(true));
+                    harassMenu.AddItem(
+                        new MenuItem("ElEasy.Nasus.Harass.Player.Mana", "Minimum Mana").SetValue(new Slider(55)));
+                }
+
+                this.Menu.AddSubMenu(harassMenu);
+
+                var clearMenu = new Menu("Clear", "Clear");
+                {
+                    clearMenu.SubMenu("Laneclear")
+                        .AddItem(new MenuItem("ElEasy.Nasus.LaneClear.Q", "Use Q").SetValue(true));
+                    clearMenu.SubMenu("Laneclear")
+                        .AddItem(new MenuItem("ElEasy.Nasus.LaneClear.E", "Use E").SetValue(true));
+                    clearMenu.SubMenu("Jungleclear")
+                        .AddItem(new MenuItem("ElEasy.Nasus.JungleClear.Q", "Use Q").SetValue(true));
+                    clearMenu.SubMenu("Jungleclear")
+                        .AddItem(new MenuItem("ElEasy.Nasus.JungleClear.E", "Use E").SetValue(true));
+                }
+
+                this.Menu.AddSubMenu(clearMenu);
+
+                var lasthitMenu = new Menu("Lasthit", "Lasthit");
+                {
+                    lasthitMenu.AddItem(
+                        new MenuItem("ElEasy.Nasus.Lasthit.Activated", "Auto Lasthit").SetValue(
+                            new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle)));
+                }
+
+                this.Menu.AddSubMenu(lasthitMenu);
+
+                var miscellaneousMenu = new Menu("Miscellaneous", "Miscellaneous");
+                {
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.off", "Turn drawings off").SetValue(true));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.W", "Draw W").SetValue(new Circle()));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.E", "Draw E").SetValue(new Circle()));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.Text", "Draw text").SetValue(true));
+                    miscellaneousMenu.AddItem(
+                        new MenuItem("ElEasy.Nasus.Draw.MinionHelper", "Draw killable minions").SetValue(true));
+                }
+
+                this.Menu.AddSubMenu(miscellaneousMenu);
+            }
+            rootMenu.AddSubMenu(this.Menu);
+        }
+
+        public void Load()
+        {
+            Console.WriteLine("Loaded Nasus");
+            Ignite = this.Player.GetSpellSlot("summonerdot");
             spells[Spells.E].SetSkillshot(
                 spells[Spells.E].Instance.SData.SpellCastTime,
                 spells[Spells.E].Instance.SData.LineWidth,
@@ -44,26 +170,25 @@
                 false,
                 SkillshotType.SkillshotCircle);
 
-            Initialize();
-            Game.OnUpdate += OnUpdate;
-            Drawing.OnDraw += OnDraw;
-            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
+            Game.OnUpdate += this.OnUpdate;
+            Drawing.OnDraw += this.OnDraw;
+            Obj_AI_Base.OnProcessSpellCast += this.Obj_AI_Base_OnProcessSpellCast;
         }
 
         #endregion
 
         #region Methods
 
-        private static void AutoLastHit()
+        private void AutoLastHit()
         {
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
-                || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed || Player.IsRecalling())
+                || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed || this.Player.IsRecalling())
             {
                 return;
             }
 
             var minions = MinionManager.GetMinions(
-                Player.Position,
+                this.Player.Position,
                 spells[Spells.E].Range,
                 MinionTypes.All,
                 MinionTeam.Enemy,
@@ -71,115 +196,49 @@
 
             foreach (var minion in minions)
             {
-                if (GetBonusDmg(minion) > minion.Health
-                    && Vector3.Distance(ObjectManager.Player.ServerPosition, minion.Position) < Player.AttackRange + 50
-                    && spells[Spells.Q].IsReady())
+                if (this.GetBonusDmg(minion) > minion.Health
+                    && Vector3.Distance(ObjectManager.Player.ServerPosition, minion.Position)
+                    < this.Player.AttackRange + 50 && spells[Spells.Q].IsReady())
                 {
                     Orbwalker.SetAttack(false);
-                    //spells[Spells.Q].Cast();
-                    Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
+                    this.Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
                     Orbwalker.SetAttack(true);
                     break;
                 }
             }
         }
 
-        private static double GetBonusDmg(Obj_AI_Base target)
+        private double GetBonusDmg(Obj_AI_Base target)
         {
             double dmgItem = 0;
-            if (Items.HasItem(Sheen) && (Items.CanUseItem(Sheen) || Player.HasBuff("sheen"))
-                && Player.BaseAttackDamage > dmgItem)
+            if (Items.HasItem(Sheen) && (Items.CanUseItem(Sheen) || this.Player.HasBuff("sheen"))
+                && this.Player.BaseAttackDamage > dmgItem)
             {
-                dmgItem = Player.GetAutoAttackDamage(target);
+                dmgItem = this.Player.GetAutoAttackDamage(target);
             }
 
-            if (Items.HasItem(Iceborn) && (Items.CanUseItem(Iceborn) || Player.HasBuff("itemfrozenfist"))
-                && Player.BaseAttackDamage * 1.25 > dmgItem)
+            if (Items.HasItem(Iceborn) && (Items.CanUseItem(Iceborn) || this.Player.HasBuff("itemfrozenfist"))
+                && this.Player.BaseAttackDamage * 1.25 > dmgItem)
             {
-                dmgItem = Player.GetAutoAttackDamage(target) * 1.25;
+                dmgItem = this.Player.GetAutoAttackDamage(target) * 1.25;
             }
 
-            return spells[Spells.Q].GetDamage(target) + Player.GetAutoAttackDamage(target) + dmgItem;
+            return spells[Spells.Q].GetDamage(target) + this.Player.GetAutoAttackDamage(target) + dmgItem;
         }
 
-        private static float IgniteDamage(Obj_AI_Hero target)
+        private float IgniteDamage(Obj_AI_Hero target)
         {
-            if (Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
+            if (Ignite == SpellSlot.Unknown || this.Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
             {
                 return 0f;
             }
-            return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+            return (float)this.Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
-        private static void Initialize()
+        private void Jungleclear()
         {
-            Menu = new Menu("ElNasus", "menu", true);
-
-            var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
-            Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
-            Menu.AddSubMenu(orbwalkerMenu);
-
-            var targetSelector = new Menu("Target Selector", "TargetSelector");
-            TargetSelector.AddToMenu(targetSelector);
-            Menu.AddSubMenu(targetSelector);
-
-            var cMenu = new Menu("Combo", "Combo");
-            cMenu.AddItem(new MenuItem("ElEasy.Nasus.Combo.Q", "Use Q").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Nasus.Combo.W", "Use W").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Nasus.Combo.E", "Use E").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Nasus.Combo.R", "Use R").SetValue(true));
-            cMenu.AddItem(
-                new MenuItem("ElEasy.Nasus.Combo.Count.R", "Minimum champions in range for R").SetValue(
-                    new Slider(2, 1, 5)));
-            cMenu.AddItem(new MenuItem("ElEasy.Nasus.Combo.HP", "Minimum HP for R").SetValue(new Slider(55)));
-            cMenu.AddItem(new MenuItem("ElEasy.Nasus.Combo.Ignite", "Use Ignite").SetValue(true));
-
-            Menu.AddSubMenu(cMenu);
-
-            var hMenu = new Menu("Harass", "Harass");
-            hMenu.AddItem(new MenuItem("ElEasy.Nasus.Harass.E", "Use E").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElEasy.Nasus.Harass.Player.Mana", "Minimum Mana").SetValue(new Slider(55)));
-
-            Menu.AddSubMenu(hMenu);
-
-            var clearMenu = new Menu("Clear", "Clear");
-            clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Nasus.LaneClear.Q", "Use Q").SetValue(true));
-            clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Nasus.LaneClear.E", "Use E").SetValue(true));
-            clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("ElEasy.Nasus.JungleClear.Q", "Use Q").SetValue(true));
-            clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("ElEasy.Nasus.JungleClear.E", "Use E").SetValue(true));
-
-            Menu.AddSubMenu(clearMenu);
-
-            var settingsMenu = new Menu("Lasthit", "Lasthit");
-            settingsMenu.AddItem(
-                new MenuItem("ElEasy.Nasus.Lasthit.Activated", "Auto Lasthit").SetValue(
-                    new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle)));
-            Menu.AddSubMenu(settingsMenu);
-
-            var miscMenu = new Menu("Misc", "Misc");
-            miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.off", "Turn drawings off").SetValue(true));
-            miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.W", "Draw W").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.E", "Draw E").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.Text", "Draw text").SetValue(true));
-            miscMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.MinionHelper", "Draw killable minions").SetValue(true));
-
-            Menu.AddSubMenu(miscMenu);
-
-            //Here comes the moneyyy, money, money, moneyyyy
-            var credits = Menu.AddSubMenu(new Menu("Credits", "jQuery"));
-            credits.AddItem(new MenuItem("ElEasy.Paypal", "if you would like to donate via paypal:"));
-            credits.AddItem(new MenuItem("ElEasy.Email", "info@zavox.nl"));
-
-            Menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            Menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
-
-            Menu.AddToMainMenu();
-        }
-
-        private static void Jungleclear()
-        {
-            var useQ = Menu.Item("ElEasy.Nasus.JungleClear.Q").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Nasus.JungleClear.E").GetValue<bool>();
+            var useQ = this.Menu.Item("ElEasy.Nasus.JungleClear.Q").IsActive();
+            var useE = this.Menu.Item("ElEasy.Nasus.JungleClear.E").IsActive();
 
             var minions = MinionManager.GetMinions(
                 ObjectManager.Player.ServerPosition,
@@ -211,24 +270,16 @@
             }
         }
 
-        private static void Laneclear()
+        private void Laneclear()
         {
-            var useQ = Menu.Item("ElEasy.Nasus.LaneClear.Q").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Nasus.LaneClear.E").GetValue<bool>();
+            var useQ = this.Menu.Item("ElEasy.Nasus.LaneClear.Q").IsActive();
+            var useE = this.Menu.Item("ElEasy.Nasus.LaneClear.E").IsActive();
 
-            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.E].Range);
+            var minions = MinionManager.GetMinions(this.Player.ServerPosition, spells[Spells.E].Range);
             if (minions.Count <= 0)
             {
                 return;
             }
-
-            /*  if (useQ && spells[Spells.Q].IsReady())
-            {
-                if (minions.Find(x => x.Health >= spells[Spells.Q].GetDamage(x) && x.IsValidTarget()) != null)
-                {
-                    spells[Spells.Q].Cast();
-                }
-            }*/
 
             if (spells[Spells.Q].IsReady() && useQ)
             {
@@ -257,7 +308,7 @@
             }
         }
 
-        private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (!args.SData.Name.ToLower().Contains("attack") || !sender.IsMe)
             {
@@ -265,13 +316,13 @@
             }
 
             var unit = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(args.Target.NetworkId);
-            if ((GetBonusDmg(unit) > unit.Health))
+            if ((this.GetBonusDmg(unit) > unit.Health))
             {
                 spells[Spells.Q].Cast();
             }
         }
 
-        private static void OnCombo()
+        private void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
             var eTarget = TargetSelector.GetTarget(
@@ -282,13 +333,13 @@
                 return;
             }
 
-            var useQ = Menu.Item("ElEasy.Nasus.Combo.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Nasus.Combo.W").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Nasus.Combo.E").GetValue<bool>();
-            var useR = Menu.Item("ElEasy.Nasus.Combo.R").GetValue<bool>();
-            var useI = Menu.Item("ElEasy.Nasus.Combo.Ignite").GetValue<bool>();
-            var countEnemies = Menu.Item("ElEasy.Nasus.Combo.Count.R").GetValue<Slider>().Value;
-            var playerHp = Menu.Item("ElEasy.Nasus.Combo.HP").GetValue<Slider>().Value;
+            var useQ = this.Menu.Item("ElEasy.Nasus.Combo.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Nasus.Combo.W").IsActive();
+            var useE = this.Menu.Item("ElEasy.Nasus.Combo.E").IsActive();
+            var useR = this.Menu.Item("ElEasy.Nasus.Combo.R").IsActive();
+            var useI = this.Menu.Item("ElEasy.Nasus.Combo.Ignite").IsActive();
+            var countEnemies = this.Menu.Item("ElEasy.Nasus.Combo.Count.R").GetValue<Slider>().Value;
+            var playerHp = this.Menu.Item("ElEasy.Nasus.Combo.HP").GetValue<Slider>().Value;
 
             if (useQ && spells[Spells.Q].IsReady())
             {
@@ -309,28 +360,29 @@
                 }
             }
 
-            if (useR && spells[Spells.R].IsReady() && Player.CountEnemiesInRange(spells[Spells.W].Range) >= countEnemies
-                || (Player.Health / Player.MaxHealth) * 100 <= playerHp)
+            if (useR && spells[Spells.R].IsReady()
+                && this.Player.CountEnemiesInRange(spells[Spells.W].Range) >= countEnemies
+                || (this.Player.Health / this.Player.MaxHealth) * 100 <= playerHp)
             {
-                spells[Spells.R].CastOnUnit(Player);
+                spells[Spells.R].CastOnUnit(this.Player);
             }
 
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
+            if (this.Player.Distance(target) <= 600 && this.IgniteDamage(target) >= target.Health && useI)
             {
-                Player.Spellbook.CastSpell(Ignite, target);
+                this.Player.Spellbook.CastSpell(Ignite, target);
             }
         }
 
-        private static void OnDraw(EventArgs args)
+        private void OnDraw(EventArgs args)
         {
-            var drawOff = Menu.Item("ElEasy.Nasus.Draw.off").GetValue<bool>();
-            var drawW = Menu.Item("ElEasy.Nasus.Draw.W").GetValue<Circle>();
-            var drawE = Menu.Item("ElEasy.Nasus.Draw.E").GetValue<Circle>();
-            var drawText = Menu.Item("ElEasy.Nasus.Draw.Text").GetValue<bool>();
-            var rBool = Menu.Item("ElEasy.Nasus.Lasthit.Activated").GetValue<KeyBind>().Active;
-            var helper = Menu.Item("ElEasy.Nasus.Draw.MinionHelper").GetValue<bool>();
+            var drawOff = this.Menu.Item("ElEasy.Nasus.Draw.off").IsActive();
+            var drawW = this.Menu.Item("ElEasy.Nasus.Draw.W").GetValue<Circle>();
+            var drawE = this.Menu.Item("ElEasy.Nasus.Draw.E").GetValue<Circle>();
+            var drawText = this.Menu.Item("ElEasy.Nasus.Draw.Text").IsActive();
+            var rBool = this.Menu.Item("ElEasy.Nasus.Lasthit.Activated").GetValue<KeyBind>().Active;
+            var helper = this.Menu.Item("ElEasy.Nasus.Draw.MinionHelper").IsActive();
 
-            var playerPos = Drawing.WorldToScreen(ObjectManager.Player.Position);
+            var playerPos = Drawing.WorldToScreen(this.Player.Position);
 
             if (drawOff)
             {
@@ -341,7 +393,7 @@
             {
                 if (spells[Spells.E].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.E].Range, Color.White);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.E].Range, Color.White);
                 }
             }
 
@@ -349,7 +401,7 @@
             {
                 if (spells[Spells.W].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.W].Range, Color.White);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.W].Range, Color.White);
                 }
             }
 
@@ -374,7 +426,7 @@
                 {
                     if (minion != null)
                     {
-                        if ((GetBonusDmg(minion) > minion.Health))
+                        if ((this.GetBonusDmg(minion) > minion.Health))
                         {
                             Render.Circle.DrawCircle(minion.ServerPosition, minion.BoundingRadius, Color.Black);
                         }
@@ -383,7 +435,7 @@
             }
         }
 
-        private static void OnHarass()
+        private void OnHarass()
         {
             var eTarget = TargetSelector.GetTarget(
                 spells[Spells.E].Range + spells[Spells.E].Width,
@@ -393,7 +445,7 @@
                 return;
             }
 
-            var useE = Menu.Item("ElEasy.Nasus.Harass.E").GetValue<bool>();
+            var useE = this.Menu.Item("ElEasy.Nasus.Harass.E").GetValue<bool>();
 
             if (useE && spells[Spells.E].IsReady() && eTarget.IsValidTarget() && spells[Spells.E].IsInRange(eTarget))
             {
@@ -405,32 +457,32 @@
             }
         }
 
-        private static void OnLastHit()
+        private void OnLastHit()
         {
             var minion =
                 MinionManager.GetMinions(
-                    Player.Position,
+                    this.Player.Position,
                     spells[Spells.Q].Range + 100,
                     MinionTypes.All,
                     MinionTeam.NotAlly,
-                    MinionOrderTypes.MaxHealth).FirstOrDefault(m => GetBonusDmg(m) > m.Health);
+                    MinionOrderTypes.MaxHealth).FirstOrDefault(m => this.GetBonusDmg(m) > m.Health);
 
             if (minion == null)
             {
                 return;
             }
 
-            if (GetBonusDmg(minion) > minion.Health && spells[Spells.Q].IsReady())
+            if (this.GetBonusDmg(minion) > minion.Health && spells[Spells.Q].IsReady())
             {
                 Orbwalker.SetAttack(false);
-                Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
+                this.Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
                 Orbwalker.SetAttack(true);
             }
         }
 
-        private static void OnUpdate(EventArgs args)
+        private void OnUpdate(EventArgs args)
         {
-            if (Player.IsDead)
+            if (this.Player.IsDead)
             {
                 return;
             }
@@ -438,27 +490,26 @@
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    OnCombo();
+                    this.OnCombo();
                     break;
 
                 case Orbwalking.OrbwalkingMode.LaneClear:
-                    Laneclear();
-                    Jungleclear();
+                    this.Laneclear();
+                    this.Jungleclear();
                     break;
 
                 case Orbwalking.OrbwalkingMode.Mixed:
-                    OnHarass();
+                    this.OnHarass();
                     break;
 
                 case Orbwalking.OrbwalkingMode.LastHit:
-                    OnLastHit();
+                    this.OnLastHit();
                     break;
             }
 
-            var active = Menu.Item("ElEasy.Nasus.Lasthit.Activated").GetValue<KeyBind>().Active;
-            if (active)
+            if (this.Menu.Item("ElEasy.Nasus.Lasthit.Activated").GetValue<KeyBind>().Active)
             {
-                AutoLastHit();
+                this.AutoLastHit();
             }
         }
 

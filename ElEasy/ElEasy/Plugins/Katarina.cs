@@ -12,7 +12,7 @@ namespace ElEasy.Plugins
     using Color = System.Drawing.Color;
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
-    public class Katarina : Standards
+    public class Katarina : IPlugin
     {
         #region Static Fields
 
@@ -28,11 +28,17 @@ namespace ElEasy.Plugins
                                                                            { Spells.R, new Spell(SpellSlot.R, 550) }
                                                                        };
 
+        private static SpellSlot Ignite;
+
+        private static bool isChanneling;
+
         private static long lastECast;
 
         private static int lastPlaced;
 
         private static Vector3 lastWardPos;
+
+        private static Orbwalking.Orbwalker Orbwalker;
 
         private static bool reCheckWard = true;
 
@@ -42,21 +48,225 @@ namespace ElEasy.Plugins
 
         #endregion
 
+        #region Enums
+
+        public enum Spells
+        {
+            Q,
+
+            W,
+
+            E,
+
+            R
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        ///     Gets or sets the menu.
+        /// </summary>
+        /// <value>
+        ///     The menu.
+        /// </value>
+        private Menu Menu { get; set; }
+
+        /// <summary>
+        ///     Gets the player.
+        /// </summary>
+        /// <value>
+        ///     The player.
+        /// </value>
+        private Obj_AI_Hero Player
+        {
+            get
+            {
+                return ObjectManager.Player;
+            }
+        }
+
+        #endregion
+
         #region Public Methods and Operators
 
-        public static void Load()
+        /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
+        {
+            this.Menu = new Menu("ElKatarina", "ElKatarina");
+            {
+                var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
+                Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+                this.Menu.AddSubMenu(orbwalkerMenu);
+
+                var targetSelector = new Menu("Target Selector", "TargetSelector");
+                TargetSelector.AddToMenu(targetSelector);
+                this.Menu.AddSubMenu(targetSelector);
+
+                var comboMenu = new Menu("Combo", "Combo");
+                {
+                    comboMenu.AddItem(new MenuItem("ElEasy.Katarina.Combo.Q", "Use Q").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Katarina.Combo.W", "Use W").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Katarina.Combo.E", "Use E").SetValue(true));
+
+                    comboMenu.SubMenu("E").AddItem(new MenuItem("ElEasy.Katarina.E.Legit", "Legit E").SetValue(false));
+                    comboMenu.SubMenu("E")
+                        .AddItem(new MenuItem("ElEasy.Katarina.E.Delay", "E Delay").SetValue(new Slider(1000, 0, 2000)));
+
+                    comboMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Katarina.Combo.R", "Use R").SetValue(true));
+                    comboMenu.SubMenu("R")
+                        .AddItem(
+                            new MenuItem("ElEasy.Katarina.Combo.Sort", "R:").SetValue(
+                                new StringList(new[] { "Normal", "Smart" })));
+                    comboMenu.SubMenu("R")
+                        .AddItem(new MenuItem("ElEasy.Katarina.Combo.R.Force", "Force R").SetValue(false));
+                    comboMenu.SubMenu("R")
+                        .AddItem(
+                            new MenuItem("ElEasy.Katarina.Combo.R.Force.Count", "Force R when in range:").SetValue(
+                                new Slider(3, 0, 5)));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Katarina.Combo.Ignite", "Use Ignite").SetValue(true));
+                }
+
+                this.Menu.AddSubMenu(comboMenu);
+
+                var harassMenu = new Menu("Harass", "Harass");
+                {
+                    harassMenu.AddItem(new MenuItem("ElEasy.Katarina.Harass.Q", "Use Q").SetValue(true));
+                    harassMenu.AddItem(new MenuItem("ElEasy.Katarina.Harass.W", "Use W").SetValue(true));
+                    harassMenu.AddItem(new MenuItem("ElEasy.Katarina.Harass.E", "Use E").SetValue(true));
+
+                    harassMenu.SubMenu("Harass")
+                        .SubMenu("AutoHarass settings")
+                        .AddItem(
+                            new MenuItem("ElEasy.Katarina.AutoHarass.Activated", "Auto harass", true).SetValue(
+                                new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle)));
+                    harassMenu.SubMenu("Harass")
+                        .SubMenu("AutoHarass settings")
+                        .AddItem(new MenuItem("ElEasy.Katarina.AutoHarass.Q", "Use Q").SetValue(true));
+                    harassMenu.SubMenu("Harass")
+                        .SubMenu("AutoHarass settings")
+                        .AddItem(new MenuItem("ElEasy.Katarina.AutoHarass.W", "Use W").SetValue(true));
+
+                    harassMenu.SubMenu("Harass")
+                        .AddItem(
+                            new MenuItem("ElEasy.Katarina.Harass.Mode", "Harass mode:").SetValue(
+                                new StringList(new[] { "Q", "Q - W", "Q - E - W" })));
+                }
+
+                this.Menu.AddSubMenu(harassMenu);
+
+                var clearMenu = new Menu("Clear", "Clear");
+                {
+                    clearMenu.SubMenu("Lasthit")
+                        .AddItem(new MenuItem("ElEasy.Katarina.Lasthit.Q", "Use Q").SetValue(true));
+                    clearMenu.SubMenu("Lasthit")
+                        .AddItem(new MenuItem("ElEasy.Katarina.Lasthit.W", "Use W").SetValue(true));
+                    clearMenu.SubMenu("Lasthit")
+                        .AddItem(new MenuItem("ElEasy.Katarina.Lasthit.E", "Use E").SetValue(false));
+                    clearMenu.SubMenu("Laneclear")
+                        .AddItem(new MenuItem("ElEasy.Katarina.LaneClear.Q", "Use Q").SetValue(true));
+                    clearMenu.SubMenu("Laneclear")
+                        .AddItem(new MenuItem("ElEasy.Katarina.LaneClear.W", "Use W").SetValue(true));
+                    clearMenu.SubMenu("Laneclear")
+                        .AddItem(new MenuItem("ElEasy.Katarina.LaneClear.E", "Use E").SetValue(false));
+                    clearMenu.SubMenu("Jungleclear")
+                        .AddItem(new MenuItem("ElEasy.Katarina.JungleClear.Q", "Use Q").SetValue(true));
+                    clearMenu.SubMenu("Jungleclear")
+                        .AddItem(new MenuItem("ElEasy.Katarina.JungleClear.W", "Use W").SetValue(true));
+                    clearMenu.SubMenu("Jungleclear")
+                        .AddItem(new MenuItem("ElEasy.Katarina.JungleClear.E", "Use E").SetValue(false));
+                }
+
+                this.Menu.AddSubMenu(clearMenu);
+
+                var wardjumpMenu = new Menu("Wardjump", "Wardjump");
+                {
+                    wardjumpMenu.AddItem(
+                        new MenuItem("ElEasy.Katarina.Wardjump", "Wardjump key").SetValue(
+                            new KeyBind("Z".ToCharArray()[0], KeyBindType.Press)));
+
+                    wardjumpMenu.AddItem(new MenuItem("ElEasy.Wardjump.Mouse", "Move to mouse").SetValue(true));
+                    wardjumpMenu.AddItem(new MenuItem("ElEasy.Wardjump.Minions", "Jump to minions").SetValue(false));
+                    wardjumpMenu.AddItem(new MenuItem("ElEasy.Wardjump.Champions", "Jump to champions").SetValue(false));
+                }
+
+                this.Menu.AddSubMenu(wardjumpMenu);
+
+                var itemMenu = new Menu("Items", "Items");
+                {
+                    itemMenu.AddItem(
+                        new MenuItem("ElEasy.Katarina.Items.hextech", "Use Hextech Gunblade").SetValue(true));
+                }
+
+                this.Menu.AddSubMenu(itemMenu);
+
+                var killstealMenu = new Menu("Killsteal", "Killsteal");
+                {
+                    killstealMenu.AddItem(new MenuItem("ElEasy.Katarina.Killsteal", "Killsteal").SetValue(true));
+                    killstealMenu.AddItem(
+                        new MenuItem("ElEasy.Katarina.Killsteal.R", "Killsteal with R").SetValue(true));
+                }
+
+                this.Menu.AddSubMenu(killstealMenu);
+
+                var miscellaneousMenu = new Menu("Miscellaneous", "Miscellaneous");
+                {
+                    miscellaneousMenu.AddItem(
+                        new MenuItem("ElEasy.Katarina.Draw.off", "Turn drawings off").SetValue(true));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Katarina.Draw.Q", "Draw Q").SetValue(new Circle()));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Katarina.Draw.W", "Draw W").SetValue(new Circle()));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Katarina.Draw.E", "Draw E").SetValue(new Circle()));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Katarina.Draw.R", "Draw R").SetValue(new Circle()));
+
+                    var dmgAfterE = new MenuItem("ElEasy.Katarina.DrawComboDamage", "Draw combo damage").SetValue(true);
+                    var drawFill =
+                        new MenuItem("ElEasy.Katarina.DrawColour", "Fill colour", true).SetValue(
+                            new Circle(true, Color.FromArgb(204, 204, 0, 0)));
+                    miscellaneousMenu.AddItem(drawFill);
+                    miscellaneousMenu.AddItem(dmgAfterE);
+
+                    DrawDamage.DamageToUnit = this.GetComboDamage;
+                    DrawDamage.Enabled = dmgAfterE.GetValue<bool>();
+                    DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
+                    DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
+
+                    dmgAfterE.ValueChanged +=
+                        delegate(object sender, OnValueChangeEventArgs eventArgs)
+                            {
+                                DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
+                            };
+
+                    drawFill.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
+                        {
+                            DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
+                            DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
+                        };
+                }
+
+                this.Menu.AddSubMenu(miscellaneousMenu);
+            }
+            rootMenu.AddSubMenu(this.Menu);
+        }
+
+        public void Load()
         {
             try
             {
-                Ignite = Player.GetSpellSlot("summonerdot");
+                Console.WriteLine("Loaded Katarina");
+                Ignite = this.Player.GetSpellSlot("summonerdot");
                 spells[Spells.R].SetCharged("KatarinaR", "KatarinaR", 550, 550, 1.0f);
 
-                Initialize();
-                Game.OnUpdate += OnUpdate;
-                Drawing.OnDraw += OnDraw;
-                Obj_AI_Base.OnIssueOrder += Obj_AI_Hero_OnIssueOrder;
-                GameObject.OnCreate += GameObject_OnCreate;
-                Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
+                Game.OnUpdate += this.OnUpdate;
+                Drawing.OnDraw += this.OnDraw;
+                Obj_AI_Base.OnIssueOrder += this.Obj_AI_Hero_OnIssueOrder;
+                GameObject.OnCreate += this.GameObject_OnCreate;
+                Obj_AI_Base.OnProcessSpellCast += this.Obj_AI_Base_OnProcessSpellCast;
+                Orbwalking.BeforeAttack += this.BeforeAttack;
             }
             catch (Exception e)
             {
@@ -68,19 +278,26 @@ namespace ElEasy.Plugins
 
         #region Methods
 
-        private static void CancelUlt(Obj_AI_Hero target)
+        private static void CastEWard(Obj_AI_Base obj)
         {
-            if (Player.IsChannelingImportantSpell() || Player.HasBuff("katarinarsound"))
+            if (500 >= Environment.TickCount - wcasttime)
             {
-                Player.IssueOrder(GameObjectOrder.MoveTo, target.ServerPosition);
-                spells[Spells.R].LastCastAttemptT = 0;
+                return;
             }
+
+            spells[Spells.E].CastOnUnit(obj);
+            wcasttime = Environment.TickCount;
         }
 
-        private static void CastE(Obj_AI_Base unit)
+        private static bool KatarinaQ(Obj_AI_Base target)
         {
-            var playLegit = Menu.Item("ElEasy.Katarina.E.Legit").GetValue<bool>();
-            var legitCastDelay = Menu.Item("ElEasy.Katarina.E.Delay").GetValue<Slider>().Value;
+            return target.Buffs.Any(x => x.Name.Contains("katarinaqmark"));
+        }
+
+        private void CastE(Obj_AI_Base unit)
+        {
+            var playLegit = this.Menu.Item("ElEasy.Katarina.E.Legit").GetValue<bool>();
+            var legitCastDelay = this.Menu.Item("ElEasy.Katarina.E.Delay").GetValue<Slider>().Value;
 
             if (playLegit)
             {
@@ -97,18 +314,7 @@ namespace ElEasy.Plugins
             }
         }
 
-        private static void CastEWard(Obj_AI_Base obj)
-        {
-            if (500 >= Environment.TickCount - wcasttime)
-            {
-                return;
-            }
-
-            spells[Spells.E].CastOnUnit(obj);
-            wcasttime = Environment.TickCount;
-        }
-
-        private static InventorySlot FindBestWardItem()
+        private InventorySlot FindBestWardItem()
         {
             var slot = Items.GetWardSlot();
             if (slot == default(InventorySlot))
@@ -116,7 +322,7 @@ namespace ElEasy.Plugins
                 return null;
             }
 
-            var sdi = GetItemSpell(slot);
+            var sdi = this.GetItemSpell(slot);
 
             if (sdi != default(SpellDataInst) && sdi.State == SpellState.Ready)
             {
@@ -125,7 +331,7 @@ namespace ElEasy.Plugins
             return slot;
         }
 
-        private static void GameObject_OnCreate(GameObject sender, EventArgs args)
+        private void GameObject_OnCreate(GameObject sender, EventArgs args)
         {
             if (!spells[Spells.E].IsReady() || !(sender is Obj_AI_Minion) || Environment.TickCount >= lastPlaced + 300)
             {
@@ -144,341 +350,201 @@ namespace ElEasy.Plugins
             }
         }
 
-        private static float GetComboDamage(Obj_AI_Base enemy)
+        private float GetComboDamage(Obj_AI_Base enemy)
         {
             var damage = 0d;
 
             if (spells[Spells.Q].IsReady())
             {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.Q);
+                damage += this.Player.GetSpellDamage(enemy, SpellSlot.Q);
             }
 
             if (spells[Spells.W].IsReady())
             {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.W);
+                damage += this.Player.GetSpellDamage(enemy, SpellSlot.W);
             }
 
             if (spells[Spells.E].IsReady())
             {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.E);
+                damage += this.Player.GetSpellDamage(enemy, SpellSlot.E);
             }
 
             if (spells[Spells.R].IsReady())
             {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.R) * 8;
+                damage += this.Player.GetSpellDamage(enemy, SpellSlot.R) * 8;
             }
 
             if (KatarinaQ(enemy))
             {
-                damage += Player.CalcDamage(
+                damage += this.Player.CalcDamage(
                     enemy,
                     Damage.DamageType.Magical,
-                    Player.FlatMagicDamageMod * 0.15 + Player.Level * 15);
+                    this.Player.FlatMagicDamageMod * 0.15 + this.Player.Level * 15);
             }
 
             return (float)damage;
         }
 
-        private static SpellDataInst GetItemSpell(InventorySlot invSlot)
+        private SpellDataInst GetItemSpell(InventorySlot invSlot)
         {
-            return Player.Spellbook.Spells.FirstOrDefault(spell => (int)spell.Slot == invSlot.Slot + 4);
+            return this.Player.Spellbook.Spells.FirstOrDefault(spell => (int)spell.Slot == invSlot.Slot + 4);
         }
 
-        private static float IgniteDamage(Obj_AI_Hero target)
+        private bool HasRBuff()
         {
-            if (Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
+            return this.Player.HasBuff("KatarinaR") || this.Player.IsChannelingImportantSpell()
+                   || this.Player.HasBuff("katarinarsound");
+        }
+
+        private float IgniteDamage(Obj_AI_Hero target)
+        {
+            if (Ignite == SpellSlot.Unknown || this.Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
             {
                 return 0f;
             }
-            return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+            return (float)this.Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
-        private static void Initialize()
+        private void KillSteal()
         {
-            Menu = new Menu("ElKatarina", "menu", true);
-
-            var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
-            Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
-            Menu.AddSubMenu(orbwalkerMenu);
-
-            var targetSelector = new Menu("Target Selector", "TargetSelector");
-            TargetSelector.AddToMenu(targetSelector);
-            Menu.AddSubMenu(targetSelector);
-
-            var cMenu = new Menu("Combo", "Combo");
-            cMenu.AddItem(new MenuItem("ElEasy.Katarina.Combo.Q", "Use Q").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Katarina.Combo.W", "Use W").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Katarina.Combo.E", "Use E").SetValue(true));
-
-            cMenu.SubMenu("E").AddItem(new MenuItem("ElEasy.Katarina.E.Legit", "Legit E").SetValue(false));
-            cMenu.SubMenu("E")
-                .AddItem(new MenuItem("ElEasy.Katarina.E.Delay", "E Delay").SetValue(new Slider(1000, 0, 2000)));
-
-            cMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Katarina.Combo.R", "Use R").SetValue(true));
-            cMenu.SubMenu("R")
-                .AddItem(
-                    new MenuItem("ElEasy.Katarina.Combo.Sort", "R:").SetValue(
-                        new StringList(new[] { "Normal", "Smart" })));
-            cMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Katarina.Combo.R.Force", "Force R").SetValue(false));
-            cMenu.SubMenu("R")
-                .AddItem(
-                    new MenuItem("ElEasy.Katarina.Combo.R.Force.Count", "Force R when in range:").SetValue(
-                        new Slider(3, 0, 5)));
-            cMenu.AddItem(new MenuItem("ElEasy.Katarina.Combo.Ignite", "Use Ignite").SetValue(true));
-
-            Menu.AddSubMenu(cMenu);
-
-            var iMenu = new Menu("Items", "Items");
-            iMenu.AddItem(new MenuItem("ElEasy.Katarina.Items.hextech", "Use Hextech Gunblade").SetValue(true));
-            Menu.AddSubMenu(iMenu);
-
-            var wMenu = new Menu("Wardjump", "Wardjump");
-            wMenu.AddItem(
-                new MenuItem("ElEasy.Katarina.Wardjump", "Wardjump key").SetValue(
-                    new KeyBind("Z".ToCharArray()[0], KeyBindType.Press)));
-
-            wMenu.AddItem(new MenuItem("ElEasy.Wardjump.Mouse", "Move to mouse").SetValue(true));
-            wMenu.AddItem(new MenuItem("ElEasy.Wardjump.Minions", "Jump to minions").SetValue(false));
-            wMenu.AddItem(new MenuItem("ElEasy.Wardjump.Champions", "Jump to champions").SetValue(false));
-            Menu.AddSubMenu(wMenu);
-
-            var hMenu = new Menu("Harass", "Harass");
-            hMenu.AddItem(new MenuItem("ElEasy.Katarina.Harass.Q", "Use Q").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElEasy.Katarina.Harass.W", "Use W").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElEasy.Katarina.Harass.E", "Use E").SetValue(true));
-
-            hMenu.SubMenu("Harass")
-                .SubMenu("AutoHarass settings")
-                .AddItem(
-                    new MenuItem("ElEasy.Katarina.AutoHarass.Activated", "Auto harass", true).SetValue(
-                        new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle)));
-            hMenu.SubMenu("Harass")
-                .SubMenu("AutoHarass settings")
-                .AddItem(new MenuItem("ElEasy.Katarina.AutoHarass.Q", "Use Q").SetValue(true));
-            hMenu.SubMenu("Harass")
-                .SubMenu("AutoHarass settings")
-                .AddItem(new MenuItem("ElEasy.Katarina.AutoHarass.W", "Use W").SetValue(true));
-
-            hMenu.SubMenu("Harass")
-                .AddItem(
-                    new MenuItem("ElEasy.Katarina.Harass.Mode", "Harass mode:").SetValue(
-                        new StringList(new[] { "Q", "Q - W", "Q - E - W" })));
-
-            Menu.AddSubMenu(hMenu);
-
-            var ksMenu = new Menu("Killsteal", "Killsteal");
-            ksMenu.AddItem(new MenuItem("ElEasy.Katarina.Killsteal", "Killsteal").SetValue(true));
-            ksMenu.AddItem(new MenuItem("ElEasy.Katarina.Killsteal.R", "Killsteal with R").SetValue(true));
-
-            Menu.AddSubMenu(ksMenu);
-
-            var clearMenu = new Menu("Clear", "Clear");
-            clearMenu.SubMenu("Lasthit").AddItem(new MenuItem("ElEasy.Katarina.Lasthit.Q", "Use Q").SetValue(true));
-            clearMenu.SubMenu("Lasthit").AddItem(new MenuItem("ElEasy.Katarina.Lasthit.W", "Use W").SetValue(true));
-            clearMenu.SubMenu("Lasthit").AddItem(new MenuItem("ElEasy.Katarina.Lasthit.E", "Use E").SetValue(false));
-            clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Katarina.LaneClear.Q", "Use Q").SetValue(true));
-            clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Katarina.LaneClear.W", "Use W").SetValue(true));
-            clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Katarina.LaneClear.E", "Use E").SetValue(false));
-            clearMenu.SubMenu("Jungleclear")
-                .AddItem(new MenuItem("ElEasy.Katarina.JungleClear.Q", "Use Q").SetValue(true));
-            clearMenu.SubMenu("Jungleclear")
-                .AddItem(new MenuItem("ElEasy.Katarina.JungleClear.W", "Use W").SetValue(true));
-            clearMenu.SubMenu("Jungleclear")
-                .AddItem(new MenuItem("ElEasy.Katarina.JungleClear.E", "Use E").SetValue(false));
-
-            Menu.AddSubMenu(clearMenu);
-
-            var miscMenu = new Menu("Misc", "Misc");
-            miscMenu.AddItem(new MenuItem("ElEasy.Katarina.Draw.off", "Turn drawings off").SetValue(true));
-            miscMenu.AddItem(new MenuItem("ElEasy.Katarina.Draw.Q", "Draw Q").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Katarina.Draw.W", "Draw W").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Katarina.Draw.E", "Draw E").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Katarina.Draw.R", "Draw R").SetValue(new Circle()));
-
-            var dmgAfterE = new MenuItem("ElEasy.Katarina.DrawComboDamage", "Draw combo damage").SetValue(true);
-            var drawFill =
-                new MenuItem("ElEasy.Katarina.DrawColour", "Fill colour", true).SetValue(
-                    new Circle(true, Color.FromArgb(204, 204, 0, 0)));
-            miscMenu.AddItem(drawFill);
-            miscMenu.AddItem(dmgAfterE);
-
-            DrawDamage.DamageToUnit = GetComboDamage;
-            DrawDamage.Enabled = dmgAfterE.GetValue<bool>();
-            DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
-            DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
-
-            dmgAfterE.ValueChanged +=
-                delegate(object sender, OnValueChangeEventArgs eventArgs)
-                    {
-                        DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
-                    };
-
-            drawFill.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
-                {
-                    DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
-                    DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
-                };
-
-            Menu.AddSubMenu(miscMenu);
-
-            //Here comes the moneyyy, money, money, moneyyyy
-            var credits = Menu.AddSubMenu(new Menu("Credits", "jQuery"));
-            credits.AddItem(new MenuItem("ElEasy.Paypal", "if you would like to donate via paypal:"));
-            credits.AddItem(new MenuItem("ElEasy.Email", "info@zavox.nl"));
-
-            Menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            Menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
-
-            Menu.AddToMainMenu();
-        }
-
-        private static bool KatarinaQ(Obj_AI_Base target)
-        {
-            return target.Buffs.Any(x => x.Name.Contains("katarinaqmark"));
-        }
-
-        private static void KillSteal()
-        {
-            foreach (var target in
-                ObjectManager.Get<Obj_AI_Hero>()
-                    .Where(x => x.IsValidTarget(1375) && !x.HasBuffOfType(BuffType.Invulnerability))
-                    .OrderByDescending(GetComboDamage))
+            foreach (
+                var hero in
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(hero => hero.IsValidTarget(spells[Spells.E].Range) && !hero.IsInvulnerable))
             {
-                if (target != null)
+                var qdmg = spells[Spells.Q].GetDamage(hero);
+                var wdmg = spells[Spells.W].GetDamage(hero);
+                var edmg = spells[Spells.E].GetDamage(hero);
+                var markDmg = this.Player.CalcDamage(
+                    hero,
+                    Damage.DamageType.Magical,
+                    this.Player.FlatMagicDamageMod * 0.15 + this.Player.Level * 15);
+                float ignitedmg;
+
+                if (Ignite != SpellSlot.Unknown)
                 {
-                    if (target.IsValidTarget(spells[Spells.E].Range)
-                        && (spells[Spells.E].GetDamage(target) + spells[Spells.Q].GetDamage(target) + MarkDmg(target)
-                            + spells[Spells.W].GetDamage(target)) > target.Health + 20)
+                    ignitedmg = (float)this.Player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite);
+                }
+                else
+                {
+                    ignitedmg = 0f;
+                }
+
+                if (hero.HasBuff("katarinaqmark") && hero.Health - wdmg - markDmg < 0 && spells[Spells.W].IsReady()
+                    && hero.IsValidTarget(spells[Spells.W].Range))
+                {
+                    spells[Spells.W].Cast();
+                }
+
+                if (hero.Health - ignitedmg < 0 && Ignite.IsReady() && hero.IsValidTarget(600))
+                {
+                    this.Player.Spellbook.CastSpell(Ignite, hero);
+                }
+
+                if (hero.Health - edmg < 0 && spells[Spells.E].IsReady() && hero.IsValidTarget(spells[Spells.E].Range))
+                {
+                    spells[Spells.E].Cast(hero);
+                }
+
+                if (hero.Health - qdmg < 0 && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(hero))
+                {
+                    spells[Spells.Q].Cast(hero);
+                }
+
+                if (hero.Health - edmg - wdmg < 0 && spells[Spells.E].IsReady() && spells[Spells.W].IsReady()
+                    && hero.IsValidTarget(spells[Spells.E].Range))
+                {
+                    this.CastE(hero);
+                    if (spells[Spells.W].IsInRange(hero))
                     {
-                        if (spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady())
-                        {
-                            CancelUlt(target);
-                            spells[Spells.Q].Cast(target);
-                            spells[Spells.E].Cast(target);
-                            spells[Spells.E].LastCastAttemptT = Utils.TickCount;
-                            if (Player.Distance(target.ServerPosition) < spells[Spells.W].Range)
-                            {
-                                spells[Spells.W].Cast();
-                            }
-                            return;
-                        }
+                        spells[Spells.W].Cast();
                     }
+                }
 
-                    if (Player.Distance(target.ServerPosition) <= spells[Spells.E].Range
-                        && (spells[Spells.E].GetDamage(target) + spells[Spells.W].GetDamage(target))
-                        > target.Health + 20)
+                if (hero.Health - edmg - qdmg < 0 && spells[Spells.E].IsReady() && spells[Spells.Q].IsReady()
+                    && hero.IsValidTarget(spells[Spells.E].Range))
+                {
+                    this.CastE(hero);
+                    spells[Spells.Q].Cast(hero);
+                }
+
+                if (hero.Health - edmg - wdmg - qdmg < 0 && spells[Spells.E].IsReady() && spells[Spells.Q].IsReady()
+                    && spells[Spells.W].IsReady() && hero.IsValidTarget(spells[Spells.E].Range))
+                {
+                    this.CastE(hero);
+                    spells[Spells.Q].Cast(hero);
+                    if (hero.IsValidTarget(spells[Spells.W].Range))
                     {
-                        if (spells[Spells.E].IsReady() && spells[Spells.W].IsReady())
-                        {
-                            CancelUlt(target);
-                            spells[Spells.E].Cast(target);
-
-                            if (target.IsValidTarget(spells[Spells.W].Range))
-                            {
-                                spells[Spells.W].Cast();
-                            }
-                            return;
-                        }
+                        spells[Spells.W].Cast();
                     }
+                }
 
-                    if (Player.Distance(target.ServerPosition) <= spells[Spells.E].Range
-                        && (spells[Spells.E].GetDamage(target) + spells[Spells.Q].GetDamage(target))
-                        > target.Health + 20)
+                if (hero.Health - edmg - wdmg - qdmg - markDmg < 0 && spells[Spells.E].IsReady()
+                    && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady()
+                    && hero.IsValidTarget(spells[Spells.E].Range))
+                {
+                    this.CastE(hero);
+                    spells[Spells.Q].Cast(hero);
+                    if (hero.IsValidTarget(spells[Spells.W].Range))
                     {
-                        if (spells[Spells.E].IsReady() && spells[Spells.Q].IsReady())
-                        {
-                            CancelUlt(target);
-                            spells[Spells.E].Cast(target);
-                            spells[Spells.Q].Cast(target);
-                            return;
-                        }
+                        spells[Spells.W].Cast();
                     }
+                }
 
-                    if (spells[Spells.Q].GetDamage(target) > target.Health + 20)
+                if (hero.Health - edmg - wdmg - qdmg - ignitedmg < 0 && spells[Spells.E].IsReady()
+                    && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady() && Ignite.IsReady()
+                    && hero.IsValidTarget(spells[Spells.E].Range))
+                {
+                    this.CastE(hero);
+                    spells[Spells.Q].Cast(hero);
+                    if (hero.IsValidTarget(spells[Spells.W].Range))
                     {
-                        if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
-                        {
-                            CancelUlt(target);
-                            spells[Spells.Q].Cast(target);
-                            return;
-                        }
-                    }
-
-                    if (target.IsValidTarget(spells[Spells.W].Range)
-                        && (spells[Spells.W].GetDamage(target) > target.Health + 20))
-                    {
-                        if (spells[Spells.W].IsReady())
-                        {
-                            CancelUlt(target);
-                            spells[Spells.W].Cast();
-                            return;
-                        }
-                    }
-
-                    if (target.IsValidTarget(spells[Spells.E].Range)
-                        && (Player.GetSpellDamage(target, SpellSlot.E)) > target.Health + 20)
-                    {
-                        if (spells[Spells.E].IsReady())
-                        {
-                            CancelUlt(target);
-                            spells[Spells.E].Cast(target);
-                            return;
-                        }
-                    }
-
-                    if (Player.Distance(target.ServerPosition) <= spells[Spells.E].Range
-                        && (Player.GetSpellDamage(target, SpellSlot.R) * 5) > target.Health + 20
-                        && Menu.Item("ElEasy.Katarina.Killsteal.R").GetValue<bool>())
-                    {
-                        if (spells[Spells.R].IsReady())
-                        {
-                            Orbwalker.SetAttack(false);
-                            Orbwalker.SetMovement(false);
-                            spells[Spells.R].Cast();
-                            return;
-                        }
+                        spells[Spells.W].Cast();
+                        this.Player.Spellbook.CastSpell(Ignite, hero);
                     }
                 }
             }
         }
 
-        private static double MarkDmg(Obj_AI_Base target)
+        private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            return target.HasBuff("katarinaqmark") ? Player.GetSpellDamage(target, SpellSlot.Q, 1) : 0;
-        }
-
-        private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
-        {
-            if (!sender.IsMe)
+            if (!sender.IsMe || args.SData.Name != "KatarinaR" || !this.Player.HasBuff("katarinarsound"))
             {
                 return;
             }
 
-            if (args.SData.Name == "KatarinaR")
+            isChanneling = true;
+            Orbwalker.SetMovement(false);
+            Orbwalker.SetAttack(false);
+            Utility.DelayAction.Add(1, () => isChanneling = false);
+        }
+
+        private void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            if (args.Unit.IsMe)
             {
-                Orbwalker.SetAttack(false);
-                Orbwalker.SetMovement(false);
+                args.Process = !this.Player.HasBuff("KatarinaR");
             }
         }
 
-        private static void Obj_AI_Hero_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
+        private void Obj_AI_Hero_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
         {
-            if (Player.IsCastingInterruptableSpell())
+            if (sender.IsMe && Environment.TickCount < rStart + 300 && args.Order == GameObjectOrder.MoveTo)
             {
                 args.Process = false;
             }
         }
 
-        private static void OnAutoHarass()
+        private void OnAutoHarass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValid || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (target == null || !target.IsValidTarget() || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 return;
             }
 
-            var useQ = Menu.Item("ElEasy.Katarina.AutoHarass.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Katarina.AutoHarass.W").GetValue<bool>();
+            var useQ = this.Menu.Item("ElEasy.Katarina.AutoHarass.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Katarina.AutoHarass.W").IsActive();
 
             if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget())
             {
@@ -491,7 +557,7 @@ namespace ElEasy.Plugins
             }
         }
 
-        private static void OnCombo()
+        private void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValidTarget())
@@ -499,38 +565,16 @@ namespace ElEasy.Plugins
                 return;
             }
 
-            UseItems(target);
+            this.UseItems(target);
 
-            var useQ = Menu.Item("ElEasy.Katarina.Combo.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Katarina.Combo.W").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Katarina.Combo.E").GetValue<bool>();
-            var useR = Menu.Item("ElEasy.Katarina.Combo.R").GetValue<bool>();
-            var useI = Menu.Item("ElEasy.Katarina.Combo.Ignite").GetValue<bool>();
-            var rSort = Menu.Item("ElEasy.Katarina.Combo.Sort").GetValue<StringList>();
-            var forceR = Menu.Item("ElEasy.Katarina.Combo.R.Force").GetValue<bool>();
-            var forceRCount = Menu.Item("ElEasy.Katarina.Combo.R.Force.Count").GetValue<Slider>().Value;
-
-            if (useR && spells[Spells.R].IsReady())
-            {
-                switch (rSort.SelectedIndex)
-                {
-                    case 0:
-                        if (Player.CountEnemiesInRange(spells[Spells.R].Range) > 0 && spells[Spells.R].IsReady())
-                        {
-                            spells[Spells.R].Cast();
-                        }
-                        break;
-
-                    case 1:
-                        if (!spells[Spells.E].IsReady()
-                            || forceR && Player.CountEnemiesInRange(spells[Spells.R].Range) <= forceRCount)
-                        {
-                            spells[Spells.R].Cast();
-                        }
-                        break;
-                }
-            }
-
+            var useQ = this.Menu.Item("ElEasy.Katarina.Combo.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Katarina.Combo.W").IsActive();
+            var useE = this.Menu.Item("ElEasy.Katarina.Combo.E").IsActive();
+            var useR = this.Menu.Item("ElEasy.Katarina.Combo.R").IsActive();
+            var useI = this.Menu.Item("ElEasy.Katarina.Combo.Ignite").IsActive();
+            var rSort = this.Menu.Item("ElEasy.Katarina.Combo.Sort").GetValue<StringList>();
+            var forceR = this.Menu.Item("ElEasy.Katarina.Combo.R.Force").IsActive();
+            var forceRCount = this.Menu.Item("ElEasy.Katarina.Combo.R.Force.Count").GetValue<Slider>().Value;
 
             if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
@@ -539,27 +583,49 @@ namespace ElEasy.Plugins
 
             if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
-                CastE(target);
+                this.CastE(target);
             }
 
             if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
             {
                 spells[Spells.W].Cast();
             }
-
-            if (target.IsValidTarget(600) && IgniteDamage(target) >= target.Health && useI)
+            if (useR && spells[Spells.R].IsReady())
             {
-                Player.Spellbook.CastSpell(Ignite, target);
+                switch (rSort.SelectedIndex)
+                {
+                    case 0:
+                        if (this.Player.CountEnemiesInRange(spells[Spells.R].Range) > 0 && spells[Spells.R].IsReady())
+                        {
+                            spells[Spells.R].Cast();
+                            rStart = Environment.TickCount;
+                        }
+                        break;
+
+                    case 1:
+                        if (!spells[Spells.E].IsReady()
+                            || forceR && this.Player.CountEnemiesInRange(spells[Spells.R].Range) <= forceRCount)
+                        {
+                            spells[Spells.R].Cast();
+                            rStart = Environment.TickCount;
+                        }
+                        break;
+                }
+            }
+
+            if (target.IsValidTarget(600) && this.IgniteDamage(target) >= target.Health && useI)
+            {
+                this.Player.Spellbook.CastSpell(Ignite, target);
             }
         }
 
-        private static void OnDraw(EventArgs args)
+        private void OnDraw(EventArgs args)
         {
-            var drawOff = Menu.Item("ElEasy.Katarina.Draw.off").GetValue<bool>();
-            var drawQ = Menu.Item("ElEasy.Katarina.Draw.Q").GetValue<Circle>();
-            var drawW = Menu.Item("ElEasy.Katarina.Draw.W").GetValue<Circle>();
-            var drawE = Menu.Item("ElEasy.Katarina.Draw.E").GetValue<Circle>();
-            var drawR = Menu.Item("ElEasy.Katarina.Draw.R").GetValue<Circle>();
+            var drawOff = this.Menu.Item("ElEasy.Katarina.Draw.off").GetValue<bool>();
+            var drawQ = this.Menu.Item("ElEasy.Katarina.Draw.Q").GetValue<Circle>();
+            var drawW = this.Menu.Item("ElEasy.Katarina.Draw.W").GetValue<Circle>();
+            var drawE = this.Menu.Item("ElEasy.Katarina.Draw.E").GetValue<Circle>();
+            var drawR = this.Menu.Item("ElEasy.Katarina.Draw.R").GetValue<Circle>();
 
             if (drawOff)
             {
@@ -570,7 +636,7 @@ namespace ElEasy.Plugins
             {
                 if (spells[Spells.Q].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.Q].Range, Color.DeepPink);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.Q].Range, Color.DeepPink);
                 }
             }
 
@@ -578,7 +644,7 @@ namespace ElEasy.Plugins
             {
                 if (spells[Spells.W].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.W].Range, Color.DeepSkyBlue);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.W].Range, Color.DeepSkyBlue);
                 }
             }
 
@@ -586,7 +652,7 @@ namespace ElEasy.Plugins
             {
                 if (spells[Spells.E].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.E].Range, Color.White);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.E].Range, Color.White);
                 }
             }
 
@@ -594,23 +660,23 @@ namespace ElEasy.Plugins
             {
                 if (spells[Spells.R].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.R].Range, Color.White);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.R].Range, Color.White);
                 }
             }
         }
 
-        private static void OnHarass()
+        private void OnHarass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValid)
+            if (target == null || !target.IsValidTarget())
             {
                 return;
             }
 
-            var useQ = Menu.Item("ElEasy.Katarina.Harass.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Katarina.Harass.W").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Katarina.Harass.E").GetValue<bool>();
-            var hMode = Menu.Item("ElEasy.Katarina.Harass.Mode").GetValue<StringList>().SelectedIndex;
+            var useQ = this.Menu.Item("ElEasy.Katarina.Harass.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Katarina.Harass.W").IsActive();
+            var useE = this.Menu.Item("ElEasy.Katarina.Harass.E").IsActive();
+            var hMode = this.Menu.Item("ElEasy.Katarina.Harass.Mode").GetValue<StringList>().SelectedIndex;
 
             switch (hMode)
             {
@@ -646,7 +712,7 @@ namespace ElEasy.Plugins
 
                         if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
                         {
-                            CastE(target);
+                            this.CastE(target);
                         }
 
                         if (spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
@@ -658,11 +724,11 @@ namespace ElEasy.Plugins
             }
         }
 
-        private static void OnJungleclear()
+        private void OnJungleclear()
         {
-            var useQ = Menu.Item("ElEasy.Katarina.JungleClear.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Katarina.JungleClear.W").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Katarina.JungleClear.E").GetValue<bool>();
+            var useQ = this.Menu.Item("ElEasy.Katarina.JungleClear.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Katarina.JungleClear.W").IsActive();
+            var useE = this.Menu.Item("ElEasy.Katarina.JungleClear.E").IsActive();
 
             var minions =
                 MinionManager.GetMinions(
@@ -689,15 +755,15 @@ namespace ElEasy.Plugins
 
             if (useE && spells[Spells.E].IsReady())
             {
-                CastE(minions);
+                this.CastE(minions);
             }
         }
 
-        private static void OnLaneclear()
+        private void OnLaneclear()
         {
-            var useQ = Menu.Item("ElEasy.Katarina.LaneClear.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Katarina.LaneClear.W").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Katarina.LaneClear.E").GetValue<bool>();
+            var useQ = this.Menu.Item("ElEasy.Katarina.LaneClear.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Katarina.LaneClear.W").IsActive();
+            var useE = this.Menu.Item("ElEasy.Katarina.LaneClear.E").IsActive();
 
             var minions =
                 MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.E].Range).FirstOrDefault();
@@ -727,16 +793,16 @@ namespace ElEasy.Plugins
             {
                 if (minions.Health < spells[Spells.E].GetDamage(minions))
                 {
-                    CastE(minions);
+                    this.CastE(minions);
                 }
             }
         }
 
-        private static void OnLasthit()
+        private void OnLasthit()
         {
-            var useQ = Menu.Item("ElEasy.Katarina.Lasthit.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Katarina.Lasthit.W").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Katarina.Lasthit.E").GetValue<bool>();
+            var useQ = this.Menu.Item("ElEasy.Katarina.Lasthit.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Katarina.Lasthit.W").IsActive();
+            var useE = this.Menu.Item("ElEasy.Katarina.Lasthit.E").IsActive();
 
             var minions =
                 MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.E].Range).FirstOrDefault();
@@ -766,30 +832,24 @@ namespace ElEasy.Plugins
             {
                 if (minions.Health < spells[Spells.E].GetDamage(minions))
                 {
-                    CastE(minions);
+                    this.CastE(minions);
                 }
             }
         }
 
-        private static void OnUpdate(EventArgs args)
+        private void OnUpdate(EventArgs args)
         {
             try
             {
-                if (Player.IsDead)
+                if (this.Player.IsDead)
                 {
                     return;
                 }
 
-                if (Menu.Item("ElEasy.Katarina.Killsteal").GetValue<bool>())
-                {
-                    KillSteal();
-                }
-
-                if (Player.IsChannelingImportantSpell() || Player.HasBuff("KatarinaR"))
+                if (this.HasRBuff())
                 {
                     Orbwalker.SetAttack(false);
                     Orbwalker.SetMovement(false);
-                    ShouldCancel();
                     return;
                 }
 
@@ -799,30 +859,35 @@ namespace ElEasy.Plugins
                 switch (Orbwalker.ActiveMode)
                 {
                     case Orbwalking.OrbwalkingMode.Combo:
-                        OnCombo();
+                        this.OnCombo();
                         break;
                     case Orbwalking.OrbwalkingMode.Mixed:
-                        OnHarass();
+                        this.OnHarass();
                         break;
 
                     case Orbwalking.OrbwalkingMode.LaneClear:
-                        OnLaneclear();
-                        OnJungleclear();
+                        this.OnLaneclear();
+                        this.OnJungleclear();
                         break;
 
                     case Orbwalking.OrbwalkingMode.LastHit:
-                        OnLasthit();
+                        this.OnLasthit();
                         break;
                 }
 
-                if (Menu.Item("ElEasy.Katarina.AutoHarass.Activated", true).GetValue<KeyBind>().Active)
+                if (this.Menu.Item("ElEasy.Katarina.Killsteal").IsActive())
                 {
-                    OnAutoHarass();
+                    this.KillSteal();
                 }
 
-                if (Menu.Item("ElEasy.Katarina.Wardjump").GetValue<KeyBind>().Active)
+                if (this.Menu.Item("ElEasy.Katarina.AutoHarass.Activated", true).GetValue<KeyBind>().Active)
                 {
-                    WardjumpToMouse();
+                    this.OnAutoHarass();
+                }
+
+                if (this.Menu.Item("ElEasy.Katarina.Wardjump").GetValue<KeyBind>().Active)
+                {
+                    this.WardjumpToMouse();
                 }
             }
             catch (Exception e)
@@ -831,47 +896,31 @@ namespace ElEasy.Plugins
             }
         }
 
-        private static void Orbwalk(Vector3 pos, Obj_AI_Hero target = null)
+        private void Orbwalk(Vector3 pos, Obj_AI_Hero target = null)
         {
-            Player.IssueOrder(GameObjectOrder.MoveTo, pos);
+            this.Player.IssueOrder(GameObjectOrder.MoveTo, pos);
         }
 
-        private static void ShouldCancel()
+        private void UseItems(Obj_AI_Base target)
         {
-            if (Player.CountEnemiesInRange(500) < 1)
-            {
-                var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
-                if (target == null)
-                {
-                    return;
-                }
-
-                spells[Spells.R].LastCastAttemptT = 0;
-                Player.IssueOrder(GameObjectOrder.MoveTo, target);
-            }
-        }
-
-        private static void UseItems(Obj_AI_Base target)
-        {
-            var useHextech = Menu.Item("ElEasy.Katarina.Items.hextech").GetValue<bool>();
-            if (useHextech)
+            if (this.Menu.Item("ElEasy.Katarina.Items.hextech").IsActive())
             {
                 var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
                 var hextech = ItemData.Hextech_Gunblade.GetItem();
 
-                if (cutlass.IsReady() && cutlass.IsOwned(Player) && cutlass.IsInRange(target))
+                if (cutlass.IsReady() && cutlass.IsOwned(this.Player) && cutlass.IsInRange(target))
                 {
                     cutlass.Cast(target);
                 }
 
-                if (hextech.IsReady() && hextech.IsOwned(Player) && hextech.IsInRange(target))
+                if (hextech.IsReady() && hextech.IsOwned(this.Player) && hextech.IsInRange(target))
                 {
                     hextech.Cast(target);
                 }
             }
         }
 
-        private static void WardJump(
+        private void WardJump(
             Vector3 pos,
             bool m2M = true,
             bool maxRange = false,
@@ -884,8 +933,8 @@ namespace ElEasy.Plugins
                 return;
             }
 
-            var basePos = Player.Position.To2D();
-            var newPos = (pos.To2D() - Player.Position.To2D());
+            var basePos = this.Player.Position.To2D();
+            var newPos = (pos.To2D() - this.Player.Position.To2D());
 
             if (JumpPos == new Vector2())
             {
@@ -893,13 +942,13 @@ namespace ElEasy.Plugins
                 {
                     JumpPos = pos.To2D();
                 }
-                else if (maxRange || Player.Distance(pos) > 590)
+                else if (maxRange || this.Player.Distance(pos) > 590)
                 {
                     JumpPos = basePos + (newPos.Normalized() * (590));
                 }
                 else
                 {
-                    JumpPos = basePos + (newPos.Normalized() * (Player.Distance(pos)));
+                    JumpPos = basePos + (newPos.Normalized() * (this.Player.Distance(pos)));
                 }
             }
             if (JumpPos != new Vector2() && reCheckWard)
@@ -918,9 +967,9 @@ namespace ElEasy.Plugins
             }
             if (m2M)
             {
-                Orbwalk(pos);
+                this.Orbwalk(pos);
             }
-            if (!spells[Spells.E].IsReady() || reqinMaxRange && Player.Distance(pos) > spells[Spells.E].Range)
+            if (!spells[Spells.E].IsReady() || reqinMaxRange && this.Player.Distance(pos) > spells[Spells.E].Range)
             {
                 return;
             }
@@ -931,7 +980,7 @@ namespace ElEasy.Plugins
                 {
                     var champs = (from champ in ObjectManager.Get<Obj_AI_Hero>()
                                   where
-                                      champ.IsAlly && champ.Distance(Player) < spells[Spells.E].Range
+                                      champ.IsAlly && champ.Distance(this.Player) < spells[Spells.E].Range
                                       && champ.Distance(pos) < 200 && !champ.IsMe
                                   select champ).ToList();
                     if (champs.Count > 0 && spells[Spells.E].IsReady())
@@ -949,7 +998,7 @@ namespace ElEasy.Plugins
                 {
                     var minion2 = (from minion in ObjectManager.Get<Obj_AI_Minion>()
                                    where
-                                       minion.IsAlly && minion.Distance(Player) < spells[Spells.E].Range
+                                       minion.IsAlly && minion.Distance(this.Player) < spells[Spells.E].Range
                                        && minion.Distance(pos) < 200 && !minion.Name.ToLower().Contains("ward")
                                    select minion).ToList();
                     if (minion2.Count > 0)
@@ -983,26 +1032,26 @@ namespace ElEasy.Plugins
 
             if (!isWard && castWardAgain)
             {
-                var ward = FindBestWardItem();
+                var ward = this.FindBestWardItem();
                 if (ward == null || !spells[Spells.E].IsReady())
                 {
                     return;
                 }
 
-                Player.Spellbook.CastSpell(ward.SpellSlot, JumpPos.To3D());
+                this.Player.Spellbook.CastSpell(ward.SpellSlot, JumpPos.To3D());
                 lastWardPos = JumpPos.To3D();
             }
         }
 
-        private static void WardjumpToMouse()
+        private void WardjumpToMouse()
         {
-            WardJump(
+            this.WardJump(
                 Game.CursorPos,
-                Menu.Item("ElEasy.Wardjump.Mouse").GetValue<bool>(),
+                this.Menu.Item("ElEasy.Wardjump.Mouse").GetValue<bool>(),
                 false,
                 false,
-                Menu.Item("ElEasy.Wardjump.Minions").GetValue<bool>(),
-                Menu.Item("ElEasy.Wardjump.Champions").GetValue<bool>());
+                this.Menu.Item("ElEasy.Wardjump.Minions").GetValue<bool>(),
+                this.Menu.Item("ElEasy.Wardjump.Champions").GetValue<bool>());
         }
 
         #endregion

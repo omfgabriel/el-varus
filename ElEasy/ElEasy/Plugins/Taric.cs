@@ -8,7 +8,7 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    public class Taric : Standards
+    public class Taric : IPlugin
     {
         #region Static Fields
 
@@ -20,143 +20,191 @@
                                                                            { Spells.R, new Spell(SpellSlot.R, 200) }
                                                                        };
 
+        private static SpellSlot Ignite;
+
+        private static Orbwalking.Orbwalker Orbwalker;
+
+        #endregion
+
+        #region Enums
+
+        public enum Spells
+        {
+            Q,
+
+            W,
+
+            E,
+
+            R
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        ///     Gets or sets the menu.
+        /// </summary>
+        /// <value>
+        ///     The menu.
+        /// </value>
+        private Menu Menu { get; set; }
+
+        /// <summary>
+        ///     Gets the player.
+        /// </summary>
+        /// <value>
+        ///     The player.
+        /// </value>
+        private Obj_AI_Hero Player
+        {
+            get
+            {
+                return ObjectManager.Player;
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
 
-        public static void Load()
+        /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
         {
-            Ignite = Player.GetSpellSlot("summonerdot");
+            this.Menu = new Menu("ElTaric", "ElTaric");
+            {
+                var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
+                Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+                this.Menu.AddSubMenu(orbwalkerMenu);
 
-            Initialize();
-            Game.OnUpdate += OnUpdate;
-            Drawing.OnDraw += OnDraw;
-            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
-            Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
+                var targetSelector = new Menu("Target Selector", "TargetSelector");
+                TargetSelector.AddToMenu(targetSelector);
+                this.Menu.AddSubMenu(targetSelector);
+
+                var comboMenu = new Menu("Combo", "Combo");
+                {
+                    comboMenu.AddItem(new MenuItem("ElEasy.Taric.Combo.Q", "Use Q").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Taric.Combo.W", "Use W").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Taric.Combo.E", "Use E").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Taric.Combo.R", "Use R").SetValue(true));
+                    comboMenu.AddItem(
+                        new MenuItem("ElEasy.Taric.Combo.Count.Enemies", "Enemies in range for R").SetValue(
+                            new Slider(2, 1, 5)));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Taric.Combo.Ignite", "Use Ignite").SetValue(true));
+                }
+
+                this.Menu.AddSubMenu(comboMenu);
+
+                var harassMenu = new Menu("Harass", "Harass");
+                {
+                    harassMenu.AddItem(new MenuItem("ElEasy.Taric.Harass.W", "Use W").SetValue(true));
+                    harassMenu.AddItem(new MenuItem("ElEasy.Taric.Harass.E", "Use E").SetValue(true));
+                    harassMenu.AddItem(
+                        new MenuItem("ElEasy.Taric.Harass.Player.Mana", "Minimum Mana").SetValue(new Slider(55)));
+                }
+
+                this.Menu.AddSubMenu(harassMenu);
+
+                var healMenu = new Menu("Heal", "Heal");
+                {
+                    healMenu.AddItem(new MenuItem("ElEasy.Taric.Heal.Activated", "Heal").SetValue(true));
+                    healMenu.AddItem(new MenuItem("ElEasy.Taric.Heal.Player.HP", "Player HP").SetValue(new Slider(55)));
+                    healMenu.AddItem(new MenuItem("ElEasy.Taric.Heal.Ally.HP", "Ally HP").SetValue(new Slider(55)));
+                    healMenu.AddItem(
+                        new MenuItem("ElEasy.Taric.Heal.Player.Mana", "Minimum Mana").SetValue(new Slider(55)));
+                }
+
+                this.Menu.AddSubMenu(healMenu);
+
+                var miscellaneousMenu = new Menu("Miscellaneous", "Miscellaneous");
+                {
+                    miscellaneousMenu.AddItem(
+                        new MenuItem("ElEasy.Taric.Interrupt.Activated", "Interrupt spells").SetValue(true));
+                    miscellaneousMenu.AddItem(
+                        new MenuItem("ElEasy.Taric.GapCloser.Activated", "Anti gapcloser").SetValue(true));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Taric.Draw.off", "Turn drawings off").SetValue(true));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Taric.Draw.Q", "Draw Q").SetValue(new Circle()));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Taric.Draw.W", "Draw W").SetValue(new Circle()));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Taric.Draw.E", "Draw E").SetValue(new Circle()));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Taric.Draw.R", "Draw R").SetValue(new Circle()));
+                }
+
+                this.Menu.AddSubMenu(miscellaneousMenu);
+            }
+            rootMenu.AddSubMenu(this.Menu);
+        }
+
+        public void Load()
+        {
+            Console.WriteLine("Loaded Taric");
+            Ignite = this.Player.GetSpellSlot("summonerdot");
+
+            Game.OnUpdate += this.OnUpdate;
+            Drawing.OnDraw += this.OnDraw;
+            AntiGapcloser.OnEnemyGapcloser += this.AntiGapcloser_OnEnemyGapcloser;
+            Interrupter2.OnInterruptableTarget += this.Interrupter2_OnInterruptableTarget;
         }
 
         #endregion
 
         #region Methods
 
-        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        private void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            var gapCloserActive = Menu.Item("ElEasy.Taric.GapCloser.Activated").GetValue<bool>();
-
-            if (gapCloserActive && spells[Spells.E].IsReady()
-                && gapcloser.Sender.Distance(Player) < spells[Spells.E].Range)
+            if (this.Menu.Item("ElEasy.Taric.GapCloser.Activated").IsActive() && spells[Spells.E].IsReady()
+                && gapcloser.Sender.Distance(this.Player) < spells[Spells.E].Range)
             {
                 spells[Spells.E].Cast(gapcloser.Sender);
             }
         }
 
-        private static void HealManager()
+        private void HealManager()
         {
-            var useHeal = Menu.Item("ElEasy.Taric.Heal.Activated").GetValue<bool>();
-            var playerMana = Menu.Item("ElEasy.Taric.Heal.Player.Mana").GetValue<Slider>().Value;
-            var playerHp = Menu.Item("ElEasy.Taric.Heal.Player.HP").GetValue<Slider>().Value;
-            var allyHp = Menu.Item("ElEasy.Taric.Heal.Ally.HP").GetValue<Slider>().Value;
-
-            if (Player.IsRecalling() || Player.InFountain() || !useHeal || Player.ManaPercent < playerMana
+            if (this.Player.IsRecalling() || this.Player.InFountain()
+                || !this.Menu.Item("ElEasy.Taric.Heal.Activated").IsActive()
+                || this.Player.ManaPercent < this.Menu.Item("ElEasy.Taric.Heal.Player.Mana").GetValue<Slider>().Value
                 || !spells[Spells.Q].IsReady())
             {
                 return;
             }
 
-            //self heal
-            if ((Player.Health / Player.MaxHealth) * 100 <= playerHp)
+            if ((this.Player.Health / this.Player.MaxHealth) * 100
+                <= this.Menu.Item("ElEasy.Taric.Heal.Player.HP").GetValue<Slider>().Value)
             {
-                spells[Spells.Q].CastOnUnit(Player);
+                spells[Spells.Q].CastOnUnit(this.Player);
             }
 
-            //ally
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsAlly && !h.IsMe))
             {
-                if ((hero.Health / hero.MaxHealth) * 100 <= allyHp && spells[Spells.Q].IsInRange(hero))
+                if ((hero.Health / hero.MaxHealth) * 100
+                    <= this.Menu.Item("ElEasy.Taric.Heal.Ally.HP").GetValue<Slider>().Value
+                    && spells[Spells.Q].IsInRange(hero))
                 {
                     spells[Spells.Q].Cast(hero);
                 }
             }
         }
 
-        private static float IgniteDamage(Obj_AI_Hero target)
+        private float IgniteDamage(Obj_AI_Hero target)
         {
-            if (Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
+            if (Ignite == SpellSlot.Unknown || this.Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
             {
                 return 0f;
             }
-            return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+            return (float)this.Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
-        private static void Initialize()
-        {
-            Menu = new Menu("ElTaric", "menu", true);
-
-            var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
-            Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
-            Menu.AddSubMenu(orbwalkerMenu);
-
-            var targetSelector = new Menu("Target Selector", "TargetSelector");
-            TargetSelector.AddToMenu(targetSelector);
-            Menu.AddSubMenu(targetSelector);
-
-            var cMenu = new Menu("Combo", "Combo");
-            cMenu.AddItem(new MenuItem("ElEasy.Taric.Combo.Q", "Use Q").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Taric.Combo.W", "Use W").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Taric.Combo.E", "Use E").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Taric.Combo.R", "Use R").SetValue(true));
-            cMenu.AddItem(
-                new MenuItem("ElEasy.Taric.Combo.Count.Enemies", "Enemies in range for R").SetValue(new Slider(2, 1, 5)));
-            cMenu.AddItem(new MenuItem("ElEasy.Taric.Combo.Ignite", "Use Ignite").SetValue(true));
-
-            Menu.AddSubMenu(cMenu);
-
-            var hMenu = new Menu("Harass", "Harass");
-            hMenu.AddItem(new MenuItem("ElEasy.Taric.Harass.W", "Use W").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElEasy.Taric.Harass.E", "Use E").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElEasy.Taric.Harass.Player.Mana", "Minimum Mana").SetValue(new Slider(55)));
-
-            Menu.AddSubMenu(hMenu);
-
-            var healMenu = new Menu("Heal", "Heal");
-            healMenu.AddItem(new MenuItem("ElEasy.Taric.Heal.Activated", "Heal").SetValue(true));
-            healMenu.AddItem(new MenuItem("ElEasy.Taric.Heal.Player.HP", "Player HP").SetValue(new Slider(55)));
-            healMenu.AddItem(new MenuItem("ElEasy.Taric.Heal.Ally.HP", "Ally HP").SetValue(new Slider(55)));
-            healMenu.AddItem(new MenuItem("ElEasy.Taric.Heal.Player.Mana", "Minimum Mana").SetValue(new Slider(55)));
-
-            Menu.AddSubMenu(healMenu);
-
-            var interruptMenu = new Menu("Settings", "Settings");
-            interruptMenu.AddItem(new MenuItem("ElEasy.Taric.Interrupt.Activated", "Interrupt spells").SetValue(true));
-            interruptMenu.AddItem(new MenuItem("ElEasy.Taric.GapCloser.Activated", "Anti gapcloser").SetValue(true));
-
-            Menu.AddSubMenu(interruptMenu);
-
-            var miscMenu = new Menu("Misc", "Misc");
-            miscMenu.AddItem(new MenuItem("ElEasy.Taric.Draw.off", "Turn drawings off").SetValue(true));
-            miscMenu.AddItem(new MenuItem("ElEasy.Taric.Draw.Q", "Draw Q").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Taric.Draw.W", "Draw W").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Taric.Draw.E", "Draw E").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Taric.Draw.R", "Draw R").SetValue(new Circle()));
-
-            Menu.AddSubMenu(miscMenu);
-
-            //Here comes the moneyyy, money, money, moneyyyy
-            var credits = Menu.AddSubMenu(new Menu("Credits", "jQuery"));
-            credits.AddItem(new MenuItem("ElEasy.Paypal", "if you would like to donate via paypal:"));
-            credits.AddItem(new MenuItem("ElEasy.Email", "info@zavox.nl"));
-
-            Menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            Menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
-
-            Menu.AddToMainMenu();
-        }
-
-        private static void Interrupter2_OnInterruptableTarget(
+        private void Interrupter2_OnInterruptableTarget(
             Obj_AI_Hero sender,
             Interrupter2.InterruptableTargetEventArgs args)
         {
-            if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > spells[Spells.E].Range)
+            if (args.DangerLevel != Interrupter2.DangerLevel.High
+                || sender.Distance(this.Player) > spells[Spells.E].Range)
             {
                 return;
             }
@@ -168,49 +216,48 @@
             }
         }
 
-        private static void OnCombo()
+        private void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValid)
+            if (target == null || !target.IsValidTarget())
             {
                 return;
             }
 
-            var useE = Menu.Item("ElEasy.Taric.Combo.E").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Taric.Combo.W").GetValue<bool>();
-            var useR = Menu.Item("ElEasy.Taric.Combo.R").GetValue<bool>();
-            var useI = Menu.Item("ElEasy.Taric.Combo.Ignite").GetValue<bool>();
-            var countEnemies = Menu.Item("ElEasy.Taric.Combo.Count.Enemies").GetValue<Slider>().Value;
-
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            if (this.Menu.Item("ElEasy.Taric.Combo.E").IsActive() && spells[Spells.E].IsReady()
+                && target.IsValidTarget(spells[Spells.E].Range))
             {
                 spells[Spells.E].Cast(target);
             }
 
-            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+            if (this.Menu.Item("ElEasy.Taric.Combo.W").IsActive() && spells[Spells.W].IsReady()
+                && target.IsValidTarget(spells[Spells.W].Range))
             {
-                spells[Spells.W].CastOnUnit(Player);
+                spells[Spells.W].CastOnUnit(this.Player);
             }
 
-            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target)
-                && Player.CountEnemiesInRange(spells[Spells.R].Range) >= countEnemies)
+            if (this.Menu.Item("ElEasy.Taric.Combo.R").IsActive() && spells[Spells.R].IsReady()
+                && target.IsValidTarget(spells[Spells.R].Range)
+                && this.Player.CountEnemiesInRange(spells[Spells.R].Range)
+                >= this.Menu.Item("ElEasy.Taric.Combo.Count.Enemies").GetValue<Slider>().Value)
             {
-                spells[Spells.R].CastOnUnit(Player);
+                spells[Spells.R].CastOnUnit(this.Player);
             }
 
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
+            if (this.Menu.Item("ElEasy.Taric.Combo.Ignite").IsActive() && target.IsValidTarget(600)
+                && this.IgniteDamage(target) >= target.Health)
             {
-                Player.Spellbook.CastSpell(Ignite, target);
+                this.Player.Spellbook.CastSpell(Ignite, target);
             }
         }
 
-        private static void OnDraw(EventArgs args)
+        private void OnDraw(EventArgs args)
         {
-            var drawOff = Menu.Item("ElEasy.Taric.Draw.off").GetValue<bool>();
-            var drawQ = Menu.Item("ElEasy.Taric.Draw.Q").GetValue<Circle>();
-            var drawW = Menu.Item("ElEasy.Taric.Draw.W").GetValue<Circle>();
-            var drawE = Menu.Item("ElEasy.Taric.Draw.E").GetValue<Circle>();
-            var drawR = Menu.Item("ElEasy.Taric.Draw.R").GetValue<Circle>();
+            var drawOff = this.Menu.Item("ElEasy.Taric.Draw.off").IsActive();
+            var drawQ = this.Menu.Item("ElEasy.Taric.Draw.Q").GetValue<Circle>();
+            var drawW = this.Menu.Item("ElEasy.Taric.Draw.W").GetValue<Circle>();
+            var drawE = this.Menu.Item("ElEasy.Taric.Draw.E").GetValue<Circle>();
+            var drawR = this.Menu.Item("ElEasy.Taric.Draw.R").GetValue<Circle>();
 
             if (drawOff)
             {
@@ -221,7 +268,7 @@
             {
                 if (spells[Spells.Q].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.Q].Range, Color.White);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.Q].Range, Color.White);
                 }
             }
 
@@ -229,7 +276,7 @@
             {
                 if (spells[Spells.E].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.E].Range, Color.White);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.E].Range, Color.White);
                 }
             }
 
@@ -237,7 +284,7 @@
             {
                 if (spells[Spells.W].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.W].Range, Color.White);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.W].Range, Color.White);
                 }
             }
 
@@ -245,12 +292,12 @@
             {
                 if (spells[Spells.W].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.R].Range, Color.White);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.R].Range, Color.White);
                 }
             }
         }
 
-        private static void OnHarass()
+        private void OnHarass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValid)
@@ -258,29 +305,29 @@
                 return;
             }
 
-            var useE = Menu.Item("ElEasy.Taric.Harass.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Taric.Harass.W").GetValue<bool>();
-            var playerMana = Menu.Item("ElEasy.Taric.Harass.Player.Mana").GetValue<Slider>().Value;
+            var useE = this.Menu.Item("ElEasy.Taric.Harass.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Taric.Harass.W").IsActive();
+            var playerMana = this.Menu.Item("ElEasy.Taric.Harass.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.Mana < playerMana)
+            if (this.Player.ManaPercent < playerMana)
             {
                 return;
             }
 
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
                 spells[Spells.E].Cast(target);
             }
 
-            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+            if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
             {
-                spells[Spells.W].CastOnUnit(Player);
+                spells[Spells.W].CastOnUnit(this.Player);
             }
         }
 
-        private static void OnUpdate(EventArgs args)
+        private void OnUpdate(EventArgs args)
         {
-            if (Player.IsDead)
+            if (this.Player.IsDead)
             {
                 return;
             }
@@ -288,15 +335,15 @@
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    OnCombo();
+                    this.OnCombo();
                     break;
 
                 case Orbwalking.OrbwalkingMode.Mixed:
-                    OnHarass();
+                    this.OnHarass();
                     break;
             }
 
-            HealManager();
+            this.HealManager();
         }
 
         #endregion
