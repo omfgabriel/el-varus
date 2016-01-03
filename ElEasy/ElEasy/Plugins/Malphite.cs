@@ -246,9 +246,7 @@
         private void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            var rTarget = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
-
-            if (target == null || !target.IsValid)
+            if (target == null || !target.IsValidTarget())
             {
                 return;
             }
@@ -280,26 +278,26 @@
             switch (ultType)
             {
                 case 0:
-                    if (useR && spells[Spells.R].IsReady() && rTarget.IsValidTarget(spells[Spells.R].Range))
+                    if (useR && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range))
                     {
                         if (spells[Spells.R].GetDamage(target) > target.Health)
                         {
-                            var pred = spells[Spells.R].GetPrediction(rTarget).Hitchance;
+                            var pred = spells[Spells.R].GetPrediction(target).Hitchance;
                             if (pred >= HitChance.High)
                             {
-                                spells[Spells.R].Cast(rTarget);
+                                spells[Spells.R].Cast(target);
                             }
                         }
                     }
                     break;
 
                 case 1:
-                    if (useR && spells[Spells.R].IsReady() && rTarget.IsValidTarget(spells[Spells.R].Range))
+                    if (useR && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range))
                     {
-                        var pred = spells[Spells.R].GetPrediction(rTarget).Hitchance;
+                        var pred = spells[Spells.R].GetPrediction(target).Hitchance;
                         if (pred >= HitChance.High)
                         {
-                            spells[Spells.R].CastIfWillHit(rTarget, countEnemies);
+                            spells[Spells.R].CastIfWillHit(target, countEnemies);
                         }
                     }
                     break;
