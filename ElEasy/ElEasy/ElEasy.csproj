@@ -54,8 +54,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Base.cs" />
     <Compile Include="DrawDamage.cs" />
+    <Compile Include="Entry.cs" />
+    <Compile Include="IPlugin.cs" />
     <Compile Include="Plugins\Cassiopeia.cs" />
     <Compile Include="Plugins\Darius.cs" />
     <Compile Include="Plugins\Katarina.cs" />
@@ -67,7 +68,6 @@
     <Compile Include="Plugins\Taric.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Standards.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

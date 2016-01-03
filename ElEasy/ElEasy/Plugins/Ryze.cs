@@ -10,7 +10,7 @@
 
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
-    public class Ryze : Standards
+    public class Ryze : IPlugin
     {
         #region Static Fields
 
@@ -22,13 +22,185 @@
                                                                            { Spells.R, new Spell(SpellSlot.R) }
                                                                        };
 
+        private static SpellSlot Ignite;
+
+        private static Orbwalking.Orbwalker Orbwalker;
+
+        #endregion
+
+        #region Enums
+
+        public enum Spells
+        {
+            Q,
+
+            W,
+
+            E,
+
+            R
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        ///     Gets or sets the menu.
+        /// </summary>
+        /// <value>
+        ///     The menu.
+        /// </value>
+        private Menu Menu { get; set; }
+
+        /// <summary>
+        ///     Gets the player.
+        /// </summary>
+        /// <value>
+        ///     The player.
+        /// </value>
+        private Obj_AI_Hero Player
+        {
+            get
+            {
+                return ObjectManager.Player;
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
 
-        public static void Load()
+        /// <summary>
+        ///     Creates the menu.
+        /// </summary>
+        /// <param name="rootMenu">The root menu.</param>
+        /// <returns></returns>
+        public void CreateMenu(Menu rootMenu)
         {
-            Ignite = Player.GetSpellSlot("summonerdot");
+            this.Menu = new Menu("ElRyze", "ElRyze");
+            {
+                var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
+                Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+                this.Menu.AddSubMenu(orbwalkerMenu);
+
+                var targetSelector = new Menu("Target Selector", "TargetSelector");
+                TargetSelector.AddToMenu(targetSelector);
+                this.Menu.AddSubMenu(targetSelector);
+
+                var comboMenu = new Menu("Combo", "Combo");
+                {
+                    comboMenu.AddItem(new MenuItem("ElEasy.Ryze.Combo.Q", "Use Q").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Ryze.Combo.W", "Use W").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Ryze.Combo.E", "Use E").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Ryze.Combo.R", "Use R").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Ryze.Combo.R.HP", "Use R when HP").SetValue(new Slider(100)));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Ryze.Combo.Ignite", "Use Ignite").SetValue(true));
+                }
+
+                this.Menu.AddSubMenu(comboMenu);
+
+                var harassMenu = new Menu("Harass", "Harass");
+                {
+                    harassMenu.AddItem(new MenuItem("ElEasy.Ryze.Harass.Q", "Use Q").SetValue(true));
+                    harassMenu.AddItem(new MenuItem("ElEasy.Ryze.Harass.W", "Use W").SetValue(true));
+                    harassMenu.AddItem(new MenuItem("ElEasy.Ryze.Harass.E", "Use E").SetValue(true));
+                    harassMenu.AddItem(
+                        new MenuItem("ElEasy.Ryze.Harass.Player.Mana", "Minimum Mana").SetValue(new Slider(55)));
+
+                    harassMenu.SubMenu("Harass")
+                        .SubMenu("AutoHarass settings")
+                        .AddItem(
+                            new MenuItem("ElEasy.Ryze.AutoHarass.Activated", "Auto harass", true).SetValue(
+                                new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle)));
+                    harassMenu.SubMenu("Harass")
+                        .SubMenu("AutoHarass settings")
+                        .AddItem(new MenuItem("ElEasy.Ryze.AutoHarass.Q", "Use Q").SetValue(true));
+                    harassMenu.SubMenu("Harass")
+                        .SubMenu("AutoHarass settings")
+                        .AddItem(new MenuItem("ElEasy.Ryze.AutoHarass.W", "Use W").SetValue(true));
+
+                    harassMenu.SubMenu("Harass")
+                        .SubMenu("AutoHarass settings")
+                        .AddItem(new MenuItem("ElEasy.Ryze.AutoHarass.E", "Use E").SetValue(true));
+
+                    harassMenu.SubMenu("Harass")
+                        .SubMenu("AutoHarass settings")
+                        .AddItem(new MenuItem("ElEasy.Ryze.AutoHarass.Mana", "Minimum mana").SetValue(new Slider(55)));
+                }
+
+                this.Menu.AddSubMenu(harassMenu);
+
+                var clearMenu = new Menu("Clear", "Clear");
+                {
+                    clearMenu.SubMenu("Lasthit").AddItem(new MenuItem("ElEasy.Ryze.Lasthit.Q", "Use Q").SetValue(true));
+                    clearMenu.SubMenu("Lasthit").AddItem(new MenuItem("ElEasy.Ryze.Lasthit.W", "Use E").SetValue(true));
+                    clearMenu.SubMenu("Lasthit").AddItem(new MenuItem("ElEasy.Ryze.Lasthit.E", "Use W").SetValue(true));
+
+                    clearMenu.SubMenu("Laneclear")
+                        .AddItem(new MenuItem("ElEasy.Ryze.LaneClear.Q", "Use Q").SetValue(true));
+                    clearMenu.SubMenu("Laneclear")
+                        .AddItem(new MenuItem("ElEasy.Ryze.LaneClear.W", "Use W").SetValue(true));
+                    clearMenu.SubMenu("Laneclear")
+                        .AddItem(new MenuItem("ElEasy.Ryze.LaneClear.E", "Use E").SetValue(true));
+                    clearMenu.SubMenu("Jungleclear")
+                        .AddItem(new MenuItem("ElEasy.Ryze.JungleClear.Q", "Use Q").SetValue(true));
+                    clearMenu.SubMenu("Jungleclear")
+                        .AddItem(new MenuItem("ElEasy.Ryze.JungleClear.W", "Use W").SetValue(true));
+                    clearMenu.SubMenu("Jungleclear")
+                        .AddItem(new MenuItem("ElEasy.Ryze.JungleClear.E", "Use E").SetValue(true));
+                    clearMenu.AddItem(
+                        new MenuItem("ElEasy.Ryze.Clear.Player.Mana", "Minimum Mana for clear").SetValue(new Slider(55)));
+                }
+
+                this.Menu.AddSubMenu(clearMenu);
+
+                var miscellaneousMenu = new Menu("Miscellaneous", "Miscellaneous");
+                {
+                    miscellaneousMenu.AddItem(
+                        new MenuItem("ElEasy.Ryze.GapCloser.Activated", "Anti gapcloser").SetValue(true));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Ryze.AA", "Don't use AA in combo").SetValue(false));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.off", "Turn drawings off").SetValue(true));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.Q", "Draw Q").SetValue(new Circle()));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.W", "Draw W").SetValue(new Circle()));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.E", "Draw E").SetValue(new Circle()));
+
+                    var dmgAfterE = new MenuItem("ElEasy.Ryze.DrawComboDamage", "Draw combo damage").SetValue(true);
+                    var drawFill =
+                        new MenuItem("ElEasy.Ryze.DrawColour", "Fill colour", true).SetValue(
+                            new Circle(true, Color.FromArgb(0xcc, 0xcc, 0x0, 0x0)));
+                    miscellaneousMenu.AddItem(drawFill);
+                    miscellaneousMenu.AddItem(dmgAfterE);
+
+                    DrawDamage.DamageToUnit = this.GetComboDamage;
+                    DrawDamage.Enabled = dmgAfterE.GetValue<bool>();
+                    DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
+                    DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
+
+                    dmgAfterE.ValueChanged +=
+                        delegate(object sender, OnValueChangeEventArgs eventArgs)
+                            {
+                                DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
+                            };
+
+                    drawFill.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
+                        {
+                            DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
+                            DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
+                        };
+                }
+
+                this.Menu.AddSubMenu(miscellaneousMenu);
+
+            }
+
+            rootMenu.AddSubMenu(this.Menu);
+        }
+
+        public void Load()
+        {
+            Console.WriteLine("Loaded Ryze");
+            Ignite = this.Player.GetSpellSlot("summonerdot");
             spells[Spells.Q].SetSkillshot(
                 spells[Spells.Q].Instance.SData.SpellCastTime,
                 spells[Spells.Q].Instance.SData.LineWidth,
@@ -36,177 +208,62 @@
                 true,
                 SkillshotType.SkillshotLine);
 
-            Initialize();
-            Game.OnUpdate += OnUpdate;
-            Drawing.OnDraw += OnDraw;
-            Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
-            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+            Game.OnUpdate += this.OnUpdate;
+            Drawing.OnDraw += this.OnDraw;
+            Orbwalking.BeforeAttack += this.OrbwalkingBeforeAttack;
+            AntiGapcloser.OnEnemyGapcloser += this.AntiGapcloser_OnEnemyGapcloser;
         }
 
         #endregion
 
         #region Methods
 
-        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        private void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            var gapCloserActive = Menu.Item("ElEasy.Ryze.Interrupt.Activated").GetValue<bool>();
-
-            if (gapCloserActive && spells[Spells.W].IsReady()
-                && gapcloser.Sender.Distance(Player) < spells[Spells.W].Range)
+            if (this.Menu.Item("ElEasy.Ryze.Interrupt.Activated").IsActive() && spells[Spells.W].IsReady()
+                && gapcloser.Sender.Distance(this.Player) < spells[Spells.W].Range)
             {
                 spells[Spells.W].CastOnUnit(gapcloser.Sender);
             }
         }
 
-        private static float GetComboDamage(Obj_AI_Base enemy)
+        private float GetComboDamage(Obj_AI_Base enemy)
         {
             var damage = 0d;
 
             if (spells[Spells.Q].IsReady())
             {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.Q);
+                damage += this.Player.GetSpellDamage(enemy, SpellSlot.Q);
             }
 
             if (spells[Spells.W].IsReady())
             {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.W);
+                damage += this.Player.GetSpellDamage(enemy, SpellSlot.W);
             }
 
             if (spells[Spells.E].IsReady())
             {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.E);
+                damage += this.Player.GetSpellDamage(enemy, SpellSlot.E);
             }
 
             if (spells[Spells.R].IsReady())
             {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.R);
+                damage += this.Player.GetSpellDamage(enemy, SpellSlot.R);
             }
 
             return (float)damage;
         }
 
-        private static float IgniteDamage(Obj_AI_Hero target)
+        private float IgniteDamage(Obj_AI_Hero target)
         {
-            if (Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
+            if (Ignite == SpellSlot.Unknown || this.Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
             {
                 return 0f;
             }
-            return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+            return (float)this.Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
-        private static void Initialize()
-        {
-            Menu = new Menu("ElRyze", "menu", true);
-
-            var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
-            Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
-            Menu.AddSubMenu(orbwalkerMenu);
-
-            var targetSelector = new Menu("Target Selector", "TargetSelector");
-            TargetSelector.AddToMenu(targetSelector);
-            Menu.AddSubMenu(targetSelector);
-
-            var cMenu = new Menu("Combo", "Combo");
-            cMenu.AddItem(new MenuItem("ElEasy.Ryze.Combo.Q", "Use Q").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Ryze.Combo.W", "Use W").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Ryze.Combo.E", "Use E").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Ryze.Combo.R", "Use R").SetValue(true));
-            cMenu.AddItem(new MenuItem("ElEasy.Ryze.Combo.R.HP", "Use R when HP").SetValue(new Slider(100)));
-            cMenu.AddItem(new MenuItem("ElEasy.Ryze.Combo.Ignite", "Use Ignite").SetValue(true));
-
-            Menu.AddSubMenu(cMenu);
-
-            var hMenu = new Menu("Harass", "Harass");
-            hMenu.AddItem(new MenuItem("ElEasy.Ryze.Harass.Q", "Use Q").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElEasy.Ryze.Harass.W", "Use W").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElEasy.Ryze.Harass.E", "Use E").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElEasy.Ryze.Harass.Player.Mana", "Minimum Mana").SetValue(new Slider(55)));
-
-            hMenu.SubMenu("Harass")
-                .SubMenu("AutoHarass settings")
-                .AddItem(
-                    new MenuItem("ElEasy.Ryze.AutoHarass.Activated", "Auto harass", true).SetValue(
-                        new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle)));
-            hMenu.SubMenu("Harass")
-                .SubMenu("AutoHarass settings")
-                .AddItem(new MenuItem("ElEasy.Ryze.AutoHarass.Q", "Use Q").SetValue(true));
-            hMenu.SubMenu("Harass")
-                .SubMenu("AutoHarass settings")
-                .AddItem(new MenuItem("ElEasy.Ryze.AutoHarass.W", "Use W").SetValue(true));
-
-            hMenu.SubMenu("Harass")
-                .SubMenu("AutoHarass settings")
-                .AddItem(new MenuItem("ElEasy.Ryze.AutoHarass.E", "Use E").SetValue(true));
-
-            hMenu.SubMenu("Harass")
-                .SubMenu("AutoHarass settings")
-                .AddItem(new MenuItem("ElEasy.Ryze.AutoHarass.Mana", "Minimum mana").SetValue(new Slider(55)));
-
-            Menu.AddSubMenu(hMenu);
-
-            var clearMenu = new Menu("Clear", "Clear");
-            clearMenu.SubMenu("Lasthit").AddItem(new MenuItem("ElEasy.Ryze.Lasthit.Q", "Use Q").SetValue(true));
-            clearMenu.SubMenu("Lasthit").AddItem(new MenuItem("ElEasy.Ryze.Lasthit.W", "Use E").SetValue(true));
-            clearMenu.SubMenu("Lasthit").AddItem(new MenuItem("ElEasy.Ryze.Lasthit.E", "Use W").SetValue(true));
-
-            clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Ryze.LaneClear.Q", "Use Q").SetValue(true));
-            clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Ryze.LaneClear.W", "Use W").SetValue(true));
-            clearMenu.SubMenu("Laneclear").AddItem(new MenuItem("ElEasy.Ryze.LaneClear.E", "Use E").SetValue(true));
-            clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("ElEasy.Ryze.JungleClear.Q", "Use Q").SetValue(true));
-            clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("ElEasy.Ryze.JungleClear.W", "Use W").SetValue(true));
-            clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("ElEasy.Ryze.JungleClear.E", "Use E").SetValue(true));
-            clearMenu.AddItem(
-                new MenuItem("ElEasy.Ryze.Clear.Player.Mana", "Minimum Mana for clear").SetValue(new Slider(55)));
-
-            Menu.AddSubMenu(clearMenu);
-
-            var miscMenu = new Menu("Misc", "Misc");
-            miscMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.off", "Turn drawings off").SetValue(true));
-            miscMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.Q", "Draw Q").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.W", "Draw W").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElEasy.Ryze.Draw.E", "Draw E").SetValue(new Circle()));
-
-            var dmgAfterE = new MenuItem("ElEasy.Ryze.DrawComboDamage", "Draw combo damage").SetValue(true);
-            var drawFill =
-                new MenuItem("ElEasy.Ryze.DrawColour", "Fill colour", true).SetValue(
-                    new Circle(true, Color.FromArgb(0xcc, 0xcc, 0x0, 0x0)));
-            miscMenu.AddItem(drawFill);
-            miscMenu.AddItem(dmgAfterE);
-
-            DrawDamage.DamageToUnit = GetComboDamage;
-            DrawDamage.Enabled = dmgAfterE.GetValue<bool>();
-            DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
-            DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
-
-            dmgAfterE.ValueChanged +=
-                delegate(object sender, OnValueChangeEventArgs eventArgs)
-                    {
-                        DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
-                    };
-
-            drawFill.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
-                {
-                    DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
-                    DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
-                };
-
-            miscMenu.AddItem(new MenuItem("ElEasy.Ryze.GapCloser.Activated", "Anti gapcloser").SetValue(true));
-            miscMenu.AddItem(new MenuItem("ElEasy.Ryze.AA", "Don't use AA in combo").SetValue(false));
-
-            Menu.AddSubMenu(miscMenu);
-
-            //Here comes the moneyyy, money, money, moneyyyy
-            var credits = Menu.AddSubMenu(new Menu("Credits", "jQuery"));
-            credits.AddItem(new MenuItem("ElEasy.Paypal", "if you would like to donate via paypal:"));
-            credits.AddItem(new MenuItem("ElEasy.Email", "info@zavox.nl"));
-
-            Menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            Menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
-
-            Menu.AddToMainMenu();
-        }
-
-        private static void OnAutoHarass()
+        private void OnAutoHarass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValid)
@@ -214,12 +271,12 @@
                 return;
             }
 
-            var useQ = Menu.Item("ElEasy.Ryze.AutoHarass.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Ryze.AutoHarass.W").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Ryze.AutoHarass.E").GetValue<bool>();
-            var mana = Menu.Item("ElEasy.Ryze.AutoHarass.Mana").GetValue<Slider>().Value;
+            var useQ = this.Menu.Item("ElEasy.Ryze.AutoHarass.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Ryze.AutoHarass.W").IsActive();
+            var useE = this.Menu.Item("ElEasy.Ryze.AutoHarass.E").IsActive();
+            var mana = this.Menu.Item("ElEasy.Ryze.AutoHarass.Mana").GetValue<Slider>().Value;
 
-            if (Player.Mana < mana)
+            if (this.Player.ManaPercent < mana)
             {
                 return;
             }
@@ -245,7 +302,7 @@
             }
         }
 
-        private static void OnCombo()
+        private void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValid)
@@ -253,14 +310,14 @@
                 return;
             }
 
-            var useQ = Menu.Item("ElEasy.Ryze.Combo.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Ryze.Combo.W").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Ryze.Combo.E").GetValue<bool>();
-            var useR = Menu.Item("ElEasy.Ryze.Combo.R").GetValue<bool>();
-            var rHp = Menu.Item("ElEasy.Ryze.Combo.R.HP").GetValue<Slider>().Value;
-            var useI = Menu.Item("ElEasy.Ryze.Combo.Ignite").GetValue<bool>();
+            var useQ = this.Menu.Item("ElEasy.Ryze.Combo.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Ryze.Combo.W").IsActive();
+            var useE = this.Menu.Item("ElEasy.Ryze.Combo.E").IsActive();
+            var useR = this.Menu.Item("ElEasy.Ryze.Combo.R").IsActive();
+            var rHp = this.Menu.Item("ElEasy.Ryze.Combo.R.HP").GetValue<Slider>().Value;
+            var useI = this.Menu.Item("ElEasy.Ryze.Combo.Ignite").IsActive();
 
-            if (Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") <= 2)
+            if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") <= 2)
             {
                 var prediction = spells[Spells.Q].GetPrediction(target);
                 if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
@@ -272,15 +329,6 @@
                     }
                 }
 
-                /*if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-                {
-                    var pred = spells[Spells.Q].GetPrediction(target);
-                    if (pred.Hitchance >= HitChance.High && pred.CollisionObjects.Count == 0)
-                    {
-                        spells[Spells.Q].Cast(target);
-                    }
-                }*/
-
                 if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
                 {
                     spells[Spells.E].CastOnUnit(target);
@@ -290,12 +338,12 @@
                     spells[Spells.W].CastOnUnit(target);
                 }
 
-                if (useR && spells[Spells.R].IsReady() && Player.HealthPercent <= rHp)
+                if (useR && spells[Spells.R].IsReady() && this.Player.HealthPercent <= rHp)
                 {
-                    spells[Spells.R].Cast(Player);
+                    spells[Spells.R].Cast(this.Player);
                 }
             }
-            else if (Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 3)
+            else if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 3)
             {
                 if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
                 {
@@ -327,12 +375,12 @@
                     }
                 }
 
-                if (useR && spells[Spells.R].IsReady() && Player.HealthPercent <= rHp)
+                if (useR && spells[Spells.R].IsReady() && this.Player.HealthPercent <= rHp)
                 {
-                    spells[Spells.R].Cast(Player);
+                    spells[Spells.R].Cast(this.Player);
                 }
             }
-            else if (Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 4)
+            else if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 4)
             {
                 if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
                 {
@@ -355,18 +403,18 @@
                 }
             }
 
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
+            if (this.Player.Distance(target) <= 600 && this.IgniteDamage(target) >= target.Health && useI)
             {
-                Player.Spellbook.CastSpell(Ignite, target);
+                this.Player.Spellbook.CastSpell(Ignite, target);
             }
         }
 
-        private static void OnDraw(EventArgs args)
+        private void OnDraw(EventArgs args)
         {
-            var drawOff = Menu.Item("ElEasy.Ryze.Draw.off").GetValue<bool>();
-            var drawQ = Menu.Item("ElEasy.Ryze.Draw.Q").GetValue<Circle>();
-            var drawW = Menu.Item("ElEasy.Ryze.Draw.W").GetValue<Circle>();
-            var drawE = Menu.Item("ElEasy.Ryze.Draw.E").GetValue<Circle>();
+            var drawOff = this.Menu.Item("ElEasy.Ryze.Draw.off").IsActive();
+            var drawQ = this.Menu.Item("ElEasy.Ryze.Draw.Q").GetValue<Circle>();
+            var drawW = this.Menu.Item("ElEasy.Ryze.Draw.W").GetValue<Circle>();
+            var drawE = this.Menu.Item("ElEasy.Ryze.Draw.E").GetValue<Circle>();
 
             if (drawOff)
             {
@@ -377,7 +425,7 @@
             {
                 if (spells[Spells.Q].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.Q].Range, Color.White);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.Q].Range, Color.White);
                 }
             }
 
@@ -385,7 +433,7 @@
             {
                 if (spells[Spells.E].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.E].Range, Color.White);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.E].Range, Color.White);
                 }
             }
 
@@ -393,12 +441,12 @@
             {
                 if (spells[Spells.W].Level > 0)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.W].Range, Color.White);
+                    Render.Circle.DrawCircle(this.Player.Position, spells[Spells.W].Range, Color.White);
                 }
             }
         }
 
-        private static void OnHarass()
+        private void OnHarass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValid)
@@ -406,12 +454,12 @@
                 return;
             }
 
-            var useQ = Menu.Item("ElEasy.Ryze.Harass.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Ryze.Harass.W").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Ryze.Harass.E").GetValue<bool>();
-            var mana = Menu.Item("ElEasy.Ryze.Harass.Player.Mana").GetValue<Slider>().Value;
+            var useQ = this.Menu.Item("ElEasy.Ryze.Harass.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Ryze.Harass.W").IsActive();
+            var useE = this.Menu.Item("ElEasy.Ryze.Harass.E").IsActive();
+            var mana = this.Menu.Item("ElEasy.Ryze.Harass.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.Mana < mana)
+            if (this.Player.ManaPercent < mana)
             {
                 return;
             }
@@ -436,119 +484,102 @@
             }
         }
 
-        private static void OnJungleclear()
+        private void OnJungleclear()
         {
-            var useQ = Menu.Item("ElEasy.Ryze.JungleClear.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Ryze.JungleClear.W").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Ryze.JungleClear.E").GetValue<bool>();
-            var mana = Menu.Item("ElEasy.Ryze.Clear.Player.Mana").GetValue<Slider>().Value;
+            var useQ = this.Menu.Item("ElEasy.Ryze.JungleClear.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Ryze.JungleClear.W").IsActive();
+            var useE = this.Menu.Item("ElEasy.Ryze.JungleClear.E").IsActive();
+            var mana = this.Menu.Item("ElEasy.Ryze.Clear.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.Mana < mana)
+            if (this.Player.ManaPercent < mana)
             {
                 return;
             }
 
-            var minions = MinionManager.GetMinions(
-                ObjectManager.Player.ServerPosition,
-                spells[Spells.Q].Range,
-                MinionTypes.All,
-                MinionTeam.Neutral,
-                MinionOrderTypes.MaxHealth);
-            if (minions.Count <= 0)
+            var minions =
+                MinionManager.GetMinions(
+                    ObjectManager.Player.ServerPosition,
+                    spells[Spells.Q].Range,
+                    MinionTypes.All,
+                    MinionTeam.Neutral,
+                    MinionOrderTypes.MaxHealth).FirstOrDefault();
+            if (minions == null)
             {
                 return;
             }
 
-            if (useQ && spells[Spells.Q].IsReady())
+            if (useQ && spells[Spells.Q].IsReady() && minions.IsValidTarget(spells[Spells.Q].Range))
             {
-                spells[Spells.Q].Cast(minions[0]);
+                spells[Spells.Q].Cast(minions);
             }
 
-            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(minions[0]))
+            if (useW && spells[Spells.W].IsReady() && minions.IsValidTarget(spells[Spells.W].Range))
             {
-                spells[Spells.W].Cast(minions[0]);
+                spells[Spells.W].Cast(minions);
             }
 
-            if (useE && spells[Spells.E].IsReady())
+            if (useE && spells[Spells.E].IsReady() && minions.IsValidTarget(spells[Spells.E].Range))
             {
-                spells[Spells.E].Cast(minions[0]);
+                spells[Spells.E].Cast(minions);
             }
         }
 
-        private static void OnLaneclear()
+        private void OnLaneclear()
         {
-            var useQ = Menu.Item("ElEasy.Ryze.LaneClear.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Ryze.LaneClear.W").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Ryze.LaneClear.E").GetValue<bool>();
-            var mana = Menu.Item("ElEasy.Ryze.Clear.Player.Mana").GetValue<Slider>().Value;
+            var useQ = this.Menu.Item("ElEasy.Ryze.LaneClear.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Ryze.LaneClear.W").IsActive();
+            var useE = this.Menu.Item("ElEasy.Ryze.LaneClear.E").IsActive();
+            var mana = this.Menu.Item("ElEasy.Ryze.Clear.Player.Mana").GetValue<Slider>().Value;
 
-            if (Player.Mana < mana)
+            if (this.Player.ManaPercent < mana)
             {
                 return;
             }
 
-            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.W].Range);
-            if (minions.Count <= 0)
+            var minions = MinionManager.GetMinions(this.Player.ServerPosition, spells[Spells.W].Range).FirstOrDefault();
+            if (minions == null)
             {
                 return;
             }
 
             if (useW && spells[Spells.W].IsReady())
             {
-                spells[Spells.W].CastOnUnit(minions[0]);
+                spells[Spells.W].CastOnUnit(minions);
             }
 
             if (useQ && spells[Spells.Q].IsReady())
             {
-                var qtarget =
-                    minions.Where(
-                        x =>
-                        x.Distance(Player) < spells[Spells.Q].Range
-                        && spells[Spells.Q].GetPrediction(x).Hitchance >= HitChance.High
-                        && (x.Health < Player.GetSpellDamage(x, SpellSlot.Q)
-                            && !(x.Health < Player.GetAutoAttackDamage(x))))
-                        .OrderByDescending(x => x.Health)
-                        .FirstOrDefault();
-                if (HealthPrediction.GetHealthPrediction(qtarget, (int)0.25)
-                    <= Player.GetSpellDamage(qtarget, SpellSlot.Q))
+                if (HealthPrediction.GetHealthPrediction(minions, (int)0.25)
+                    <= this.Player.GetSpellDamage(minions, SpellSlot.Q))
                 {
-                    spells[Spells.Q].Cast(qtarget);
+                    spells[Spells.Q].Cast(minions);
                 }
             }
 
             if (useE && spells[Spells.E].IsReady())
             {
-                spells[Spells.E].Cast(minions[0]);
+                spells[Spells.E].Cast(minions);
             }
         }
 
-        private static void OnLasthit()
+        private void OnLasthit()
         {
-            var useQ = Menu.Item("ElEasy.Ryze.Lasthit.Q").GetValue<bool>();
-            var useW = Menu.Item("ElEasy.Ryze.Lasthit.W").GetValue<bool>();
-            var useE = Menu.Item("ElEasy.Ryze.Lasthit.E").GetValue<bool>();
+            var useQ = this.Menu.Item("ElEasy.Ryze.Lasthit.Q").IsActive();
+            var useW = this.Menu.Item("ElEasy.Ryze.Lasthit.W").IsActive();
+            var useE = this.Menu.Item("ElEasy.Ryze.Lasthit.E").IsActive();
 
-            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.W].Range);
-            if (minions.Count <= 0)
+            var minions = MinionManager.GetMinions(this.Player.ServerPosition, spells[Spells.W].Range).FirstOrDefault();
+            if (minions == null)
             {
                 return;
             }
 
             if (spells[Spells.Q].IsReady() && useQ)
             {
-                var qtarget =
-                    minions.Where(
-                        x =>
-                        x.Distance(Player) < spells[Spells.Q].Range
-                        && spells[Spells.Q].GetPrediction(x).Hitchance >= HitChance.High
-                        && (x.Health < Player.GetSpellDamage(x, SpellSlot.Q)
-                            && !(x.Health < Player.GetAutoAttackDamage(x))))
-                        .OrderByDescending(x => x.Health)
-                        .FirstOrDefault();
-                if (HealthPrediction.GetHealthPrediction(qtarget, (int)0.25)
-                    <= Player.GetSpellDamage(qtarget, SpellSlot.Q))
+                if (HealthPrediction.GetHealthPrediction(minions, (int)0.25)
+                    <= this.Player.GetSpellDamage(minions, SpellSlot.Q))
                 {
-                    spells[Spells.Q].Cast(qtarget);
+                    spells[Spells.Q].Cast(minions);
                 }
             }
 
@@ -560,7 +591,7 @@
                         allMinions.Where(
                             minion => minion.Health <= ObjectManager.Player.GetSpellDamage(minion, SpellSlot.W)))
                     {
-                        if (minion.IsValidTarget())
+                        if (minion.IsValidTarget(spells[Spells.W].Range))
                         {
                             spells[Spells.W].CastOnUnit(minion);
                             return;
@@ -587,9 +618,9 @@
             }
         }
 
-        private static void OnUpdate(EventArgs args)
+        private void OnUpdate(EventArgs args)
         {
-            if (Player.IsDead)
+            if (this.Player.IsDead)
             {
                 return;
             }
@@ -597,57 +628,56 @@
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    OnCombo();
+                    this.OnCombo();
                     break;
 
                 case Orbwalking.OrbwalkingMode.LastHit:
-                    OnLasthit();
+                    this.OnLasthit();
                     break;
 
                 case Orbwalking.OrbwalkingMode.LaneClear:
-                    OnLaneclear();
-                    OnJungleclear();
+                    this.OnLaneclear();
+                    this.OnJungleclear();
                     break;
 
                 case Orbwalking.OrbwalkingMode.Mixed:
-                    OnHarass();
+                    this.OnHarass();
                     break;
             }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            switch (Orbwalker.ActiveMode)
             {
-                if (Player.Buffs.Count(buf => buf.Name == "Muramana") == 0)
-                {
-                    var muramana = ItemData.Muramana.GetItem();
-                    if (muramana.IsOwned(Player))
+                case Orbwalking.OrbwalkingMode.Combo:
+                    if (this.Player.Buffs.Count(buf => buf.Name == "Muramana") == 0)
                     {
-                        muramana.Cast();
+                        var muramana = ItemData.Muramana.GetItem();
+                        if (muramana.IsOwned(this.Player))
+                        {
+                            muramana.Cast();
+                        }
                     }
-                }
-            }
-            else
-            {
-                if (Player.Buffs.Count(buf => buf.Name == "Muramana") != 0)
-                {
-                    var muramana = ItemData.Muramana.GetItem();
-                    if (muramana.IsOwned(Player))
+                    break;
+                default:
+                    if (this.Player.Buffs.Count(buf => buf.Name == "Muramana") != 0)
                     {
-                        muramana.Cast();
+                        var muramana = ItemData.Muramana.GetItem();
+                        if (muramana.IsOwned(this.Player))
+                        {
+                            muramana.Cast();
+                        }
                     }
-                }
+                    break;
             }
 
-            var autoHarass = Menu.Item("ElEasy.Ryze.AutoHarass.Activated", true).GetValue<KeyBind>().Active;
-            if (autoHarass)
+            if (this.Menu.Item("ElEasy.Ryze.AutoHarass.Activated", true).GetValue<KeyBind>().Active)
             {
-                OnAutoHarass();
+                this.OnAutoHarass();
             }
         }
 
-        private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        private void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            var autoattack = Menu.Item("ElEasy.Ryze.AA").GetValue<bool>();
-            if (autoattack && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (this.Menu.Item("ElEasy.Ryze.AA").IsActive() && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 args.Process = false;
             }
@@ -657,7 +687,7 @@
                 {
                     args.Process =
                         !(spells[Spells.Q].IsReady() || spells[Spells.W].IsReady() || spells[Spells.E].IsReady()
-                          || Player.Distance(args.Target) >= 1000);
+                          || this.Player.Distance(args.Target) >= 1000);
                 }
             }
         }
