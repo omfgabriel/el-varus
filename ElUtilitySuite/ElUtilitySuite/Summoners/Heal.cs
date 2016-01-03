@@ -119,7 +119,7 @@
                 ObjectManager.Get<Obj_AI_Hero>()
                     .Any(
                         x =>
-                        x.IsAlly && this.Menu.Item(string.Format("healon{0}", x.ChampionName)).IsActive()
+                        x.IsAlly && !x.IsDead && this.Menu.Item(string.Format("healon{0}", x.ChampionName)).IsActive()
                         && ((int)(args.Damage / x.MaxHealth * 100)
                             > this.Menu.Item("Heal.Damage").GetValue<Slider>().Value
                             || x.HealthPercent < this.Menu.Item("Heal.HP").GetValue<Slider>().Value)
