@@ -22,7 +22,7 @@ namespace ElSinged
     {
         private static String hero = "Singed";
         public static Obj_AI_Hero Player { get { return ObjectManager.Player; } }
-        public static Orbwalking.Orbwalker Orbwalker;
+        public static Orbwalking.Orbwalker _orbwalker;
 
         private static SpellSlot ignite;
         private static bool useQAgain;
@@ -119,7 +119,7 @@ namespace ElSinged
         {
             var target = TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Magical);
 
-            switch (Orbwalker.ActiveMode)
+            switch (_orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
                     Combo(target);
@@ -208,13 +208,12 @@ namespace ElSinged
 
         private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (_orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 if (spells[Spells.E].IsReady())
                 {
                     spells[Spells.E].Cast();
                 }
-                //args.Process = false;
             }
         }
 
