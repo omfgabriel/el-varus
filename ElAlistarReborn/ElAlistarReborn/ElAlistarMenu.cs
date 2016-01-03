@@ -29,45 +29,55 @@
             Menu.AddSubMenu(targetSelector);
 
             var comboMenu = new Menu("Combo", "Combo");
-            comboMenu.AddItem(new MenuItem("ElAlistar.Combo.Q", "Use Q").SetValue(true));
-            comboMenu.AddItem(new MenuItem("ElAlistar.Combo.W", "Use W").SetValue(true));
-            comboMenu.AddItem(new MenuItem("ElAlistar.Combo.E", "Use E").SetValue(true));
-            comboMenu.AddItem(new MenuItem("ElAlistar.Combo.R", "Use R").SetValue(true));
-            comboMenu.AddItem(
-                new MenuItem("ElAlistar.Combo.Count.Enemies", "Enemies in range for R").SetValue(new Slider(2, 1, 5)));
-            comboMenu.AddItem(new MenuItem("ElAlistar.Combo.HP.Enemies", "R when HP").SetValue(new Slider(55)));
-            comboMenu.AddItem(new MenuItem("ElAlistar.Combo.Ignite", "Use Ignite").SetValue(true));
+            {
+                comboMenu.AddItem(new MenuItem("ElAlistar.Combo.Q", "Use Q").SetValue(true));
+                comboMenu.AddItem(new MenuItem("ElAlistar.Combo.W", "Use W").SetValue(true));
+                comboMenu.AddItem(new MenuItem("ElAlistar.Combo.E", "Use E").SetValue(true));
+                comboMenu.AddItem(new MenuItem("ElAlistar.Combo.R", "Use R").SetValue(true));
+                comboMenu.AddItem(
+                    new MenuItem("ElAlistar.Combo.Count.Enemies", "Enemies in range for R").SetValue(
+                        new Slider(2, 1, 5)));
+                comboMenu.AddItem(new MenuItem("ElAlistar.Combo.HP.Enemies", "R when HP").SetValue(new Slider(55)));
+                comboMenu.AddItem(new MenuItem("ElAlistar.Combo.Ignite", "Use Ignite").SetValue(true));
 
-            comboMenu.AddItem(
-                new MenuItem("ElAlistar.Combo.FlashQ", "Flash Q").SetValue(
-                    new KeyBind("Z".ToCharArray()[0], KeyBindType.Press)));
+                comboMenu.AddItem(
+                    new MenuItem("ElAlistar.Combo.FlashQ", "Flash Q").SetValue(
+                        new KeyBind("Z".ToCharArray()[0], KeyBindType.Press)));
 
-            comboMenu.AddItem(new MenuItem("ElAlistar.Combo.Click", "Left Click [on] TS [off]").SetValue(true));
+                comboMenu.AddItem(new MenuItem("ElAlistar.Combo.Click", "Left Click [on] TS [off]").SetValue(true));
+            }
 
             Menu.AddSubMenu(comboMenu);
 
             var harassMenu = new Menu("Harass", "Harass");
-            harassMenu.AddItem(new MenuItem("ElAlistar.Harass.Q", "Use Q").SetValue(true));
+            {
+                harassMenu.AddItem(new MenuItem("ElAlistar.Harass.Q", "Use Q").SetValue(true));
+            }
 
             Menu.AddSubMenu(harassMenu);
 
             var healMenu = new Menu("Heal", "Heal");
-            healMenu.AddItem(new MenuItem("ElAlistar.Heal.Activated", "Use heal").SetValue(true));
-            healMenu.AddItem(new MenuItem("ElAlistar.Heal.Player.HP", "Player HP percentage").SetValue(new Slider(55)));
+            {
+                healMenu.AddItem(new MenuItem("ElAlistar.Heal.Activated", "Use heal").SetValue(true));
+                healMenu.AddItem(
+                    new MenuItem("ElAlistar.Heal.Player.HP", "Player HP percentage").SetValue(new Slider(55)));
 
-            healMenu.AddItem(new MenuItem("ElAlistar.Heal.Ally.Activated", "Heal ally").SetValue(true));
-            healMenu.AddItem(new MenuItem("ElAlistar.Heal.Ally.HP", "Ally HP percentage").SetValue(new Slider(55)));
-            healMenu.AddItem(new MenuItem("ElAlistar.Heal.Player.Mana", "Mana for heal").SetValue(new Slider(55)));
+                healMenu.AddItem(new MenuItem("ElAlistar.Heal.Ally.Activated", "Heal ally").SetValue(true));
+                healMenu.AddItem(new MenuItem("ElAlistar.Heal.Ally.HP", "Ally HP percentage").SetValue(new Slider(55)));
+                healMenu.AddItem(new MenuItem("ElAlistar.Heal.Player.Mana", "Mana for heal").SetValue(new Slider(55)));
+            }
 
             Menu.AddSubMenu(healMenu);
 
             var miscMenu = new Menu("Misc", "Misc");
-            miscMenu.AddItem(new MenuItem("ElAlistar.Draw.off", "Turn drawings off").SetValue(true));
-            miscMenu.AddItem(new MenuItem("ElAlistar.Draw.Q", "Draw Q").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElAlistar.Draw.W", "Draw W").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("ElAlistar.Draw.E", "Draw E").SetValue(new Circle()));
-            miscMenu.AddItem(new MenuItem("xxx", ""));
-            miscMenu.AddItem(new MenuItem("ElAlistar.Interrupt", "Interrupt spells").SetValue(true));
+            {
+                miscMenu.AddItem(new MenuItem("ElAlistar.Draw.off", "Turn drawings off").SetValue(true));
+                miscMenu.AddItem(new MenuItem("ElAlistar.Draw.Q", "Draw Q").SetValue(new Circle()));
+                miscMenu.AddItem(new MenuItem("ElAlistar.Draw.W", "Draw W").SetValue(new Circle()));
+                miscMenu.AddItem(new MenuItem("ElAlistar.Draw.E", "Draw E").SetValue(new Circle()));
+                miscMenu.AddItem(new MenuItem("xxx", ""));
+                miscMenu.AddItem(new MenuItem("ElAlistar.Interrupt", "Interrupt spells").SetValue(true));
+            }
 
             Menu.AddSubMenu(miscMenu);
 

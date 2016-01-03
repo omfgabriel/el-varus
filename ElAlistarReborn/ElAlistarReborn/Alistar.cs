@@ -82,46 +82,36 @@
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            var gapCloserActive = ElAlistarMenu.Menu.Item("ElAlistar.Interrupt").GetValue<bool>();
-
-            if (gapCloserActive && spells[Spells.W].IsReady()
-                && gapcloser.Sender.Distance(Player) < spells[Spells.W].Range)
+            if (MenuCheck("ElAlistar.Interrupt"))
             {
-                spells[Spells.W].Cast(gapcloser.Sender);
-            }
+                if (spells[Spells.W].IsReady() && gapcloser.Sender.Distance(Player) < spells[Spells.W].Range)
+                {
+                    spells[Spells.W].Cast(gapcloser.Sender);
+                }
 
-            if (gapCloserActive && !spells[Spells.W].IsReady() && spells[Spells.Q].IsReady()
-                && gapcloser.Sender.Distance(Player) < spells[Spells.Q].Range)
-            {
-                spells[Spells.Q].Cast(gapcloser.Sender);
+                if (!spells[Spells.W].IsReady() && spells[Spells.Q].IsReady()
+                    && gapcloser.Sender.Distance(Player) < spells[Spells.Q].Range)
+                {
+                    spells[Spells.Q].Cast(gapcloser.Sender);
+                }
             }
         }
 
-        private static float GetWDamage(Obj_AI_Base enemy)
+        private static bool HasEnoughMana()
         {
-            var damage = 0d;
-
-            if (spells[Spells.W].IsReady())
-            {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.W);
-            }
-
-            return (float)damage;
+            return Player.Mana
+                   > Player.Spellbook.GetSpell(SpellSlot.Q).ManaCost + Player.Spellbook.GetSpell(SpellSlot.W).ManaCost;
         }
 
         private static void HealManager()
         {
-            var useHeal = ElAlistarMenu.Menu.Item("ElAlistar.Heal.Activated").IsActive();
-            var useHealAlly = ElAlistarMenu.Menu.Item("ElAlistar.Heal.Ally.Activated").IsActive();
-            var playerMana = ElAlistarMenu.Menu.Item("ElAlistar.Heal.Player.Mana").GetValue<Slider>().Value;
-
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || Player.IsRecalling() || Player.InFountain()
-                || Player.Mana < playerMana)
+            if (Player.Mana < ElAlistarMenu.Menu.Item("ElAlistar.Heal.Player.Mana").GetValue<Slider>().Value) return;
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || Player.IsRecalling() || Player.InFountain())
             {
                 return;
             }
 
-            if (!spells[Spells.E].IsReady() || !useHeal)
+            if (!spells[Spells.E].IsReady() || !MenuCheck("ElAlistar.Heal.Activated"))
             {
                 return;
             }
@@ -136,7 +126,7 @@
 
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsAlly && !h.IsMe && !h.IsDead))
             {
-                if (useHealAlly && (hero.Health / hero.MaxHealth) * 100 <= allyHp && spells[Spells.E].IsInRange(hero))
+                if (MenuCheck("ElAlistar.Heal.Ally.Activated") && (hero.Health / hero.MaxHealth) * 100 <= allyHp && spells[Spells.E].IsInRange(hero))
                 {
                     spells[Spells.E].Cast();
                 }
@@ -174,61 +164,87 @@
             }
         }
 
+        private static bool MenuCheck(string menuName)
+        {
+            return ElAlistarMenu.Menu.Item(menuName).IsActive();
+        }
+
         private static void OnCombo()
         {
             // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
             var target = TargetSelector.GetSelectedTarget() != null
                              ? TargetSelector.GetSelectedTarget()
-                             : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
+                             : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Magical);
 
-            if (target == null || !target.IsValidTarget())
+            if (target == null)
             {
                 return;
             }
 
-            var useQ = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Q").IsActive();
-            var useW = ElAlistarMenu.Menu.Item("ElAlistar.Combo.W").IsActive();
-            var useR = ElAlistarMenu.Menu.Item("ElAlistar.Combo.R").IsActive();
-            var useI = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Ignite").IsActive();
-            var enemiesInRange = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Count.Enemies").GetValue<Slider>().Value;
-            var rHealth = ElAlistarMenu.Menu.Item("ElAlistar.Combo.HP.Enemies").GetValue<Slider>().Value;
-
-            var qmana = Player.Spellbook.GetSpell(SpellSlot.Q);
-            var wmana = Player.Spellbook.GetSpell(SpellSlot.W);
-
-            if (target.IsValidTarget(spells[Spells.W].Range))
+            if (MenuCheck("ElAlistar.Combo.Q") && MenuCheck("ElAlistar.Combo.W") && HasEnoughMana())
             {
-                if (useQ && useW && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady()
-                    && Player.Mana > qmana.ManaCost + wmana.ManaCost)
+                if (!spells[Spells.Q].IsReady() && !spells[Spells.W].IsReady())
                 {
-                    if (spells[Spells.W].Cast(target).IsCasted())
-                    {
-                        var comboTime = Math.Max(0, Player.Distance(target) - 365) / 1.2f - 25;
-                        Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
-                    }
+                    return;
+                }
+
+                if (spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
+                {
+                    spells[Spells.W].Cast(target);
+                }
+
+                if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                {
+                    var comboTime = Math.Max(0, Player.Distance(target) - 365) / 1.2f - 25;
+                    Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
                 }
             }
 
-            if (useR && Player.CountEnemiesInRange(spells[Spells.W].Range) >= enemiesInRange
-                && (Player.Health / Player.MaxHealth) * 100 >= rHealth)
+            if (MenuCheck("ElAlistar.Combo.Q"))
             {
-                spells[Spells.R].Cast();
+                if (target.IsValidTarget(spells[Spells.Q].Range))
+                {
+                    spells[Spells.Q].Cast();
+                }
+
+                else if (spells[Spells.Q].GetDamage(target) > target.Health)
+                {
+                    spells[Spells.Q].Cast();
+                }
             }
 
-            if (spells[Spells.W].IsReady() && !spells[Spells.Q].IsReady() && spells[Spells.W].IsInRange(target)
-                && GetWDamage(target) > target.Health)
+            if (MenuCheck("ElAlistar.Combo.W"))
             {
-                spells[Spells.W].Cast();
+                if (spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range)
+                    && spells[Spells.W].GetDamage(target) > target.Health)
+                {
+                    spells[Spells.W].Cast();
+                }
             }
 
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
+            if (MenuCheck("ElAlistar.Combo.R"))
             {
-                Player.Spellbook.CastSpell(ignite, target);
+                if (Player.CountEnemiesInRange(spells[Spells.W].Range)
+                    >= ElAlistarMenu.Menu.Item("ElAlistar.Combo.Count.Enemies").GetValue<Slider>().Value
+                    && (Player.Health / Player.MaxHealth) * 100
+                    >= ElAlistarMenu.Menu.Item("ElAlistar.Combo.HP.Enemies").GetValue<Slider>().Value)
+                {
+                    spells[Spells.R].Cast();
+                }
+            }
+
+            if (MenuCheck("ElAlistar.Combo.Ignite"))
+            {
+                if (target.IsValidTarget(600f) && IgniteDamage(target) >= target.Health)
+                {
+                    Player.Spellbook.CastSpell(ignite, target);
+                }
             }
         }
 
         private static void OnHarass()
         {
+            // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
             var target = TargetSelector.GetSelectedTarget() != null
                              ? TargetSelector.GetSelectedTarget()
                              : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
