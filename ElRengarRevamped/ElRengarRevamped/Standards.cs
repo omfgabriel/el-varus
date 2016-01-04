@@ -6,8 +6,6 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    using ItemData = LeagueSharp.Common.Data.ItemData;
-
     public class Standards
     {
         #region Static Fields
@@ -22,7 +20,8 @@
                                                                                  Spells.Q,
                                                                                  new Spell(
                                                                                  SpellSlot.Q,
-                                                                                 Orbwalking.GetRealAutoAttackRange(Player) + 100) // + 150
+                                                                                 Orbwalking.GetRealAutoAttackRange(
+                                                                                     Player) + 100) // + 150
                                                                              },
                                                                              { Spells.W, new Spell(SpellSlot.W, 500) },
                                                                              { Spells.E, new Spell(SpellSlot.E, 1000) },
@@ -129,22 +128,6 @@
             }
 
             Smite = Player.GetSpellSlot("summonersmite");
-        }
-
-        protected static void UseHydra()
-        {
-            if (Player.IsWindingUp)
-            {
-                return;
-            }
-
-            if (!ItemData.Tiamat_Melee_Only.GetItem().IsReady() && !ItemData.Ravenous_Hydra_Melee_Only.GetItem().IsReady())
-            {
-                return;
-            }
-
-            ItemData.Tiamat_Melee_Only.GetItem().Cast();
-            ItemData.Ravenous_Hydra_Melee_Only.GetItem().Cast();
         }
 
         #endregion

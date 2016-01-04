@@ -23,8 +23,6 @@
     {
         #region Static Fields
 
-        public static bool JustDoIt;
-
         public static int LastAutoAttack, Lastrengarq;
 
         public static int LastQ, LastE, LastW, LastSpell;
@@ -176,13 +174,10 @@
                 return;
             }
 
-            if (sender.IsMe)
-            {
-                Orbwalking.LastAATick = Utils.GameTimeTickCount - Game.Ping / 2 - (int)Player.AttackCastDelay * 1000
-                                        + args.Duration;
-            }
+            Orbwalking.LastAATick = Utils.GameTimeTickCount - Game.Ping / 2 - (int)Player.AttackCastDelay * 1000
+                                    + args.Duration;
 
-            if (sender.IsMe && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 if (Ferocity == 5)
                 {
@@ -199,28 +194,31 @@
                             {
                                 spells[Spells.Q].Cast();
                             }
+
+                            if (target.IsValidTarget(spells[Spells.Q].Range))
+                            {
+                                Utility.DelayAction.Add(
+                                    50,
+                                    () =>
+                                        {
+                                            if (target.IsValidTarget(spells[Spells.W].Range))
+                                            {
+                                                spells[Spells.W].Cast();
+                                            }
+
+                                            spells[Spells.E].Cast(target);
+                                            ActiveModes.CastItems(target);
+                                        });
+                            }
+
                             break;
-                    }
-                }
-
-                if (JustDoIt)
-                {
-                    if (spells[Spells.E].IsReady())
-                    {
-                        spells[Spells.E].Cast(target);
-                    }
-
-                    if (!spells[Spells.E].IsReady() && spells[Spells.Q].IsReady()
-                        && target.IsValidTarget(spells[Spells.Q].Range))
-                    {
-                        spells[Spells.Q].Cast();
                     }
                 }
 
                 switch (IsListActive("Combo.Prio").SelectedIndex)
                 {
                     case 0:
-                        if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range) && Ferocity == 5)
+                        if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
                         {
                             spells[Spells.E].Cast(target);
                         }
@@ -229,33 +227,9 @@
                     case 2:
                         if (IsActive("Beta.Cast.Q") && RengarR)
                         {
-                            spells[Spells.E].Cast(target);
+                            spells[Spells.Q].Cast();
                         }
-
-                        spells[Spells.Q].Cast();
-
-                        if (target.IsValidTarget(spells[Spells.Q].Range))
-                        {
-                            Utility.DelayAction.Add(
-                                50,
-                                () =>
-                                    {
-                                        if (target.IsValidTarget(spells[Spells.W].Range))
-                                        {
-                                            spells[Spells.W].Cast();
-                                        }
-
-                                        spells[Spells.E].Cast(target);
-                                        UseHydra();
-                                    });
-                        }
-
                         break;
-                }
-
-                if (target.IsValidTarget(spells[Spells.W].Range))
-                {
-                    UseHydra();
                 }
             }
         }
@@ -369,35 +343,17 @@
         {
             if (sender.IsMe)
             {
-                if (!args.SData.Name.ToLower().Contains("attack"))
-                {
-                    return;
-                }
-
-                if (args.SData.Name == "RengarR")
+                if (args.SData.Name.ToLower() == "rengarr")
                 {
                     if (Items.CanUseItem(3142))
                     {
-                        Utility.DelayAction.Add(2500, () => Items.UseItem(3142));
+                        Utility.DelayAction.Add(2000, () => Items.UseItem(3142));
                     }
                 }
 
-                if (args.SData.Name.Contains("Attack") && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                if (!args.SData.Name.ToLower().Contains("attack"))
                 {
-                    //Tiamat Hydra cast after AA  - Credits to Kurisu 
-                    Utility.DelayAction.Add(
-                        50 + (int)(Player.AttackDelay * 100) + Game.Ping / 2 + 10,
-                        delegate
-                            {
-                                if (Items.CanUseItem(3077))
-                                {
-                                    Items.UseItem(3077);
-                                }
-                                if (Items.CanUseItem(3074))
-                                {
-                                    Items.UseItem(3074);
-                                }
-                            });
+                    return;
                 }
 
                 switch (args.SData.Name.ToLower())
@@ -446,10 +402,6 @@
                     case Orbwalking.OrbwalkingMode.Mixed:
                         ActiveModes.Harass();
                         break;
-
-                    case Orbwalking.OrbwalkingMode.LastHit:
-                        ActiveModes.LastHit();
-                        break;
                 }
 
                 if (IsActive("Beta.Cast.Q") && IsListActive("Combo.Prio").SelectedIndex == 2)
@@ -476,7 +428,6 @@
                             Utility.DelayAction.Add(
                                 MenuInit.Menu.Item("Beta.Cast.Q.Delay").GetValue<Slider>().Value,
                                 () => spells[Spells.Q].Cast());
-                            JustDoIt = true;
                         }
                     }
                 }
