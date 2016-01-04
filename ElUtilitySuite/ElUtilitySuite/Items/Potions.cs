@@ -130,8 +130,7 @@
         {
             try
             {
-                if (!this.Menu.Item("Potions.Activated").IsActive() || this.Player.InFountain()
-                    || this.Player.IsRecalling() || Entry.Player.IsDead)
+                if (!this.Menu.Item("Potions.Activated").IsActive() || this.Player.IsDead || this.Player.InFountain() || this.Player.IsRecalling())
                 {
                     return;
                 }
