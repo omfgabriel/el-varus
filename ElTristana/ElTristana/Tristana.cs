@@ -228,13 +228,16 @@ namespace ElTristana
             if (spells[Spells.E].IsReady() && IsActive("ElTristana.Harass.E")
                 && Player.ManaPercent > MenuInit.Menu.Item("ElTristana.Harass.E.Mana").GetValue<Slider>().Value)
             {
-                foreach (var enemy in from enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy)
-                                      let getEnemies =
-                                          MenuInit.Menu.Item("ElTristana.E.On.Harass" + enemy.CharData.BaseSkinName)
-                                      where getEnemies != null && getEnemies.GetValue<bool>()
-                                      select enemy)
+                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
                 {
-                    spells[Spells.E].Cast(enemy);
+                    if (hero.IsEnemy)
+                    {
+                        MenuItem getEnemies = MenuInit.Menu.Item("ElTristana.E.On.Harass" + hero.CharData.BaseSkinName);
+                        if (getEnemies != null && getEnemies.GetValue<bool>())
+                        {
+                            spells[Spells.E].Cast(hero);
+                        }
+                    }
                 }
             }
 
