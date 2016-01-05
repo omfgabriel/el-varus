@@ -247,8 +247,6 @@
                          };
         }
 
-        
-
         #endregion
 
         #region Public Properties
