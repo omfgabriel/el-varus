@@ -191,8 +191,8 @@
                                  },
                              new Entry
                                  {
-                                     ChampionName = "Vi", Range = 250f, Slot = SpellSlot.Q, Stage = 0,
-                                     TargetType = SpellDataTargetType.Location
+                                     ChampionName = "Vi", Range = 325f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Self
                                  },
                              new Entry
                                  {
