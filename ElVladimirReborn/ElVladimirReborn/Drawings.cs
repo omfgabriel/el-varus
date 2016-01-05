@@ -12,11 +12,11 @@
 
         public static void OnDraw(EventArgs args)
         {
-            var drawOff = ElVladimirMenu._menu.Item("ElVladimir.Draw.off").GetValue<bool>();
-            var drawQ = ElVladimirMenu._menu.Item("ElVladimir.Draw.Q").GetValue<Circle>();
-            var drawW = ElVladimirMenu._menu.Item("ElVladimir.Draw.W").GetValue<Circle>();
-            var drawE = ElVladimirMenu._menu.Item("ElVladimir.Draw.E").GetValue<Circle>();
-            var drawR = ElVladimirMenu._menu.Item("ElVladimir.Draw.R").GetValue<Circle>();
+            var drawOff = ElVladimirMenu.Menu.Item("ElVladimir.Draw.off").GetValue<bool>();
+            var drawQ = ElVladimirMenu.Menu.Item("ElVladimir.Draw.Q").GetValue<Circle>();
+            var drawW = ElVladimirMenu.Menu.Item("ElVladimir.Draw.W").GetValue<Circle>();
+            var drawE = ElVladimirMenu.Menu.Item("ElVladimir.Draw.E").GetValue<Circle>();
+            var drawR = ElVladimirMenu.Menu.Item("ElVladimir.Draw.R").GetValue<Circle>();
             //var drawText = ElVladimirMenu._menu.Item("ElVladimir.Draw.Text").GetValue<bool>();
             //var rBool = ElVladimirMenu._menu.Item("ElVladimir.AutoHarass.Activated").GetValue<KeyBind>().Active;
 
