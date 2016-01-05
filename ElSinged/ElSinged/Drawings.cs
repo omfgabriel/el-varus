@@ -13,10 +13,10 @@ namespace ElSinged
     {
         public static void Drawing_OnDraw(EventArgs args)
         {
-            var drawOff = ElSingedMenu._menu.Item("ElSinged.Draw.off").GetValue<bool>();
-            var drawQ = ElSingedMenu._menu.Item("ElSinged.Draw.Q").GetValue<Circle>();
-            var drawW = ElSingedMenu._menu.Item("ElSinged.Draw.W").GetValue<Circle>();
-            var drawE = ElSingedMenu._menu.Item("ElSinged.Draw.E").GetValue<Circle>();
+            var drawOff = ElSingedMenu.Menu.Item("ElSinged.Draw.off").GetValue<bool>();
+            var drawQ = ElSingedMenu.Menu.Item("ElSinged.Draw.Q").GetValue<Circle>();
+            var drawW = ElSingedMenu.Menu.Item("ElSinged.Draw.W").GetValue<Circle>();
+            var drawE = ElSingedMenu.Menu.Item("ElSinged.Draw.E").GetValue<Circle>();
 
             if (drawOff)
                 return;
