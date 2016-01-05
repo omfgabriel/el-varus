@@ -118,9 +118,136 @@
                                  {
                                      ChampionName = "Shen", Range = 520f, Slot = SpellSlot.E, Stage = 0,
                                      TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Diana", Range = 895f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Alistar", Range = 365f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Nocturne", Range = 1200f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Maokai", Range = 600f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Twitch", Range = 950f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Self
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "JarvanIV", Range = 770f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Rengar", Range = 325f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Aatrox", Range = 650f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Amumu", Range = 1100f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Gragas", Range = 600f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Trundle", Range = 325f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Fiddlesticks", Range = 750f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Jax", Range = 700f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Ekko", Range = 1075f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Vi", Range = 250f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Shaco", Range = 625f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Warwick", Range = 400f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Sejuani", Range = 625f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Tryndamere", Range = 660f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Zac", Range = 550f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "TahmKench", Range = 880f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Quinn", Range = 1025f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Poppy", Range = 525f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Kayle", Range = 650f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Hecarim", Range = 350f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
                                  }
                          };
         }
+
+        
 
         #endregion
 
@@ -272,19 +399,23 @@
                 Spells.Where(
                     x => x.ChampionName.Equals(Player.ChampionName, StringComparison.InvariantCultureIgnoreCase)))
             {
-                if (Player.GetSpellDamage(mob, spell.Slot, spell.Stage) + damage >= mob.Health)
+                if (!(Player.GetSpellDamage(mob, spell.Slot, spell.Stage) + damage >= mob.Health)
+                    || !(mob.Distance(Player.ServerPosition) <= spell.Range + mob.BoundingRadius + Player.BoundingRadius))
                 {
-                    if (mob.Distance(Player.ServerPosition) <= spell.Range + mob.BoundingRadius + Player.BoundingRadius)
-                    {
-                        if (spell.TargetType == SpellDataTargetType.Unit)
-                        {
-                            Player.Spellbook.CastSpell(spell.Slot, mob);
-                        }
-                        else if (spell.TargetType == SpellDataTargetType.Self)
-                        {
-                            Player.Spellbook.CastSpell(spell.Slot);
-                        }
-                    }
+                    continue;
+                }
+
+                if (spell.TargetType == SpellDataTargetType.Unit)
+                {
+                    Player.Spellbook.CastSpell(spell.Slot, mob);
+                }
+                else if (spell.TargetType == SpellDataTargetType.Self)
+                {
+                    Player.Spellbook.CastSpell(spell.Slot);
+                }
+                else if (spell.TargetType == SpellDataTargetType.Location)
+                {
+                    Player.Spellbook.CastSpell(spell.Slot, mob.ServerPosition);
                 }
             }
         }
