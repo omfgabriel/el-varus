@@ -117,6 +117,136 @@
                                      ChampionName = "Shen", Range = 520f, Slot = SpellSlot.E, Stage = 0,
                                      TargetType = SpellDataTargetType.Unit
                                  },
+                             new Smite
+                                 {
+                                     ChampionName = "Diana", Range = 895f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Alistar", Range = 365f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Nocturne", Range = 1200f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Maokai", Range = 600f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Twitch", Range = 950f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Self
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "JarvanIV", Range = 770f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Rengar", Range = 325f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Aatrox", Range = 650f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Amumu", Range = 1100f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Gragas", Range = 600f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Trundle", Range = 325f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Fiddlesticks", Range = 750f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Jax", Range = 700f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Ekko", Range = 1075f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Vi", Range = 325f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Self
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Shaco", Range = 625f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Warwick", Range = 400f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Sejuani", Range = 625f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Tryndamere", Range = 660f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Zac", Range = 550f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "TahmKench", Range = 880f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Quinn", Range = 1025f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Location
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Poppy", Range = 525f, Slot = SpellSlot.E, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Kayle", Range = 650f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Hecarim", Range = 350f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Smite
+                                 {
+                                     ChampionName = "Renekton", Range = 350f, Slot = SpellSlot.W, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
+                                 }
                          };
         }
 
@@ -299,6 +429,10 @@
                         else if (spell.TargetType == SpellDataTargetType.Self)
                         {
                             this.Player.Spellbook.CastSpell(spell.Slot);
+                        }
+                        else if (spell.TargetType == SpellDataTargetType.Location)
+                        {
+                            this.Player.Spellbook.CastSpell(spell.Slot, mob.ServerPosition);
                         }
                     }
                 }
