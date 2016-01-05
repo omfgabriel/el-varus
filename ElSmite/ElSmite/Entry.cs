@@ -243,6 +243,11 @@
                                  {
                                      ChampionName = "Hecarim", Range = 350f, Slot = SpellSlot.Q, Stage = 0,
                                      TargetType = SpellDataTargetType.Unit
+                                 },
+                             new Entry
+                                 {
+                                     ChampionName = "Renekton", Range = 350f, Slot = SpellSlot.W, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
                                  }
                          };
         }
