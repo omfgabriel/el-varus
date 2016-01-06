@@ -716,6 +716,11 @@
         {
             try
             {
+                if (Player.IsDead)
+                {
+                    return;
+                }
+
                 switch (Orbwalker.ActiveMode)
                 {
                     case Orbwalking.OrbwalkingMode.Combo:
