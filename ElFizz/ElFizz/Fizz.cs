@@ -578,7 +578,7 @@
                     return;
                 }
 
-                if (Player.ManaPercent < Menu.Item("ElFizz.jungleclear.Mana").GetValue<Slider>().Value)
+                if (Player.ManaPercent > Menu.Item("ElFizz.jungleclear.Mana").GetValue<Slider>().Value)
                 {
                     return;
                 }
@@ -624,7 +624,10 @@
                         Q.Cast(enemy);
                         return;
                     }
-                    RLogicKill();
+                    if (IsActive("ElFizz.Killsteal.R"))
+                    {
+                        RLogicKill();
+                    }        
                 }
             }
             catch (Exception exception)
