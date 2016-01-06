@@ -145,18 +145,25 @@ namespace ElTristana
                        HeroManager.Enemies.Find(x => x.HasBuff("TristanaECharge") && x.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)));
             var target = eTarget ?? TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
 
-            if (target == null || !target.IsValidTarget()) return;
+            if (!target.IsValidTarget())
+            {
+                return;
+            }
+
             if (eTarget != null && IsActive("ElTristana.Combo.Focus.E"))
             {
                 TargetSelector.SetTarget(target);
-                Hud.SelectedUnit = target;
+                if (Hud.SelectedUnit != null)
+                {
+                    Hud.SelectedUnit = (Obj_AI_Hero)target;
+                }
                 Console.WriteLine("Selected target: {0}", target.ChampionName);
             }
 
             if (spells[Spells.E].IsReady() && IsActive("ElTristana.Combo.E")
                     && Player.ManaPercent > MenuInit.Menu.Item("ElTristana.Combo.E.Mana").GetValue<Slider>().Value)
             {
-                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+                foreach (var hero in HeroManager.Enemies.OrderByDescending(x => x.Health))
                 {
                     if (hero.IsEnemy)
                     {
@@ -176,40 +183,27 @@ namespace ElTristana
 
             UseItems(target);
 
+            if (spells[Spells.R].IsReady() && IsActive("ElTristana.Combo.R"))
+            {
+                if (spells[Spells.R].GetDamage(target) > target.Health)
+                {
+                    spells[Spells.R].Cast(target);
+                }
+            }
+
+            if (IsECharged(target) && IsActive("ElTristana.Combo.Always.RE"))
+            {
+                if (spells[Spells.R].GetDamage(target) + spells[Spells.E].GetDamage(target) * ((0.3 * target.GetBuffCount("TristanaECharge") + 1)) > target.Health)
+                {
+                    spells[Spells.R].Cast(target);
+                }
+            }
+
+
             if (spells[Spells.Q].IsReady() && IsActive("ElTristana.Combo.Q")
                 && target.IsValidTarget(spells[Spells.E].Range))
             {
                 spells[Spells.Q].Cast();
-            }
-
-            if (spells[Spells.R].IsReady() && IsActive("ElTristana.Combo.R"))
-            {
-                if (IsECharged(target) && IsActive("ElTristana.Combo.Always.RE"))
-                {
-                    if (IsBusterShotable(target))
-                    {
-                        spells[Spells.R].Cast(target);
-                    }
-                }
-
-                if (GetExecuteDamage(target) > target.Health + 50)
-                {
-                    if (IsActive("ElTristana.Combo.Always.R") && GetExecuteDamage(target) > target.Health + 50)
-                    {
-                        spells[Spells.R].Cast(target);
-                    }
-
-                    if (IsECharged(target) && GetExecuteDamage(target) > target.Health + 50)
-                    {
-                        spells[Spells.R].Cast(target);
-                    }
-
-                    if (spells[Spells.R].GetDamage(target) > target.Health + 50
-                        || GetExecuteDamage(target) > target.Health + 50)
-                    {
-                        spells[Spells.R].Cast(target);
-                    }
-                }
             }
         }
 
@@ -228,7 +222,7 @@ namespace ElTristana
             if (spells[Spells.E].IsReady() && IsActive("ElTristana.Harass.E")
                 && Player.ManaPercent > MenuInit.Menu.Item("ElTristana.Harass.E.Mana").GetValue<Slider>().Value)
             {
-                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+                foreach (var hero in HeroManager.Enemies.OrderByDescending(x => x.Health))
                 {
                     if (hero.IsEnemy)
                     {
@@ -289,8 +283,7 @@ namespace ElTristana
                 && Player.ManaPercent > MenuInit.Menu.Item("ElTristana.LaneClear.E.Mana").GetValue<Slider>().Value)
             {
                 foreach (var minion in
-                    ObjectManager.Get<Obj_AI_Minion>()
-                        .Where(minion => minion.IsValidTarget(Orbwalking.GetRealAutoAttackRange(minion))))
+                    ObjectManager.Get<Obj_AI_Minion>().OrderByDescending(m => m.Health))
                 {
                     spells[Spells.E].Cast(minion);
                 }
@@ -470,17 +463,6 @@ namespace ElTristana
 
         #region
 
-        private static bool IsBusterShotable(this Obj_AI_Base target)
-        {
-            var hero = target as Obj_AI_Hero;
-            return GetExecuteDamage(target) + spells[Spells.R].GetDamage(target) > GetHealth(target) && (hero == null);
-        }
-
-        private static float GetHealth(Obj_AI_Base target)
-        {
-            return target.Health;
-        }
-
         private static BuffInstance GetECharge(this Obj_AI_Base target)
         {
             return target.Buffs.Find(x => x.DisplayName == "TristanaECharge");
@@ -489,22 +471,6 @@ namespace ElTristana
         private static bool IsECharged(this Obj_AI_Base target)
         {
             return target.GetECharge() != null;
-        }
-
-        private static double GetExecuteDamage(Obj_AI_Base target)
-        {
-            if (target.GetBuffCount("TristanaECharge") != 0)
-            {
-                return (spells[Spells.E].GetDamage(target) * ((0.3 * target.GetBuffCount("TristanaECharge") + 1))
-                        + (Player.TotalAttackDamage()) + (Player.TotalMagicalDamage * 0.5));
-            }
-
-            return 0;
-        }
-
-        private static float TotalAttackDamage(this Obj_AI_Base target)
-        {
-            return target.BaseAttackDamage + target.FlatPhysicalDamageMod;
         }
 
         #endregion
