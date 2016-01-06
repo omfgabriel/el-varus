@@ -18,6 +18,18 @@
 
         #endregion
 
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets or sets the slot.
+        /// </summary>
+        /// <value>
+        ///     The Smitespell
+        /// </value>
+        public static Spell IgniteSpell { get; set; }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
@@ -114,6 +126,18 @@
                 {
                     return;
                 }
+
+                var igniteSlot = Player.GetSpell(SpellSlot.Summoner1).Name.ToLower().Contains("summonerdot")
+                                     ? SpellSlot.Summoner1
+                                     : Player.GetSpell(SpellSlot.Summoner2).Name.ToLower().Contains("summonerdot")
+                                           ? SpellSlot.Summoner2
+                                           : SpellSlot.Unknown;
+
+                if (igniteSlot != SpellSlot.Unknown)
+                {
+                    IgniteSpell = new Spell(igniteSlot, 600f);
+                }
+
 
                 Q = new Spell(SpellSlot.Q, 550f);
                 W = new Spell(SpellSlot.W, Orbwalking.GetRealAutoAttackRange(Player));
@@ -263,7 +287,7 @@
 
                 var jungleclearMenu = new Menu("Jungleclear", "Jungleclear");
                 {
-                    jungleclearMenu.AddItem(new MenuItem("ElFizz.jgaungleclear.Q", "Use Q").SetValue(true));
+                    jungleclearMenu.AddItem(new MenuItem("ElFizz.jungleclear.Q", "Use Q").SetValue(true));
                     jungleclearMenu.AddItem(new MenuItem("ElFizz.jungleclear.E", "Use E").SetValue(true));
                     jungleclearMenu.AddItem(
                         new MenuItem("ElFizz.laneclear.minionshit", "Minimum minions killable (E)").SetValue(
@@ -280,6 +304,7 @@
                     killstealMenu.AddItem(new MenuItem("ElFizz.killsteal.Tower", "Don't Q under tower").SetValue(true));
                     killstealMenu.AddItem(new MenuItem("ElFizz.Killsteal.Q", "Use Q").SetValue(true));
                     killstealMenu.AddItem(new MenuItem("ElFizz.Killsteal.R", "Use R").SetValue(true));
+                    killstealMenu.AddItem(new MenuItem("ElFizz.Ignite", "Use Ignite").SetValue(true));
                 }
 
                 Menu.AddSubMenu(killstealMenu);
@@ -326,6 +351,30 @@
             }
 
             return new Vector3();
+        }
+
+        /// <summary>
+        ///     The ignite killsteal logic
+        /// </summary>
+        private static void HandleIgnite()
+        {
+            try
+            {
+                var kSableEnemy =
+                    HeroManager.Enemies.FirstOrDefault(
+                        hero =>
+                        hero.IsValidTarget(550) && ShieldCheck(hero) && !hero.IsZombie
+                        && Player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite) >= hero.Health);
+
+                if (kSableEnemy != null && IgniteSpell.Slot != SpellSlot.Unknown)
+                {
+                    Player.Spellbook.CastSpell(IgniteSpell.Slot, kSableEnemy);
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
         }
 
         /// <summary>
@@ -393,7 +442,7 @@
                                     Q.Cast(target);
                                     return;
                                 }
-
+                                
                                 RCastLogic(target);
                             }
                         }
@@ -421,9 +470,24 @@
                         break;
                 }
 
+
                 if (IsActive("ElFizz.Combo.Q") && Q.IsReady() && target.IsValidTarget(Q.Range))
                 {
                     Q.Cast(target);
+                }
+
+                if (IsActive("ElFizz.Combo.Q") && IsActive("ElFizz.Ignite") && IgniteSpell.Slot != SpellSlot.Unknown)
+                {
+                    if (Q.GetDamage(target) + IgniteSpell.GetDamage(target) > target.Health)
+                    {
+                        if (target.IsValidTarget(Q.Range))
+                        {
+                            if (Q.Cast(target).IsCasted())
+                            {
+                                Player.Spellbook.CastSpell(IgniteSpell.Slot, target);
+                            }
+                        }
+                    }
                 }
 
                 if (IsActive("ElFizz.Combo.W") && W.IsReady() && !Q.IsReady() && !E.IsReady()
@@ -578,7 +642,7 @@
                     return;
                 }
 
-                if (Player.ManaPercent > Menu.Item("ElFizz.jungleclear.Mana").GetValue<Slider>().Value)
+                if (Player.ManaPercent < Menu.Item("ElFizz.jungleclear.Mana").GetValue<Slider>().Value)
                 {
                     return;
                 }
@@ -627,7 +691,7 @@
                     if (IsActive("ElFizz.Killsteal.R"))
                     {
                         RLogicKill();
-                    }        
+                    }
                 }
             }
             catch (Exception exception)
@@ -745,6 +809,11 @@
                     OnKillsteal();
                 }
 
+                if (IsActive("ElFizz.Ignite"))
+                {
+                    HandleIgnite();
+                }
+
                 if (Menu.Item("ElFizz.Flee.Key").GetValue<KeyBind>().Active)
                 {
                     OnFlee();
@@ -812,6 +881,25 @@
             {
                 Console.WriteLine(e);
             }
+        }
+
+        /// <summary>
+        ///     The shield checker
+        /// </summary>
+        private static bool ShieldCheck(Obj_AI_Base hero)
+        {
+            try
+            {
+                return !hero.HasBuff("summonerdot") || !hero.HasBuff("summonerbarrier") || !hero.HasBuff("BlackShield")
+                       || !hero.HasBuff("SivirShield") || !hero.HasBuff("BansheesVeil")
+                       || !hero.HasBuff("ShroudofDarkness");
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+
+            return false;
         }
 
         /// <summary>
