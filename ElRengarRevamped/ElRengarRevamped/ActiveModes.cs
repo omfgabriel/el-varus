@@ -34,7 +34,6 @@ namespace ElRengarRevamped
                     {
                         Hud.SelectedUnit = Rengar.SelectedEnemy;
                     }
-                    Console.WriteLine("Selected target: {0}", target.ChampionName);
                 }
 
                 CastItems(target);
