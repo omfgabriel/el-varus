@@ -192,7 +192,7 @@
                 spells[Spells.E].Range,
                 MinionTypes.All,
                 MinionTeam.Enemy,
-                MinionOrderTypes.MaxHealth);
+                MinionOrderTypes.MaxHealth).OrderByDescending(m => this.GetBonusDmg(m) > m.Health);
 
             foreach (var minion in minions)
             {
@@ -341,22 +341,23 @@
             var countEnemies = this.Menu.Item("ElEasy.Nasus.Combo.Count.R").GetValue<Slider>().Value;
             var playerHp = this.Menu.Item("ElEasy.Nasus.Combo.HP").GetValue<Slider>().Value;
 
+            if (useW && spells[Spells.W].IsReady())
+            {
+                spells[Spells.W].Cast(target);
+            }
+
             if (useQ && spells[Spells.Q].IsReady())
             {
                 spells[Spells.Q].Cast();
             }
 
-            if (useW && spells[Spells.W].IsReady())
-            {
-                spells[Spells.W].Cast(target);
-            }
 
             if (useE && spells[Spells.E].IsReady() && eTarget.IsValidTarget() && spells[Spells.E].IsInRange(eTarget))
             {
                 var pred = spells[Spells.E].GetPrediction(eTarget).Hitchance;
                 if (pred >= HitChance.High)
                 {
-                    spells[Spells.E].Cast(eTarget);
+                    spells[Spells.E].Cast(eTarget.ServerPosition);
                 }
             }
 
@@ -465,7 +466,7 @@
                     spells[Spells.Q].Range + 100,
                     MinionTypes.All,
                     MinionTeam.NotAlly,
-                    MinionOrderTypes.MaxHealth).FirstOrDefault(m => this.GetBonusDmg(m) > m.Health);
+                    MinionOrderTypes.MaxHealth).OrderByDescending(m => this.GetBonusDmg(m) > m.Health).FirstOrDefault();
 
             if (minion == null)
             {
