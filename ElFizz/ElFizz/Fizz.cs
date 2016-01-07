@@ -853,7 +853,6 @@
                 {
                     if (!ShieldCheck(target) || IsActive("ElFizz.Combo.Overkill.R") && Player.GetSpellDamage(target, SpellSlot.R) > target.Health + 75)
                     {
-                        Console.WriteLine("overkill");
                         return;
                     }
                     R.Cast(predictionEnemy);
