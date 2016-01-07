@@ -336,10 +336,11 @@
             var smiteMenu = rootMenu.AddSubMenu(new Menu("Smite", "Smite"));
             {
                 smiteMenu.AddItem(
-                    new MenuItem("ElSmite.Activated", "Activated").SetValue(
+                    new MenuItem("ElSmite.Activated", "Smite Activated").SetValue(
                         new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle, true)));
 
-                smiteMenu.AddItem(new MenuItem("Smite.Spell", "Use spell").SetValue(true));
+                smiteMenu.AddItem(new MenuItem("Smite.Spell", "Use spell smite combo").SetValue(true));
+                smiteMenu.AddItem(new MenuItem("ElSmite.KS.Combo", "Use smite in combo").SetValue(true));
 
                 if (Game.MapId == GameMapId.SummonersRift)
                 {
@@ -664,6 +665,7 @@
 
             try
             {
+//Console.WriteLine(Orbwalking.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear);
                 this.JungleSmite();
                 this.SmiteKill();
             }
@@ -682,11 +684,21 @@
 
         private void SmiteKill()
         {
-            if (!this.Menu.Item("ElSmite.KS.Activated").GetValue<bool>())
+            if (!this.Menu.Item("ElSmite.KS.Activated").IsActive())
             {
                 return;
             }
 
+            if (this.Menu.Item("ElSmite.KS.Combo").IsActive()
+                && this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() == "s5_summonersmiteduel" && Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active) 
+            {
+                var smiteComboEnemy = HeroManager.Enemies.FirstOrDefault(hero => !hero.IsZombie && hero.IsValidTarget(500));
+                if (smiteComboEnemy != null)
+                {
+                    this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, smiteComboEnemy);
+                }
+            }
+          
             if (this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() != "s5_summonersmiteplayerganker")
             {
                 return;
