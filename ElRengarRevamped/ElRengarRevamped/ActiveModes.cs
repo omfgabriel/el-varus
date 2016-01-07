@@ -20,17 +20,22 @@ namespace ElRengarRevamped
                 // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
                 var target = TargetSelector.GetSelectedTarget() != null
                                  ? TargetSelector.GetSelectedTarget()
-                                 : TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+                                 : TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Physical);
 
                 if (target == null)
                 {
                     return;
                 }
 
-                /*if (Rengar.SelectedEnemy.IsValidTarget(spells[Spells.E].Range))
+                if (Rengar.SelectedEnemy.IsValidTarget(spells[Spells.E].Range))
                 {
-                    Rengar.SelectedEnemy = target;
-                }*/
+                    TargetSelector.SetTarget(target);
+                    if (Hud.SelectedUnit != null)
+                    {
+                        Hud.SelectedUnit = Rengar.SelectedEnemy;
+                    }
+                    Console.WriteLine("Selected target: {0}", target.ChampionName);
+                }
 
                 CastItems(target);
 
@@ -152,7 +157,7 @@ namespace ElRengarRevamped
 
             if (prediction.Hitchance >= HitChance.High)
             {
-                spells[Spells.E].Cast(target);
+                spells[Spells.E].Cast(target.ServerPosition);
             }
         }
 
@@ -322,9 +327,17 @@ namespace ElRengarRevamped
 
         public static void CastItems(Obj_AI_Base target)
         {
-            if (Player.IsDashing() || Player.IsWindingUp)
+            if (target.IsValidTarget(400f))
             {
-                return;
+                if (ItemData.Tiamat_Melee_Only.GetItem().IsOwned() && ItemData.Tiamat_Melee_Only.GetItem().IsReady())
+                {
+                    ItemData.Tiamat_Melee_Only.GetItem().Cast();
+                }
+
+                if (ItemData.Ravenous_Hydra_Melee_Only.GetItem().IsOwned() && ItemData.Ravenous_Hydra_Melee_Only.GetItem().IsReady())
+                {
+                    ItemData.Ravenous_Hydra_Melee_Only.GetItem().Cast();
+                }
             }
 
             if (target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)))
@@ -335,18 +348,6 @@ namespace ElRengarRevamped
                 }
 
                 ItemData.Titanic_Hydra_Melee_Only.GetItem().Cast();
-            }
-
-            if (target.IsValidTarget(400f))
-            {
-                if (!ItemData.Tiamat_Melee_Only.GetItem().IsReady()
-                    && !ItemData.Ravenous_Hydra_Melee_Only.GetItem().IsReady())
-                {
-                    return;
-                }
-
-                ItemData.Tiamat_Melee_Only.GetItem().Cast();
-                ItemData.Ravenous_Hydra_Melee_Only.GetItem().Cast();
             }
         }
 

@@ -174,8 +174,10 @@
                 return;
             }
 
-            Orbwalking.LastAATick = Utils.GameTimeTickCount - Game.Ping / 2 - (int)Player.AttackCastDelay * 1000
+            /*Orbwalking.LastAATick = Utils.GameTimeTickCount - Game.Ping / 2 - (int)Player.AttackCastDelay * 1000
                                     + args.Duration;
+                                    */
+        
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
@@ -230,6 +232,13 @@
                             spells[Spells.Q].Cast();
                         }
                         break;
+                }
+
+                if (args.Duration - 100 - Game.Ping / 2 > 0)
+                {
+                    Utility.DelayAction.Add(
+                        (int)(args.Duration - 100 - Game.Ping / 2),
+                        () => { ActiveModes.CastItems(target); });
                 }
             }
         }
@@ -343,29 +352,21 @@
         {
             if (sender.IsMe)
             {
-                if (args.SData.Name.ToLower() == "rengarr")
-                {
-                    if (Items.CanUseItem(3142))
-                    {
-                        Utility.DelayAction.Add(2000, () => Items.UseItem(3142));
-                    }
-                }
-
-                if (!args.SData.Name.ToLower().Contains("attack"))
-                {
-                    return;
-                }
-
                 switch (args.SData.Name.ToLower())
                 {
+                    case "rengarr":
+                        if (Items.CanUseItem(3142)) Utility.DelayAction.Add(2000, () => Items.UseItem(3142));
+                        break;
                     case "rengarq":
                         LastQ = Environment.TickCount;
                         LastSpell = Environment.TickCount;
+                        Orbwalking.ResetAutoAttackTimer();
                         break;
 
                     case "rengare":
                         LastE = Environment.TickCount;
                         LastSpell = Environment.TickCount;
+                        if (Orbwalking.LastAATick < Utils.GameTimeTickCount - Game.Ping / 2 && Utils.GameTimeTickCount - Game.Ping / 2 < Orbwalking.LastAATick + Player.AttackCastDelay * 1000 + 40) Orbwalking.ResetAutoAttackTimer();
                         break;
 
                     case "rengarw":
