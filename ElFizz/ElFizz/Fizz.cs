@@ -250,6 +250,8 @@
                     comboMenu.AddItem(new MenuItem("ElFizz.Combo.W", "Use W").SetValue(true));
                     comboMenu.AddItem(new MenuItem("ElFizz.Combo.E", "Use E").SetValue(true));
                     comboMenu.AddItem(new MenuItem("ElFizz.Combo.R", "Use R").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElFizz.Combo.Overkill.R", "Check R overkill").SetValue(false));
+
                     comboMenu.AddItem(
                         new MenuItem("ElFizz.Combo.Type", "Combo Type").SetValue(
                             new StringList(new[] { "Q -> R -> E", "R -> Q -> E" }, 0)));
@@ -363,7 +365,7 @@
                 var kSableEnemy =
                     HeroManager.Enemies.FirstOrDefault(
                         hero =>
-                        hero.IsValidTarget(550) && ShieldCheck(hero) && !hero.IsZombie
+                        hero.IsValidTarget(550) && ShieldCheck(hero) && !hero.HasBuff("summonerdot") && !hero.IsZombie
                         && Player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite) >= hero.Health);
 
                 if (kSableEnemy != null && IgniteSpell.Slot != SpellSlot.Unknown)
@@ -419,8 +421,6 @@
                         E.Cast(target.Position);
                     }
                 }
-
-                /* at the moment of writting this i was drugged so it's or really good or really bad but i don't give a flying fuck */
 
                 switch (Menu.Item("ElFizz.Combo.Type").GetValue<StringList>().SelectedIndex)
                 {
@@ -527,7 +527,7 @@
                             Drawing.DrawText(
                                 Drawing.Width * 0.70f,
                                 Drawing.Height * 0.95f,
-                                Color.Yellow,
+                                Color.White,
                                 "Combo: Q -> R -> E");
                             break;
 
@@ -595,7 +595,7 @@
                     LastHarassPos = Player.ServerPosition;
                 }
 
-                if (JumpBack)
+                if (JumpBack && IsActive("ElFizz.Harass.E"))
                 {
                     E.Cast((Vector3)LastHarassPos);
                 }
@@ -851,6 +851,11 @@
             {
                 var predictionEnemy = R.GetPrediction(target).CastPosition;
                 {
+                    if (!ShieldCheck(target) || IsActive("ElFizz.Combo.Overkill.R") && Player.GetSpellDamage(target, SpellSlot.R) > target.Health + 75)
+                    {
+                        Console.WriteLine("overkill");
+                        return;
+                    }
                     R.Cast(predictionEnemy);
                     return;
                 }
@@ -869,7 +874,7 @@
             try
             {
                 foreach (
-                    var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range) && !x.IsDead && !x.IsZombie))
+                    var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range) && !x.IsDead && !x.IsZombie && ShieldCheck(x)))
                 {
                     if (enemy.Health < CalculateComboDamage(enemy, false, false, false, true))
                     {
@@ -890,7 +895,7 @@
         {
             try
             {
-                return !hero.HasBuff("summonerdot") || !hero.HasBuff("summonerbarrier") || !hero.HasBuff("BlackShield")
+                return !hero.HasBuff("summonerbarrier") || !hero.HasBuff("BlackShield")
                        || !hero.HasBuff("SivirShield") || !hero.HasBuff("BansheesVeil")
                        || !hero.HasBuff("ShroudofDarkness");
             }
