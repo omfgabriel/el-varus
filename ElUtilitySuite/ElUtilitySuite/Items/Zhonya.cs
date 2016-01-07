@@ -378,6 +378,11 @@
                                      ChampionName = "velkoz", SDataName = "velkozqplitactive", MissileName = "", Delay = 0,
                                      MissileSpeed = 1200, CastRange = 1050f
                                  },
+                              new ZhonyaSpell
+                                 {
+                                     ChampionName = "velkoz", SDataName = "velkozr", MissileName = "", Delay = 0,
+                                     MissileSpeed = 1500, CastRange = 1575f
+                                 },
                              new ZhonyaSpell
                                  {
                                      ChampionName = "vi", SDataName = "viq", MissileName = "", Delay = 250,

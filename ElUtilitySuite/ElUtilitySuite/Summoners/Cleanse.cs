@@ -70,6 +70,12 @@
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "Ahri", Name = "ahriseduce", MenuName = "Ahri Charm",
+                                     Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
+                                     Slot = SpellSlot.E, Interval = 1.0
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "Talon", Name = "talonbleeddebuf", MenuName = "Talon Bleed", Evade = false,
                                      DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.Q,
                                      Interval = .8
