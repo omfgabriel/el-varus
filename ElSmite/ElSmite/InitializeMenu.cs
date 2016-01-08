@@ -51,7 +51,7 @@
                 }
             }
 
-            var combatMenu = Menu.AddSubMenu(new Menu("Killsteal", "Killsteal"));
+            var combatMenu = Menu.AddSubMenu(new Menu("Champion smite", "Championsmite"));
             {
                 combatMenu.AddItem(new MenuItem("ElSmite.KS.Activated", "Use smite to killsteal").SetValue(true));
             }
