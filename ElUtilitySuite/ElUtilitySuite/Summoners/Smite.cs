@@ -340,7 +340,6 @@
                         new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle, true)));
 
                 smiteMenu.AddItem(new MenuItem("Smite.Spell", "Use spell smite combo").SetValue(true));
-                smiteMenu.AddItem(new MenuItem("ElSmite.KS.Combo", "Use smite in combo").SetValue(true));
 
                 if (Game.MapId == GameMapId.SummonersRift)
                 {
@@ -348,8 +347,7 @@
                     smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
                     smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
                     smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
-
-                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(false));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(true));
 
                     smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
                     smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
@@ -366,9 +364,10 @@
                     smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_NWraith", "Wraith Enabled").SetValue(true));
                 }
 
-                //Killsteal submenu
-                smiteMenu.SubMenu("Killsteal")
+                //Champion Smite
+                smiteMenu.SubMenu("Champion smite")
                     .AddItem(new MenuItem("ElSmite.KS.Activated", "Use smite to killsteal").SetValue(true));
+                smiteMenu.SubMenu("Champion smite").AddItem(new MenuItem("ElSmite.KS.Combo", "Use smite in combo").SetValue(true));
 
                 //Drawings
                 smiteMenu.SubMenu("Drawings")
@@ -684,11 +683,6 @@
 
         private void SmiteKill()
         {
-            if (!this.Menu.Item("ElSmite.KS.Activated").IsActive())
-            {
-                return;
-            }
-
             if (this.Menu.Item("ElSmite.KS.Combo").IsActive()
                 && this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() == "s5_summonersmiteduel" && Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active) 
             {
@@ -704,12 +698,13 @@
                 return;
             }
 
-            var kSableEnemy =
-                HeroManager.Enemies.FirstOrDefault(
-                    hero => !hero.IsZombie && hero.IsValidTarget(500) && 20 + 8 * this.Player.Level >= hero.Health);
-            if (kSableEnemy != null)
+            if (this.Menu.Item("ElSmite.KS.Activated").IsActive())
             {
-                this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, kSableEnemy);
+                var kSableEnemy = HeroManager.Enemies.FirstOrDefault(hero => !hero.IsZombie && hero.IsValidTarget(500) && 20 + 8 * this.Player.Level >= hero.Health);
+                if (kSableEnemy != null)
+                {
+                    this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, kSableEnemy);
+                }
             }
         }
 
