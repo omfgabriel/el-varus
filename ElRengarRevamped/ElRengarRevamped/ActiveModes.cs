@@ -341,12 +341,12 @@ namespace ElRengarRevamped
 
             if (target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)))
             {
-                if (!ItemData.Titanic_Hydra_Melee_Only.GetItem().IsReady())
+                if (!Items.HasItem(3748) || !Items.CanUseItem(3748))
                 {
                     return;
                 }
 
-                ItemData.Titanic_Hydra_Melee_Only.GetItem().Cast();
+                Items.UseItem(3748);
             }
         }
 
