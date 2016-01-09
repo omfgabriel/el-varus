@@ -319,11 +319,6 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Name = "vir", Evade = false, DoT = false, Cleanse = false, CleanseTimer = 0,
-                                     EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
                                      Champion = "twistedfate", Name = "goldcardpreattack",
                                      MenuName = "Twisted Fate Gold (W)", Evade = false, DoT = false, EvadeTimer = 0,
                                      Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W
@@ -338,104 +333,6 @@
                                      Champion = "amumu", Name = "curseofthesadmummy", MenuName = "curseofthesadmummy (R)",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
                                      Slot = SpellSlot.R
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "virknockup", Evade = false, DoT = false, Cleanse = false, CleanseTimer = 0,
-                                     EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "yasuorknockupcombo", Evade = false, DoT = false, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "yasuorknockupcombotar", Evade = false, DoT = false, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "zyrabramblezoneknockup", Evade = false, DoT = false, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "velkozresearchstack", Evade = false, DoT = true, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown,
-                                     Interval = 0.3
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "frozenheartaura", Evade = false, DoT = false, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "dariusaxebrabcone", Evade = false, DoT = false, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "frozenheartauracosmetic", Evade = false, DoT = false, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "itemsunfirecapeaura", Evade = false, DoT = true, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown,
-                                     Interval = 1.0
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "fizzmoveback", Evade = false, DoT = false, Cleanse = false, CleanseTimer = 0,
-                                     EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "blessingofthelizardelderslow", Evade = false, DoT = true, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown,
-                                     Interval = 1.0
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "dragonburning", Evade = false, DoT = false, Cleanse = false, CleanseTimer = 0,
-                                     EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "rocketgrab2", Evade = false, DoT = false, Cleanse = false, CleanseTimer = 0,
-                                     EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "frostarrow", Evade = false, DoT = false, Cleanse = false, CleanseTimer = 0,
-                                     EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "Pulverize", Evade = false, DoT = false, Cleanse = false, CleanseTimer = 0,
-                                     EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Q
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "monkeykingspinknockup", Evade = false, DoT = false, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "headbutttarget", Evade = false, DoT = false, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.W
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "hecarimrampstuncheck", Evade = false, DoT = false, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "hecarimrampattackknockback", Evade = false, DoT = false, Cleanse = false,
-                                     CleanseTimer = 0, EvadeTimer = 0, QssIgnore = true, Slot = SpellSlot.Unknown
                                  },
                              new CleanseSpell
                                  {
