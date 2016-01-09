@@ -29,15 +29,17 @@
                                      Interval = 1.0
                                  },
                              new CleanseSpell
-                                   {                                           
-                                      Champion = "Taric", Name = "stun", MenuName = "Taric Stun", Evade = false, DoT = false, EvadeTimer = 0,
-                                      Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E, Interval = 1.0
-                                  },
+                                 {
+                                     Champion = "Taric", Name = "stun", MenuName = "Taric Stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E,
+                                     Interval = 1.0
+                                 },
                              new CleanseSpell
-                                   {
-                                      Champion = "Leona", Name = "stun", MenuName = "Leona Stun", Evade = false, DoT = false, EvadeTimer = 0,
-                                      Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q, Interval = 1.0
-                                  },
+                                 {
+                                     Champion = "Leona", Name = "stun", MenuName = "Leona Stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q,
+                                     Interval = 1.0
+                                 },
                              new CleanseSpell
                                  {
                                      Champion = "Vi", Name = "virknockup", MenuName = "Vi R Knockup", Evade = true,
@@ -237,11 +239,6 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Braum", Name = "braummark", MenuName = "Braum Passive", Evade = false,
-                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 200, Slot = SpellSlot.Q
-                                 },
-                             new CleanseSpell
-                                 {
                                      Champion = "Zed", Name = "zedultexecute", MenuName = "Zed Mark", Evade = true,
                                      DoT = false, EvadeTimer = 2500, Cleanse = true, CleanseTimer = 500,
                                      Slot = SpellSlot.R, Interval = 1.0
@@ -267,6 +264,12 @@
                                      Champion = "Morgana", Name = "soulshackles", MenuName = "Morgana Soul Shackles",
                                      Evade = true, DoT = false, EvadeTimer = 2600, Cleanse = true, CleanseTimer = 1100,
                                      Slot = SpellSlot.R, Interval = 3.9
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "Morgana", Name = "darkbindingmissile", MenuName = "Morgana Q",
+                                     Evade = true, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 1200,
+                                     Slot = SpellSlot.Q
                                  },
                              new CleanseSpell
                                  {
@@ -329,9 +332,9 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "twistedfate", Name = "goldcardpreattack",
-                                     MenuName = "Twisted Fate Gold (W)", Evade = false, DoT = false, EvadeTimer = 0,
-                                     Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W
+                                     Champion = "twistedfate", Name = "stun", MenuName = "Twisted Fate Gold (W)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Unknown
                                  },
                              new CleanseSpell
                                  {
@@ -348,6 +351,44 @@
                                  {
                                      Champion = "Rammus", Name = "taunt", MenuName = "Rammus Taunt", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "shen", Name = "taunt", MenuName = "Shen Taunt", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "jax", Name = "stun", MenuName = "Jax (E)", Evade = false, DoT = false,
+                                     EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "kennen", Name = "stun", MenuName = "Kennen stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Unknown
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "braum", Name = "braumstundebuff", MenuName = "Braum Passive",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Unknown
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "riven", Name = "stun", MenuName = "Riven (W)", Evade = false, DoT = false,
+                                     EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "annie", Name = "stun", MenuName = "Annie Stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Unknown
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "anivia", Name = "stun", MenuName = "Anivia Stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
                                  },
                              new CleanseSpell
                                  {
@@ -497,12 +538,12 @@
         }
 
         /// <summary>
-        /// Gets or sets the random.
+        ///     Gets or sets the random.
         /// </summary>
         /// <value>
-        /// The random.
+        ///     The random.
         /// </value>
-        private static Random Random { get; set; }
+        private static Random Random { get; }
 
         /// <summary>
         ///     Gets or sets the menu.
@@ -592,6 +633,8 @@
             {
                 return;
             }
+
+            //Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Select(b => b.DisplayName)));
 
             foreach (var ally in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
             {

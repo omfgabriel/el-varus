@@ -664,7 +664,6 @@
 
             try
             {
-//Console.WriteLine(Orbwalking.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear);
                 this.JungleSmite();
                 this.SmiteKill();
             }
