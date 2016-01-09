@@ -591,8 +591,10 @@
 
                 zhonyaMenu.AddSubMenu(zhonyaSpellMenu);
                 zhonyaMenu.AddItem(new MenuItem("ZhonyaDangerous", "Zhonya's on dangerous spell").SetValue(true));
-                zhonyaMenu.AddItem(new MenuItem("ZhonyaHP_BETA", "Use Zhonya on low HP (BETA)").SetValue(false));
+                zhonyaMenu.AddItem(new MenuItem("ZhonyaHP", "Use Zhonya on low HP").SetValue(true));
                 zhonyaMenu.AddItem(new MenuItem("ZhonyaHPSlider", "HP Percent").SetValue(new Slider(10, 1, 50)));
+                zhonyaMenu.AddItem(
+                    new MenuItem("NoZhonyaEvade", "Don't Zhonya if spell is evade-able (BETA)").SetValue(false));
 
                 rootMenu.AddSubMenu(zhonyaMenu);
                 this.Menu = zhonyaMenu;
@@ -614,6 +616,72 @@
         #endregion
 
         #region Methods
+
+        /// <summary>
+        ///     Determines whether the hero can evade the specified missile.
+        /// </summary>
+        /// <param name="missile">The missile.</param>
+        /// <param name="hero">The hero.</param>
+        /// <returns></returns>
+        private bool CanEvadeMissile(MissileClient missile, Obj_AI_Base hero)
+        {
+            var heroPos = hero.ServerPosition.To2D();
+            float evadeTime = 0;
+            float spellHitTime = 0;
+
+            if (missile.SData.TargettingType.ToString().Contains("Location")
+                && !missile.SData.TargettingType.ToString().Contains("Aoe"))
+            {
+                var projection =
+                    heroPos.ProjectOn(missile.StartPosition.To2D(), missile.EndPosition.To2D()).SegmentPoint;
+                evadeTime = 1000 * (missile.SData.LineWidth - heroPos.Distance(projection) + hero.BoundingRadius)
+                            / hero.MoveSpeed;
+                spellHitTime = this.GetSpellHitTime(missile, projection);
+            }
+            else if (missile.SData.TargettingType == SpellDataTargetType.LocationAoe)
+            {
+                evadeTime = 1000 * (missile.SData.CastRadius - heroPos.Distance(missile.EndPosition)) / hero.MoveSpeed;
+                spellHitTime = this.GetSpellHitTime(missile, heroPos);
+            }
+
+            return spellHitTime > evadeTime;
+        }
+
+        /// <summary>
+        ///     Gets the spell hit time.
+        /// </summary>
+        /// <param name="missile">The missile.</param>
+        /// <param name="pos">The position.</param>
+        /// <returns></returns>
+        private float GetSpellHitTime(MissileClient missile, Vector2 pos)
+        {
+            if (!missile.SData.TargettingType.ToString().Contains("Location")
+                || missile.SData.TargettingType.ToString().Contains("Aoe"))
+            {
+                return missile.SData.TargettingType == SpellDataTargetType.LocationAoe
+                           ? Math.Max(
+                               0,
+                               missile.SData.CastFrame / 30 * 1000
+                               + missile.StartPosition.Distance(missile.EndPosition) / missile.SData.MissileSpeed * 1000
+                               - Environment.TickCount - Game.Ping)
+                           : float.MaxValue;
+            }
+
+            if (
+                Spells.Find(x => x.MissileName.Equals(missile.Name, StringComparison.InvariantCultureIgnoreCase))
+                    .MissileSpeed == int.MaxValue)
+            {
+                return Math.Max(
+                    0,
+                    missile.SData.CastFrame / 30 * 1000
+                    + missile.StartPosition.Distance(missile.EndPosition) / missile.SData.MissileSpeed * 1000
+                    - Environment.TickCount - Game.Ping);
+            }
+
+            var spellPos = missile.Position.To2D();
+            return 1000 * spellPos.Distance(pos) / missile.SData.MissileAccel;
+        }
+
 
         /// <summary>
         ///     Fired when a game object is created.
@@ -662,7 +730,10 @@
                       .ProjectOn(missile.StartPosition.To2D(), endPosition.To2D())
                       .SegmentPoint))
             {
-                zhyonyaItem.Cast();
+                if (!(this.Menu.Item("NoZhonyaEvade").IsActive() && this.CanEvadeMissile(missile, Player)))
+                {
+                    zhyonyaItem.Cast();
+                }          
             }
         }
 
@@ -757,6 +828,12 @@
                            Player.ServerPosition.To2D().ProjectOn(args.Start.To2D(), endPosition.To2D()).SegmentPoint))
                 || (!isLinear && Player.Distance(endPosition) <= width + Player.BoundingRadius))
             {
+                // Let missile client event handle it
+                if (Menu.Item("NoZhonyaEvade").IsActive() && spellData.MissileName != null)
+                {
+                    return;
+                }
+
                 zhyonyaItem.Cast();
             }
         }
