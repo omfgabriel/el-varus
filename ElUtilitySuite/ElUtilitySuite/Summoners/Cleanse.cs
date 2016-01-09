@@ -24,22 +24,6 @@
                          {
                              new CleanseSpell
                                  {
-                                     Name = "stun", MenuName = "Stun", Evade = false, DoT = false, EvadeTimer = 0,
-                                     Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown, Interval = 1.0
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "taunt", MenuName = "Taunt", Evade = false, DoT = false, EvadeTimer = 0,
-                                     Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown, Interval = 1.0
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Name = "suppression", MenuName = "Suppresion", Evade = false, DoT = false,
-                                     EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown,
-                                     Interval = 1.0
-                                 },
-                             new CleanseSpell
-                                 {
                                      Name = "summonerdot", MenuName = "Summoner Ignite", Evade = false, DoT = true,
                                      EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.Unknown,
                                      Interval = 1.0
@@ -455,9 +439,8 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Rammus", Name = "puncturingtaunt", MenuName = "Rammus Taunt",
-                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
-                                     Slot = SpellSlot.E
+                                     Champion = "Rammus", Name = "taunt", MenuName = "Rammus Taunt", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
                                  },
                              new CleanseSpell
                                  {
@@ -686,7 +669,17 @@
                         continue;
                     }
 
-                    var item = GetBestCleanseItem(ally, ally.GetBuff(spell.Name));
+                    var buff = ally.GetBuff(spell.Name);
+
+                    if (
+                        !((Obj_AI_Hero)buff.Caster).ChampionName.Equals(
+                            spell.Champion,
+                            StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return;
+                    }
+
+                    var item = GetBestCleanseItem(ally, buff);
 
                     if (item == null)
                     {
