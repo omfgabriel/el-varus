@@ -537,7 +537,7 @@
         {
             get
             {
-                return this.Menu.Item("ZhonyaHP_BETA").IsActive();
+                return this.Menu.Item("ZhonyaHP").IsActive();
             }
         }
 
