@@ -328,25 +328,23 @@ namespace ElRengarRevamped
         {
             if (target.IsValidTarget(400f))
             {
-                if (ItemData.Tiamat_Melee_Only.GetItem().IsOwned() && ItemData.Tiamat_Melee_Only.GetItem().IsReady())
+                if (Items.HasItem(3074) || Items.CanUseItem(3074))
                 {
-                    ItemData.Tiamat_Melee_Only.GetItem().Cast();
+                    Items.UseItem(3074);
                 }
 
-                if (ItemData.Ravenous_Hydra_Melee_Only.GetItem().IsOwned() && ItemData.Ravenous_Hydra_Melee_Only.GetItem().IsReady())
+                if (Items.HasItem(3077) || Items.CanUseItem(3077)) 
                 {
-                    ItemData.Ravenous_Hydra_Melee_Only.GetItem().Cast();
+                    Items.UseItem(3077);
                 }
             }
 
             if (target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)))
             {
-                if (!Items.HasItem(3748) || !Items.CanUseItem(3748))
+                if (Items.HasItem(3748) || Items.CanUseItem(3748))
                 {
-                    return;
+                    Items.UseItem(3748);
                 }
-
-                Items.UseItem(3748);
             }
         }
 
