@@ -27,7 +27,7 @@
                                      Name = "stun", MenuName = "Stun", Evade = false, DoT = false, EvadeTimer = 0,
                                      Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown, Interval = 1.0
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
                                      Name = "taunt", MenuName = "Taunt", Evade = false, DoT = false, EvadeTimer = 0,
                                      Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown, Interval = 1.0
@@ -70,9 +70,9 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Ahri", Name = "ahriseduce", MenuName = "Ahri Charm",
-                                     Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
-                                     Slot = SpellSlot.E, Interval = 1.0
+                                     Champion = "Ahri", Name = "ahriseduce", MenuName = "Ahri Charm", Evade = false,
+                                     DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E,
+                                     Interval = 1.0
                                  },
                              new CleanseSpell
                                  {
@@ -556,6 +556,12 @@
 
         #endregion
 
+        #region Delegates
+
+        public delegate SpellSlot GetSlotDelegate();
+
+        #endregion
+
         #region Public Properties
 
         /// <summary>
@@ -736,7 +742,7 @@
             /// <value>
             ///     The slot delegate.
             /// </value>
-            public Func<SpellSlot> Slot { get; set; }
+            public GetSlotDelegate Slot { get; set; }
 
             /// <summary>
             ///     Gets or sets the spell.
