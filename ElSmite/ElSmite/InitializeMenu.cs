@@ -7,7 +7,7 @@
     {
         #region Static Fields
 
-        public static Menu Menu, ChampionMenu;
+        public static Menu Menu;
 
         #endregion
 
@@ -30,12 +30,7 @@
                     mainMenu.AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
                     mainMenu.AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
                     mainMenu.AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
-
-                    //hmm
                     mainMenu.AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(false));
-
-
-                    //Bullshit smites
                     mainMenu.AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
                     mainMenu.AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
                     mainMenu.AddItem(new MenuItem("SRU_Krug", "Krug").SetValue(false));
