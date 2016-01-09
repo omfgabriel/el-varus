@@ -29,6 +29,16 @@
                                      Interval = 1.0
                                  },
                              new CleanseSpell
+                                   {                                           
+                                      Champion = "Taric", Name = "stun", MenuName = "Taric Stun", Evade = false, DoT = false, EvadeTimer = 0,
+                                      Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E, Interval = 1.0
+                                  },
+                             new CleanseSpell
+                                   {
+                                      Champion = "Leona", Name = "stun", MenuName = "Leona Stun", Evade = false, DoT = false, EvadeTimer = 0,
+                                      Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q, Interval = 1.0
+                                  },
+                             new CleanseSpell
                                  {
                                      Champion = "Vi", Name = "virknockup", MenuName = "Vi R Knockup", Evade = true,
                                      DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
