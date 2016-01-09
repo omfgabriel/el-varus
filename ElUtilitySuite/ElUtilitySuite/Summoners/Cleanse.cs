@@ -432,12 +432,20 @@
             #endregion
 
             Items = Items.OrderBy(x => x.Priority).ToList();
+
+            Random = new Random(Environment.TickCount);
         }
 
         #endregion
 
         #region Delegates
 
+        /// <summary>
+        ///     A delegate that returns a <see cref="SpellSlot" />
+        /// </summary>
+        /// <returns>
+        ///     <see cref="SpellSlot" />
+        /// </returns>
         public delegate SpellSlot GetSlotDelegate();
 
         #endregion
@@ -478,6 +486,8 @@
             }
         }
 
+        private static Random Random { get; set; }
+
         /// <summary>
         ///     Gets or sets the menu.
         /// </summary>
@@ -509,6 +519,16 @@
                 }
 
                 this.Menu.AddSubMenu(spellsMenu);
+
+                var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
+                {
+                    humanizerDelay.AddItem(
+                        new MenuItem("CleanseMinDelay", "Minimum Delay (MS)").SetValue(new Slider(100, 0, 500)));
+                    humanizerDelay.AddItem(
+                        new MenuItem("CleanseMaxDelay", "Maximum Delay (MS)").SetValue(new Slider(200, 1, 500)));
+                }
+
+                this.Menu.AddSubMenu(humanizerDelay);
 
                 this.Menu.AddItem(new MenuItem("CleanseActivated", "Use Cleanse").SetValue(true));
             }
@@ -583,7 +603,12 @@
                         continue;
                     }
 
-                    Utility.DelayAction.Add(spell.CleanseTimer, () => item.Cast(ally));
+                    Utility.DelayAction.Add(
+                        spell.CleanseTimer
+                        + Random.Next(
+                            this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value,
+                            this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
+                        () => item.Cast(ally));
                 }
             }
         }

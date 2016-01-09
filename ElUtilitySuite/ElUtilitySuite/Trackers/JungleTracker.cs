@@ -242,7 +242,7 @@
                 Drawing.Direct3DDevice,
                 new FontDescription
                     {
-                        FaceName = "Tahoma", Height = 14, OutputPrecision = FontPrecision.Default,
+                        FaceName = "Tahoma", Height = 13, OutputPrecision = FontPrecision.Default,
                         Quality = FontQuality.Default
                     });
 
