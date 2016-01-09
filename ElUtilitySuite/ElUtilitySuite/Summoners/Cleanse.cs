@@ -486,6 +486,12 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the random.
+        /// </summary>
+        /// <value>
+        /// The random.
+        /// </value>
         private static Random Random { get; set; }
 
         /// <summary>
