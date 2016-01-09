@@ -20,11 +20,12 @@
 
             var mainMenu = Menu.AddSubMenu(new Menu("Default", "Default"));
             {
+                mainMenu.AddItem(
+                       new MenuItem("ElSmite.Activated", "Activated").SetValue(
+                           new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle, true)));
+
                 if (Entry.IsSummonersRift)
-                {
-                    mainMenu.AddItem(
-                        new MenuItem("ElSmite.Activated", "Activated").SetValue(
-                            new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle, true)));
+                {                   
                     mainMenu.AddItem(new MenuItem("SRU_Dragon", "Dragon").SetValue(true));
                     mainMenu.AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
                     mainMenu.AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
