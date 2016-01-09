@@ -543,7 +543,7 @@
         /// <value>
         ///     The random.
         /// </value>
-        private static Random Random { get; }
+        private static Random Random { get; set; }
 
         /// <summary>
         ///     Gets or sets the menu.
