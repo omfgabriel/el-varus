@@ -197,12 +197,6 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Lissandra", Name = "lissandrarenemy2", MenuName = "Lissandra Frozen Tomb",
-                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 100,
-                                     Slot = SpellSlot.R, Interval = 1.0
-                                 },
-                             new CleanseSpell
-                                 {
                                      Champion = "Sejuani", Name = "sejuaniglacialprison",
                                      MenuName = "Sejuani Glacial Prison", Evade = false, DoT = false, EvadeTimer = 0,
                                      Cleanse = true, CleanseTimer = 100, Slot = SpellSlot.R, Interval = 1.0
@@ -267,9 +261,8 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Morgana", Name = "darkbindingmissile", MenuName = "Morgana Q",
-                                     Evade = true, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 1200,
-                                     Slot = SpellSlot.Q
+                                     Champion = "Morgana", Name = "dark binding", MenuName = "Morgana Q", Evade = true,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
                                  },
                              new CleanseSpell
                                  {
@@ -387,14 +380,84 @@
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "Warwick", Name = "InfiniteDuress", MenuName = "Warwick (R)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
+                                     Slot = SpellSlot.R
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "anivia", Name = "stun", MenuName = "Anivia Stun", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Warwick", Name = "InfiniteDuress", MenuName = "Warwick (R)",
-                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
-                                     Slot = SpellSlot.R
+                                     Champion = "heimerdinger", Name = "stun", MenuName = "Heimerdinger Stun",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.W
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "bard", Name = "bardqshackledebuff", MenuName = "Bard Stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Unknown
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "vayne", Name = "stun", MenuName = "Vayne Condemn", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "elise", Name = "buffelisecocoon", MenuName = "Elise E", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "udyr", Name = "stun", MenuName = "Udyr Stun", Evade = false, DoT = false,
+                                     EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "irelia", Name = "stun", MenuName = "Irelia Stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "veigar", Name = "stun", MenuName = "Veigar Stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "gnar", Name = "stun", MenuName = "Gnar stun", Evade = false, DoT = false,
+                                     EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "syndra", Name = "stun", MenuName = "Syndra stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Unknown
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "sona", Name = "stun", MenuName = "Sona (R)", Evade = false, DoT = false,
+                                     EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "xerath", Name = "stun", MenuName = "Xerath (E)", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "Lissandra", Name = "lissandrarenemy2", MenuName = "Lissandra (R)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 100,
+                                     Slot = SpellSlot.R, Interval = 1.0
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "lissandra", Name = "lissandraw", MenuName = "Lissandra (W)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.W
                                  }
                          };
 
