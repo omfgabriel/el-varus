@@ -204,6 +204,12 @@
         /// </value>
         public static List<JungleCamp> JungleCamps { get; set; }
 
+        /// <summary>
+        /// Gets or sets the menu.
+        /// </summary>
+        /// <value>
+        /// The menu.
+        /// </value>
         public Menu Menu { get; set; }
 
         #endregion
@@ -248,10 +254,9 @@
 
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
+
             Drawing.OnEndScene += this.Drawing_OnEndScene;
-
             Drawing.OnPreReset += args => { Font.OnLostDevice(); };
-
             Drawing.OnPostReset += args => { Font.OnResetDevice(); };
         }
 
@@ -339,12 +344,14 @@
             foreach (var camp in DeadCamps.Where(x => x.NextRespawnTime - Environment.TickCount > 0))
             {
                 var timeSpan = TimeSpan.FromMilliseconds(camp.NextRespawnTime - Environment.TickCount);
+                var text = timeSpan.ToString(@"m\:ss");
+                var size = Font.MeasureText(text);
 
                 Font.DrawText(
                     null,
-                    timeSpan.ToString(@"m\:ss"),
-                    (int)camp.MinimapPosition.X,
-                    (int)camp.MinimapPosition.Y,
+                    text,
+                    (int)camp.MinimapPosition.X - size.Width / 2,
+                    (int)camp.MinimapPosition.Y - size.Height / 2,
                     new ColorBGRA(255, 255, 255, 255));
             }
         }
