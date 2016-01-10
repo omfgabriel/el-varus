@@ -7,7 +7,7 @@
     {
         #region Static Fields
 
-        public static Menu Menu, ChampionMenu;
+        public static Menu Menu;
 
         #endregion
 
@@ -20,21 +20,17 @@
 
             var mainMenu = Menu.AddSubMenu(new Menu("Default", "Default"));
             {
+                mainMenu.AddItem(
+                       new MenuItem("ElSmite.Activated", "Activated").SetValue(
+                           new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle, true)));
+
                 if (Entry.IsSummonersRift)
-                {
-                    mainMenu.AddItem(
-                        new MenuItem("ElSmite.Activated", "Activated").SetValue(
-                            new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle, true)));
+                {                   
                     mainMenu.AddItem(new MenuItem("SRU_Dragon", "Dragon").SetValue(true));
                     mainMenu.AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
                     mainMenu.AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
                     mainMenu.AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
-
-                    //hmm
                     mainMenu.AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(false));
-
-
-                    //Bullshit smites
                     mainMenu.AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
                     mainMenu.AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
                     mainMenu.AddItem(new MenuItem("SRU_Krug", "Krug").SetValue(false));
