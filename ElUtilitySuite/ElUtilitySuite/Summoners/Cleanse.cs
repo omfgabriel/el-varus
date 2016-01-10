@@ -643,9 +643,19 @@
                 var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
                 {
                     humanizerDelay.AddItem(
-                        new MenuItem("CleanseMinDelay", "Minimum Delay (MS)").SetValue(new Slider(100, 0, 500)));
+                        new MenuItem("CleanseMinDelay", "Minimum Delay (MS)").SetValue(new Slider(50, 0, 500)));
                     humanizerDelay.AddItem(
-                        new MenuItem("CleanseMaxDelay", "Maximum Delay (MS)").SetValue(new Slider(200, 1, 500)));
+                        new MenuItem("CleanseMaxDelay", "Maximum Delay (MS)").SetValue(new Slider(100, 0, 500)));
+
+                    humanizerDelay.Item("CleanseMaxDelay").ValueChanged +=
+                        delegate(object sender, OnValueChangeEventArgs args)
+                            {
+                                if (args.GetNewValue<Slider>().Value
+                                    < this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value)
+                                {
+                                    args.Process = false;
+                                }
+                            };
                 }
 
                 this.Menu.AddSubMenu(humanizerDelay);
