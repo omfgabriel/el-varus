@@ -168,12 +168,6 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Zilean", Name = "zileanqenemybomb", MenuName = "Zilean Bomb",
-                                     Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
-                                     Slot = SpellSlot.Q, Interval = 3.8
-                                 },
-                             new CleanseSpell
-                                 {
                                      Champion = "Wukong", Name = "monkeykingspintowin", Evade = false, DoT = true,
                                      EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.R, Interval = 1.0
                                  },
@@ -353,7 +347,7 @@
                              new CleanseSpell
                                  {
                                      Champion = "jax", Name = "stun", MenuName = "Jax (E)", Evade = false, DoT = false,
-                                     EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                     EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E
                                  },
                              new CleanseSpell
                                  {
@@ -458,7 +452,40 @@
                                      Champion = "lissandra", Name = "lissandraw", MenuName = "Lissandra (W)",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
                                      Slot = SpellSlot.W
-                                 }
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "renekton", Name = "stun", MenuName = "Renekton stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "tahmkench", Name = "tahmkenchqstun", MenuName = "Tahm Q stun",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Q
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "tahmkench", Name = "tahmkenchwhasdevouredtarget", MenuName = "Tahm stun",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = false, QssIgnore = true,
+                                     CleanseTimer = 0, Slot = SpellSlot.Unknown
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "nautilus", Name = "nautilusanchordragroot", MenuName = "Nautilus Q",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Q
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "nautilus", Name = "stun", MenuName = "Nautilus R", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "zilean", Name = "stun", MenuName = "Zilean double Q", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
+                                 },
                          };
 
             Spells =
