@@ -462,7 +462,7 @@
             /// <value>
             ///     The position.
             /// </value>
-            public Vector3 Position { get; }
+            public Vector3 Position { get; set; }
 
             /// <summary>
             ///     Gets the respawn time.
@@ -470,7 +470,7 @@
             /// <value>
             ///     The respawn time.
             /// </value>
-            public int RespawnTime { get; }
+            public int RespawnTime { get; set; }
 
             /// <summary>
             ///     Gets or sets the team.
