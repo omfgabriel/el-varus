@@ -162,6 +162,7 @@ namespace ElRengarRevamped
 
         private static void CastW(Obj_AI_Base target)
         {
+
             if (!target.IsValidTarget(spells[Spells.W].Range) || !spells[Spells.W].IsReady())
             {
                 return;
