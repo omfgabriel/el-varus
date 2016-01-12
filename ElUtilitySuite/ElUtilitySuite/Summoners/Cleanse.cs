@@ -42,6 +42,18 @@
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "Teemo", Name = "blind", MenuName = "Teemo Blind", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q,
+                                     Interval = 1.0
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "Brand", Name = "stun", MenuName = "Brand stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown,
+                                     Interval = 1.0
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "Vi", Name = "virknockup", MenuName = "Vi R Knockup", Evade = true,
                                      DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.Unknown, Interval = 1.0
@@ -670,9 +682,9 @@
                 var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
                 {
                     humanizerDelay.AddItem(
-                        new MenuItem("CleanseMinDelay", "Minimum Delay (MS)").SetValue(new Slider(50, 0, 500)));
+                        new MenuItem("CleanseMinDelay", "Minimum Delay (MS)").SetValue(new Slider(0, 0, 500)));
                     humanizerDelay.AddItem(
-                        new MenuItem("CleanseMaxDelay", "Maximum Delay (MS)").SetValue(new Slider(100, 0, 500)));
+                        new MenuItem("CleanseMaxDelay", "Maximum Delay (MS)").SetValue(new Slider(0, 0, 500)));
 
                     humanizerDelay.Item("CleanseMaxDelay").ValueChanged +=
                         delegate(object sender, OnValueChangeEventArgs args)
@@ -761,13 +773,15 @@
                     {
                         continue;
                     }
-
-                    Utility.DelayAction.Add(
+                    
+                    /*Utility.DelayAction.Add(
                         spell.CleanseTimer
                         + Random.Next(
                             this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value,
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
-                        () => item.Cast(ally));
+                        () => item.Cast(ally));*/
+
+                    Utility.DelayAction.Add(spell.CleanseTimer, () => item.Cast(ally));
                 }
             }
         }
