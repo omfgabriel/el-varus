@@ -442,7 +442,7 @@
                 return;
             }
 
-            if (InitializeMenu.Menu.Item(Minion.CharData.BaseSkinName).IsActive())
+            if (InitializeMenu.Menu.Item(Minion.CharData.BaseSkinName).IsActive()) // change to Name
             {
                 if (Minion.Distance(Player.ServerPosition) <= 500 + Minion.BoundingRadius + Player.BoundingRadius)
                 {
