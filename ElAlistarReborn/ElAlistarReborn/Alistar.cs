@@ -1,47 +1,46 @@
 ﻿namespace ElAlistarReborn
 {
     using System;
-    using System.Collections.Generic;
+    using System.Drawing;
     using System.Linq;
 
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    using SharpDX;
-
-    internal enum Spells
+    internal class Alistar
     {
-        Q,
-
-        W,
-
-        E,
-
-        R
-    }
-
-    internal static class Alistar
-    {
-        #region Static Fields
-
-        public static Orbwalking.Orbwalker Orbwalker;
-
-        public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
-                                                             {
-                                                                 { Spells.Q, new Spell(SpellSlot.Q, 365) },
-                                                                 { Spells.W, new Spell(SpellSlot.W, 650) },
-                                                                 { Spells.E, new Spell(SpellSlot.E, 575) },
-                                                                 { Spells.R, new Spell(SpellSlot.R, 0) }
-                                                             };
-
-        private static SpellSlot flashSlot;
-
-        private static SpellSlot ignite;
-
-        #endregion
-
         #region Properties
 
+        /// <summary>
+        ///     Gets or sets the E spell
+        /// </summary>
+        /// <value>
+        ///     The E spell
+        /// </value>
+        private static Spell E { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the menu
+        /// </summary>
+        /// <value>
+        ///     The menu
+        /// </value>
+        private static Menu Menu { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the orbwalker
+        /// </summary>
+        /// <value>
+        ///     The orbwalker
+        /// </value>
+        private static Orbwalking.Orbwalker Orbwalker { get; set; }
+
+        /// <summary>
+        ///     Gets the player.
+        /// </summary>
+        /// <value>
+        ///     The player.
+        /// </value>
         private static Obj_AI_Hero Player
         {
             get
@@ -50,260 +49,453 @@
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the Q spell
+        /// </summary>
+        /// <value>
+        ///     The Q spell
+        /// </value>
+        private static Spell Q { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the R spell.
+        /// </summary>
+        /// <value>
+        ///     The R spell
+        /// </value>
+        private static Spell R { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the W spell
+        /// </summary>
+        /// <value>
+        ///     The W spell
+        /// </value>
+        private static Spell W { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the slot.
+        /// </summary>
+        /// <value>
+        ///     The IgniteSpell
+        /// </value>
+        public static Spell IgniteSpell { get; set; }
+
+        /// <summary>
+        ///     FlashSlot
+        /// </summary>
+        public static SpellSlot FlashSlot;
+
+
         #endregion
 
         #region Public Methods and Operators
 
-        public static void OnLoad(EventArgs args)
+        /// <summary>
+        ///     Fired when the game loads.
+        /// </summary>
+        /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
+        public static void OnGameLoad(EventArgs args)
         {
-            if (ObjectManager.Player.CharData.BaseSkinName != "Alistar")
+            try
             {
-                return;
+                if (Player.ChampionName != "Alistar")
+                {
+                    return;
+                }
+
+                var igniteSlot = Player.GetSpell(SpellSlot.Summoner1).Name.ToLower().Contains("summonerdot")
+                                    ? SpellSlot.Summoner1
+                                    : Player.GetSpell(SpellSlot.Summoner2).Name.ToLower().Contains("summonerdot")
+                                          ? SpellSlot.Summoner2
+                                          : SpellSlot.Unknown;
+
+                if (igniteSlot != SpellSlot.Unknown)
+                {
+                    IgniteSpell = new Spell(igniteSlot, 600f);
+                }
+
+                FlashSlot = Player.GetSpellSlot("summonerflash");
+
+                Q = new Spell(SpellSlot.Q, 365f);
+                W = new Spell(SpellSlot.W, 650f);
+                E = new Spell(SpellSlot.E, 575f);
+                R = new Spell(SpellSlot.R);
+
+                GenerateMenu();
+                Game.OnUpdate += OnUpdate;
+                Drawing.OnDraw += OnDraw;
+                AttackableUnit.OnDamage += AttackableUnit_OnDamage;
+                Interrupter2.OnInterruptableTarget += OnInterruptableTarget;
+                AntiGapcloser.OnEnemyGapcloser += OnEnemyGapcloser;
             }
-
-            spells[Spells.W].SetTargetted(0.5f, 1.5f);
-
-            ignite = Player.GetSpellSlot("summonerdot");
-            flashSlot = Player.GetSpellSlot("summonerflash");
-
-            Game.PrintChat(
-                "[00:01] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
-
-            ElAlistarMenu.Initialize();
-            Game.OnUpdate += OnUpdate;
-            Drawing.OnDraw += Drawings.OnDraw;
-            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
-            Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
         }
 
         #endregion
 
         #region Methods
 
-        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        /// <summary>
+        ///     Creates the menu
+        /// </summary>
+        /// <value>
+        ///     Creates the menu
+        /// </value>
+        private static void GenerateMenu()
         {
-            if (MenuCheck("ElAlistar.Interrupt"))
+            try
             {
-                if (spells[Spells.W].IsReady() && gapcloser.Sender.Distance(Player) < spells[Spells.W].Range)
+                Menu = new Menu("ElAlistar", "ElAlistar", true);
+
+                var targetselectorMenu = new Menu("Target Selector", "Target Selector");
                 {
-                    spells[Spells.W].Cast(gapcloser.Sender);
+                    TargetSelector.AddToMenu(targetselectorMenu);
                 }
 
-                if (!spells[Spells.W].IsReady() && spells[Spells.Q].IsReady()
-                    && gapcloser.Sender.Distance(Player) < spells[Spells.Q].Range)
+                Menu.AddSubMenu(targetselectorMenu);
+
+                var orbwalkMenu = new Menu("Orbwalker", "Orbwalker");
                 {
-                    spells[Spells.Q].Cast(gapcloser.Sender);
+                    Orbwalker = new Orbwalking.Orbwalker(orbwalkMenu);
                 }
+
+                Menu.AddSubMenu(orbwalkMenu);
+
+                var comboMenu = new Menu("Combo Settings", "Combo");
+                {
+                    comboMenu.AddItem(new MenuItem("ElAlistar.Combo.Q", "Use Q").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElAlistar.Combo.W", "Use W").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElAlistar.Combo.R", "Use R").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElAlistar.Combo.RHeal.HP", "R on Health percentage").SetValue(new Slider(60, 1)));
+                    comboMenu.AddItem(new MenuItem("ElAlistar.Combo.RHeal.Damage", "R on damage dealt %").SetValue(new Slider(60, 1)));
+                }
+
+                Menu.AddSubMenu(comboMenu);
+
+                var flashMenu = new Menu("Flash Settings", "Flash");
+                {
+                    flashMenu.AddItem(new MenuItem("ElAlistar.Flash.Click", "Left Click [on] TS [off]").SetValue(true));
+                    flashMenu.AddItem(
+                    new MenuItem("ElAlistar.Combo.FlashQ", "Flash Q").SetValue(
+                        new KeyBind("Z".ToCharArray()[0], KeyBindType.Press)));
+                }
+
+                Menu.AddSubMenu(flashMenu);
+
+                var healMenu = new Menu("Heal Settings", "Heal");
+                {
+                    healMenu.AddItem(new MenuItem("ElAlistar.Heal.E", "Use heal").SetValue(true));
+                    healMenu.AddItem(new MenuItem("Heal.HP", "Health percentage").SetValue(new Slider(80, 1)));
+                    healMenu.AddItem(new MenuItem("Heal.Damage", "Heal on damage dealt %").SetValue(new Slider(80, 1)));
+                    healMenu.AddItem(
+                            new MenuItem("ElAlistar.Heal.Mana", "Minimum mana").SetValue(
+                                new Slider(20, 0, 100)));
+                    healMenu.AddItem(new MenuItem("seperator21", ""));
+                    foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
+                    {
+                        healMenu.AddItem(new MenuItem("healon" + x.ChampionName, "Use for " + x.ChampionName))
+                            .SetValue(true);
+                    }
+                }
+
+                Menu.AddSubMenu(healMenu);
+
+                var interrupterMenu = new Menu("Interrupter Settings", "Interrupter");
+                {
+                    interrupterMenu.AddItem(new MenuItem("ElAlistar.Interrupter.Q", "Use Q").SetValue(true));
+                    interrupterMenu.AddItem(new MenuItem("ElAlistar.Interrupter.W", "Use W").SetValue(true));
+                    interrupterMenu.AddItem(new MenuItem("ElAlistar.GapCloser", "Anti gapcloser").SetValue(true));
+                }
+
+                Menu.AddSubMenu(interrupterMenu);
+
+                var miscellaneousMenu = new Menu("Miscellaneous", "Misc");
+                {
+                    miscellaneousMenu.AddItem(new MenuItem("ElAlistar.Ignite", "Use Ignite").SetValue(true));
+                    miscellaneousMenu.AddItem(new MenuItem("ElAlistar.Drawings.W", "Draw W range").SetValue(true));
+
+                }
+
+                Menu.AddSubMenu(miscellaneousMenu);
+
+                Menu.AddToMainMenu();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
             }
         }
 
+        /// <summary>
+        ///     Gets the active menu item
+        /// </summary>
+        /// <value>
+        ///     The menu item
+        /// </value>
+        private static bool IsActive(string menuName)
+        {
+            return Menu.Item(menuName).IsActive();
+        }
+        /// <summary>
+        ///     Called when the game draws itself.
+        /// </summary>
+        /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
+        private static void OnDraw(EventArgs args)
+        {
+            try
+            {
+                if (IsActive("ElAlistar.Drawings.W"))
+                {
+                    if (W.Level > 0)
+                    {
+                        Render.Circle.DrawCircle(ObjectManager.Player.Position, W.Range, Color.DeepSkyBlue);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+        }
+
+
+        /// <summary>
+        ///     The ignite killsteal logic
+        /// </summary>
+        private static void HandleIgnite()
+        {
+            try
+            {
+                var kSableEnemy =
+                    HeroManager.Enemies.FirstOrDefault(
+                        hero =>
+                        hero.IsValidTarget(550) && ShieldCheck(hero) && !hero.HasBuff("summonerdot") && !hero.IsZombie
+                        && Player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite) >= hero.Health);
+
+                if (kSableEnemy != null && IgniteSpell.Slot != SpellSlot.Unknown)
+                {
+                    Player.Spellbook.CastSpell(IgniteSpell.Slot, kSableEnemy);
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+        }
+
+        /// <summary>
+        ///     The shield checker
+        /// </summary>
+        private static bool ShieldCheck(Obj_AI_Base hero)
+        {
+            try
+            {
+                return !hero.HasBuff("summonerbarrier") || !hero.HasBuff("BlackShield")
+                       || !hero.HasBuff("SivirShield") || !hero.HasBuff("BansheesVeil")
+                       || !hero.HasBuff("ShroudofDarkness");
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+
+            return false;
+        }
+
+
+        /// <summary>
+        ///     Returns the mana
+        /// </summary>
         private static bool HasEnoughMana()
         {
             return Player.Mana
                    > Player.Spellbook.GetSpell(SpellSlot.Q).ManaCost + Player.Spellbook.GetSpell(SpellSlot.W).ManaCost;
         }
 
-        private static void HealManager()
+        /// <summary>
+        ///     Combo logic
+        /// </summary>
+        private static void OnCombo()
         {
-            if (Player.Mana < ElAlistarMenu.Menu.Item("ElAlistar.Heal.Player.Mana").GetValue<Slider>().Value) return;
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || Player.IsRecalling() || Player.InFountain())
+            try
             {
-                return;
-            }
-
-            if (!spells[Spells.E].IsReady() || !MenuCheck("ElAlistar.Heal.Activated"))
-            {
-                return;
-            }
-
-            var playerHp = ElAlistarMenu.Menu.Item("ElAlistar.Heal.Player.HP").GetValue<Slider>().Value;
-            var allyHp = ElAlistarMenu.Menu.Item("ElAlistar.Heal.Ally.HP").GetValue<Slider>().Value;
-
-            if ((Player.Health / Player.MaxHealth) * 100 < playerHp)
-            {
-                spells[Spells.E].Cast();
-            }
-
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsAlly && !h.IsMe && !h.IsDead))
-            {
-                if (MenuCheck("ElAlistar.Heal.Ally.Activated") && (hero.Health / hero.MaxHealth) * 100 <= allyHp && spells[Spells.E].IsInRange(hero))
+                var target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Magical);
+                if (target == null)
                 {
-                    spells[Spells.E].Cast();
+                    return;
+                }
+
+                if (IsActive("ElAlistar.Combo.Q") && IsActive("ElAlistar.Combo.W") && Q.IsReady() && W.IsReady())
+                {
+                    if (target.IsValidTarget(W.Range) && HasEnoughMana())
+                    {
+                        if (target.IsValidTarget(Q.Range))
+                        {
+                            Q.Cast();
+                            return;
+                        }
+
+                        if (W.Cast(target).IsCasted())
+                        {
+                            var comboTime = Math.Max(0, Player.Distance(target) - 365) / 1.2f - 25;
+                            Utility.DelayAction.Add((int)comboTime, () => Q.Cast());
+                        }
+                    }
+                }
+
+                if (IsActive("ElAlistar.Combo.Q") && target.IsValidTarget(Q.Range))
+                {
+                    Q.Cast();
+                }
+
+                if (IsActive("ElAlistar.Combo.W"))
+                {
+                    if (target.IsValidTarget(W.Range) && W.GetDamage(target) > target.Health)
+                    {
+                        W.Cast(target);
+                    }
                 }
             }
-        }
-
-        private static float IgniteDamage(Obj_AI_Hero target)
-        {
-            if (ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(ignite) != SpellState.Ready)
+            catch (Exception exception)
             {
-                return 0f;
+                Console.WriteLine(exception);
             }
-            return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
-        private static void Interrupter2_OnInterruptableTarget(
+        private static void OnInterruptableTarget(
             Obj_AI_Hero sender,
             Interrupter2.InterruptableTargetEventArgs args)
         {
-            if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > spells[Spells.Q].Range)
+            if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > W.Range)
             {
                 return;
             }
 
-            if (sender.IsValidTarget(spells[Spells.Q].Range) && args.DangerLevel == Interrupter2.DangerLevel.High
-                && spells[Spells.Q].IsReady())
+            if (sender.IsValidTarget(Q.Range) && Q.IsReady() && IsActive("ElAlistar.Interrupter.Q"))
             {
-                spells[Spells.Q].Cast(sender);
+                Q.Cast();
             }
 
-            if (sender.IsValidTarget(spells[Spells.W].Range) && args.DangerLevel == Interrupter2.DangerLevel.High
-                && !spells[Spells.Q].IsReady() && spells[Spells.W].IsReady())
+            if (sender.IsValidTarget(W.Range) && W.IsReady() && IsActive("ElAlistar.Interrupter.W"))
             {
-                spells[Spells.W].Cast(sender);
+                W.Cast(sender);
             }
         }
 
-        private static bool MenuCheck(string menuName)
+        private static void OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            return ElAlistarMenu.Menu.Item(menuName).IsActive();
+            if (IsActive("ElAlistar.GapCloser"))
+            {
+                if (Q.IsReady()
+                    && gapcloser.Sender.Distance(Player) < Q.Range)
+                {
+                    Q.Cast();
+                }
+
+                if (W.IsReady() && gapcloser.Sender.Distance(Player) < W.Range)
+                {
+                    W.Cast(gapcloser.Sender);
+                }
+            }
         }
 
-        private static void OnCombo()
+        private static void AttackableUnit_OnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
         {
-            // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
-            var target = TargetSelector.GetSelectedTarget() != null
-                             ? TargetSelector.GetSelectedTarget()
-                             : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Magical);
+            var obj = ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId);
 
-            if (target == null)
+            if (obj.Type != GameObjectType.obj_AI_Hero)
             {
                 return;
             }
 
-            if (MenuCheck("ElAlistar.Combo.Q") && MenuCheck("ElAlistar.Combo.W") && HasEnoughMana())
-            {
-                if (!spells[Spells.Q].IsReady() && !spells[Spells.W].IsReady())
-                {
-                    return;
-                }
+            var hero = (Obj_AI_Hero)obj;
 
-                if (spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
-                {
-                    spells[Spells.W].Cast(target);
-                }
-
-                if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
-                {
-                    var comboTime = Math.Max(0, Player.Distance(target) - 365) / 1.2f - 25;
-                    Utility.DelayAction.Add((int)comboTime, () => spells[Spells.Q].Cast());
-                }
-            }
-
-            if (MenuCheck("ElAlistar.Combo.Q"))
-            {
-                if (target.IsValidTarget(spells[Spells.Q].Range))
-                {
-                    spells[Spells.Q].Cast();
-                }
-
-                else if (spells[Spells.Q].GetDamage(target) > target.Health)
-                {
-                    spells[Spells.Q].Cast();
-                }
-            }
-
-            if (MenuCheck("ElAlistar.Combo.W"))
-            {
-                if (spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range)
-                    && spells[Spells.W].GetDamage(target) > target.Health)
-                {
-                    spells[Spells.W].Cast();
-                }
-            }
-
-            if (MenuCheck("ElAlistar.Combo.R"))
-            {
-                if (Player.CountEnemiesInRange(spells[Spells.W].Range)
-                    >= ElAlistarMenu.Menu.Item("ElAlistar.Combo.Count.Enemies").GetValue<Slider>().Value
-                    && (Player.Health / Player.MaxHealth) * 100
-                    >= ElAlistarMenu.Menu.Item("ElAlistar.Combo.HP.Enemies").GetValue<Slider>().Value)
-                {
-                    spells[Spells.R].Cast();
-                }
-            }
-
-            if (MenuCheck("ElAlistar.Combo.Ignite"))
-            {
-                if (target.IsValidTarget(600f) && IgniteDamage(target) >= target.Health)
-                {
-                    Player.Spellbook.CastSpell(ignite, target);
-                }
-            }
-        }
-
-        private static void OnHarass()
-        {
-            // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
-            var target = TargetSelector.GetSelectedTarget() != null
-                             ? TargetSelector.GetSelectedTarget()
-                             : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
-
-            if (target == null || !target.IsValidTarget())
+            if (hero.IsEnemy)
             {
                 return;
             }
 
-            var useQ = ElAlistarMenu.Menu.Item("ElAlistar.Harass.Q").IsActive();
-
-            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+            if (Menu.Item("ElAlistar.Combo.R").IsActive())
             {
-                spells[Spells.Q].Cast(target);
+                if (ObjectManager.Get<Obj_AI_Hero>()
+                        .Any(
+                            x =>
+                            x.IsAlly && x.IsMe && !x.IsDead && ((int)(args.Damage / x.MaxHealth * 100)
+                                > Menu.Item("ElAlistar.Combo.RHeal.Damage").GetValue<Slider>().Value
+                                || x.HealthPercent < Menu.Item("ElAlistar.Combo.RHeal.HP").GetValue<Slider>().Value && x.CountEnemiesInRange(1000) >= 1)))
+                {
+                    R.Cast();
+                }
+            }
+
+            if (Menu.Item("ElAlistar.Heal.E").IsActive() && Player.ManaPercent > Menu.Item("ElAlistar.Heal.Mana").GetValue<Slider>().Value)
+            {
+                if (
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Any(
+                            x =>
+                            x.IsAlly && !x.IsDead && Menu.Item(string.Format("healon{0}", x.ChampionName)).IsActive()
+                            && ((int)(args.Damage / x.MaxHealth * 100)
+                                > Menu.Item("Heal.Damage").GetValue<Slider>().Value
+                                || x.HealthPercent < Menu.Item("Heal.HP").GetValue<Slider>().Value)
+                            && x.Distance(Player) < E.Range && x.CountEnemiesInRange(1000) >= 1))
+                {
+                    E.Cast();
+                }
             }
         }
 
+        /// <summary>
+        ///     Called when the game updates
+        /// </summary>
+        /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private static void OnUpdate(EventArgs args)
         {
-            if (Player.IsDead)
+            try
             {
-                return;
-            }
-
-            switch (Orbwalker.ActiveMode)
-            {
-                case Orbwalking.OrbwalkingMode.Combo:
-                    OnCombo();
-                    break;
-
-                case Orbwalking.OrbwalkingMode.Mixed:
-                    OnHarass();
-                    break;
-            }
-
-            if (ElAlistarMenu.Menu.Item("ElAlistar.Combo.FlashQ").GetValue<KeyBind>().Active
-                && spells[Spells.Q].IsReady())
-            {
-                Orbwalk(Game.CursorPos);
-
-                var target = ElAlistarMenu.Menu.Item("ElAlistar.Combo.Click").GetValue<bool>()
-                                 ? TargetSelector.GetSelectedTarget()
-                                 : TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Magical);
-
-                if (!target.IsValidTarget(spells[Spells.W].Range))
+                if (Player.IsDead || Player.IsRecalling() || Player.InFountain())
                 {
                     return;
                 }
 
-                Player.Spellbook.CastSpell(flashSlot, target.ServerPosition);
-                Utility.DelayAction.Add(50, () => spells[Spells.Q].Cast());
+                switch (Orbwalker.ActiveMode)
+                {
+                    case Orbwalking.OrbwalkingMode.Combo:
+                        OnCombo();
+                        break;
+                }
+
+                if (IsActive("ElAlistar.Ignite"))
+                {
+                    HandleIgnite();
+                }
+
+                if (Menu.Item("ElAlistar.Combo.FlashQ").GetValue<KeyBind>().Active && Q.IsReady())
+                {
+                    Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+
+                    var target = IsActive("ElAlistar.Flash.Click")
+                                     ? TargetSelector.GetSelectedTarget()
+                                     : TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Magical);
+
+                    if (!target.IsValidTarget(W.Range))
+                    {
+                        return;
+                    }
+
+                    Player.Spellbook.CastSpell(FlashSlot, target.ServerPosition);
+                    Utility.DelayAction.Add(50, () => Q.Cast());
+                }
+
             }
-
-            HealManager();
-        }
-
-        private static void Orbwalk(Vector3 pos, Obj_AI_Hero target = null)
-        {
-            Player.IssueOrder(GameObjectOrder.MoveTo, pos);
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
         }
 
         #endregion

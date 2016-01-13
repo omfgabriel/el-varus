@@ -8,7 +8,7 @@
 
         private static void Main(string[] args)
         {
-            CustomEvents.Game.OnGameLoad += Alistar.OnLoad;
+            CustomEvents.Game.OnGameLoad += Alistar.OnGameLoad;
         }
 
         #endregion
