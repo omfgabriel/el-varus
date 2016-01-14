@@ -100,8 +100,6 @@
                 menu.AddToMainMenu();
 
                 Menu = menu;
-
-                Game.PrintChat("<font color='#0dd629'>DATABASE</font> Give it a +1 for ya boy jQuery man!");
             }
             catch (Exception e)
             {
