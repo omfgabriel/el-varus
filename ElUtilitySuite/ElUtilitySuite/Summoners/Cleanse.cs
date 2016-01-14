@@ -108,7 +108,7 @@
                                  },
                               new CleanseSpell
                                  {
-                                     Champion = "FiddleSticks", Name = "fiddlesticksdarkwind", MenuName = "Fiddle Fear",
+                                     Champion = "FiddleSticks", Name = "fear", MenuName = "Fiddle Fear",
                                      Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.E, Interval = 1.0
                                  },
