@@ -42,6 +42,18 @@
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "Teemo", Name = "blind", MenuName = "Teemo Blind", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q,
+                                     Interval = 1.0
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "Brand", Name = "stun", MenuName = "Brand stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown,
+                                     Interval = 1.0
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "Vi", Name = "virknockup", MenuName = "Vi R Knockup", Evade = true,
                                      DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.Unknown, Interval = 1.0
@@ -93,6 +105,12 @@
                                      Champion = "FiddleSticks", Name = "drainchannel", MenuName = "Fiddle Drain",
                                      Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.W, Interval = 1.0
+                                 },
+                              new CleanseSpell
+                                 {
+                                     Champion = "FiddleSticks", Name = "fear", MenuName = "Fiddle Fear",
+                                     Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
+                                     Slot = SpellSlot.E, Interval = 1.0
                                  },
                              new CleanseSpell
                                  {
@@ -165,12 +183,6 @@
                                      Name = "missfortunepassivestack", Evade = false, DoT = true, EvadeTimer = 0,
                                      Champion = "MissFortune", Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.R,
                                      Interval = 0.5
-                                 },
-                             new CleanseSpell
-                                 {
-                                     Champion = "Zilean", Name = "zileanqenemybomb", MenuName = "Zilean Bomb",
-                                     Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
-                                     Slot = SpellSlot.Q, Interval = 3.8
                                  },
                              new CleanseSpell
                                  {
@@ -353,7 +365,7 @@
                              new CleanseSpell
                                  {
                                      Champion = "jax", Name = "stun", MenuName = "Jax (E)", Evade = false, DoT = false,
-                                     EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                     EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E
                                  },
                              new CleanseSpell
                                  {
@@ -458,7 +470,40 @@
                                      Champion = "lissandra", Name = "lissandraw", MenuName = "Lissandra (W)",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
                                      Slot = SpellSlot.W
-                                 }
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "renekton", Name = "stun", MenuName = "Renekton stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "tahmkench", Name = "tahmkenchqstun", MenuName = "Tahm Q stun",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Q
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "tahmkench", Name = "tahmkenchwhasdevouredtarget", MenuName = "Tahm stun",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = false, QssIgnore = true,
+                                     CleanseTimer = 0, Slot = SpellSlot.Unknown
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "nautilus", Name = "nautilusanchordragroot", MenuName = "Nautilus Q",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Q
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "nautilus", Name = "stun", MenuName = "Nautilus R", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R
+                                 },
+                             new CleanseSpell
+                                 {
+                                     Champion = "zilean", Name = "stun", MenuName = "Zilean double Q", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
+                                 },
                          };
 
             Spells =
@@ -643,9 +688,9 @@
                 var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
                 {
                     humanizerDelay.AddItem(
-                        new MenuItem("CleanseMinDelay", "Minimum Delay (MS)").SetValue(new Slider(50, 0, 500)));
+                        new MenuItem("CleanseMinDelay", "Minimum Delay (MS)").SetValue(new Slider(0, 0, 500)));
                     humanizerDelay.AddItem(
-                        new MenuItem("CleanseMaxDelay", "Maximum Delay (MS)").SetValue(new Slider(100, 0, 500)));
+                        new MenuItem("CleanseMaxDelay", "Maximum Delay (MS)").SetValue(new Slider(0, 0, 500)));
 
                     humanizerDelay.Item("CleanseMaxDelay").ValueChanged +=
                         delegate(object sender, OnValueChangeEventArgs args)
@@ -734,13 +779,15 @@
                     {
                         continue;
                     }
-
-                    Utility.DelayAction.Add(
+                    
+                    /*Utility.DelayAction.Add(
                         spell.CleanseTimer
                         + Random.Next(
                             this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value,
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
-                        () => item.Cast(ally));
+                        () => item.Cast(ally));*/
+
+                    Utility.DelayAction.Add(spell.CleanseTimer, () => item.Cast(ally));
                 }
             }
         }

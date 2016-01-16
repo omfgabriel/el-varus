@@ -269,7 +269,16 @@
 
             if (useR && spells[Spells.R].IsReady() && rTarget.IsValidTarget(spells[Spells.R].Range))
             {
-                spells[Spells.R].CastIfWillHit(rTarget, hitByR);
+                var pred = spells[Spells.R].GetPrediction(target);
+                if (pred.Hitchance >= HitChance.High)
+                {
+                    var hits = HeroManager.Enemies.Where(x => x.Distance(target) <= spells[Spells.R].Width).ToList();
+                    Console.WriteLine(hits.Count);
+                    if (hits.Any(hit => hits.Count >= hitByR))
+                    {
+                        spells[Spells.R].Cast(pred.CastPosition);
+                    }
+                }
             }
 
             if (this.Player.Distance(target) <= 600 && this.IgniteDamage(target) >= target.Health && useI)

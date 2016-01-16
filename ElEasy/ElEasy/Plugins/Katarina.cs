@@ -231,7 +231,7 @@ namespace ElEasy.Plugins
                     miscellaneousMenu.AddItem(dmgAfterE);
 
                     DrawDamage.DamageToUnit = this.GetComboDamage;
-                    DrawDamage.Enabled = dmgAfterE.GetValue<bool>();
+                    DrawDamage.Enabled = dmgAfterE.IsActive();
                     DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
                     DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
 
@@ -296,7 +296,7 @@ namespace ElEasy.Plugins
 
         private void CastE(Obj_AI_Base unit)
         {
-            var playLegit = this.Menu.Item("ElEasy.Katarina.E.Legit").GetValue<bool>();
+            var playLegit = this.Menu.Item("ElEasy.Katarina.E.Legit").IsActive();
             var legitCastDelay = this.Menu.Item("ElEasy.Katarina.E.Delay").GetValue<Slider>().Value;
 
             if (playLegit)
@@ -621,7 +621,7 @@ namespace ElEasy.Plugins
 
         private void OnDraw(EventArgs args)
         {
-            var drawOff = this.Menu.Item("ElEasy.Katarina.Draw.off").GetValue<bool>();
+            var drawOff = this.Menu.Item("ElEasy.Katarina.Draw.off").IsActive();
             var drawQ = this.Menu.Item("ElEasy.Katarina.Draw.Q").GetValue<Circle>();
             var drawW = this.Menu.Item("ElEasy.Katarina.Draw.W").GetValue<Circle>();
             var drawE = this.Menu.Item("ElEasy.Katarina.Draw.E").GetValue<Circle>();
@@ -1047,11 +1047,11 @@ namespace ElEasy.Plugins
         {
             this.WardJump(
                 Game.CursorPos,
-                this.Menu.Item("ElEasy.Wardjump.Mouse").GetValue<bool>(),
+                this.Menu.Item("ElEasy.Wardjump.Mouse").IsActive(),
                 false,
                 false,
-                this.Menu.Item("ElEasy.Wardjump.Minions").GetValue<bool>(),
-                this.Menu.Item("ElEasy.Wardjump.Champions").GetValue<bool>());
+                this.Menu.Item("ElEasy.Wardjump.Minions").IsActive(),
+                this.Menu.Item("ElEasy.Wardjump.Champions").IsActive());
         }
 
         #endregion

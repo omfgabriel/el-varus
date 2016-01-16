@@ -20,7 +20,7 @@ namespace ElRengarRevamped
                 // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
                 var target = TargetSelector.GetSelectedTarget() != null
                                  ? TargetSelector.GetSelectedTarget()
-                                 : TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Physical);
+                                 : TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
 
                 if (target == null)
                 {
@@ -156,12 +156,13 @@ namespace ElRengarRevamped
 
             if (prediction.Hitchance >= HitChance.High)
             {
-                spells[Spells.E].Cast(target.ServerPosition);
+                spells[Spells.E].Cast(target);
             }
         }
 
         private static void CastW(Obj_AI_Base target)
         {
+
             if (!target.IsValidTarget(spells[Spells.W].Range) || !spells[Spells.W].IsReady())
             {
                 return;

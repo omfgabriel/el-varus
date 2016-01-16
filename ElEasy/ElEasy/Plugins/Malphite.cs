@@ -15,7 +15,7 @@
         private static readonly Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
                                                                        {
                                                                            { Spells.Q, new Spell(SpellSlot.Q, 625) },
-                                                                           { Spells.W, new Spell(SpellSlot.W, 125) },
+                                                                           { Spells.W, new Spell(SpellSlot.W, Orbwalking.GetRealAutoAttackRange(ObjectManager.Player) + 100) },
                                                                            { Spells.E, new Spell(SpellSlot.E, 375) },
                                                                            { Spells.R, new Spell(SpellSlot.R, 1000) }
                                                                        };
@@ -91,20 +91,24 @@
                     comboMenu.AddItem(new MenuItem("ElEasy.Malphite.Combo.Q", "Use Q").SetValue(true));
                     comboMenu.AddItem(new MenuItem("ElEasy.Malphite.Combo.W", "Use W").SetValue(true));
                     comboMenu.AddItem(new MenuItem("ElEasy.Malphite.Combo.E", "Use E").SetValue(true));
-                    comboMenu.SubMenu("R").AddItem(new MenuItem("ElEasy.Malphite.Combo.R", "Use R").SetValue(true));
-                    comboMenu.SubMenu("R")
-                        .AddItem(
-                            new MenuItem("ElEasy.Malphite.Combo.R.Mode", "Mode ").SetValue(
-                                new StringList(new[] { "Normal", "Champions hit" })));
-                    comboMenu.SubMenu("R")
-                        .AddItem(
-                            new MenuItem("ElEasy.Malphite.Combo.Count.R", "Minimum champions hit by R").SetValue(
-                                new Slider(2, 1, 5)));
-
                     comboMenu.AddItem(new MenuItem("ElEasy.Malphite.Combo.Ignite", "Use Ignite").SetValue(true));
                 }
 
                 this.Menu.AddSubMenu(comboMenu);
+
+                var rMenu = new Menu("R Settings", "R");
+                {
+                    rMenu.AddItem(new MenuItem("ElEasy.Malphite.Combo.R", "Use R").SetValue(true));
+                    rMenu.AddItem(new MenuItem("ElEasy.Malphite.Combo.ForceR", "Force R when target can get killed").SetValue(false));
+                    rMenu.AddItem(
+                            new MenuItem("ElEasy.Malphite.Combo.R.Mode", "Mode ").SetValue(
+                                new StringList(new[] { "Single target finisher", "Champions hit" }, 1)));
+                    rMenu.AddItem(
+                            new MenuItem("ElEasy.Malphite.Combo.Count.R", "Minimum champions hit by R").SetValue(
+                                new Slider(2, 1, 5)));
+                }
+
+                this.Menu.AddSubMenu(rMenu);
 
                 var harassMenu = new Menu("Harass", "Harass");
                 {
@@ -157,6 +161,8 @@
                         new MenuItem("ElEasy.Malphite.Interrupt.Activated", "Interrupt spells").SetValue(true));
                     miscellaneousMenu.AddItem(
                         new MenuItem("ElEasy.Malphite.Draw.off", "Turn drawings off").SetValue(true));
+                    miscellaneousMenu.AddItem(
+                       new MenuItem("ElEasy.Malphite.Castpos", "Draw R cast position").SetValue(true));
                     miscellaneousMenu.AddItem(new MenuItem("ElEasy.Malphite.Draw.Q", "Draw Q").SetValue(new Circle()));
                     miscellaneousMenu.AddItem(new MenuItem("ElEasy.Malphite.Draw.E", "Draw E").SetValue(new Circle()));
                     miscellaneousMenu.AddItem(new MenuItem("ElEasy.Malphite.Draw.R", "Draw R").SetValue(new Circle()));
@@ -265,7 +271,7 @@
                 spells[Spells.Q].Cast(target);
             }
 
-            if (useW && spells[Spells.W].IsReady())
+            if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
             {
                 spells[Spells.W].Cast();
             }
@@ -282,10 +288,10 @@
                     {
                         if (spells[Spells.R].GetDamage(target) > target.Health)
                         {
-                            var pred = spells[Spells.R].GetPrediction(target).Hitchance;
-                            if (pred >= HitChance.High)
+                            var pred = spells[Spells.R].GetPrediction(target);
+                            if (pred.Hitchance >= HitChance.High)
                             {
-                                spells[Spells.R].Cast(target);
+                                spells[Spells.R].Cast(pred.CastPosition);
                             }
                         }
                     }
@@ -294,14 +300,35 @@
                 case 1:
                     if (useR && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range))
                     {
-                        var pred = spells[Spells.R].GetPrediction(target).Hitchance;
-                        if (pred >= HitChance.High)
+                        var pred = spells[Spells.R].GetPrediction(target);
+                        if (pred.Hitchance >= HitChance.High)
                         {
-                            spells[Spells.R].CastIfWillHit(target, countEnemies);
+                      
+                            var hits = HeroManager.Enemies.Where(x => x.Distance(target) <= 300f).ToList();
+                            if (hits.Any(hit => hits.Count >= countEnemies))
+                            {
+                                spells[Spells.R].Cast(pred.CastPosition);
+                            }
                         }
                     }
                     break;
             }
+            //
+            if (this.Menu.Item("ElEasy.Malphite.Combo.ForceR").IsActive())
+            {
+                var getthabitch =
+                    HeroManager.Enemies.FirstOrDefault(
+                        x =>
+                        x.Distance(target) <= 300f && spells[Spells.R].GetDamage(x) > x.Health
+                        && this.Player.CountEnemiesInRange(1000) == 1);
+
+                var pred = spells[Spells.R].GetPrediction(getthabitch);
+                if (pred.Hitchance >= HitChance.High)
+                {
+                    spells[Spells.R].Cast(pred.CastPosition);
+                }
+            }
+
 
             if (target.IsValidTarget(600) && this.IgniteDamage(target) >= target.Health && useI)
             {
@@ -320,6 +347,20 @@
             {
                 return;
             }
+            //
+            if (this.Menu.Item("ElEasy.Malphite.Castpos").IsActive())
+            {
+                var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
+                if (target == null) return;
+
+                var hits = HeroManager.Enemies.Where(x => x.Distance(target) <= 300f).ToList();
+                if (hits.Any(hit => hits.Count >= this.Menu.Item("ElEasy.Malphite.Combo.Count.R").GetValue<Slider>().Value))
+            {
+                    var pred = spells[Spells.R].GetPrediction(target);
+                    Render.Circle.DrawCircle(pred.CastPosition, 300, Color.DeepSkyBlue);
+                }
+            }
+
 
             if (drawQ.Active)
             {
@@ -328,6 +369,7 @@
                     Render.Circle.DrawCircle(this.Player.Position, spells[Spells.Q].Range, Color.White);
                 }
             }
+
 
             if (drawE.Active)
             {
