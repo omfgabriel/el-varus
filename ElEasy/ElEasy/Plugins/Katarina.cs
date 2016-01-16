@@ -409,7 +409,7 @@ namespace ElEasy.Plugins
         {
             foreach (
                 var hero in
-                    ObjectManager.Get<Obj_AI_Hero>()
+                    HeroManager.Enemies
                         .Where(hero => hero.IsValidTarget(spells[Spells.E].Range) && !hero.IsInvulnerable))
             {
                 var qdmg = spells[Spells.Q].GetDamage(hero);
@@ -529,7 +529,7 @@ namespace ElEasy.Plugins
 
         private void Obj_AI_Hero_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
         {
-            if (sender.IsMe && Environment.TickCount < rStart + 300 && args.Order == GameObjectOrder.MoveTo)
+            if (sender.IsMe && Utils.GameTimeTickCount < rStart  && args.Order == GameObjectOrder.MoveTo)
             {
                 args.Process = false;
             }
@@ -598,7 +598,9 @@ namespace ElEasy.Plugins
                         if (this.Player.CountEnemiesInRange(spells[Spells.R].Range) > 0 && spells[Spells.R].IsReady())
                         {
                             spells[Spells.R].Cast();
-                            rStart = Environment.TickCount;
+                            Orbwalker.SetMovement(false);
+                            Orbwalker.SetAttack(false);
+                            rStart = Utils.GameTimeTickCount + 400;
                         }
                         break;
 
@@ -607,7 +609,9 @@ namespace ElEasy.Plugins
                             || forceR && this.Player.CountEnemiesInRange(spells[Spells.R].Range) <= forceRCount)
                         {
                             spells[Spells.R].Cast();
-                            rStart = Environment.TickCount;
+                            Orbwalker.SetMovement(false);
+                            Orbwalker.SetAttack(false);
+                            rStart = Utils.GameTimeTickCount + 400;
                         }
                         break;
                 }
@@ -850,11 +854,13 @@ namespace ElEasy.Plugins
                 {
                     Orbwalker.SetAttack(false);
                     Orbwalker.SetMovement(false);
-                    return;
+                }
+                else
+                {
+                    Orbwalker.SetAttack(true);
+                    Orbwalker.SetMovement(true);
                 }
 
-                Orbwalker.SetAttack(true);
-                Orbwalker.SetMovement(true);
 
                 switch (Orbwalker.ActiveMode)
                 {
