@@ -350,6 +350,11 @@ namespace ElEasy.Plugins
             }
         }
 
+        private double QMarkDamage(Obj_AI_Base target)
+        {
+            return target.HasBuff("katarinaqmark") ? this.Player.GetSpellDamage(target, SpellSlot.Q, 1) : 0;
+        }
+
         private float GetComboDamage(Obj_AI_Base enemy)
         {
             var damage = 0d;
@@ -358,6 +363,8 @@ namespace ElEasy.Plugins
             {
                 damage += this.Player.GetSpellDamage(enemy, SpellSlot.Q);
             }
+
+            damage += this.QMarkDamage(enemy);
 
             if (spells[Spells.W].IsReady())
             {
@@ -372,14 +379,6 @@ namespace ElEasy.Plugins
             if (spells[Spells.R].IsReady())
             {
                 damage += this.Player.GetSpellDamage(enemy, SpellSlot.R) * 8;
-            }
-
-            if (KatarinaQ(enemy))
-            {
-                damage += this.Player.CalcDamage(
-                    enemy,
-                    Damage.DamageType.Magical,
-                    this.Player.FlatMagicDamageMod * 0.15 + this.Player.Level * 15);
             }
 
             return (float)damage;
