@@ -112,8 +112,8 @@
 
             if (ElCorkiMenu._menu.Item("ElCorki.AutoHarass").GetValue<KeyBind>().Active)
             {
-                var q = ElCorkiMenu._menu.Item("ElCorki.UseQAutoHarass").GetValue<bool>();
-                var r = ElCorkiMenu._menu.Item("ElCorki.UseQAutoHarass").GetValue<bool>();
+                var q = ElCorkiMenu._menu.Item("ElCorki.UseQAutoHarass").IsActive();
+                var r = ElCorkiMenu._menu.Item("ElCorki.UseQAutoHarass").IsActive();
                 var mana = ElCorkiMenu._menu.Item("ElCorki.harass.mana").GetValue<Slider>().Value;
 
                 if (Player.ManaPercent < mana)
@@ -161,12 +161,18 @@
                 return;
             }
 
-            var comboQ = ElCorkiMenu._menu.Item("ElCorki.Combo.Q").GetValue<bool>();
-            var comboE = ElCorkiMenu._menu.Item("ElCorki.Combo.E").GetValue<bool>();
-            var comboR = ElCorkiMenu._menu.Item("ElCorki.Combo.R").GetValue<bool>();
-            var useIgnite = ElCorkiMenu._menu.Item("ElCorki.Combo.Ignite").GetValue<bool>();
+            var comboQ = ElCorkiMenu._menu.Item("ElCorki.Combo.Q").IsActive();
+            var comboE = ElCorkiMenu._menu.Item("ElCorki.Combo.E").IsActive();
+            var comboR = ElCorkiMenu._menu.Item("ElCorki.Combo.R").IsActive();
+            var useIgnite = ElCorkiMenu._menu.Item("ElCorki.Combo.Ignite").IsActive();
             var rStacks = ElCorkiMenu._menu.Item("ElCorki.Combo.RStacks").GetValue<Slider>().Value;
             var rTarget = TargetSelector.GetTarget(spells[Spells.R1].Range, TargetSelector.DamageType.Magical);
+
+            var bigR = HasBigRocket();
+
+            var _target = TargetSelector.GetTarget(
+                   bigR ? spells[Spells.R2].Range : spells[Spells.R1].Range,
+                   TargetSelector.DamageType.Magical);
 
             Items(target);
 
@@ -175,7 +181,7 @@
                 var pred = spells[Spells.Q].GetPrediction(target);
                 if (pred.Hitchance >= HitChance.VeryHigh)
                 {
-                    spells[Spells.Q].Cast(target);
+                    spells[Spells.Q].Cast(pred.CastPosition);
                 }
             }
 
@@ -184,24 +190,20 @@
                 spells[Spells.E].Cast(target);
             }
 
-            if (comboR && spells[Spells.R1].IsReady()
-                && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Ammo > rStacks
-                && spells[Spells.R1].IsInRange(rTarget))
+            if (comboR && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Ammo > rStacks && _target != null)
             {
-                var bigR = HasBigRocket();
-
-                var _target = TargetSelector.GetTarget(
-                    bigR ? spells[Spells.R2].Range : spells[Spells.R1].Range,
-                    TargetSelector.DamageType.Magical);
-                if (_target != null)
+                if (!bigR)
                 {
-                    if (bigR)
-                    {
-                        spells[Spells.R2].Cast(target);
-                    }
-                    else
+                    if (target.IsValidTarget(spells[Spells.R1].Range))
                     {
                         spells[Spells.R1].Cast(target);
+                    }
+                }
+                else
+                {
+                    if (target.IsValidTarget(spells[Spells.R2].Range))
+                    {
+                        spells[Spells.R2].Cast(target);
                     }
                 }
             }
@@ -236,9 +238,9 @@
                 return;
             }
 
-            var harassQ = ElCorkiMenu._menu.Item("ElCorki.Harass.Q").GetValue<bool>();
-            var harassE = ElCorkiMenu._menu.Item("ElCorki.Harass.E").GetValue<bool>();
-            var harassR = ElCorkiMenu._menu.Item("ElCorki.Harass.R").GetValue<bool>();
+            var harassQ = ElCorkiMenu._menu.Item("ElCorki.Harass.Q").IsActive();
+            var harassE = ElCorkiMenu._menu.Item("ElCorki.Harass.E").IsActive();
+            var harassR = ElCorkiMenu._menu.Item("ElCorki.Harass.R").IsActive();
             var minmana = ElCorkiMenu._menu.Item("ElCorki.harass.mana2").GetValue<Slider>().Value;
             var rStacks = ElCorkiMenu._menu.Item("ElCorki.Harass.RStacks").GetValue<Slider>().Value;
 
@@ -279,9 +281,9 @@
             var ghost = ItemData.Youmuus_Ghostblade.GetItem();
             var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
 
-            var useYoumuu = ElCorkiMenu._menu.Item("ElCorki.Items.Youmuu").GetValue<bool>();
-            var useCutlass = ElCorkiMenu._menu.Item("ElCorki.Items.Cutlass").GetValue<bool>();
-            var useBlade = ElCorkiMenu._menu.Item("ElCorki.Items.Blade").GetValue<bool>();
+            var useYoumuu = ElCorkiMenu._menu.Item("ElCorki.Items.Youmuu").IsActive();
+            var useCutlass = ElCorkiMenu._menu.Item("ElCorki.Items.Cutlass").IsActive();
+            var useBlade = ElCorkiMenu._menu.Item("ElCorki.Items.Blade").IsActive();
 
             var useBladeEhp = ElCorkiMenu._menu.Item("ElCorki.Items.Blade.EnemyEHP").GetValue<Slider>().Value;
             var useBladeMhp = ElCorkiMenu._menu.Item("ElCorki.Items.Blade.EnemyMHP").GetValue<Slider>().Value;
@@ -312,9 +314,9 @@
 
         private static void JungleClear()
         {
-            var useQ = ElCorkiMenu._menu.Item("useQFarmJungle").GetValue<bool>();
-            var useE = ElCorkiMenu._menu.Item("useEFarmJungle").GetValue<bool>();
-            var useR = ElCorkiMenu._menu.Item("useRFarmJungle").GetValue<bool>();
+            var useQ = ElCorkiMenu._menu.Item("useQFarmJungle").IsActive();
+            var useE = ElCorkiMenu._menu.Item("useEFarmJungle").IsActive();
+            var useR = ElCorkiMenu._menu.Item("useRFarmJungle").IsActive();
             var minmana = ElCorkiMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
             var minions = MinionManager.GetMinions(
                 ObjectManager.Player.ServerPosition,
@@ -349,7 +351,7 @@
 
         private static void JungleStealMode()
         {
-            var useJsm = ElCorkiMenu._menu.Item("ElCorki.misc.junglesteal").GetValue<bool>();
+            var useJsm = ElCorkiMenu._menu.Item("ElCorki.misc.junglesteal").IsActive();
 
             if (!useJsm)
             {
@@ -390,7 +392,7 @@
 
         private static void KsMode()
         {
-            var useKs = ElCorkiMenu._menu.Item("ElCorki.misc.ks").GetValue<bool>();
+            var useKs = ElCorkiMenu._menu.Item("ElCorki.misc.ks").IsActive();
             if (!useKs)
             {
                 return;
@@ -411,9 +413,9 @@
 
         private static void LaneClear()
         {
-            var useQ = ElCorkiMenu._menu.Item("useQFarm").GetValue<bool>();
-            var useE = ElCorkiMenu._menu.Item("useEFarm").GetValue<bool>();
-            var useR = ElCorkiMenu._menu.Item("useRFarm").GetValue<bool>();
+            var useQ = ElCorkiMenu._menu.Item("useQFarm").IsActive();
+            var useE = ElCorkiMenu._menu.Item("useEFarm").IsActive();
+            var useR = ElCorkiMenu._menu.Item("useRFarm").IsActive();
             var countMinions = ElCorkiMenu._menu.Item("ElCorki.Count.Minions").GetValue<Slider>().Value;
             var countMinionsE = ElCorkiMenu._menu.Item("ElCorki.Count.Minions.E").GetValue<Slider>().Value;
             var countMinionsR = ElCorkiMenu._menu.Item("ElCorki.Count.Minions.R").GetValue<Slider>().Value;
