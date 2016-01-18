@@ -378,7 +378,7 @@
                                      ChampionName = "velkoz", SDataName = "velkozqplitactive", MissileName = "", Delay = 0,
                                      MissileSpeed = 1200, CastRange = 1050f
                                  },
-                              new ZhonyaSpell
+                             new ZhonyaSpell
                                  {
                                      ChampionName = "velkoz", SDataName = "velkozr", MissileName = "", Delay = 0,
                                      MissileSpeed = 1500, CastRange = 1575f
@@ -493,6 +493,12 @@
         /// </value>
         public static List<ZhonyaSpell> Spells { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the menu.
+        /// </summary>
+        /// <value>
+        ///     The menu.
+        /// </value>
         public Menu Menu { get; set; }
 
         #endregion
@@ -648,49 +654,13 @@
         }
 
         /// <summary>
-        ///     Gets the spell hit time.
-        /// </summary>
-        /// <param name="missile">The missile.</param>
-        /// <param name="pos">The position.</param>
-        /// <returns></returns>
-        private float GetSpellHitTime(MissileClient missile, Vector2 pos)
-        {
-            if (!missile.SData.TargettingType.ToString().Contains("Location")
-                || missile.SData.TargettingType.ToString().Contains("Aoe"))
-            {
-                return missile.SData.TargettingType == SpellDataTargetType.LocationAoe
-                           ? Math.Max(
-                               0,
-                               missile.SData.CastFrame / 30 * 1000
-                               + missile.StartPosition.Distance(missile.EndPosition) / missile.SData.MissileSpeed * 1000
-                               - Environment.TickCount - Game.Ping)
-                           : float.MaxValue;
-            }
-
-            if (
-                Spells.Find(x => x.MissileName.Equals(missile.Name, StringComparison.InvariantCultureIgnoreCase))
-                    .MissileSpeed == int.MaxValue)
-            {
-                return Math.Max(
-                    0,
-                    missile.SData.CastFrame / 30 * 1000
-                    + missile.StartPosition.Distance(missile.EndPosition) / missile.SData.MissileSpeed * 1000
-                    - Environment.TickCount - Game.Ping);
-            }
-
-            var spellPos = missile.Position.To2D();
-            return 1000 * spellPos.Distance(pos) / missile.SData.MissileAccel;
-        }
-
-
-        /// <summary>
         ///     Fired when a game object is created.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void GameObjectOnCreate(GameObject sender, EventArgs args)
         {
-            if (!sender.IsValid<MissileClient>() || sender.IsAlly)
+            if (!sender.IsValid<MissileClient>() || sender.IsAlly || !zhyonyaItem.IsReady())
             {
                 return;
             }
@@ -733,8 +703,43 @@
                 if (!(this.Menu.Item("NoZhonyaEvade").IsActive() && this.CanEvadeMissile(missile, Player)))
                 {
                     zhyonyaItem.Cast();
-                }          
+                }
             }
+        }
+
+        /// <summary>
+        ///     Gets the spell hit time.
+        /// </summary>
+        /// <param name="missile">The missile.</param>
+        /// <param name="pos">The position.</param>
+        /// <returns></returns>
+        private float GetSpellHitTime(MissileClient missile, Vector2 pos)
+        {
+            if (!missile.SData.TargettingType.ToString().Contains("Location")
+                || missile.SData.TargettingType.ToString().Contains("Aoe"))
+            {
+                return missile.SData.TargettingType == SpellDataTargetType.LocationAoe
+                           ? Math.Max(
+                               0,
+                               missile.SData.CastFrame / 30 * 1000
+                               + missile.StartPosition.Distance(missile.EndPosition) / missile.SData.MissileSpeed * 1000
+                               - Environment.TickCount - Game.Ping)
+                           : float.MaxValue;
+            }
+
+            if (
+                Spells.Find(x => x.MissileName.Equals(missile.Name, StringComparison.InvariantCultureIgnoreCase))
+                    .MissileSpeed == int.MaxValue)
+            {
+                return Math.Max(
+                    0,
+                    missile.SData.CastFrame / 30 * 1000
+                    + missile.StartPosition.Distance(missile.EndPosition) / missile.SData.MissileSpeed * 1000
+                    - Environment.TickCount - Game.Ping);
+            }
+
+            var spellPos = missile.Position.To2D();
+            return 1000 * spellPos.Distance(pos) / missile.SData.MissileAccel;
         }
 
         /// <summary>
@@ -745,7 +750,8 @@
         private void ObjAiBaseOnOnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
         {
             if (args.TargetNetworkId != Player.NetworkId
-                || !ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId).IsMe || !this.ZhonyaLowHp)
+                || !ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId).IsMe || !this.ZhonyaLowHp
+                || !zhyonyaItem.IsReady())
             {
                 return;
             }
@@ -764,7 +770,7 @@
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.IsAlly)
+            if (sender.IsAlly || !zhyonyaItem.IsReady())
             {
                 return;
             }
@@ -829,7 +835,7 @@
                 || (!isLinear && Player.Distance(endPosition) <= width + Player.BoundingRadius))
             {
                 // Let missile client event handle it
-                if (Menu.Item("NoZhonyaEvade").IsActive() && spellData.MissileName != null)
+                if (this.Menu.Item("NoZhonyaEvade").IsActive() && spellData.MissileName != null)
                 {
                     return;
                 }
