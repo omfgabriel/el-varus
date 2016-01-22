@@ -19,7 +19,7 @@
         /// <summary>
         ///     The zhyonya item
         /// </summary>
-        private static Items.Item zhyonyaItem;
+        private static Items.Item zhonyaItem;
 
         #endregion
 
@@ -88,7 +88,7 @@
                                  },
                              new ZhonyaSpell
                                  {
-                                     ChampionName = "zed", SDataName = "zedr", MissileName = "", Delay = 250,
+                                     ChampionName = "zed", SDataName = "zedr", MissileName = "", Delay = 500,
                                      MissileSpeed = int.MaxValue, CastRange = 850f
                                  },
                              new ZhonyaSpell
@@ -596,7 +596,7 @@
                 }
 
                 zhonyaMenu.AddSubMenu(zhonyaSpellMenu);
-                zhonyaMenu.AddItem(new MenuItem("ZhonyaDangerous", "Zhonya's on dangerous spell").SetValue(true));
+                zhonyaMenu.AddItem(new MenuItem("ZhonyaDangerous", "Use Zhonya").SetValue(true));
                 zhonyaMenu.AddItem(new MenuItem("ZhonyaHP", "Use Zhonya on low HP").SetValue(true));
                 zhonyaMenu.AddItem(new MenuItem("ZhonyaHPSlider", "HP Percent").SetValue(new Slider(10, 1, 50)));
                 zhonyaMenu.AddItem(
@@ -612,7 +612,7 @@
         /// </summary>
         public void Load()
         {
-            zhyonyaItem = new Items.Item(Game.MapId == GameMapId.SummonersRift ? 3157 : 3090);
+            zhonyaItem = new Items.Item(Game.MapId == GameMapId.SummonersRift ? 3157 : 3090);
 
             GameObject.OnCreate += this.GameObjectOnCreate;
             Obj_AI_Base.OnProcessSpellCast += this.ObjAiBaseOnProcessSpellCast;
@@ -660,7 +660,8 @@
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void GameObjectOnCreate(GameObject sender, EventArgs args)
         {
-            if (!sender.IsValid<MissileClient>() || sender.IsAlly || !zhyonyaItem.IsReady())
+            if (!sender.IsValid<MissileClient>() || sender.IsAlly || !zhonyaItem.IsReady()
+                || !this.Menu.Item("ZhonyaDangerous").IsActive())
             {
                 return;
             }
@@ -702,7 +703,7 @@
             {
                 if (!(this.Menu.Item("NoZhonyaEvade").IsActive() && this.CanEvadeMissile(missile, Player)))
                 {
-                    zhyonyaItem.Cast();
+                    zhonyaItem.Cast();
                 }
             }
         }
@@ -751,7 +752,7 @@
         {
             if (args.TargetNetworkId != Player.NetworkId
                 || !ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId).IsMe || !this.ZhonyaLowHp
-                || !zhyonyaItem.IsReady())
+                || !zhonyaItem.IsReady())
             {
                 return;
             }
@@ -759,7 +760,7 @@
             if (Player.HealthPercent < this.ZhonyaBelowHp
                 || (Player.Health - args.Damage) / Player.MaxHealth * 100 < this.ZhonyaBelowHp)
             {
-                zhyonyaItem.Cast();
+                zhonyaItem.Cast();
             }
         }
 
@@ -770,7 +771,7 @@
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.IsAlly || !zhyonyaItem.IsReady())
+            if (sender.IsAlly || !zhonyaItem.IsReady() || !this.Menu.Item("ZhonyaDangerous").IsActive())
             {
                 return;
             }
@@ -802,7 +803,7 @@
                 || args.SData.TargettingType == SpellDataTargetType.SelfAoe
                 && Player.Distance(sender) < spellData.CastRange)
             {
-                zhyonyaItem.Cast();
+                Utility.DelayAction.Add((int)spellData.Delay, () => zhonyaItem.Cast());
                 return;
             }
 
@@ -840,7 +841,7 @@
                     return;
                 }
 
-                zhyonyaItem.Cast();
+                zhonyaItem.Cast();
             }
         }
 
