@@ -320,13 +320,9 @@
             if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") <= 2)
             {
                 var prediction = spells[Spells.Q].GetPrediction(target);
-                if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+                if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                 {
-                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange
-                        && prediction.Hitchance != HitChance.Collision)
-                    {
-                        spells[Spells.Q].Cast(target);
-                    }
+                    spells[Spells.Q].Cast(target);
                 }
 
                 if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
