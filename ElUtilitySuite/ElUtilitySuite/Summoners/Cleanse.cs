@@ -48,6 +48,11 @@
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "Ashe", Name = "stun", MenuName = "Ashe (R)", Evade = false, DoT = false,
+                                     EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "Brand", Name = "stun", MenuName = "Brand stun", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Unknown,
                                      Interval = 1.0
