@@ -28,6 +28,12 @@
                                      EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.Unknown,
                                      Interval = 1.0
                                  },
+                              new CleanseSpell
+                                 {
+                                     Name = "summonerexhaust", MenuName = "Summoner Exhaust", Evade = false, DoT = true,
+                                     EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.Unknown,
+                                     Interval = 1.0
+                                 },
                              new CleanseSpell
                                  {
                                      Champion = "Taric", Name = "stun", MenuName = "Taric Stun", Evade = false,
