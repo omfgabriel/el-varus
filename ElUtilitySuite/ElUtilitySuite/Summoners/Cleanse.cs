@@ -478,6 +478,12 @@
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "lux", Name = "luxlightbinding", MenuName = "Lux (Q)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Q
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "renekton", Name = "stun", MenuName = "Renekton stun", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W
                                  },
