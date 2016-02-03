@@ -439,12 +439,12 @@ namespace ElTristana
             {
                 return;
             }
-            if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > spells[Spells.R].Range)
+            if (sender.Distance(Player) > spells[Spells.R].Range)
             {
                 return;
             }
 
-            if (spells[Spells.R].CanCast(sender) && args.DangerLevel >= Interrupter2.DangerLevel.High)
+            if (spells[Spells.R].CanCast(sender)) //
             {
                 spells[Spells.R].Cast(sender);
             }
