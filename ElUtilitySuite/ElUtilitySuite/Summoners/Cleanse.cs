@@ -263,7 +263,7 @@
                              new CleanseSpell
                                  {
                                      Champion = "Zed", Name = "zedultexecute", MenuName = "Zed Mark", Evade = true,
-                                     DoT = false, EvadeTimer = 2500, Cleanse = true, CleanseTimer = 500,
+                                     DoT = false, EvadeTimer = 2600, Cleanse = true, CleanseTimer = 500,
                                      Slot = SpellSlot.R, Interval = 1.0
                                  },
                              new CleanseSpell
