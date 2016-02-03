@@ -88,7 +88,7 @@
                                  },
                              new ZhonyaSpell
                                  {
-                                     ChampionName = "zed", SDataName = "zedr", MissileName = "", Delay = 500,
+                                     ChampionName = "zed", SDataName = "zedr", MissileName = "", Delay = 700,
                                      MissileSpeed = int.MaxValue, CastRange = 850f
                                  },
                              new ZhonyaSpell

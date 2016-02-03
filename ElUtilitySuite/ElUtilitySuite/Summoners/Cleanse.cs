@@ -803,14 +803,14 @@
                         continue;
                     }
                     
-                    /*Utility.DelayAction.Add(
+                    Utility.DelayAction.Add(
                         spell.CleanseTimer
                         + Random.Next(
                             this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value,
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
-                        () => item.Cast(ally));*/
+                        () => item.Cast(ally));
 
-                    Utility.DelayAction.Add(spell.CleanseTimer, () => item.Cast(ally));
+                    //Utility.DelayAction.Add(spell.CleanseTimer, () => item.Cast(ally));
                 }
             }
         }
