@@ -121,12 +121,12 @@
                         var manamune = Entry.Player.GetSpellSlot("Muramana");
                         if (manamune != SpellSlot.Unknown && !Entry.Player.HasBuff("Muramana"))
                         {
-                            if (Entry.Player.Mana / Entry.Player.MaxMana * 100
+                           /* if (Entry.Player.Mana / Entry.Player.MaxMana * 100
                                 > this.Menu.Item("useMuramanaMana").GetValue<Slider>().Value)
                             {
-                                Entry.Player.Spellbook.CastSpell(manamune);
-                            }
-
+                                
+                            }*/
+                            Entry.Player.Spellbook.CastSpell(manamune);
                             Utility.DelayAction.Add(400, () => CanManamune = false);
                         }
                     }
