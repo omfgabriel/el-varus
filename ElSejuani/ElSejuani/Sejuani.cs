@@ -171,11 +171,16 @@ namespace ElSejuani
                 }      
             }
 
-            if (comboR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) && Player.CountEnemiesInRange(spells[Spells.R].Range) >= countEnemyR)
+            if (comboR && spells[Spells.R].IsReady())
             {
-                var prediction = spells[Spells.R].GetPrediction(target).Hitchance;
-                if (prediction >= CustomHitChance)
-                    spells[Spells.R].CastOnBestTarget();
+                foreach (var x in HeroManager.Enemies.Where((hero => !hero.IsDead && hero.IsValidTarget(spells[Spells.R].Range))))
+                {
+                    var pred = spells[Spells.R].GetPrediction(x);
+                    if (pred.AoeTargetsHitCount >= countEnemyR)
+                    {
+                        spells[Spells.R].Cast(pred.CastPosition);
+                    }
+                }
             }
         }
 
@@ -196,7 +201,7 @@ namespace ElSejuani
             var minmana = ElSejuaniMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
             var minQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q.Count").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < minmana)
+            if (Player.ManaPercent < minmana)
                 return;
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
@@ -239,7 +244,7 @@ namespace ElSejuani
             var minmana = ElSejuaniMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
             var minQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q.Count").GetValue<Slider>().Value;
            
-            if (Player.ManaPercentage() < minmana)
+            if (Player.ManaPercent < minmana)
                 return;
 
             var minions = MinionManager.GetMinions(
@@ -288,7 +293,7 @@ namespace ElSejuani
             var harassE = ElSejuaniMenu._menu.Item("ElSejuani.Harass.E").GetValue<bool>();
             var minmana = ElSejuaniMenu._menu.Item("ElSejuani.harass.mana").GetValue<Slider>().Value;
 
-            if (Player.ManaPercentage() < minmana)
+            if (Player.ManaPercent < minmana)
                 return;
 
             if (harassQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
