@@ -476,6 +476,11 @@
                                      Champion = "xerath", Name = "stun", MenuName = "Xerath (E)", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
                                  },
+                              new CleanseSpell
+                                 {
+                                     Champion = "thresh", Name = "threshq", MenuName = "Thresh (Q)", Evade = true,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
+                                 },
                              new CleanseSpell
                                  {
                                      Champion = "Lissandra", Name = "lissandrarenemy2", MenuName = "Lissandra (R)",
