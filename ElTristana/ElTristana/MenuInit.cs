@@ -69,27 +69,6 @@ namespace ElTristana
 
             #endregion
 
-
-            var humanizerDelay = new Menu("Humanizer Delay", "Humanizer Delay");
-            {
-                humanizerDelay.AddItem(
-                    new MenuItem("EMinDelay", "E- Minimum Delay (MS)").SetValue(new Slider(0, 0, 500)));
-                humanizerDelay.AddItem(
-                    new MenuItem("EMaxDelay", "E- Maximum Delay (MS)").SetValue(new Slider(0, 0, 500)));
-
-                humanizerDelay.Item("EMaxDelay").ValueChanged +=
-                    delegate (object sender, OnValueChangeEventArgs args)
-                    {
-                        if (args.GetNewValue<Slider>().Value
-                                < Menu.Item("EMinDelay").GetValue<Slider>().Value)
-                        {
-                            args.Process = false;
-                        }
-                    };
-            }
-
-           Menu.AddSubMenu(humanizerDelay);
-
             #region 
 
             var itemMenu = new Menu("Items", "Items");

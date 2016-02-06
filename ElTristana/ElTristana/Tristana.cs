@@ -176,20 +176,12 @@
                         var getEnemies = MenuInit.Menu.Item("ElTristana.E.On" + hero.CharData.BaseSkinName);
                         if (getEnemies != null && getEnemies.GetValue<bool>())
                         {
-                            Utility.DelayAction.Add(
-                                Random.Next(
-                                    MenuInit.Menu.Item("EMinDelay").GetValue<Slider>().Value,
-                                    MenuInit.Menu.Item("EMaxDelay").GetValue<Slider>().Value),
-                                () => spells[Spells.E].Cast(hero));
+                            spells[Spells.E].Cast(hero);
                         }
 
                         if (getEnemies != null && !getEnemies.GetValue<bool>() && Player.CountEnemiesInRange(1500) == 1)
                         {
-                            Utility.DelayAction.Add(
-                                Random.Next(
-                                    MenuInit.Menu.Item("EMinDelay").GetValue<Slider>().Value,
-                                    MenuInit.Menu.Item("EMaxDelay").GetValue<Slider>().Value),
-                                () => spells[Spells.E].Cast(hero));
+                            spells[Spells.E].Cast(hero);
                         }
                     }
                 }
