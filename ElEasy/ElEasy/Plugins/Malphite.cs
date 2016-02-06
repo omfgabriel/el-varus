@@ -498,7 +498,7 @@
                 spells[Spells.W].Cast(this.Player);
             }
 
-            if (useE && spells[Spells.E].IsReady())
+            if (useE && spells[Spells.E].IsReady() && minions.IsValidTarget(spells[Spells.E].Range))
             {
                 spells[Spells.E].Cast();
             }
