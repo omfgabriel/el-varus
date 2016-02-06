@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Linq;
 
     using LeagueSharp;
@@ -86,6 +85,11 @@
             }
         }
 
+        private static bool CheckMenu(string menuName)
+        {
+            return ElVladimirMenu.Menu.Item(menuName).IsActive();
+        }
+
         private static float GetComboDamage(Obj_AI_Base enemy)
         {
             var damage = 0d;
@@ -117,6 +121,26 @@
             return (float)(damage + Player.GetAutoAttackDamage(enemy));
         }
 
+        //Credits to Lizzarin
+        private static Tuple<int, List<Obj_AI_Hero>> GetEHits()
+        {
+            try
+            {
+                var hits =
+                    HeroManager.Enemies.Where(
+                        e =>
+                        e.IsValidTarget() && e.Distance(Player) < 600f * 0.8f
+                        || e.Distance(Player) < 600f && e.IsFacing(Player)).ToList();
+
+                return new Tuple<int, List<Obj_AI_Hero>>(hits.Count, hits);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            return new Tuple<int, List<Obj_AI_Hero>>(0, null);
+        }
+
         private static float IgniteDamage(Obj_AI_Hero target)
         {
             if (ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(ignite) != SpellState.Ready)
@@ -126,6 +150,32 @@
             return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
+        private static void OnAutoHarass()
+        {
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
+            if (target == null || !target.IsValid)
+            {
+                return;
+            }
+
+            var useQ = ElVladimirMenu.Menu.Item("ElVladimir.AutoHarass.Q").IsActive();
+            var useE = ElVladimirMenu.Menu.Item("ElVladimir.AutoHarass.E").IsActive();
+            var playerHp = ElVladimirMenu.Menu.Item("ElVladimir.AutoHarass.Health.E").GetValue<Slider>().Value;
+
+            if (spells[Spells.Q].IsReady() && target.IsValidTarget() && useQ)
+            {
+                spells[Spells.Q].CastOnUnit(target, true);
+            }
+
+            if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range)
+                && (Player.Health / Player.MaxHealth) * 100 >= playerHp && useE)
+            {
+                if (GetEHits().Item1 > 0)
+                {
+                    spells[Spells.E].Cast();
+                }
+            }
+        }
 
         private static void OnAutoStack()
         {
@@ -141,11 +191,6 @@
             {
                 spells[Spells.E].Cast();
             }
-        }
-
-        private static bool CheckMenu(string menuName)
-        {
-            return ElVladimirMenu.Menu.Item(menuName).IsActive();
         }
 
         private static void OnCombo()
@@ -168,13 +213,14 @@
                 }
             }
 
-            if (CheckMenu("ElVladimir.Combo.Q") && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+            if (CheckMenu("ElVladimir.Combo.Q") && spells[Spells.Q].IsReady()
+                && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].CastOnUnit(target);
             }
 
-
-            if (CheckMenu("ElVladimir.Combo.W") && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
+            if (CheckMenu("ElVladimir.Combo.W") && spells[Spells.W].IsReady()
+                && target.IsValidTarget(spells[Spells.W].Range))
             {
                 spells[Spells.W].Cast();
             }
@@ -223,7 +269,8 @@
             {
                 if (CheckMenu("ElVladimir.Combo.R") && spells[Spells.R].IsReady())
                 {
-                    foreach (var x in HeroManager.Enemies.Where((hero => !hero.IsDead && hero.IsValidTarget(spells[Spells.R].Range))))
+                    foreach (var x in
+                        HeroManager.Enemies.Where((hero => !hero.IsDead && hero.IsValidTarget(spells[Spells.R].Range))))
                     {
                         var pred = spells[Spells.R].GetPrediction(x);
                         if (pred.AoeTargetsHitCount >= countEnemy)
@@ -234,30 +281,11 @@
                 }
             }
 
-            if (CheckMenu("ElVladimir.Combo.Ignite") && Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health)
+            if (CheckMenu("ElVladimir.Combo.Ignite") && Player.Distance(target) <= 600
+                && IgniteDamage(target) >= target.Health)
             {
                 Player.Spellbook.CastSpell(ignite, target);
             }
-        }
-
-        //Credits to Lizzarin
-        private static Tuple<int, List<Obj_AI_Hero>> GetEHits()
-        {
-            try
-            {
-                var hits =
-                    HeroManager.Enemies.Where(
-                        e =>
-                            e.IsValidTarget() && e.Distance(Player) < 600f * 0.8f ||
-                            e.Distance(Player) < 600f && e.IsFacing(Player)).ToList();
-
-                return new Tuple<int, List<Obj_AI_Hero>>(hits.Count, hits);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            return new Tuple<int, List<Obj_AI_Hero>>(0, null);
         }
 
         private static void OnHarass()
@@ -268,12 +296,14 @@
                 return;
             }
 
-            if (CheckMenu("ElVladimir.Harass.Q") && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+            if (CheckMenu("ElVladimir.Harass.Q") && spells[Spells.Q].IsReady()
+                && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].CastOnUnit(target);
             }
 
-            if (CheckMenu("ElVladimir.Harass.E") && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
+            if (CheckMenu("ElVladimir.Harass.E") && spells[Spells.E].IsReady()
+                && target.IsValidTarget(spells[Spells.E].Range))
             {
                 if (GetEHits().Item1 > 0)
                 {
@@ -381,6 +411,11 @@
                     OnLaneClear();
                     OnJungleClear();
                     break;
+            }
+
+            if (ElVladimirMenu.Menu.Item("ElVladimir.AutoHarass.Activated").GetValue<KeyBind>().Active)
+            {
+                OnAutoHarass();
             }
 
             if (ElVladimirMenu.Menu.Item("ElVladimir.Settings.Stack.E").GetValue<KeyBind>().Active)

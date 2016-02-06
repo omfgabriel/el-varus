@@ -45,11 +45,23 @@
 
             Menu.AddSubMenu(comboMenu);
 
-            //ElVladimir.Harass
             var harassMenu = new Menu("Harass", "Harass");
             {
                 harassMenu.AddItem(new MenuItem("ElVladimir.Harass.Q", "Use Q").SetValue(true));
                 harassMenu.AddItem(new MenuItem("ElVladimir.Harass.E", "Use E").SetValue(true));
+
+                harassMenu.SubMenu("AutoHarass settings")
+                    .AddItem(
+                        new MenuItem("ElVladimir.AutoHarass.Health.E", "Minimum Health for E").SetValue(new Slider(20)));
+                harassMenu.SubMenu("AutoHarass settings")
+                    .AddItem(
+                        new MenuItem("ElVladimir.AutoHarass.Activated", "Auto harass", true).SetValue(
+                            new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle)));
+                harassMenu.SubMenu("AutoHarass settings").AddItem(new MenuItem("spacespacespace", ""));
+                harassMenu.SubMenu("AutoHarass settings")
+                    .AddItem(new MenuItem("ElVladimir.AutoHarass.Q", "Use Q").SetValue(true));
+                harassMenu.SubMenu("AutoHarass settings")
+                    .AddItem(new MenuItem("ElVladimir.AutoHarass.E", "Use E").SetValue(true));
             }
             Menu.AddSubMenu(harassMenu);
 
@@ -90,7 +102,6 @@
 
             Menu.AddSubMenu(miscMenu);
 
-            //Here comes the moneyyy, money, money, moneyyyy
             var credits = new Menu("Credits", "jQuery");
             {
                 credits.AddItem(new MenuItem("ElVladimir.Paypal", "if you would like to donate via paypal:"));
