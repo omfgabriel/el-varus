@@ -57,7 +57,7 @@
             {
                 healMenu.AddItem(new MenuItem("Heal.Activated", "Heal").SetValue(true));
                 healMenu.AddItem(new MenuItem("Heal.HP", "Health percentage").SetValue(new Slider(20, 1)));
-                healMenu.AddItem(new MenuItem("Heal.Damage", "Heal on damage dealt %").SetValue(new Slider(20, 1)));
+                healMenu.AddItem(new MenuItem("Heal.Damage", "Heal on % incoming damage").SetValue(new Slider(20, 1)));
                 healMenu.AddItem(new MenuItem("seperator21", ""));
                 foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
                 {
