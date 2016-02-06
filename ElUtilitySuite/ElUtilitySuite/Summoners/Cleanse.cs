@@ -1,4 +1,4 @@
-﻿namespace ElUtilitySuite.Summoners
+namespace ElUtilitySuite.Summoners
 {
     using System;
     using System.Collections.Generic;
@@ -173,7 +173,7 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Darius", Name = "dariushemo", MenuName = "Darius Hemorrhage",
+                                     Champion = "Darius", Name = "DariusNoxianTacticsONH", MenuName = "Darius (W)",
                                      Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.W, Interval = 1.0
                                  },
@@ -262,7 +262,7 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Zed", Name = "zedultexecute", MenuName = "Zed Mark", Evade = true,
+                                     Champion = "Zed", Name = "zedulttargetmark", MenuName = "Zed Mark", Evade = true,
                                      DoT = false, EvadeTimer = 2600, Cleanse = true, CleanseTimer = 500,
                                      Slot = SpellSlot.R, Interval = 1.0
                                  },
@@ -284,13 +284,13 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Morgana", Name = "soulshackles", MenuName = "Morgana Soul Shackles",
+                                     Champion = "Morgana", Name = "SoulShackless", MenuName = "Morgana Soul Shackles",
                                      Evade = true, DoT = false, EvadeTimer = 2600, Cleanse = true, CleanseTimer = 1100,
                                      Slot = SpellSlot.R, Interval = 3.9
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Morgana", Name = "dark binding", MenuName = "Morgana Q", Evade = true,
+                                     Champion = "Morgana", Name = "DarkBindingMissile", MenuName = "Morgana Q", Evade = true,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
                                  },
                              new CleanseSpell
@@ -320,6 +320,11 @@
                              new CleanseSpell
                                  {
                                      Champion = "Urgot", Name = "urgotswap2", MenuName = "Urgot Swap", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R
+                                 },
+                              new CleanseSpell
+                                 {
+                                     Champion = "Diana", Name = "DianaArc", MenuName = "Diana Q", Evade = true,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R
                                  },
                              new CleanseSpell
@@ -409,7 +414,7 @@
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Warwick", Name = "InfiniteDuress", MenuName = "Warwick (R)",
+                                     Champion = "Warwick", Name = "suppression", MenuName = "Warwick (R)",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.R
                                  },
@@ -779,6 +784,8 @@
             {
                 return;
             }
+
+            //Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Select(b => b.DisplayName)));
 
             foreach (var ally in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
             {
