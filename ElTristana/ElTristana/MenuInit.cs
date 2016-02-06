@@ -69,6 +69,27 @@ namespace ElTristana
 
             #endregion
 
+
+            var humanizerDelay = new Menu("Humanizer Delay", "Humanizer Delay");
+            {
+                humanizerDelay.AddItem(
+                    new MenuItem("EMinDelay", "E- Minimum Delay (MS)").SetValue(new Slider(0, 0, 500)));
+                humanizerDelay.AddItem(
+                    new MenuItem("EMaxDelay", "E- Maximum Delay (MS)").SetValue(new Slider(0, 0, 500)));
+
+                humanizerDelay.Item("EMaxDelay").ValueChanged +=
+                    delegate (object sender, OnValueChangeEventArgs args)
+                    {
+                        if (args.GetNewValue<Slider>().Value
+                                < Menu.Item("EMinDelay").GetValue<Slider>().Value)
+                        {
+                            args.Process = false;
+                        }
+                    };
+            }
+
+           Menu.AddSubMenu(humanizerDelay);
+
             #region 
 
             var itemMenu = new Menu("Items", "Items");
@@ -111,6 +132,30 @@ namespace ElTristana
             miscMenu.AddItem(new MenuItem("ElTristana.Draw.R", "Draw R").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElTristana.Antigapcloser", "Antigapcloser").SetValue(false));
             miscMenu.AddItem(new MenuItem("ElTristana.Interrupter", "Interrupter").SetValue(false));
+
+            var dmgAfterE = new MenuItem("ElTristana.DrawComboDamage", "Draw combo damage").SetValue(true);
+            var drawFill =
+                new MenuItem("ElTristana.DrawColour", "Fill colour", true).SetValue(
+                    new Circle(true, Color.Goldenrod));
+            miscMenu.AddItem(drawFill);
+            miscMenu.AddItem(dmgAfterE);
+
+            DamageIndicator.DamageToUnit = Tristana.GetComboDamage;
+            DamageIndicator.Enabled = dmgAfterE.GetValue<bool>();
+            DamageIndicator.Fill = drawFill.GetValue<Circle>().Active;
+            DamageIndicator.FillColor = drawFill.GetValue<Circle>().Color;
+
+            dmgAfterE.ValueChanged +=
+                delegate (object sender, OnValueChangeEventArgs eventArgs)
+                {
+                    DamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
+                };
+
+            drawFill.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DamageIndicator.Fill = eventArgs.GetNewValue<Circle>().Active;
+                DamageIndicator.FillColor = eventArgs.GetNewValue<Circle>().Color;
+            };
 
             Menu.AddSubMenu(miscMenu);
 
