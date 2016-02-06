@@ -775,8 +775,6 @@
                 return;
             }
 
-            //Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Select(b => b.DisplayName)));
-
             foreach (var ally in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
             {
                 foreach (var spell in Spells.Where(x => ally.HasBuff(x.Name)))
@@ -803,14 +801,14 @@
                         continue;
                     }
                     
-                    Utility.DelayAction.Add(
+                    /*Utility.DelayAction.Add(
                         spell.CleanseTimer
                         + Random.Next(
                             this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value,
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
-                        () => item.Cast(ally));
+                        () => item.Cast(ally));*/
 
-                    //Utility.DelayAction.Add(spell.CleanseTimer, () => item.Cast(ally));
+                    Utility.DelayAction.Add(spell.CleanseTimer, () => item.Cast(ally));
                 }
             }
         }
