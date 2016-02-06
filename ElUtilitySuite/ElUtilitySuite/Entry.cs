@@ -74,6 +74,7 @@
                 Expression.Lambda(typeof(ObjectActivator<T>), Expression.New(ctor, argsExp), param).Compile();
         }
 
+
         public static void OnLoad(EventArgs args)
         {
             try
