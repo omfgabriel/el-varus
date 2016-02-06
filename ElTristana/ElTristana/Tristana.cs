@@ -129,7 +129,7 @@
                 return;
             }
 
-            if (sender.Distance(Player) < spells[Spells.R].Range)
+            if (sender.Distance(Player) <= spells[Spells.R].Range)
             {
                 spells[Spells.R].Cast(sender);
             }
