@@ -27,7 +27,7 @@
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
                                                              {
                                                                  { Spells.Q, new Spell(SpellSlot.Q, 650) },
-                                                                 { Spells.W, new Spell(SpellSlot.W, 350) },
+                                                                 { Spells.W, new Spell(SpellSlot.W,  Orbwalking.GetRealAutoAttackRange(Player) + 100) },
                                                                  { Spells.E, new Spell(SpellSlot.E, 1000) },
                                                                  { Spells.R, new Spell(SpellSlot.R, 1175) }
                                                              };
@@ -291,7 +291,7 @@
                 }
 
                 if (spells[Spells.W].IsReady() && clearW
-                    && minion.ServerPosition.Distance(Player.ServerPosition, true) <= 500)
+                    && minion.ServerPosition.Distance(Player.ServerPosition, true) <= spells[Spells.W].Range)
                 {
                     spells[Spells.W].Cast();
                 }
@@ -393,7 +393,7 @@
             var prediction = spells[Spells.R].GetPrediction(target);
             if (prediction.Hitchance >= HitChance.High)
             {
-                spells[Spells.R].Cast(target.Position);
+                spells[Spells.R].Cast(prediction.CastPosition);
             }
         }
 
