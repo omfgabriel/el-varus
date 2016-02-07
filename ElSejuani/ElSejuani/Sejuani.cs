@@ -1,27 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using LeagueSharp;
-using LeagueSharp.Common;
-using SharpDX;
-using LeagueSharp.Common.Data;
-
-
-namespace ElSejuani
+﻿namespace ElSejuani
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using LeagueSharp;
+    using LeagueSharp.Common;
+
     internal enum Spells
     {
         Q,
+
         W,
+
         E,
+
         R
     }
 
     internal static class Sejuani
     {
+        #region Static Fields
+
+        public static Orbwalking.Orbwalker Orbwalker;
+
+        public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
+                                                             {
+                                                                 { Spells.Q, new Spell(SpellSlot.Q, 650) },
+                                                                 { Spells.W, new Spell(SpellSlot.W, 350) },
+                                                                 { Spells.E, new Spell(SpellSlot.E, 1000) },
+                                                                 { Spells.R, new Spell(SpellSlot.R, 1175) }
+                                                             };
+
+        private static SpellSlot _ignite;
+
+        #endregion
+
+        #region Properties
+
+        private static HitChance CustomHitChance
+        {
+            get
+            {
+                return GetHitchance();
+            }
+        }
+
         private static Obj_AI_Hero Player
         {
             get
@@ -29,26 +53,123 @@ namespace ElSejuani
                 return ObjectManager.Player;
             }
         }
-        public static Orbwalking.Orbwalker Orbwalker;
-        private static SpellSlot _ignite;
 
-        public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
+        #endregion
+
+        #region Public Methods and Operators
+
+        public static BuffInstance GetFrost(Obj_AI_Base target)
         {
-            { Spells.Q, new Spell(SpellSlot.Q, 650)},
-            { Spells.W, new Spell(SpellSlot.W, 350)},
-            { Spells.E, new Spell(SpellSlot.E, 1000)},
-            { Spells.R, new Spell(SpellSlot.R, 1175)}
-        };
+            return target.Buffs.FirstOrDefault(buff => buff.Name == "sejuanifrost");
+        }
 
-        #region Gameloaded 
-
-        #region hitchance
-
-        private static HitChance CustomHitChance
+        public static void OnLoad(EventArgs args)
         {
-            get
+            if (Player.CharData.BaseSkinName != "Sejuani")
             {
-                return GetHitchance();
+                return;
+            }
+
+            Console.WriteLine("Injected");
+            Notifications.AddNotification("ElSejuani by jQuery v1.0.0.0", 1000);
+
+            spells[Spells.Q].SetSkillshot(0, 70, 1600, true, SkillshotType.SkillshotLine);
+            spells[Spells.R].SetSkillshot(250, 110, 1600, false, SkillshotType.SkillshotLine);
+
+            _ignite = Player.GetSpellSlot("summonerdot");
+
+            ElSejuaniMenu.Initialize();
+            Game.OnUpdate += OnUpdate;
+            Drawing.OnDraw += Drawings.OnDraw;
+
+            Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
+            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+        }
+
+        #endregion
+
+        #region Methods
+
+        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        {
+            if (!gapcloser.Sender.IsValidTarget(spells[Spells.Q].Range))
+            {
+                return;
+            }
+
+            if (gapcloser.Sender.Distance(Player) > spells[Spells.Q].Range)
+            {
+                return;
+            }
+
+            var useQ = ElSejuaniMenu._menu.Item("ElSejuani.Interupt.Q").IsActive();
+            var useR = ElSejuaniMenu._menu.Item("ElSejuani.Interupt.R").IsActive();
+
+            if (gapcloser.Sender.IsValidTarget(spells[Spells.Q].Range))
+            {
+                if (useQ && spells[Spells.Q].IsReady())
+                {
+                    spells[Spells.Q].Cast(gapcloser.Sender);
+                }
+
+                if (useR && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
+                {
+                    spells[Spells.R].Cast(gapcloser.Sender);
+                }
+            }
+        }
+
+        private static void Combo()
+        {
+            var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
+            if (target == null)
+            {
+                return;
+            }
+
+            var comboQ = ElSejuaniMenu._menu.Item("ElSejuani.Combo.Q").IsActive();
+            var comboE = ElSejuaniMenu._menu.Item("ElSejuani.Combo.E").IsActive();
+            var comboW = ElSejuaniMenu._menu.Item("ElSejuani.Combo.E").IsActive();
+            var comboR = ElSejuaniMenu._menu.Item("ElSejuani.Combo.R").IsActive();
+            var countEnemyR = ElSejuaniMenu._menu.Item("ElSejuani.Combo.R.Count").GetValue<Slider>().Value;
+            var countEnemyE = ElSejuaniMenu._menu.Item("ElSejuani.Combo.E.Count").GetValue<Slider>().Value;
+
+            if (comboQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+            {
+                spells[Spells.Q].Cast(target);
+            }
+
+            if (comboW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
+            {
+                spells[Spells.W].Cast();
+            }
+
+            if (comboE && spells[Spells.E].IsReady() && IsFrozen(target) && target.IsValidTarget(spells[Spells.E].Range))
+            {
+                if (IsFrozen(target))
+                {
+                    spells[Spells.E].Cast();
+                }
+
+                if (IsFrozen(target)
+                    && target.ServerPosition.Distance(Player.ServerPosition, true) <= spells[Spells.E].Range)
+                {
+                    spells[Spells.E].Cast();
+                }
+            }
+
+            if (comboR && spells[Spells.R].IsReady())
+            {
+                foreach (
+                    var x in
+                        HeroManager.Enemies.Where((hero => !hero.IsDead && hero.IsValidTarget(spells[Spells.R].Range))))
+                {
+                    var pred = spells[Spells.R].GetPrediction(x);
+                    if (pred.AoeTargetsHitCount >= countEnemyR)
+                    {
+                        spells[Spells.R].Cast(pred.CastPosition);
+                    }
+                }
             }
         }
 
@@ -69,47 +190,172 @@ namespace ElSejuani
             }
         }
 
-        #endregion
+        private static void Harass()
+        {
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
+            if (target == null)
+            {
+                return;
+            }
 
-        #region IsFrozen
+            var harassQ = ElSejuaniMenu._menu.Item("ElSejuani.Harass.Q").IsActive();
+            var harassW = ElSejuaniMenu._menu.Item("ElSejuani.Harass.W").IsActive();
+            var harassE = ElSejuaniMenu._menu.Item("ElSejuani.Harass.E").IsActive();
+            var minmana = ElSejuaniMenu._menu.Item("ElSejuani.harass.mana").GetValue<Slider>().Value;
+
+            if (Player.ManaPercent < minmana)
+            {
+                return;
+            }
+
+            if (harassQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+            {
+                spells[Spells.Q].Cast(target);
+            }
+
+            if (harassW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
+            {
+                spells[Spells.W].Cast();
+            }
+
+            if (harassE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
+            {
+                if (IsFrozen(target) && spells[Spells.E].GetDamage(target) > target.Health)
+                {
+                    spells[Spells.E].Cast();
+                }
+
+                if (IsFrozen(target)
+                    && target.ServerPosition.Distance(Player.ServerPosition, true)
+                    < Math.Pow(spells[Spells.E].Range * 0.8, 2))
+                {
+                    spells[Spells.E].Cast();
+                }
+            }
+        }
+
+        private static void Interrupter2_OnInterruptableTarget(
+            Obj_AI_Hero sender,
+            Interrupter2.InterruptableTargetEventArgs args)
+        {
+            if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > spells[Spells.Q].Range)
+            {
+                return;
+            }
+
+            if (sender.IsValidTarget(spells[Spells.Q].Range) && args.DangerLevel == Interrupter2.DangerLevel.High
+                && spells[Spells.Q].IsReady())
+            {
+                spells[Spells.Q].Cast(sender);
+            }
+        }
 
         private static bool IsFrozen(Obj_AI_Base target)
         {
             return target.HasBuff("SejuaniFrost");
         }
 
-        #endregion
-
-        public static void OnLoad(EventArgs args)
+        private static void JungleClear()
         {
-            if (ObjectManager.Player.CharData.BaseSkinName != "Sejuani")
+            var clearQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q").IsActive();
+            var clearW = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q").IsActive();
+            var clearE = ElSejuaniMenu._menu.Item("ElSejuani.Clear.E").IsActive();
+            var minmana = ElSejuaniMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
+            var minQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q.Count").GetValue<Slider>().Value;
+
+            if (Player.ManaPercent < minmana)
+            {
                 return;
+            }
 
-            Console.WriteLine("Injected");
-            Notifications.AddNotification("ElSejuani by jQuery v1.0.0.0", 1000);
+            var minions = MinionManager.GetMinions(
+                ObjectManager.Player.ServerPosition,
+                spells[Spells.W].Range,
+                MinionTypes.All,
+                MinionTeam.Neutral,
+                MinionOrderTypes.MaxHealth);
 
-            spells[Spells.Q].SetSkillshot(0, 70, 1600, true, SkillshotType.SkillshotLine);
-            spells[Spells.R].SetSkillshot(250, 110, 1600, false, SkillshotType.SkillshotLine);
+            if (minions.Count <= 0)
+            {
+                return;
+            }
 
-            _ignite = Player.GetSpellSlot("summonerdot");
+            foreach (var minion in minions)
+            {
+                if (spells[Spells.Q].IsReady() && clearQ)
+                {
+                    if (spells[Spells.Q].GetLineFarmLocation(minions).MinionsHit >= minQ)
+                    {
+                        spells[Spells.Q].Cast(spells[Spells.Q].GetLineFarmLocation(minions).Position);
+                    }
+                }
 
-            ElSejuaniMenu.Initialize();
-            Game.OnUpdate += OnUpdate;
-            Drawing.OnDraw += Drawings.OnDraw;
+                if (spells[Spells.W].IsReady() && clearW
+                    && minion.ServerPosition.Distance(Player.ServerPosition, true) <= spells[Spells.W].Range)
+                {
+                    spells[Spells.W].Cast();
+                }
 
-            Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
-            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+                if (spells[Spells.E].IsReady() && clearE
+                    && minions[0].Health + (minions[0].HPRegenRate / 2) <= spells[Spells.E].GetDamage(minion)
+                    && minion.HasBuff("sejuanifrost"))
+                {
+                    spells[Spells.E].Cast();
+                }
+            }
         }
 
-        #endregion
+        private static void LaneClear()
+        {
+            var clearQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q").IsActive();
+            var clearW = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q").IsActive();
+            var clearE = ElSejuaniMenu._menu.Item("ElSejuani.Clear.E").IsActive();
+            var minmana = ElSejuaniMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
+            var minQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q.Count").GetValue<Slider>().Value;
 
-        #region OnGameUpdate
+            if (Player.ManaPercent < minmana)
+            {
+                return;
+            }
+
+            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
+            if (minions.Count <= 0)
+            {
+                return;
+            }
+
+            foreach (var minion in minions)
+            {
+                if (spells[Spells.Q].IsReady() && clearQ)
+                {
+                    if (spells[Spells.Q].GetLineFarmLocation(minions).MinionsHit >= minQ)
+                    {
+                        spells[Spells.Q].Cast(spells[Spells.Q].GetLineFarmLocation(minions).Position);
+                    }
+                }
+
+                if (spells[Spells.W].IsReady() && clearW
+                    && minion.ServerPosition.Distance(Player.ServerPosition, true) >= spells[Spells.W].Range)
+                {
+                    spells[Spells.W].Cast();
+                }
+
+                if (spells[Spells.E].IsReady() && clearE
+                    && minions[0].Health + (minions[0].HPRegenRate / 2) <= spells[Spells.E].GetDamage(minion)
+                    && minion.HasBuff("sejuanifrost"))
+                {
+                    spells[Spells.E].Cast();
+                }
+            }
+        }
 
         private static void OnUpdate(EventArgs args)
         {
             if (Player.IsDead)
+            {
                 return;
-  
+            }
+
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -126,240 +372,9 @@ namespace ElSejuani
 
             //var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             //Game.PrintChat("Buffs: {0}", string.Join(" | ", target.Buffs.Select(b => b.DisplayName)));
-           // Console.WriteLine("Buffs: {0}", string.Join(" | ", target.Buffs.Select(b => b.DisplayName)));
-
-        }
-        #endregion
-
-        #region Combo
-
-        private static void Combo()
-        {
-            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-
-            if (target == null || !target.IsValidTarget())
-                return;
-
-            var comboQ = ElSejuaniMenu._menu.Item("ElSejuani.Combo.Q").GetValue<bool>();
-            var comboE = ElSejuaniMenu._menu.Item("ElSejuani.Combo.E").GetValue<bool>();
-            var comboW = ElSejuaniMenu._menu.Item("ElSejuani.Combo.E").GetValue<bool>();
-            var comboR = ElSejuaniMenu._menu.Item("ElSejuani.Combo.R").GetValue<bool>();
-            var countEnemyR = ElSejuaniMenu._menu.Item("ElSejuani.Combo.R.Count").GetValue<Slider>().Value;
-            var countEnemyE = ElSejuaniMenu._menu.Item("ElSejuani.Combo.E.Count").GetValue<Slider>().Value;
-
-            if (comboQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-            {
-                spells[Spells.Q].Cast(target);
-            }
-
-            if (comboW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
-            {
-                spells[Spells.W].Cast();
-            }
-
-            if (comboE && spells[Spells.E].IsReady() && IsFrozen(target))
-            {
-                if (IsFrozen(target)) // && spells[Spells.E].GetDamage(target) > target.Health
-                {
-                    spells[Spells.E].Cast(target);
-                }
-                    
-                if (IsFrozen(target) &&
-                    target.ServerPosition.Distance(Player.ServerPosition, true) >= spells[Spells.E].Range)
-                {
-                    spells[Spells.E].Cast(target);
-                }      
-            }
-
-            if (comboR && spells[Spells.R].IsReady())
-            {
-                foreach (var x in HeroManager.Enemies.Where((hero => !hero.IsDead && hero.IsValidTarget(spells[Spells.R].Range))))
-                {
-                    var pred = spells[Spells.R].GetPrediction(x);
-                    if (pred.AoeTargetsHitCount >= countEnemyR)
-                    {
-                        spells[Spells.R].Cast(pred.CastPosition);
-                    }
-                }
-            }
+            // Console.WriteLine("Buffs: {0}", string.Join(" | ", target.Buffs.Select(b => b.DisplayName)));
         }
 
-        #endregion
-
-        #region Laneclear
-
-        public static BuffInstance GetFrost(Obj_AI_Base target)
-        {
-            return target.Buffs.FirstOrDefault(buff => buff.Name == "sejuanifrost");
-        }
-
-        private static void LaneClear()
-        {
-            var clearQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q").GetValue<bool>();
-            var clearW = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q").GetValue<bool>();
-            var clearE = ElSejuaniMenu._menu.Item("ElSejuani.Clear.E").GetValue<bool>();
-            var minmana = ElSejuaniMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
-            var minQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q.Count").GetValue<Slider>().Value;
-
-            if (Player.ManaPercent < minmana)
-                return;
-
-            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
-            if (minions.Count <= 0)
-                return;
-
-            foreach (var minion in minions)
-            {
-                if (spells[Spells.Q].IsReady() && clearQ)
-                {
-                    if (spells[Spells.Q].GetLineFarmLocation(minions).MinionsHit >= minQ)
-                    {
-                        spells[Spells.Q].Cast(spells[Spells.Q].GetLineFarmLocation(minions).Position);
-                        return;
-                    }
-                }
-
-                if (spells[Spells.W].IsReady() && clearW && minion.ServerPosition.Distance(Player.ServerPosition, true) >= spells[Spells.W].Range)
-                {
-                    spells[Spells.W].Cast();
-                }
-
-                if (spells[Spells.E].IsReady() && clearE &&
-                    minions[0].Health + (minions[0].HPRegenRate / 2) <= spells[Spells.E].GetDamage(minion) && minion.HasBuff("sejuanifrost"))
-                {
-                    spells[Spells.E].Cast();
-                }
-            }
-        }
-
-        #endregion
-
-        #region jungle
-
-        private static void JungleClear()
-        {
-            var clearQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q").GetValue<bool>();
-            var clearW = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q").GetValue<bool>();
-            var clearE = ElSejuaniMenu._menu.Item("ElSejuani.Clear.E").GetValue<bool>();
-            var minmana = ElSejuaniMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
-            var minQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q.Count").GetValue<Slider>().Value;
-           
-            if (Player.ManaPercent < minmana)
-                return;
-
-            var minions = MinionManager.GetMinions(
-               ObjectManager.Player.ServerPosition, spells[Spells.W].Range, MinionTypes.All, MinionTeam.Neutral,
-               MinionOrderTypes.MaxHealth);
-
-            if (minions.Count <= 0)
-                return;
-
-            foreach (var minion in minions)
-            {
-                if (spells[Spells.Q].IsReady() && clearQ)
-                {
-                    if (spells[Spells.Q].GetLineFarmLocation(minions).MinionsHit >= minQ)
-                    {
-                        spells[Spells.Q].Cast(spells[Spells.Q].GetLineFarmLocation(minions).Position);
-                        return;
-                    }
-                }
-
-                if (spells[Spells.W].IsReady() && clearW && minion.ServerPosition.Distance(Player.ServerPosition, true) >= spells[Spells.W].Range)
-                {
-                    spells[Spells.W].Cast();
-                }
-
-                if (spells[Spells.E].IsReady() && clearE &&
-                    minions[0].Health + (minions[0].HPRegenRate / 2) <= spells[Spells.E].GetDamage(minion) && minion.HasBuff("sejuanifrost"))
-                {
-                    spells[Spells.E].Cast();
-                }
-            }
-        }
-
-        #endregion
-
-        #region Harass
-
-        private static void Harass()
-        {
-            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValidTarget())
-                return;
-
-            var harassQ = ElSejuaniMenu._menu.Item("ElSejuani.Harass.Q").GetValue<bool>();
-            var harassW = ElSejuaniMenu._menu.Item("ElSejuani.Harass.W").GetValue<bool>();
-            var harassE = ElSejuaniMenu._menu.Item("ElSejuani.Harass.E").GetValue<bool>();
-            var minmana = ElSejuaniMenu._menu.Item("ElSejuani.harass.mana").GetValue<Slider>().Value;
-
-            if (Player.ManaPercent < minmana)
-                return;
-
-            if (harassQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-            {
-                spells[Spells.Q].Cast(target);
-            }
-
-            if (harassW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
-            {
-                spells[Spells.W].Cast();
-            }
-
-            if (harassE && spells[Spells.E].IsReady())
-            {
-                if (IsFrozen(target) && spells[Spells.E].GetDamage(target) > target.Health)
-                    spells[Spells.E].Cast(target);
-
-                if (IsFrozen(target) &&
-                    target.ServerPosition.Distance(Player.ServerPosition, true) >
-                    Math.Pow(spells[Spells.E].Range * 0.8, 2))
-                    spells[Spells.E].Cast(target);
-            }
-        }
-        #endregion
-
-        #region Intterupt
-
-        private static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
-        {
-            if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > spells[Spells.Q].Range)
-                return;
-
-            if (sender.IsValidTarget(spells[Spells.Q].Range) && args.DangerLevel == Interrupter2.DangerLevel.High && spells[Spells.Q].IsReady())
-            {
-                spells[Spells.Q].Cast(sender);
-            }
-        }
-
-        #endregion
-
-        #region GapCloser
-
-        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
-        {
-            if (!gapcloser.Sender.IsValidTarget(spells[Spells.Q].Range))
-                return;
-
-            if (gapcloser.Sender.Distance(Player) > spells[Spells.Q].Range)
-                return;
-
-            var useQ = ElSejuaniMenu._menu.Item("ElSejuani.Interupt.Q").GetValue<bool>();
-            var useR = ElSejuaniMenu._menu.Item("ElSejuani.Interupt.R").GetValue<bool>();
-
-            if (gapcloser.Sender.IsValidTarget(spells[Spells.Q].Range))
-            {
-                if (useQ && spells[Spells.Q].IsReady())
-                {
-                    spells[Spells.Q].Cast(gapcloser.Sender);
-                }
-
-                if (useR && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
-                {
-                    spells[Spells.R].Cast(gapcloser.Sender);
-                }
-            }
-        }
         #endregion
     }
 }
