@@ -13,11 +13,11 @@ namespace ElSejuani
     {
         public static void OnDraw(EventArgs args)
         {
-            var drawOff = ElSejuaniMenu._menu.Item("ElSejuani.Draw.off").GetValue<bool>();
-            var drawQ = ElSejuaniMenu._menu.Item("ElSejuani.Draw.Q").GetValue<Circle>();
-            var drawW = ElSejuaniMenu._menu.Item("ElSejuani.Draw.W").GetValue<Circle>();
-            var drawE = ElSejuaniMenu._menu.Item("ElSejuani.Draw.E").GetValue<Circle>();
-            var drawR = ElSejuaniMenu._menu.Item("ElSejuani.Draw.R").GetValue<Circle>();
+            var drawOff = ElSejuaniMenu.Menu.Item("ElSejuani.Draw.off").GetValue<bool>();
+            var drawQ = ElSejuaniMenu.Menu.Item("ElSejuani.Draw.Q").GetValue<Circle>();
+            var drawW = ElSejuaniMenu.Menu.Item("ElSejuani.Draw.W").GetValue<Circle>();
+            var drawE = ElSejuaniMenu.Menu.Item("ElSejuani.Draw.E").GetValue<Circle>();
+            var drawR = ElSejuaniMenu.Menu.Item("ElSejuani.Draw.R").GetValue<Circle>();
 
 
             if (drawOff)

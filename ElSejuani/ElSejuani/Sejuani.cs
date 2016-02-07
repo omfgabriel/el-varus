@@ -102,8 +102,8 @@
                 return;
             }
 
-            var useQ = ElSejuaniMenu._menu.Item("ElSejuani.Interupt.Q").IsActive();
-            var useR = ElSejuaniMenu._menu.Item("ElSejuani.Interupt.R").IsActive();
+            var useQ = ElSejuaniMenu.Menu.Item("ElSejuani.Interupt.Q").IsActive();
+            var useR = ElSejuaniMenu.Menu.Item("ElSejuani.Interupt.R").IsActive();
 
             if (gapcloser.Sender.IsValidTarget(spells[Spells.Q].Range))
             {
@@ -127,12 +127,12 @@
                 return;
             }
 
-            var comboQ = ElSejuaniMenu._menu.Item("ElSejuani.Combo.Q").IsActive();
-            var comboE = ElSejuaniMenu._menu.Item("ElSejuani.Combo.E").IsActive();
-            var comboW = ElSejuaniMenu._menu.Item("ElSejuani.Combo.E").IsActive();
-            var comboR = ElSejuaniMenu._menu.Item("ElSejuani.Combo.R").IsActive();
-            var countEnemyR = ElSejuaniMenu._menu.Item("ElSejuani.Combo.R.Count").GetValue<Slider>().Value;
-            var countEnemyE = ElSejuaniMenu._menu.Item("ElSejuani.Combo.E.Count").GetValue<Slider>().Value;
+            var comboQ = ElSejuaniMenu.Menu.Item("ElSejuani.Combo.Q").IsActive();
+            var comboE = ElSejuaniMenu.Menu.Item("ElSejuani.Combo.E").IsActive();
+            var comboW = ElSejuaniMenu.Menu.Item("ElSejuani.Combo.E").IsActive();
+            var comboR = ElSejuaniMenu.Menu.Item("ElSejuani.Combo.R").IsActive();
+            var countEnemyR = ElSejuaniMenu.Menu.Item("ElSejuani.Combo.R.Count").GetValue<Slider>().Value;
+            var countEnemyE = ElSejuaniMenu.Menu.Item("ElSejuani.Combo.E.Count").GetValue<Slider>().Value;
 
             if (comboQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
@@ -175,7 +175,7 @@
 
         private static HitChance GetHitchance()
         {
-            switch (ElSejuaniMenu._menu.Item("ElSejuani.hitChance").GetValue<StringList>().SelectedIndex)
+            switch (ElSejuaniMenu.Menu.Item("ElSejuani.hitChance").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
                     return HitChance.Low;
@@ -198,10 +198,10 @@
                 return;
             }
 
-            var harassQ = ElSejuaniMenu._menu.Item("ElSejuani.Harass.Q").IsActive();
-            var harassW = ElSejuaniMenu._menu.Item("ElSejuani.Harass.W").IsActive();
-            var harassE = ElSejuaniMenu._menu.Item("ElSejuani.Harass.E").IsActive();
-            var minmana = ElSejuaniMenu._menu.Item("ElSejuani.harass.mana").GetValue<Slider>().Value;
+            var harassQ = ElSejuaniMenu.Menu.Item("ElSejuani.Harass.Q").IsActive();
+            var harassW = ElSejuaniMenu.Menu.Item("ElSejuani.Harass.W").IsActive();
+            var harassE = ElSejuaniMenu.Menu.Item("ElSejuani.Harass.E").IsActive();
+            var minmana = ElSejuaniMenu.Menu.Item("ElSejuani.harass.mana").GetValue<Slider>().Value;
 
             if (Player.ManaPercent < minmana)
             {
@@ -257,11 +257,11 @@
 
         private static void JungleClear()
         {
-            var clearQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q").IsActive();
-            var clearW = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q").IsActive();
-            var clearE = ElSejuaniMenu._menu.Item("ElSejuani.Clear.E").IsActive();
-            var minmana = ElSejuaniMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
-            var minQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q.Count").GetValue<Slider>().Value;
+            var clearQ = ElSejuaniMenu.Menu.Item("ElSejuani.Clear.Q").IsActive();
+            var clearW = ElSejuaniMenu.Menu.Item("ElSejuani.Clear.Q").IsActive();
+            var clearE = ElSejuaniMenu.Menu.Item("ElSejuani.Clear.E").IsActive();
+            var minmana = ElSejuaniMenu.Menu.Item("minmanaclear").GetValue<Slider>().Value;
+            var minQ = ElSejuaniMenu.Menu.Item("ElSejuani.Clear.Q.Count").GetValue<Slider>().Value;
 
             if (Player.ManaPercent < minmana)
             {
@@ -307,11 +307,11 @@
 
         private static void LaneClear()
         {
-            var clearQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q").IsActive();
-            var clearW = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q").IsActive();
-            var clearE = ElSejuaniMenu._menu.Item("ElSejuani.Clear.E").IsActive();
-            var minmana = ElSejuaniMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
-            var minQ = ElSejuaniMenu._menu.Item("ElSejuani.Clear.Q.Count").GetValue<Slider>().Value;
+            var clearQ = ElSejuaniMenu.Menu.Item("ElSejuani.Clear.Q").IsActive();
+            var clearW = ElSejuaniMenu.Menu.Item("ElSejuani.Clear.Q").IsActive();
+            var clearE = ElSejuaniMenu.Menu.Item("ElSejuani.Clear.E").IsActive();
+            var minmana = ElSejuaniMenu.Menu.Item("minmanaclear").GetValue<Slider>().Value;
+            var minQ = ElSejuaniMenu.Menu.Item("ElSejuani.Clear.Q.Count").GetValue<Slider>().Value;
 
             if (Player.ManaPercent < minmana)
             {
@@ -370,10 +370,33 @@
                     break;
             }
 
-            //var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            //Game.PrintChat("Buffs: {0}", string.Join(" | ", target.Buffs.Select(b => b.DisplayName)));
-            // Console.WriteLine("Buffs: {0}", string.Join(" | ", target.Buffs.Select(b => b.DisplayName)));
+            if (ElSejuaniMenu.Menu.Item("ElSejuani.Combo.Semi.R").GetValue<KeyBind>().Active)
+            {
+                SemiR();
+            }
         }
+
+
+        private static void SemiR()
+        {
+            var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
+            if (target == null)
+            {
+                return;
+            }
+
+            if (!spells[Spells.R].IsReady() || !target.IsValidTarget(spells[Spells.R].Range))
+            {
+                return;
+            }
+
+            var prediction = spells[Spells.R].GetPrediction(target);
+            if (prediction.Hitchance >= HitChance.High)
+            {
+                spells[Spells.R].Cast(target.Position);
+            }
+        }
+
 
         #endregion
     }
