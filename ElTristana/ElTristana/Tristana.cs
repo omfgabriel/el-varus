@@ -2,12 +2,14 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Linq;
 
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using SharpDX;
+
+    using Color = System.Drawing.Color;
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
     #region
@@ -15,6 +17,8 @@
     internal enum Spells
     {
         Q,
+
+        W,
 
         E,
 
@@ -32,6 +36,7 @@
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
                                                              {
                                                                  { Spells.Q, new Spell(SpellSlot.Q, 550) },
+                                                                 { Spells.W, new Spell(SpellSlot.W, 900) },
                                                                  { Spells.E, new Spell(SpellSlot.E, 625) },
                                                                  { Spells.R, new Spell(SpellSlot.R, 700) },
                                                              };
@@ -72,6 +77,14 @@
 
         #region Public Methods and Operators
 
+        // <summary>
+        ///     Gets or sets the last harass position
+        /// </summary>
+        /// <value>
+        ///     The last harass position
+        /// </value>
+        private static Vector3? LastHarassPos { get; set; }
+
         public static void OnLoad(EventArgs args)
         {
             if (ObjectManager.Player.ChampionName != "Tristana")
@@ -86,10 +99,11 @@
                 Game.PrintChat(
                     "[00:00] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
 
+                spells[Spells.W].SetSkillshot(0.35f, 250f, 1400f, false, SkillshotType.SkillshotCircle);
+
                 MenuInit.Initialize();
                 Game.OnUpdate += OnUpdate;
                 Drawing.OnDraw += OnDraw;
-                Spellbook.OnCastSpell += OnSpellCast;
                 AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
                 Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
             }
@@ -157,12 +171,6 @@
                 return;
             }
 
-            if (eTarget != null && IsActive("ElTristana.Combo.Focus.E"))
-            {
-                TargetSelector.SetTarget(target);
-                Orbwalker.ForceTarget(target);
-            }
-
             if (spells[Spells.E].IsReady() && IsActive("ElTristana.Combo.E")
                 && Player.ManaPercent > MenuInit.Menu.Item("ElTristana.Combo.E.Mana").GetValue<Slider>().Value)
             {
@@ -181,6 +189,16 @@
                             spells[Spells.E].Cast(hero);
                         }
                     }
+                }
+            }
+
+
+            if (IsActive("ElTristana.Combo.Focus.E"))
+            {
+                if (IsECharged(target))
+                {
+                    TargetSelector.SetTarget(target);
+                    Orbwalker.ForceTarget(target);
                 }
             }
 
@@ -211,8 +229,99 @@
             }
         }
 
+        private static bool HasEBuff(this Obj_AI_Base target)
+        {
+            return target.HasBuff("TristanaECharge");
+        }
+
+        private static int GetEStacks(this Obj_AI_Base target)
+        {
+            return HasEBuff(target) ? 3 : target.GetBuffCount("TristanaECharge");
+        }
+
+
         private static void OnDraw(EventArgs args)
         {
+          
+            var target =
+                HeroManager.Enemies.Find(
+                    x => x.HasBuff("TristanaECharge") && x.IsValidTarget(2000));
+            if (!target.IsValidTarget())
+            {
+                return;
+            }
+
+            if (IsActive("ElTristana.DrawStacks"))
+            {
+
+                if (LastHarassPos == null)
+                {
+                    LastHarassPos = Player.ServerPosition;
+                }
+
+                var x = target.HPBarPosition.X + 45;
+                var y = target.HPBarPosition.Y - 25;
+
+                if (spells[Spells.E].Level > 0)
+                {
+                    if (HasEBuff(target)) //Credits to lizzaran 
+                    {
+                        int stacks = target.GetBuffCount("TristanaECharge");
+                        if (stacks > -1)
+                        {
+                            for (var i = 0; 4 > i; i++)
+                            {
+                                Drawing.DrawLine( x + i * 20, y, x + i * 20 + 10, y, 10, i > stacks ? Color.DarkGray : Color.DeepSkyBlue);
+                            }
+                        }
+
+                        if (stacks == 3)
+                        {
+                            if (IsActive("ElTristana.W"))
+                            {
+                                if (IsActive("ElTristana.W.Jump"))
+                                {
+                                    if (IsActive("ElTristana.W.Jump.kill"))
+                                    {
+                                        if (target.IsValidTarget(spells[Spells.W].Range) && Player.CountEnemiesInRange(MenuInit.Menu.Item("ElTristana.W.Enemies.Range").GetValue<Slider>().Value) <= MenuInit.Menu.Item("ElTristana.W.Enemies").GetValue<Slider>().Value)
+                                        {
+                                            if (IsActive("ElTristana.W.Jump.tower"))
+                                            {
+                                                bool underTower = target.UnderTurret();
+                                                if (underTower)
+                                                {
+                                                    return;
+                                                }
+                                            }
+
+                                            if (spells[Spells.W].GetDamage(target) > target.Health + 15)
+                                            {
+                                                spells[Spells.W].Cast(target.ServerPosition);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (target.IsValidTarget(spells[Spells.W].Range) && Player.CountEnemiesInRange(MenuInit.Menu.Item("ElTristana.W.Enemies.Range").GetValue<Slider>().Value) <= MenuInit.Menu.Item("ElTristana.W.Enemies").GetValue<Slider>().Value)
+                                        {
+                                            if (IsActive("ElTristana.W.Jump.tower"))
+                                            {
+                                                bool underTower = target.UnderTurret();
+                                                if (underTower)
+                                                {
+                                                    return;
+                                                }
+                                            }
+                                            spells[Spells.W].Cast(target.ServerPosition);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             if (IsActive("ElTristana.Draw.off"))
             {
                 return;
@@ -363,15 +472,6 @@
             }
         }
 
-        private static void OnSpellCast(Spellbook sender, SpellbookCastSpellEventArgs args)
-        {
-            if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.None && args.Slot == SpellSlot.W
-                && IsActive("ElTristana.DumbRetards"))
-            {
-                args.Process = false;
-            }
-        }
-
         private static void OnUpdate(EventArgs args)
         {
             if (Player.IsDead)
@@ -465,3 +565,4 @@
         #endregion
     }
 }
+ 

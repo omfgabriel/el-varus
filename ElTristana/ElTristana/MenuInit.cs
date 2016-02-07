@@ -50,6 +50,16 @@ namespace ElTristana
 
             #endregion
 
+            var suicideMenu = new Menu("W settings", "Suicide menu").SetFontStyle(FontStyle.Regular, SharpDX.Color.GreenYellow);
+            suicideMenu.AddItem(new MenuItem("ElTristana.W", "Use this special feature").SetValue(false));
+            suicideMenu.AddItem(new MenuItem("ElTristana.W.Jump.kill", "Only jump when killable").SetValue(false));
+            suicideMenu.AddItem(new MenuItem("ElTristana.W.Jump.tower", "Check under tower").SetValue(true));
+            suicideMenu.AddItem(new MenuItem("ElTristana.W.Jump", "W to enemy with 4 stacks").SetValue(true));
+            suicideMenu.AddItem(new MenuItem("ElTristana.W.Enemies", "Only jump when enemies in range")).SetValue(new Slider(1, 1, 5));
+            suicideMenu.AddItem(new MenuItem("ElTristana.W.Enemies.Range", "Enemies in range distance check")).SetValue(new Slider(1500, 800, 2000));
+
+            Menu.AddSubMenu(suicideMenu);
+
 
             #region 
 
@@ -106,6 +116,7 @@ namespace ElTristana
 
             var miscMenu = new Menu("Misc", "Misc");
             miscMenu.AddItem(new MenuItem("ElTristana.Draw.off", "Turn drawings off").SetValue(true));
+            miscMenu.AddItem(new MenuItem("ElTristana.DrawStacks", "Draw E stacks").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElTristana.Draw.Q", "Draw Q").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElTristana.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElTristana.Draw.R", "Draw R").SetValue(new Circle()));
@@ -138,9 +149,7 @@ namespace ElTristana
 
             Menu.AddSubMenu(miscMenu);
 
-            var problemMenu = new Menu("Smart people menu", "Smart people menu");
-            problemMenu.AddItem(new MenuItem("ElTristana.DumbRetards", "I HAVE THE PROBLEM THAT TRISTANA CAST W FOR NO REASON AT ALL").SetValue(false));
-            Menu.AddSubMenu(problemMenu);
+           
 
             #endregion
 
