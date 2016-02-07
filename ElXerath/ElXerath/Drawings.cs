@@ -13,13 +13,13 @@
 
         public static void Drawing_OnDraw(EventArgs args)
         {
-            var drawOff = ElXerathMenu._menu.Item("ElXerath.Draw.off").GetValue<bool>();
-            var drawQ = ElXerathMenu._menu.Item("ElXerath.Draw.Q").GetValue<Circle>();
-            var drawW = ElXerathMenu._menu.Item("ElXerath.Draw.W").GetValue<Circle>();
-            var drawE = ElXerathMenu._menu.Item("ElXerath.Draw.E").GetValue<Circle>();
-            var drawR = ElXerathMenu._menu.Item("ElXerath.Draw.R").GetValue<Circle>();
-            var drawText = ElXerathMenu._menu.Item("ElXerath.Draw.Text").GetValue<bool>();
-            var rBool = ElXerathMenu._menu.Item("ElXerath.AutoHarass").GetValue<KeyBind>().Active;
+            var drawOff = ElXerathMenu.Menu.Item("ElXerath.Draw.off").GetValue<bool>();
+            var drawQ = ElXerathMenu.Menu.Item("ElXerath.Draw.Q").GetValue<Circle>();
+            var drawW = ElXerathMenu.Menu.Item("ElXerath.Draw.W").GetValue<Circle>();
+            var drawE = ElXerathMenu.Menu.Item("ElXerath.Draw.E").GetValue<Circle>();
+            var drawR = ElXerathMenu.Menu.Item("ElXerath.Draw.R").GetValue<Circle>();
+            var drawText = ElXerathMenu.Menu.Item("ElXerath.Draw.Text").GetValue<bool>();
+            var rBool = ElXerathMenu.Menu.Item("ElXerath.AutoHarass").GetValue<KeyBind>().Active;
 
             if (drawOff)
             {

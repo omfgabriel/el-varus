@@ -1,13 +1,14 @@
 ﻿namespace ElXerath
 {
     using System;
+
     using LeagueSharp.Common;
 
     public class ElXerathMenu
     {
         #region Static Fields
 
-        public static Menu _menu;
+        public static Menu Menu;
 
         #endregion
 
@@ -15,17 +16,17 @@
 
         public static void Initialize()
         {
-            _menu = new Menu("ElXerath", "menu", true);
+            Menu = new Menu("ElXerath", "menu", true);
 
             //ElXerath.Orbwalker
             var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
             Xerath.Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
-            _menu.AddSubMenu(orbwalkerMenu);
+            Menu.AddSubMenu(orbwalkerMenu);
 
             //ElXerath.TargetSelector
             var targetSelector = new Menu("Target Selector", "TargetSelector");
             TargetSelector.AddToMenu(targetSelector);
-            _menu.AddSubMenu(targetSelector);
+            Menu.AddSubMenu(targetSelector);
 
             var cMenu = new Menu("Combo", "Combo");
             cMenu.AddItem(new MenuItem("ElXerath.Combo.Q", "Use Q").SetValue(true));
@@ -33,7 +34,7 @@
             cMenu.AddItem(new MenuItem("ElXerath.Combo.E", "Use E").SetValue(true));
             cMenu.AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
 
-            _menu.AddSubMenu(cMenu);
+            Menu.AddSubMenu(cMenu);
 
             var rMenu = new Menu("Ult", "Ult");
             rMenu.AddItem(new MenuItem("ElXerath.R.AutoUseR", "Auto use charges").SetValue(true));
@@ -55,7 +56,7 @@
 
             rMenu.AddItem(new MenuItem("ElXerath.R.Radius", "Target radius").SetValue(new Slider(700, 1500, 300)));
 
-            _menu.AddSubMenu(rMenu);
+            Menu.AddSubMenu(rMenu);
 
             var hMenu = new Menu("Harass", "Harass");
             hMenu.AddItem(new MenuItem("ElXerath.Harass.Q", "Use Q").SetValue(true));
@@ -70,7 +71,7 @@
                 .AddItem(new MenuItem("ElXerath.harass.mana", "Auto harass mana"))
                 .SetValue(new Slider(55));
 
-            _menu.AddSubMenu(hMenu);
+            Menu.AddSubMenu(hMenu);
 
             var lMenu = new Menu("Clear", "LaneClear");
             lMenu.AddItem(new MenuItem("ElXerath.clear.Q", "Use Q").SetValue(true));
@@ -82,7 +83,7 @@
             lMenu.AddItem(new MenuItem("fasfsafsafsadsasasfasfa", ""));
             lMenu.AddItem(new MenuItem("minmanaclear", "Auto harass mana")).SetValue(new Slider(55));
 
-            _menu.AddSubMenu(lMenu);
+            Menu.AddSubMenu(lMenu);
 
             //ElXerath.Misc
             var miscMenu = new Menu("Misc", "Misc");
@@ -107,19 +108,19 @@
                 new MenuItem("ElXerath.hitChance", "Hitchance Q").SetValue(
                     new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
 
-            _menu.AddSubMenu(miscMenu);
+            Menu.AddSubMenu(miscMenu);
 
             //Here comes the moneyyy, money, money, moneyyyy
             var credits = new Menu("Credits", "jQuery");
             credits.AddItem(new MenuItem("ElXerath.Paypal", "if you would like to donate via paypal:"));
             credits.AddItem(new MenuItem("ElXerath.Email", "info@zavox.nl"));
-            _menu.AddSubMenu(credits);
+            Menu.AddSubMenu(credits);
 
-            _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.6"));
-            _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
+            Menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
+            Menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.6"));
+            Menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
-            _menu.AddToMainMenu();
+            Menu.AddToMainMenu();
 
             Console.WriteLine("Menu Loaded");
         }

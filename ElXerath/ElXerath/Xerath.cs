@@ -3,12 +3,13 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
     using SharpDX;
-    using Color = System.Drawing.Color;
 
+    using Color = System.Drawing.Color;
 
     internal enum Spells
     {
@@ -117,8 +118,7 @@
             }
 
             if (gapcloser.Sender.IsValidTarget(spells[Spells.E].Range)
-                && (ElXerathMenu._menu.Item("ElXerath.misc.Antigapcloser").GetValue<bool>()
-                    && spells[Spells.E].IsReady()))
+                && (ElXerathMenu.Menu.Item("ElXerath.misc.Antigapcloser").IsActive() && spells[Spells.E].IsReady()))
             {
                 spells[Spells.E].Cast(gapcloser.Sender);
             }
@@ -136,11 +136,11 @@
                 return;
             }
 
-            if (ElXerathMenu._menu.Item("ElXerath.AutoHarass").GetValue<KeyBind>().Active)
+            if (ElXerathMenu.Menu.Item("ElXerath.AutoHarass").GetValue<KeyBind>().Active)
             {
-                var q = ElXerathMenu._menu.Item("ElXerath.UseQAutoHarass").GetValue<bool>();
-                var w = ElXerathMenu._menu.Item("ElXerath.UseWAutoHarass").GetValue<bool>();
-                var mana = ElXerathMenu._menu.Item("ElXerath.harass.mana").GetValue<Slider>().Value;
+                var q = ElXerathMenu.Menu.Item("ElXerath.UseQAutoHarass").IsActive();
+                var w = ElXerathMenu.Menu.Item("ElXerath.UseWAutoHarass").IsActive();
+                var mana = ElXerathMenu.Menu.Item("ElXerath.harass.mana").GetValue<Slider>().Value;
 
                 if (Player.ManaPercent < mana)
                 {
@@ -177,10 +177,10 @@
 
         private static void CastR(Obj_AI_Base target)
         {
-            var useR = ElXerathMenu._menu.Item("ElXerath.R.AutoUseR").GetValue<bool>();
-            var tapkey = ElXerathMenu._menu.Item("ElXerath.R.OnTap").GetValue<KeyBind>().Active;
-            var ultRadius = ElXerathMenu._menu.Item("ElXerath.R.Radius").GetValue<Slider>().Value;
-            var drawROn = ElXerathMenu._menu.Item("ElXerath.Draw.RON").GetValue<bool>();
+            var useR = ElXerathMenu.Menu.Item("ElXerath.R.AutoUseR").IsActive();
+            var tapkey = ElXerathMenu.Menu.Item("ElXerath.R.OnTap").GetValue<KeyBind>().Active;
+            var ultRadius = ElXerathMenu.Menu.Item("ElXerath.R.Radius").GetValue<Slider>().Value;
+            var drawROn = ElXerathMenu.Menu.Item("ElXerath.Draw.RON").IsActive();
 
             if (!useR)
             {
@@ -192,7 +192,7 @@
                 return;
             }
 
-            var ultType = ElXerathMenu._menu.Item("ElXerath.R.Mode").GetValue<StringList>().SelectedIndex;
+            var ultType = ElXerathMenu.Menu.Item("ElXerath.R.Mode").GetValue<StringList>().SelectedIndex;
 
             if (target.Health - spells[Spells.R].GetDamage(target) < 0)
             {
@@ -217,7 +217,7 @@
                     break;
 
                 case 1:
-                    var d = ElXerathMenu._menu.Item("Delay" + (RCombo._index + 1)).GetValue<Slider>().Value;
+                    var d = ElXerathMenu.Menu.Item("Delay" + (RCombo._index + 1)).GetValue<Slider>().Value;
                     if (Utils.TickCount - RCombo.CastSpell > d)
                     {
                         spells[Spells.R].Cast(target);
@@ -269,9 +269,9 @@
                 return;
             }
 
-            var comboQ = ElXerathMenu._menu.Item("ElXerath.Combo.Q").GetValue<bool>();
-            var comboW = ElXerathMenu._menu.Item("ElXerath.Combo.W").GetValue<bool>();
-            var comboE = ElXerathMenu._menu.Item("ElXerath.Combo.E").GetValue<bool>();
+            var comboQ = ElXerathMenu.Menu.Item("ElXerath.Combo.Q").IsActive();
+            var comboW = ElXerathMenu.Menu.Item("ElXerath.Combo.W").IsActive();
+            var comboE = ElXerathMenu.Menu.Item("ElXerath.Combo.E").IsActive();
 
             if (wTarget != null && comboW && spells[Spells.W].IsReady())
             {
@@ -302,7 +302,7 @@
             }
 
             if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health
-                && ElXerathMenu._menu.Item("ElXerath.Ignite").GetValue<bool>())
+                && ElXerathMenu.Menu.Item("ElXerath.Ignite").IsActive())
             {
                 Player.Spellbook.CastSpell(_ignite, target);
             }
@@ -319,7 +319,7 @@
 
         private static HitChance GetHitchance()
         {
-            switch (ElXerathMenu._menu.Item("ElXerath.hitChance").GetValue<StringList>().SelectedIndex)
+            switch (ElXerathMenu.Menu.Item("ElXerath.hitChance").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
                     return HitChance.Low;
@@ -346,8 +346,8 @@
                 return;
             }
 
-            var harassQ = ElXerathMenu._menu.Item("ElXerath.Harass.Q").GetValue<bool>();
-            var harassW = ElXerathMenu._menu.Item("ElXerath.Harass.W").GetValue<bool>();
+            var harassQ = ElXerathMenu.Menu.Item("ElXerath.Harass.Q").IsActive();
+            var harassW = ElXerathMenu.Menu.Item("ElXerath.Harass.W").IsActive();
 
             if (wTarget != null && harassW && spells[Spells.W].IsReady())
             {
@@ -381,10 +381,10 @@
 
         private static void JungleClear()
         {
-            var clearQ = ElXerathMenu._menu.Item("ElXerath.jclear.Q").GetValue<bool>();
-            var clearW = ElXerathMenu._menu.Item("ElXerath.jclear.W").GetValue<bool>();
-            var clearE = ElXerathMenu._menu.Item("ElXerath.jclear.E").GetValue<bool>();
-            var minmana = ElXerathMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
+            var clearQ = ElXerathMenu.Menu.Item("ElXerath.jclear.Q").IsActive();
+            var clearW = ElXerathMenu.Menu.Item("ElXerath.jclear.W").IsActive();
+            var clearE = ElXerathMenu.Menu.Item("ElXerath.jclear.E").IsActive();
+            var minmana = ElXerathMenu.Menu.Item("minmanaclear").GetValue<Slider>().Value;
 
             if (Player.ManaPercent < minmana)
             {
@@ -442,7 +442,7 @@
 
         private static void KsMode()
         {
-            var useKs = ElXerathMenu._menu.Item("ElXerath.misc.ks").GetValue<bool>();
+            var useKs = ElXerathMenu.Menu.Item("ElXerath.misc.ks").IsActive();
             if (!useKs)
             {
                 return;
@@ -469,9 +469,9 @@
 
         private static void LaneClear()
         {
-            var clearQ = ElXerathMenu._menu.Item("ElXerath.clear.Q").GetValue<bool>();
-            var clearW = ElXerathMenu._menu.Item("ElXerath.clear.W").GetValue<bool>();
-            var minmana = ElXerathMenu._menu.Item("minmanaclear").GetValue<Slider>().Value;
+            var clearQ = ElXerathMenu.Menu.Item("ElXerath.clear.Q").IsActive();
+            var clearW = ElXerathMenu.Menu.Item("ElXerath.clear.W").IsActive();
+            var minmana = ElXerathMenu.Menu.Item("minmanaclear").GetValue<Slider>().Value;
 
             if (Player.ManaPercent < minmana)
             {
@@ -510,7 +510,7 @@
 
         private static void Obj_AI_Hero_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
         {
-            var blockMovement = ElXerathMenu._menu.Item("ElXerath.R.Block").GetValue<bool>();
+            var blockMovement = ElXerathMenu.Menu.Item("ElXerath.R.Block").IsActive();
             if (CastingR && blockMovement)
             {
                 args.Process = false;
@@ -562,7 +562,7 @@
                     break;
             }
 
-            var showNotifications = ElXerathMenu._menu.Item("ElXerath.misc.Notifications").GetValue<bool>();
+            var showNotifications = ElXerathMenu.Menu.Item("ElXerath.misc.Notifications").GetValue<bool>();
 
             if (spells[Spells.R].IsReady() && showNotifications && Environment.TickCount - lastNotification > 5000)
             {
@@ -585,7 +585,7 @@
 
             if (spells[Spells.E].IsReady())
             {
-                var useE = ElXerathMenu._menu.Item("ElXerath.Misc.E").GetValue<KeyBind>().Active;
+                var useE = ElXerathMenu.Menu.Item("ElXerath.Misc.E").GetValue<KeyBind>().Active;
                 var eTarget = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
 
                 if (useE)
