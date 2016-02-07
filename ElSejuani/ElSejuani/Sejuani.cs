@@ -291,7 +291,7 @@
                 }
 
                 if (spells[Spells.W].IsReady() && clearW
-                    && minion.ServerPosition.Distance(Player.ServerPosition, true) <= spells[Spells.W].Range)
+                    && minion.ServerPosition.Distance(Player.ServerPosition, true) <= 500)
                 {
                     spells[Spells.W].Cast();
                 }
