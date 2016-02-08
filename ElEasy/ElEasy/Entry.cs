@@ -87,7 +87,7 @@
                 var menu = new Menu("ElEasy", "ElEasy", true);
                 foreach (var plugin in plugins)
                 {
-                    if (plugin.ToString().ToLower().Contains(Player.CharData.BaseSkinName.ToLower())) //this is some real broscience
+                    if (plugin.ToString().ToLower().Contains(Player.ChampionName.ToLower())) //this is some real broscience
                     {
                         plugin.CreateMenu(menu);
                         plugin.Load();
