@@ -182,11 +182,13 @@
                         if (getEnemies != null && getEnemies.GetValue<bool>())
                         {
                             spells[Spells.E].Cast(hero);
+                            Orbwalker.ForceTarget(hero);
                         }
 
                         if (getEnemies != null && !getEnemies.GetValue<bool>() && Player.CountEnemiesInRange(1500) == 1)
                         {
                             spells[Spells.E].Cast(hero);
+                            Orbwalker.ForceTarget(hero);
                         }
                     }
                 }
@@ -371,6 +373,7 @@
                         if (getEnemies != null && getEnemies.GetValue<bool>())
                         {
                             spells[Spells.E].Cast(hero);
+                            Orbwalker.ForceTarget(hero);
                         }
                     }
                 }
@@ -450,6 +453,7 @@
                     ObjectManager.Get<Obj_AI_Minion>().OrderByDescending(m => m.Health))
                 {
                     spells[Spells.E].Cast(minion);
+                    Orbwalker.ForceTarget(minion);
                 }
             }
 
