@@ -106,6 +106,7 @@
                 Drawing.OnDraw += OnDraw;
                 AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
                 Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
+                Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
             }
             catch (Exception e)
             {
@@ -116,6 +117,49 @@
         #endregion
 
         #region Methods
+
+        private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            try
+            {
+                if (!args.Unit.IsMe)
+                {
+                    return;
+                }
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
+                    || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+                {
+                    if (!(args.Target is Obj_AI_Hero))
+                    {
+                        return;
+                    }
+
+                    var target = HeroManager.Enemies.Find(x => x.HasBuff("TristanaECharge") && x.IsValidTarget(spells[Spells.E].Range));
+                    if (target == null)
+                    {
+                        return;
+                    }
+                    if (Orbwalking.InAutoAttackRange(target))
+                    {
+                        Orbwalker.ForceTarget(target);
+                    }
+                }
+
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LastHit
+                    || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
+                {
+                    var minion = args.Target as Obj_AI_Minion;
+                    if (minion != null && minion.HasBuff("TristanaECharge"))
+                    {
+                        Orbwalker.ForceTarget(minion);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
@@ -171,6 +215,20 @@
                 return;
             }
 
+            if (IsActive("ElTristana.Combo.Focus.E"))
+            {
+                var passiveTarget = HeroManager.Enemies.Find(x => x.HasBuff("TristanaECharge") && x.IsValidTarget(spells[Spells.E].Range));
+                if (passiveTarget != null)
+                {
+                    Orbwalker.ForceTarget(passiveTarget);
+                }
+                else
+                {
+                    Orbwalker.ForceTarget(null);
+                }
+            }
+
+
             if (spells[Spells.E].IsReady() && IsActive("ElTristana.Combo.E")
                 && Player.ManaPercent > MenuInit.Menu.Item("ElTristana.Combo.E.Mana").GetValue<Slider>().Value)
             {
@@ -191,16 +249,6 @@
                             Orbwalker.ForceTarget(hero);
                         }
                     }
-                }
-            }
-
-
-            if (IsActive("ElTristana.Combo.Focus.E"))
-            {
-                if (IsECharged(target))
-                {
-                    TargetSelector.SetTarget(target);
-                    Orbwalker.ForceTarget(target);
                 }
             }
 
