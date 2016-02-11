@@ -17,6 +17,12 @@
         /// </value>
         public Spell BarrierSpell { get; set; }
 
+        /// <summary>
+        /// Gets or sets the menu.
+        /// </summary>
+        /// <value>
+        /// The menu.
+        /// </value>
         public Menu Menu { get; set; }
 
         #endregion
@@ -105,20 +111,15 @@
 
             var hero = (Obj_AI_Hero)obj;
 
-            if (hero.IsEnemy)
+            if (!hero.IsMe)
             {
                 return;
             }
 
-            if (
-                ObjectManager.Get<Obj_AI_Hero>()
-                    .Any(
-                        x =>
-                        x.IsMe
-                        && ((int)(args.Damage / x.MaxHealth * 100)
-                            > this.Menu.Item("Barrier.Damage").GetValue<Slider>().Value
-                            || x.HealthPercent < this.Menu.Item("Barrier.HP").GetValue<Slider>().Value)
-                        && x.CountEnemiesInRange(1000) >= 1))
+            if (((int)(args.Damage / this.Player.MaxHealth * 100)
+                 > this.Menu.Item("Barrier.Damage").GetValue<Slider>().Value
+                 || this.Player.HealthPercent < this.Menu.Item("Barrier.HP").GetValue<Slider>().Value)
+                && this.Player.CountEnemiesInRange(1000) >= 1)
             {
                 this.BarrierSpell.Cast();
             }
