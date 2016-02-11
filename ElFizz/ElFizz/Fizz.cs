@@ -414,7 +414,7 @@
                 }
 
                 if (IsActive("ElFizz.Combo.Gapclose.E")
-                    && Player.ManaPercent > Menu.Item("ElFizz.Combo.Gapclose.E.Mana").GetValue<Slider>().Value)
+                    && Player.ManaPercent < Menu.Item("ElFizz.Combo.Gapclose.E.Mana").GetValue<Slider>().Value)
                 {
                     if (target.Distance(Player) > Q.Range && Q.GetDamage(target) > target.Health)
                     {
