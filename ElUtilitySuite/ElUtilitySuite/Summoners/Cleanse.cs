@@ -42,6 +42,12 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "Lulu", Name = "polymorph", MenuName = "Lulu polymorph", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W,
+                                     Interval = 1.0
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "Pantheon", Name = "stun", MenuName = "Pantheon Stun", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W,
                                      Interval = 1.0
@@ -479,7 +485,7 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "sona", Name = "stun", MenuName = "Sona (R)", Evade = false, DoT = false,
+                                     Champion = "sona", Name = "stun", MenuName = "Sona (R)", Evade = true, DoT = false,
                                      EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R
                                  },
                              new CleanseSpell
