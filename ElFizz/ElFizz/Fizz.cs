@@ -207,6 +207,58 @@
             return 0;
         }
 
+        private static float GetComboDamage(Obj_AI_Base enemy)
+        {
+            try
+            {
+                float damage = 0;
+
+                if (!Player.IsWindingUp)
+                {
+                    damage += (float)ObjectManager.Player.GetAutoAttackDamage(enemy, true);
+                }
+
+                if (Q.IsReady())
+                {
+                    damage += Q.GetDamage(enemy);
+                }
+
+                if (W.IsReady())
+                {
+                    damage += W.GetDamage(enemy);
+                }
+
+                if (E.IsReady())
+                {
+                    damage += E.GetDamage(enemy);
+                }
+
+                if (Player.HasBuff("lichbane"))
+                {
+                    damage +=
+                        (float)
+                        Player.CalcDamage(
+                            enemy,
+                            Damage.DamageType.Magical,
+                            (Player.BaseAttackDamage * 0.75)
+                            + (Player.BaseAbilityDamage + Player.FlatMagicDamageMod) * 0.5);
+                }
+
+                if (R.IsReady())
+                {
+                    damage += R.GetDamage(enemy);
+                }
+
+                return damage;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+
+            return 0;
+        }
+
         /// <summary>
         ///     Creates the menu
         /// </summary>
@@ -323,7 +375,33 @@
 
                 var drawingsMenu = new Menu("Drawings", "Drawings");
                 {
+                    drawingsMenu.AddItem(new MenuItem("ElFizz.Draw.Off", "Disable drawings").SetValue(false));
+                    drawingsMenu.AddItem(new MenuItem("ElFizz.Draw.Q", "Draw Q").SetValue(new Circle()));
+                    drawingsMenu.AddItem(new MenuItem("ElFizz.Draw.R", "Draw R").SetValue(new Circle()));
                     drawingsMenu.AddItem(new MenuItem("ElFizz.drawings.ComboMode", "Draw Combo Mode").SetValue(true));
+                    var dmgAfterE = new MenuItem("GFUELQuinn.DrawComboDamage", "Draw combo damage").SetValue(true);
+                    var drawFill =
+                        new MenuItem("ElDiana.DrawColour", "Fill colour", true).SetValue(
+                            new Circle(true, Color.Goldenrod));
+                    drawingsMenu.AddItem(drawFill);
+                    drawingsMenu.AddItem(dmgAfterE);
+
+                    DamageIndicator.DamageToUnit = GetComboDamage;
+                    DamageIndicator.Enabled = dmgAfterE.IsActive();
+                    DamageIndicator.Fill = drawFill.GetValue<Circle>().Active;
+                    DamageIndicator.FillColor = drawFill.GetValue<Circle>().Color;
+
+                    dmgAfterE.ValueChanged +=
+                        delegate (object sender, OnValueChangeEventArgs eventArgs)
+                        {
+                            DamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
+                        };
+
+                    drawFill.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
+                    {
+                        DamageIndicator.Fill = eventArgs.GetNewValue<Circle>().Active;
+                        DamageIndicator.FillColor = eventArgs.GetNewValue<Circle>().Color;
+                    };
                 }
 
                 Menu.AddSubMenu(drawingsMenu);
@@ -519,6 +597,27 @@
         {
             try
             {
+                if (IsActive("ElFizz.Draw.Off"))
+                {
+                    return;
+                }
+
+                if (Menu.Item("ElFizz.Draw.Q").GetValue<Circle>().Active)
+                {
+                    if (Q.Level > 0)
+                    {
+                        Render.Circle.DrawCircle(ObjectManager.Player.Position, Q.Range, Color.White);
+                    }
+                }
+
+                if (Menu.Item("ElFizz.Draw.R").GetValue<Circle>().Active)
+                {
+                    if (R.Level > 0)
+                    {
+                        Render.Circle.DrawCircle(ObjectManager.Player.Position, R.Range, Color.DeepSkyBlue);
+                    }
+                }
+
                 if (IsActive("ElFizz.drawings.ComboMode"))
                 {
                     switch (Menu.Item("ElFizz.Combo.Type").GetValue<StringList>().SelectedIndex)
