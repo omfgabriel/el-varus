@@ -6,6 +6,8 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using ItemData = LeagueSharp.Common.Data.ItemData;
+
     internal class Offensive : IPlugin
     {
         #region Static Fields
@@ -17,6 +19,52 @@
         #region Public Properties
 
         public Menu Menu { get; set; }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        ///     Gets Ravenous Hydra
+        /// </summary>
+        /// <value>
+        ///     Ravenous Hydra
+        /// </value>
+        private static Items.Item Hydra
+        {
+            get
+            {
+                return ItemData.Ravenous_Hydra_Melee_Only.GetItem();
+            }
+        }
+
+        /// <summary>
+        ///     Gets Muramana
+        /// </summary>
+        /// <value>
+        ///     Muramana
+        /// </value>
+        private static Items.Item Muramana
+        {
+            get
+            {
+                return ItemData.Muramana.GetItem();
+            }
+        }
+
+        /// <summary>
+        ///     Gets Muramana2
+        /// </summary>
+        /// <value>
+        ///     Muramana2
+        /// </value>
+        private static Items.Item Muramana2
+        {
+            get
+            {
+                return ItemData.Muramana2.GetItem();
+            }
+        }
 
         #endregion
 
@@ -94,50 +142,75 @@
 
         private void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.IsMe && (Items.HasItem(3042) || Items.HasItem(3043)))
+            try
             {
-                if (Entry.Player.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown
-                    && (this.Menu.Item("usecombo").GetValue<KeyBind>().Active || args.Target.Type == Entry.Player.Type))
+                if (!sender.IsMe)
                 {
-                    CanManamune = true;
+                    return;
                 }
 
-                else
+                if (Muramana.IsOwned() || Muramana2.IsOwned())
                 {
-                    Utility.DelayAction.Add(400, () => CanManamune = false);
+                    if (ObjectManager.Player.GetSpellSlot(args.SData.Name) != SpellSlot.Unknown)
+                    {
+                        CanManamune = true;
+                    }
+
+                    if (!args.SData.IsAutoAttack())
+                    {
+                        return;
+                    }
+
+                    if (this.Menu.Item("usecombo").GetValue<KeyBind>().Active)
+                    {
+                        CanManamune = true;
+                    }
+                    else if (args.Target.Type == GameObjectType.obj_AI_Hero)
+                    {
+                        CanManamune = true;
+                    }
+                    else
+                    {
+                        Utility.DelayAction.Add(400, () => CanManamune = false);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
         }
 
         private void OffensiveItemManager()
         {
-            if (this.Menu.Item("useMuramana").GetValue<bool>())
+            if (this.Menu.Item("useMuramana").IsActive())
             {
+                if (Entry.Player.Mana / Entry.Player.MaxMana * 100
+                    < this.Menu.Item("useMuramanaMana").GetValue<Slider>().Value)
+                {
+                    return;
+                }
+
                 if (CanManamune)
                 {
                     if (this.Menu.Item("muraMode").GetValue<StringList>().SelectedIndex != 1
                         || Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active)
                     {
-                        var manamune = Entry.Player.GetSpellSlot("Muramana");
-                        if (manamune != SpellSlot.Unknown && !Entry.Player.HasBuff("Muramana"))
+                        var manamune = ObjectManager.Player.GetSpellSlot("Muramana");
+                        if (manamune != SpellSlot.Unknown && !ObjectManager.Player.HasBuff("Muramana"))
                         {
-                           /* if (Entry.Player.Mana / Entry.Player.MaxMana * 100
-                                > this.Menu.Item("useMuramanaMana").GetValue<Slider>().Value)
-                            {
-                                
-                            }*/
-                            Entry.Player.Spellbook.CastSpell(manamune);
-                            Utility.DelayAction.Add(400, () => CanManamune = false);
-                        }
+                            ObjectManager.Player.Spellbook.CastSpell(manamune);
+                            Utility.DelayAction.Add(500, () => CanManamune = false);
+                        }   
                     }
                 }
 
                 if (!CanManamune && !Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active)
                 {
-                    var manamune = Entry.Player.GetSpellSlot("Muramana");
-                    if (manamune != SpellSlot.Unknown && Entry.Player.HasBuff("Muramana"))
+                    var manamune = ObjectManager.Player.GetSpellSlot("Muramana");
+                    if (manamune != SpellSlot.Unknown && ObjectManager.Player.HasBuff("Muramana"))
                     {
-                        Entry.Player.Spellbook.CastSpell(manamune);
+                        ObjectManager.Player.Spellbook.CastSpell(manamune);
                     }
                 }
             }
@@ -161,7 +234,6 @@
             {
                 return;
             }
-
             try
             {
                 this.OffensiveItemManager();
