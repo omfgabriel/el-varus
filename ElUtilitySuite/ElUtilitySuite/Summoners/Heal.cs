@@ -116,8 +116,8 @@
                 return;
             }
 
-            if ((int)(args.Damage / hero.MaxHealth * 100) > this.Menu.Item("Heal.Damage").GetValue<Slider>().Value
-                || hero.HealthPercent < this.Menu.Item("Heal.HP").GetValue<Slider>().Value)
+            if (((int)(args.Damage / hero.MaxHealth * 100) > this.Menu.Item("Heal.Damage").GetValue<Slider>().Value)
+                || (hero.HealthPercent < this.Menu.Item("Heal.HP").GetValue<Slider>().Value))
             {
                 this.HealSpell.Cast();
             }
