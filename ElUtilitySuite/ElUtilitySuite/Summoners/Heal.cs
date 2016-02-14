@@ -110,20 +110,14 @@
 
             var hero = (Obj_AI_Hero)obj;
 
-            if (hero.IsEnemy)
+            if (hero.IsEnemy || (!hero.IsMe && !this.HealSpell.IsInRange(obj))
+                || !this.Menu.Item(string.Format("healon{0}", hero.ChampionName)).IsActive())
             {
                 return;
             }
 
-            if (
-                ObjectManager.Get<Obj_AI_Hero>()
-                    .Any(
-                        x =>
-                        x.IsAlly && !x.IsDead && this.Menu.Item(string.Format("healon{0}", x.ChampionName)).IsActive()
-                        && ((int)(args.Damage / x.MaxHealth * 100)
-                            > this.Menu.Item("Heal.Damage").GetValue<Slider>().Value
-                            || x.HealthPercent < this.Menu.Item("Heal.HP").GetValue<Slider>().Value)
-                        && x.Distance(this.Player) < 850 && x.CountEnemiesInRange(1000) >= 1))
+            if ((int)(args.Damage / hero.MaxHealth * 100) > this.Menu.Item("Heal.Damage").GetValue<Slider>().Value
+                || hero.HealthPercent < this.Menu.Item("Heal.HP").GetValue<Slider>().Value)
             {
                 this.HealSpell.Cast();
             }
