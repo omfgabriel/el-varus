@@ -269,7 +269,7 @@
                     if (args.Duration - 100 - Game.Ping / 2 > 0)
                     {
                         Utility.DelayAction.Add(
-                            (int)(args.Duration - 100 - Game.Ping / 2),
+                            args.Duration - 100 - Game.Ping / 2,
                             () => { ActiveModes.CastItems(target); });
                     }
                 }
@@ -287,7 +287,7 @@
                 var drawW = MenuInit.Menu.Item("Misc.Drawings.W").GetValue<Circle>();
                 var drawE = MenuInit.Menu.Item("Misc.Drawings.E").GetValue<Circle>();
                 var drawExclamation = MenuInit.Menu.Item("Misc.Drawings.Exclamation").GetValue<Circle>();
-                    //Exclamation mark
+                //Exclamation mark
 
                 var drawSearchRange = MenuInit.Menu.Item("Beta.Search.Range").GetValue<Circle>();
                 var searchrange = MenuInit.Menu.Item("Beta.searchrange").GetValue<Slider>().Value;
@@ -409,7 +409,10 @@
                     switch (args.SData.Name.ToLower())
                     {
                         case "rengarr":
-                            if (Items.CanUseItem(3142)) Utility.DelayAction.Add(2000, () => Items.UseItem(3142));
+                            if (Items.CanUseItem(3142))
+                            {
+                                Utility.DelayAction.Add(2000, () => Items.UseItem(3142));
+                            }
                             break;
                         case "rengarq":
                             LastQ = Environment.TickCount;
@@ -422,7 +425,10 @@
                             LastSpell = Environment.TickCount;
                             if (Orbwalking.LastAATick < Utils.GameTimeTickCount - Game.Ping / 2
                                 && Utils.GameTimeTickCount - Game.Ping / 2
-                                < Orbwalking.LastAATick + Player.AttackCastDelay * 1000 + 40) Orbwalking.ResetAutoAttackTimer();
+                                < Orbwalking.LastAATick + Player.AttackCastDelay * 1000 + 40)
+                            {
+                                Orbwalking.ResetAutoAttackTimer();
+                            }
                             break;
 
                         case "rengarw":
@@ -440,7 +446,8 @@
 
         private static void OnUpdate(EventArgs args)
         {
-            try { 
+            try
+            {
                 if (Player.IsDead)
                 {
                     return;
