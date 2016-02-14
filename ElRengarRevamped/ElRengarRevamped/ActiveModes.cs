@@ -1,6 +1,7 @@
 namespace ElRengarRevamped
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using LeagueSharp;
@@ -29,14 +30,14 @@ namespace ElRengarRevamped
 
                 if (Rengar.SelectedEnemy.IsValidTarget(spells[Spells.E].Range))
                 {
-                    TargetSelector.SetTarget(target);
+                    Orbwalker.ForceTarget(target);
                     if (Hud.SelectedUnit != null)
                     {
                         Hud.SelectedUnit = Rengar.SelectedEnemy;
                     }
                 }
 
-                CastItems(target);
+                //CastItems(target);
 
                 #region RengarR
 
@@ -86,7 +87,7 @@ namespace ElRengarRevamped
                             break;
                         case 1:
                             if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady()
-                                && target.IsValidTarget(spells[Spells.W].Range) && !HasPassive)
+                                && Player.Distance(target) < 500 && !HasPassive)
                             {
                                 CastW(target);
                             }
@@ -145,29 +146,65 @@ namespace ElRengarRevamped
 
         #region Methods
 
+        private static Tuple<int, List<Obj_AI_Hero>> GetWHits()
+        {
+            try
+            {
+                var hits =
+                    HeroManager.Enemies.Where(
+                        e =>
+                        e.IsValidTarget() && e.Distance(Player) < 450f
+                        || e.Distance(Player) < 450f && e.IsFacing(Player)).ToList();
+
+                return new Tuple<int, List<Obj_AI_Hero>>(hits.Count, hits);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            return new Tuple<int, List<Obj_AI_Hero>>(0, null);
+        }
+
         private static void CastE(Obj_AI_Base target)
         {
-            if (!spells[Spells.E].IsReady() || !target.IsValidTarget(spells[Spells.E].Range))
+            try
             {
-                return;
+                if (!spells[Spells.E].IsReady() || !target.IsValidTarget(spells[Spells.E].Range))
+                {
+                    return;
+                }
+
+                var prediction = spells[Spells.E].GetPrediction(target);
+
+                if (prediction.Hitchance >= HitChance.High)
+                {
+                    spells[Spells.E].Cast(prediction.CastPosition);
+                }
             }
-
-            var prediction = spells[Spells.E].GetPrediction(target);
-
-            if (prediction.Hitchance >= HitChance.High)
+            catch (Exception e)
             {
-                spells[Spells.E].Cast(target);
+                Console.WriteLine(e);
             }
         }
 
         private static void CastW(Obj_AI_Base target)
         {
-
-            if (!target.IsValidTarget(spells[Spells.W].Range) || !spells[Spells.W].IsReady())
+            try
             {
-                return;
+                if (!spells[Spells.W].IsReady())
+                {
+                    return;
+                }
+
+                if (GetWHits().Item1 > 0)
+                {
+                    spells[Spells.W].Cast();
+                }
             }
-            spells[Spells.W].Cast();
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         #endregion
@@ -244,109 +281,190 @@ namespace ElRengarRevamped
 
         public static void Jungleclear()
         {
-            var minion =
-                MinionManager.GetMinions(
-                    Player.ServerPosition,
-                    spells[Spells.W].Range,
-                    MinionTypes.All,
-                    MinionTeam.Neutral,
-                    MinionOrderTypes.MaxHealth).FirstOrDefault();
-
-            if (minion == null)
+            try
             {
-                return;
-            }
+                var minion =
+                    MinionManager.GetMinions(
+                        Player.ServerPosition,
+                        spells[Spells.W].Range,
+                        MinionTypes.All,
+                        MinionTeam.Neutral,
+                        MinionOrderTypes.MaxHealth).FirstOrDefault();
 
-            CastItems(minion);
-
-            if (Ferocity == 5 && IsActive("Jungle.Save.Ferocity"))
-            {
-                if (minion.IsValidTarget(spells[Spells.W].Range) && !HasPassive)
+                if (minion == null)
                 {
-                    CastItems(minion);
+                    return;
                 }
-                return;
-            }
 
-            if (IsActive("Jungle.Use.Q") && spells[Spells.Q].IsReady()
-                && minion.IsValidTarget(spells[Spells.Q].Range + 100))
-            {
-                spells[Spells.Q].Cast();
-            }
+                CastItems(minion);
 
-            if (IsActive("Jungle.Use.W") && spells[Spells.W].IsReady() && minion.IsValidTarget(spells[Spells.W].Range)
-                && !HasPassive)
-            {
-                spells[Spells.W].Cast();
-            }
+                if (Ferocity == 5 && IsActive("Jungle.Save.Ferocity"))
+                {
+                    if (minion.IsValidTarget(spells[Spells.W].Range) && !HasPassive)
+                    {
+                        CastItems(minion);
+                    }
+                    return;
+                }
 
-            if (IsActive("Jungle.Use.E") && spells[Spells.E].IsReady() && minion.IsValidTarget(spells[Spells.E].Range))
+                if (IsActive("Jungle.Use.Q") && spells[Spells.Q].IsReady()
+                    && minion.IsValidTarget(spells[Spells.Q].Range + 100))
+                {
+                    spells[Spells.Q].Cast();
+                }
+
+                if (IsActive("Jungle.Use.W") && spells[Spells.W].IsReady()
+                    && minion.IsValidTarget(spells[Spells.W].Range) && !HasPassive)
+                {
+                    spells[Spells.W].Cast();
+                }
+
+                if (IsActive("Jungle.Use.E") && spells[Spells.E].IsReady()
+                    && minion.IsValidTarget(spells[Spells.E].Range))
+                {
+                    spells[Spells.E].Cast(minion.Position);
+                }
+            }
+            catch (Exception e)
             {
-                spells[Spells.E].Cast(minion.Position);
+                Console.WriteLine(e);
             }
         }
 
         public static void Laneclear()
         {
-            var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.W].Range).FirstOrDefault();
-            if (minion == null)
+            try
             {
-                return;
-            }
+                var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.W].Range).FirstOrDefault();
+                if (minion == null)
+                {
+                    return;
+                }
 
-            if (Player.Spellbook.IsAutoAttacking || Player.IsWindingUp)
-            {
-                return;
-            }
-            if (Ferocity == 5 && IsActive("Clear.Save.Ferocity"))
-            {
-                if (minion.IsValidTarget(spells[Spells.W].Range))
+                if (Player.Spellbook.IsAutoAttacking || Player.IsWindingUp)
+                {
+                    return;
+                }
+                if (Ferocity == 5 && IsActive("Clear.Save.Ferocity"))
+                {
+                    if (minion.IsValidTarget(spells[Spells.W].Range))
+                    {
+                        CastItems(minion);
+                    }
+                    return;
+                }
+
+                if (IsActive("Clear.Use.Q") && spells[Spells.Q].IsReady()
+                    && minion.IsValidTarget(spells[Spells.Q].Range))
+                {
+                    spells[Spells.Q].Cast();
+                }
+
+                if (IsActive("Clear.Use.W") && spells[Spells.W].IsReady()
+                    && minion.IsValidTarget(spells[Spells.W].Range))
                 {
                     CastItems(minion);
+                    spells[Spells.W].Cast();
                 }
-                return;
-            }
 
-            if (IsActive("Clear.Use.Q") && spells[Spells.Q].IsReady() && minion.IsValidTarget(spells[Spells.Q].Range))
-            {
-                spells[Spells.Q].Cast();
+                if (IsActive("Clear.Use.E") && spells[Spells.E].GetDamage(minion) > minion.Health
+                    && spells[Spells.E].IsReady() && minion.IsValidTarget(spells[Spells.E].Range))
+                {
+                    spells[Spells.E].Cast(minion.Position);
+                }
             }
-
-            if (IsActive("Clear.Use.W") && spells[Spells.W].IsReady() && minion.IsValidTarget(spells[Spells.W].Range))
+            catch (Exception e)
             {
-                CastItems(minion);
-                spells[Spells.W].Cast();
-            }
-
-            if (IsActive("Clear.Use.E") && spells[Spells.E].GetDamage(minion) > minion.Health
-                && spells[Spells.E].IsReady() && minion.IsValidTarget(spells[Spells.E].Range))
-            {
-                spells[Spells.E].Cast(minion.Position);
+                Console.WriteLine(e);
             }
         }
 
-        public static void CastItems(Obj_AI_Base target)
+        /// <summary>
+        ///     Gets Youmuus Ghostblade
+        /// </summary>
+        /// <value>
+        ///     Youmuus Ghostblade
+        /// </value>
+        private static Items.Item Youmuu
         {
-            if (target.IsValidTarget(400f))
+            get
             {
-                if (Items.HasItem(3074) || Items.CanUseItem(3074))
-                {
-                    Items.UseItem(3074);
-                }
+                return ItemData.Youmuus_Ghostblade.GetItem();
+            }
+        }
 
-                if (Items.HasItem(3077) || Items.CanUseItem(3077)) 
-                {
-                    Items.UseItem(3077);
-                }
+        /// <summary>
+        ///     Gets Ravenous Hydra
+        /// </summary>
+        /// <value>
+        ///     Ravenous Hydra
+        /// </value>
+        private static Items.Item Hydra
+        {
+            get
+            {
+                return ItemData.Ravenous_Hydra_Melee_Only.GetItem();
+            }
+        }
+
+        /// <summary>
+        ///     Gets Tiamat Item
+        /// </summary>
+        /// <value>
+        ///     Tiamat Item
+        /// </value>
+        private static Items.Item Tiamat
+        {
+            get
+            {
+                return ItemData.Tiamat_Melee_Only.GetItem();
+            }
+        }
+
+        /// <summary>
+        ///     Gets Titanic Hydra
+        /// </summary>
+        /// <value>
+        ///     Titanic Hydra
+        /// </value>
+        private static Items.Item Titanic
+        {
+            get
+            {
+                return ItemData.Titanic_Hydra_Melee_Only.GetItem();
+            }
+        }
+
+        public static bool CastItems(Obj_AI_Base target)
+        {
+            if (Player.IsDashing() || Player.IsWindingUp)
+            {
+                return false;
             }
 
-            if (target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)))
+            var youmuus = Youmuu;
+            if (Youmuu.IsReady() && youmuus.Cast())
             {
-                if (Items.HasItem(3748) || Items.CanUseItem(3748))
-                {
-                    Items.UseItem(3748);
-                }
+                return true;
             }
+
+            var heroes = Player.GetEnemiesInRange(385).Count;
+            var count = heroes;
+
+            var tiamat = Tiamat;
+            if (tiamat.IsReady() && count > 0 && tiamat.Cast())
+            {
+                return true;
+            }
+
+            var hydra = Hydra;
+            if (Hydra.IsReady() && count > 0 && hydra.Cast())
+            {
+                return true;
+            }
+
+            var titanic = Titanic;
+            return titanic.IsReady() && count > 0 && titanic.Cast();
         }
 
         #endregion
