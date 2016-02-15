@@ -116,7 +116,7 @@
                 return;
             }
 
-            if (((int)(args.Damage / hero.MaxHealth * 100) > this.Menu.Item("Heal.Damage").GetValue<Slider>().Value)
+            if (((int)(args.Damage / hero.Health) > this.Menu.Item("Heal.Damage").GetValue<Slider>().Value)
                 || (hero.HealthPercent < this.Menu.Item("Heal.HP").GetValue<Slider>().Value))
             {
                 this.Player.Spellbook.CastSpell(this.HealSpell.Slot);
