@@ -46,6 +46,12 @@ namespace ElUtilitySuite.Summoners
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W,
                                      Interval = 1.0
                                  },
+                              new CleanseSpell
+                                 {
+                                     Champion = "Nocturne", Name = "fear", MenuName = "Nocturne Fear", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E,
+                                     Interval = 1.0
+                                 },
                              new CleanseSpell
                                  {
                                      Champion = "Pantheon", Name = "stun", MenuName = "Pantheon Stun", Evade = false,
