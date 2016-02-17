@@ -48,7 +48,7 @@
             this.Menu.AddItem(new MenuItem("UseMuramana", "Use Muramana").SetValue(true));
             this.Menu.AddItem(
                 new MenuItem("MuramanaMode", "Muramana Mode").SetValue(new StringList(new[] { "Always", "Combo" }, 1)));
-            this.Menu.AddItem(new MenuItem("MuramanaMana", "Min Mana %").SetValue(20));
+            this.Menu.AddItem(new MenuItem("MuramanaMana", "Min Mana %").SetValue(new Slider(20)));
         }
 
         /// <summary>

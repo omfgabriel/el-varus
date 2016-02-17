@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using System.Security;
     using System.Security.Permissions;
 
     using LeagueSharp;
@@ -28,8 +27,8 @@
                     .GetTypes()
                     .Where(
                         x =>
-                        x.Namespace != null && x.Namespace.Contains("Offensive") && x.IsClass
-                        && x.IsAssignableFrom(typeof(Item)))
+                        x.Namespace != null && x.Namespace.Contains("OffensiveItems") && x.IsClass
+                        && typeof(Item).IsAssignableFrom(x))
                     .Select(x => (Item)Activator.CreateInstance(x))
                     .ToList();
         }
@@ -57,10 +56,11 @@
         /// <returns></returns>
         public void CreateMenu(Menu rootMenu)
         {
-            this.Menu = rootMenu.AddSubMenu(new Menu("Offensive", "omenu2"));
+            this.Menu = rootMenu.AddSubMenu(new Menu("Offensive2", "omenu2"));
 
             foreach (var item in this.offensiveItems)
             {
+                Game.PrintChat("Hello!");
                 var submenu = new Menu(item.Name, (int)item.Id + item.Name);
 
                 item.Menu = submenu;
@@ -75,8 +75,6 @@
         /// </summary>
         public void Load()
         {
-            return;
-
             Game.OnUpdate += this.Game_OnUpdate;
         }
 
