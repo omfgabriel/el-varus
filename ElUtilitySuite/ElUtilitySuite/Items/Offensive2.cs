@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Security;
+    using System.Security.Permissions;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -18,6 +20,7 @@
 
         #region Constructors and Destructors
 
+        [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         public Offensive2()
         {
             this.offensiveItems =

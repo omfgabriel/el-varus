@@ -7,19 +7,6 @@
 
     internal class Hextech : Item
     {
-        #region Constructors and Destructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Item" /> class.
-        /// </summary>
-        /// <param name="menu">The menu.</param>
-        public Hextech(Menu menu)
-            : base(menu)
-        {
-        }
-
-        #endregion
-
         #region Public Properties
 
         /// <summary>

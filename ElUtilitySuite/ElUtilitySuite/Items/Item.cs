@@ -10,19 +10,6 @@
     /// </summary>
     internal abstract class Item
     {
-        #region Constructors and Destructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Item" /> class.
-        /// </summary>
-        /// <param name="menu">The menu.</param>
-        protected Item(Menu menu)
-        {
-            this.Menu = menu;
-        }
-
-        #endregion
-
         #region Public Properties
 
         /// <summary>
