@@ -360,7 +360,7 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "LeeSin", Name = "blindmonkqonechaos", MenuName = "Lee Sonic Wave",
+                                     Champion = "LeeSin", Name = "blindmonkqone", MenuName = "Lee Sin Q",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
                                      Slot = SpellSlot.Q
                                  },
