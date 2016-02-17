@@ -13,12 +13,24 @@
     {
         #region Delegates
 
+        /// <summary>
+        /// Creates a new object of the specified type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="args">The arguments.</param>
+        /// <returns></returns>
         internal delegate T ObjectActivator<out T>(params object[] args);
 
         #endregion
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets or sets the menu.
+        /// </summary>
+        /// <value>
+        /// The menu.
+        /// </value>
         public static Menu Menu { get; set; }
 
         /// <summary>
