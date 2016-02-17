@@ -10,7 +10,7 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    internal class Offensive2 : IPlugin
+    internal class Offensive2 //: IPlugin
     {
         #region Fields
 
