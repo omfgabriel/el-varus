@@ -491,7 +491,7 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "sona", Name = "stun", MenuName = "Sona (R)", Evade = true, DoT = false,
+                                     Champion = "sona", Name = "SonaR", MenuName = "Sona (R)", Evade = true, DoT = false,
                                      EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R
                                  },
                              new CleanseSpell
