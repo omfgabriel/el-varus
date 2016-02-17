@@ -48,7 +48,7 @@
         public override bool ShouldUseItem()
         {
             return this.Menu.Item("Hydracombo").IsActive() && this.ComboModeActive
-                   && HeroManager.Enemies.Any(x => x.Distance(this.Player) < 400);
+                   && HeroManager.Enemies.Any(x => x.Distance(this.Player) < 400 && !x.IsDead && !x.IsZombie);
         }
 
         #endregion

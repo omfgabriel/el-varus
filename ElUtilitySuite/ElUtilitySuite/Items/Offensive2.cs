@@ -9,7 +9,7 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    internal class Offensive2 //: IPlugin
+    internal class Offensive2 : IPlugin
     {
         #region Fields
 
@@ -56,11 +56,10 @@
         /// <returns></returns>
         public void CreateMenu(Menu rootMenu)
         {
-            this.Menu = rootMenu.AddSubMenu(new Menu("Offensive2", "omenu2"));
+            this.Menu = rootMenu.AddSubMenu(new Menu("Offensive", "omenu2"));
 
             foreach (var item in this.offensiveItems)
             {
-                Game.PrintChat("Hello!");
                 var submenu = new Menu(item.Name, (int)item.Id + item.Name);
 
                 item.Menu = submenu;

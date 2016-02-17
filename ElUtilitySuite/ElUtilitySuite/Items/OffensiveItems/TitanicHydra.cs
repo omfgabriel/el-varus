@@ -1,5 +1,7 @@
 ﻿namespace ElUtilitySuite.Items.OffensiveItems
 {
+    using System.Linq;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
