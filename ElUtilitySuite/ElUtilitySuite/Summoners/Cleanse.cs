@@ -737,7 +737,7 @@ namespace ElUtilitySuite.Summoners
                     foreach (var spell in Spells)
                     {
                         spellsMenu.AddItem(
-                            new MenuItem(spell.Champion + spell.Name, string.IsNullOrEmpty(spell.MenuName) ? spell.Name : spell.MenuName)
+                            new MenuItem(spell.Champion ?? string.Empty + spell.Name, string.IsNullOrEmpty(spell.MenuName) ? spell.Name : spell.MenuName)
                                 .SetValue(spell.Cleanse));
                     }
                 }
