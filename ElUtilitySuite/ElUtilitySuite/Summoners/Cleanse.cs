@@ -842,7 +842,7 @@ namespace ElUtilitySuite.Summoners
             {
                 foreach (var spell in Spells.Where(x => ally.HasBuff(x.Name)))
                 {
-                    if (!this.Menu.Item(spell.Name).IsActive())
+                    if (!this.Menu.Item(spell.Champion ?? string.Empty + spell.Name).IsActive())
                     {
                         continue;
                     }
