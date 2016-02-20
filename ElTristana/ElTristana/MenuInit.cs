@@ -43,7 +43,7 @@ namespace ElTristana
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy))
                 comboMenu.SubMenu("Use E on")
                     .AddItem(
-                        new MenuItem("ElTristana.E.On" + hero.CharData.BaseSkinName, hero.CharData.BaseSkinName)
+                        new MenuItem("ElTristana.E.On" + hero.ChampionName, hero.ChampionName)
                             .SetValue(true));
 
             Menu.AddSubMenu(comboMenu);

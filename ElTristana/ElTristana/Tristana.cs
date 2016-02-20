@@ -236,7 +236,7 @@
                 {
                     if (hero.IsEnemy)
                     {
-                        var getEnemies = MenuInit.Menu.Item("ElTristana.E.On" + hero.CharData.BaseSkinName);
+                        var getEnemies = MenuInit.Menu.Item("ElTristana.E.On" + hero.ChampionName);
                         if (getEnemies != null && getEnemies.GetValue<bool>())
                         {
                             spells[Spells.E].Cast(hero);
