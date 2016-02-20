@@ -19,10 +19,10 @@
         public Spell MarkSpell { get; set; }
 
         /// <summary>
-        /// Gets or sets the menu.
+        ///     Gets or sets the menu.
         /// </summary>
         /// <value>
-        /// The menu.
+        ///     The menu.
         /// </value>
         public Menu Menu { get; set; }
 
@@ -84,10 +84,10 @@
             }
 
             var markSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name == "summonersnowball"
-                                  ? SpellSlot.Summoner1
-                                  : this.Player.GetSpell(SpellSlot.Summoner2).Name == "summonersnowball"
-                                        ? SpellSlot.Summoner2
-                                        : SpellSlot.Unknown;
+                               ? SpellSlot.Summoner1
+                               : this.Player.GetSpell(SpellSlot.Summoner2).Name == "summonersnowball"
+                                     ? SpellSlot.Summoner2
+                                     : SpellSlot.Unknown;
 
             if (markSlot == SpellSlot.Unknown)
             {
@@ -98,8 +98,11 @@
             this.MarkSpell.SetSkillshot(0f, 60f, 1500f, true, SkillshotType.SkillshotLine);
 
             Game.OnUpdate += this.GameOnUpdate;
-
         }
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         ///     Fired when the game is updated.
