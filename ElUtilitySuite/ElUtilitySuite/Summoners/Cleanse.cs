@@ -737,7 +737,7 @@ namespace ElUtilitySuite.Summoners
                     foreach (var spell in Spells)
                     {
                         spellsMenu.AddItem(
-                            new MenuItem(spell.Champion ?? string.Empty + spell.Name, string.IsNullOrEmpty(spell.MenuName) ? spell.Name : spell.MenuName)
+                            new MenuItem(spell.MenuName.Replace(" ", string.Empty), string.IsNullOrEmpty(spell.MenuName) ? spell.Name : spell.MenuName)
                                 .SetValue(spell.Cleanse));
                     }
                 }
@@ -840,9 +840,10 @@ namespace ElUtilitySuite.Summoners
 
             foreach (var ally in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
             {
-                foreach (var spell in Spells.Where(x => ally.HasBuff(x.Name)))
+                var ally1 = ally;
+                foreach (var spell in Spells.Where(x => ally1.HasBuff(x.Name)))
                 {
-                    if (!this.Menu.Item(spell.Champion ?? string.Empty + spell.Name).IsActive())
+                    if (!this.Menu.Item(spell.MenuName.Replace(" ", string.Empty)).IsActive())
                     {
                         continue;
                     }
@@ -871,6 +872,7 @@ namespace ElUtilitySuite.Summoners
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
                         () => item.Cast(ally));*/
 
+                    var ally2 = ally;
                     Utility.DelayAction.Add(
                         spell.CleanseTimer,
                         () =>
@@ -881,7 +883,7 @@ namespace ElUtilitySuite.Summoners
                                     return;
                                 }
 
-                                Player.Spellbook.CastSpell(item.Slot, ally);
+                                Player.Spellbook.CastSpell(item.Slot, ally2);
                             });
                 }
             }
