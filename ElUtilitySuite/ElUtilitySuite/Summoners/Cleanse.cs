@@ -733,7 +733,7 @@ namespace ElUtilitySuite.Summoners
         {
             this.Menu = new Menu("Cleanse", "CleanseV3");
             {
-                var spellsMenu = new Menu("Spells", "CleanseV3Spells").SetFontStyle(FontStyle.Regular, SharpDX.Color.Aqua);
+                var spellsMenu = new Menu("Spells", "CleanseV3Spells"); //.SetFontStyle(FontStyle.Regular, SharpDX.Color.Aqua);
                 {
                     foreach (var spell in Spells)
                     {
