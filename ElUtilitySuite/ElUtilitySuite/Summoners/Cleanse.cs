@@ -731,9 +731,9 @@ namespace ElUtilitySuite.Summoners
         /// <param name="rootMenu">The root menu.</param>
         public void CreateMenu(Menu rootMenu)
         {
-            this.Menu = new Menu("Cleanse/QSS", "CleanseV3"); //.SetFontStyle(FontStyle.Regular, SharpDX.Color.Aqua);
+            this.Menu = new Menu("Cleanse", "CleanseV3");
             {
-                var spellsMenu = new Menu("Spells", "CleanseV3Spells");
+                var spellsMenu = new Menu("Spells", "CleanseV3Spells").SetFontStyle(FontStyle.Regular, SharpDX.Color.Aqua);
                 {
                     foreach (var spell in Spells)
                     {
