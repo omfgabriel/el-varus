@@ -738,7 +738,7 @@ namespace ElUtilitySuite.Summoners
                     foreach (var spell in Spells)
                     {
                         spellsMenu.AddItem(
-                            new MenuItem(spell.MenuName.Replace(" ", string.Empty), string.IsNullOrEmpty(spell.MenuName) ? spell.Name : spell.MenuName)
+                            new MenuItem(spell.MenuName != null ? spell.MenuName.Replace(" ", string.Empty) : spell.Name, string.IsNullOrEmpty(spell.MenuName) ? spell.Name : spell.MenuName)
                                 .SetValue(spell.Cleanse));
                     }
                 }
@@ -844,7 +844,7 @@ namespace ElUtilitySuite.Summoners
                 var ally1 = ally;
                 foreach (var spell in Spells.Where(x => ally1.HasBuff(x.Name)))
                 {
-                    if (!this.Menu.Item(spell.MenuName.Replace(" ", string.Empty)).IsActive())
+                    if (!this.Menu.Item(spell.MenuName != null ? spell.MenuName.Replace(" ", string.Empty) : spell.Name).IsActive())
                     {
                         continue;
                     }
