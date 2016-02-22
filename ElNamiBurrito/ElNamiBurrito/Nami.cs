@@ -38,14 +38,6 @@
 
         #region Properties
 
-        private static HitChance CustomHitChance
-        {
-            get
-            {
-                return GetHitchance();
-            }
-        }
-
         private static Obj_AI_Hero Player
         {
             get
@@ -209,23 +201,6 @@
             }
         }
 
-        private static HitChance GetHitchance()
-        {
-            switch (ElNamiMenu._menu.Item("ElNamiReborn.hitChance").GetValue<StringList>().SelectedIndex)
-            {
-                case 0:
-                    return HitChance.Low;
-                case 1:
-                    return HitChance.Medium;
-                case 2:
-                    return HitChance.High;
-                case 3:
-                    return HitChance.VeryHigh;
-                default:
-                    return HitChance.Medium;
-            }
-        }
-
         private static void Harass(Obj_AI_Base target)
         {
             if (target == null || !target.IsValidTarget() || target.IsMinion)
@@ -245,11 +220,10 @@
 
             if (useQ && spells[Spells.Q].IsReady())
             {
-                var prediction = spells[Spells.Q].GetPrediction(target).Hitchance;
-
-                if (prediction >= CustomHitChance)
+                var prediction = spells[Spells.Q].GetPrediction(target);
+                if (prediction.Hitchance >= HitChance.High)
                 {
-                    spells[Spells.Q].Cast(target);
+                    spells[Spells.Q].Cast(prediction.CastPosition);
                 }
             }
 
@@ -259,7 +233,7 @@
                     HeroManager.Allies.Where(
                         hero =>
                         hero.IsAlly
-                        && ElNamiMenu._menu.Item("ElNamiReborn.Settings.E1" + hero.BaseSkinName).GetValue<bool>())
+                        && ElNamiMenu._menu.Item("ElNamiReborn.Settings.E1" + hero.CharData.BaseSkinName).IsActive())
                         .OrderBy(closest => closest.Distance(target))
                         .FirstOrDefault();
 
@@ -322,7 +296,6 @@
 
             PlayerHealing();
             AllyHealing();
-            //AutoHarass();
         }
 
         private static void PlayerHealing()

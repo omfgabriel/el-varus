@@ -90,8 +90,6 @@ namespace ElNamiBurrito
 
             miscMenu.AddItem(new MenuItem("sep1", ""));
             miscMenu.AddItem(new MenuItem("ElNamiReborn.misc.ks", "Killsteal mode").SetValue(false));
-            miscMenu.AddItem(new MenuItem("sep5", ""));
-            miscMenu.AddItem(new MenuItem("ElNamiReborn.hitChance", "Hitchance").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
 
             _menu.AddSubMenu(miscMenu);
 
