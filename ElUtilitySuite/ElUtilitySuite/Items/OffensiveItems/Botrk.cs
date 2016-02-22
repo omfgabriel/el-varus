@@ -62,7 +62,7 @@
                        x =>
                        x.HealthPercent < this.Menu.Item("BotrkEnemyHp").GetValue<Slider>().Value
                        && x.Distance(this.Player) < 550)
-                       || this.Player.Health < this.Menu.Item("BotrkMyHp").GetValue<Slider>().Value);
+                       || this.Player.HealthPercent < this.Menu.Item("BotrkMyHp").GetValue<Slider>().Value);
         }
 
         /// <summary>
