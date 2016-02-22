@@ -733,7 +733,7 @@ namespace ElUtilitySuite.Summoners
         {
             this.Menu = new Menu("Cleanse", "CleanseV3");
             {
-                var spellsMenu = new Menu("Spells", "CleanseV3Spells"); //.SetFontStyle(FontStyle.Regular, SharpDX.Color.Aqua);
+                var spellsMenu = new Menu("Spells", "CleanseV3Spells").SetFontStyle(FontStyle.Regular, SharpDX.Color.Aqua);
                 {
                     foreach (var spell in Spells)
                     {
@@ -745,12 +745,12 @@ namespace ElUtilitySuite.Summoners
 
                 this.Menu.AddSubMenu(spellsMenu);
 
-                /*var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
+                var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
                 {
                     humanizerDelay.AddItem(
-                        new MenuItem("CleanseMinDelay", "Minimum Delay (MS)").SetValue(new Slider(0, 0, 500)));
+                        new MenuItem("CleanseMinDelay", "Minimum Delay (MS)").SetValue(new Slider(500, 0, 1000)));
                     humanizerDelay.AddItem(
-                        new MenuItem("CleanseMaxDelay", "Maximum Delay (MS)").SetValue(new Slider(0, 0, 500)));
+                        new MenuItem("CleanseMaxDelay", "Maximum Delay (MS)").SetValue(new Slider(800, 0, 1500)));
 
                     humanizerDelay.Item("CleanseMaxDelay").ValueChanged +=
                         delegate(object sender, OnValueChangeEventArgs args)
@@ -763,7 +763,7 @@ namespace ElUtilitySuite.Summoners
                             };
                 }
 
-                this.Menu.AddSubMenu(humanizerDelay);*/
+                this.Menu.AddSubMenu(humanizerDelay);
 
                 this.Menu.AddItem(new MenuItem("CleanseActivated", "Use Cleanse").SetValue(true));
             }
@@ -791,14 +791,6 @@ namespace ElUtilitySuite.Summoners
         /// <returns></returns>
         private static Spell GetBestCleanseItem(GameObject ally, BuffInstance buff)
         {
-            /**return
-                Items
-                    .Where(
-                        x =>
-                        x.WorksOn.Any(y => buff.Type.HasFlag(y)) && (ally.IsMe || x.WorksOnAllies)
-                        && (x.Spell.IsReady() && x.Spell.IsInRange(ally)))
-                    .Select(x => x.Spell)
-                    .FirstOrDefault();**/
             foreach (var item in Items.OrderBy(x => x.Priority))
             {
                 if (!item.WorksOn.Any(x => buff.Type.HasFlag(x)))
@@ -866,16 +858,12 @@ namespace ElUtilitySuite.Summoners
                         continue;
                     }
 
-                    /*Utility.DelayAction.Add(
+                    var ally2 = ally;
+                    Utility.DelayAction.Add(
                         spell.CleanseTimer
                         + Random.Next(
                             this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value,
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
-                        () => item.Cast(ally));*/
-
-                    var ally2 = ally;
-                    Utility.DelayAction.Add(
-                        spell.CleanseTimer,
                         () =>
                             {
                                 //Check if player still has buff or is zhonya'd
@@ -886,6 +874,20 @@ namespace ElUtilitySuite.Summoners
 
                                 Player.Spellbook.CastSpell(item.Slot, ally2);
                             });
+
+                    
+                    /*Utility.DelayAction.Add(
+                        spell.CleanseTimer,
+                        () =>
+                            {
+                                //Check if player still has buff or is zhonya'd
+                                if (!Player.HasBuff(buff.Name) || Player.IsInvulnerable)
+                                {
+                                    return;
+                                }
+
+                                Player.Spellbook.CastSpell(item.Slot, ally2);
+                            });*/
                 }
             }
         }

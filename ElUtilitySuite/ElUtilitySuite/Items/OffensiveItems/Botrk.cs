@@ -62,7 +62,7 @@
                        x =>
                        x.HealthPercent < this.Menu.Item("BotrkEnemyHp").GetValue<Slider>().Value
                        && x.Distance(this.Player) < 550)
-                       || this.Player.HealthPercent < this.Menu.Item("BotrkMyHp").GetValue<Slider>().Value);
+                       || this.Player.Health < this.Menu.Item("BotrkMyHp").GetValue<Slider>().Value);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@
                 HeroManager.Enemies.First(
                     x =>
                     x.HealthPercent < this.Menu.Item("BotrkEnemyHp").GetValue<Slider>().Value
-                    && x.Distance(this.Player) < 550 && !x.IsDead && !x.IsZombie));
+                    && x.Distance(this.Player) < 550));
         }
 
         #endregion
