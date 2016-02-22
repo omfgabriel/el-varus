@@ -23,6 +23,27 @@
         }
 
         /// <summary>
+        ///     Loads this instance.
+        /// </summary>
+        /*public Muramana()
+        {
+            Obj_AI_Base.OnProcessSpellCast += this.ObjAiBaseOnProcessSpellCast;
+        }*/
+
+        /// <summary>
+        ///     Fired when the game processes a spell cast.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
+        /*private void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.IsAlly)
+            {
+                return;
+            }
+        }*/
+
+        /// <summary>
         ///     Gets or sets the name of the item.
         /// </summary>
         /// <value>

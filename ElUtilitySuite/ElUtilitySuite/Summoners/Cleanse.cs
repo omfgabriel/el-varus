@@ -67,6 +67,12 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "Quinn", Name = "QuinnQSightReduction", MenuName = "Quinn Blind", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q,
+                                     Interval = 1.0
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "Teemo", Name = "blind", MenuName = "Teemo Blind", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q,
                                      Interval = 1.0
@@ -731,9 +737,9 @@ namespace ElUtilitySuite.Summoners
         /// <param name="rootMenu">The root menu.</param>
         public void CreateMenu(Menu rootMenu)
         {
-            this.Menu = new Menu("Cleanse", "CleanseV3");
+            this.Menu = new Menu("Cleanse/QSS", "CleanseV3").SetFontStyle(FontStyle.Regular, SharpDX.Color.Aqua);
             {
-                var spellsMenu = new Menu("Spells", "CleanseV3Spells").SetFontStyle(FontStyle.Regular, SharpDX.Color.Aqua);
+                var spellsMenu = new Menu("Spells", "CleanseV3Spells");
                 {
                     foreach (var spell in Spells)
                     {
@@ -820,6 +826,8 @@ namespace ElUtilitySuite.Summoners
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void GameOnUpdate(EventArgs args)
         {
+            
+           // Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Select(b => b.DisplayName)));
             if (Player.IsInvulnerable || Player.HasBuffOfType(BuffType.SpellImmunity)
                 || Player.HasBuffOfType(BuffType.Invulnerability))
             {
