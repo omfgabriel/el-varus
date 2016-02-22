@@ -151,7 +151,7 @@
 
                 if (prediction.Hitchance >= HitChance.High)
                 {
-                    spells[Spells.Q].Cast(prediction.UnitPosition);
+                    spells[Spells.Q].Cast(prediction.CastPosition);
                 }
             }
 
