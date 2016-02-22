@@ -1,5 +1,7 @@
 ﻿namespace ElUtilitySuite.Items.OffensiveItems
 {
+    using System.Linq;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -86,9 +88,20 @@
                 return true;
             }
 
-            if (this.Player.HasBuff("Muramana"))
+            Obj_AI_Hero target = TargetSelector.GetTarget(1500, TargetSelector.DamageType.Physical);
+            if (target != null)
             {
-                Items.UseItem((int)this.Id);
+                if (!this.Player.HasBuff("Muramana"))
+                {
+                    Items.UseItem((int)this.Id);
+                }
+            }
+            else
+            {
+                if (this.Player.HasBuff("Muramana"))
+                {
+                    Items.UseItem((int)this.Id);
+                }
             }
 
             return false;
