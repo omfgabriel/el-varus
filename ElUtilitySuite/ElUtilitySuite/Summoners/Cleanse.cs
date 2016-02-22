@@ -826,8 +826,6 @@ namespace ElUtilitySuite.Summoners
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void GameOnUpdate(EventArgs args)
         {
-            
-           // Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Select(b => b.DisplayName)));
             if (Player.IsInvulnerable || Player.HasBuffOfType(BuffType.SpellImmunity)
                 || Player.HasBuffOfType(BuffType.Invulnerability))
             {
@@ -882,20 +880,6 @@ namespace ElUtilitySuite.Summoners
 
                                 Player.Spellbook.CastSpell(item.Slot, ally2);
                             });
-
-                    
-                    /*Utility.DelayAction.Add(
-                        spell.CleanseTimer,
-                        () =>
-                            {
-                                //Check if player still has buff or is zhonya'd
-                                if (!Player.HasBuff(buff.Name) || Player.IsInvulnerable)
-                                {
-                                    return;
-                                }
-
-                                Player.Spellbook.CastSpell(item.Slot, ally2);
-                            });*/
                 }
             }
         }
