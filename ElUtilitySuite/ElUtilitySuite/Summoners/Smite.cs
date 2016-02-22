@@ -24,7 +24,7 @@
                 "SRU_Baron", "SRU_Gromp", "SRU_Murkwolf",
                 "SRU_Razorbeak", "SRU_RiftHerald",
                 "SRU_Krug", "Sru_Crab", "TT_Spiderboss",
-                "TTNGolem", "TTNWolf", "TTNWraith"
+                "TT_NGolem", "TT_NWolf", "TT_NWraith"
             };
 
         #endregion
@@ -448,10 +448,12 @@
 
             Minion =
                 (Obj_AI_Minion)
-                MinionManager.GetMinions(this.Player.ServerPosition, 900, MinionTypes.All, MinionTeam.Neutral)
+                MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 500, MinionTypes.All, MinionTeam.Neutral)
                     .FirstOrDefault(
                         buff =>
-                        buff.IsValidTarget() && BuffsThatActuallyMakeSenseToSmite.Contains(buff.CharData.BaseSkinName));
+                        buff.IsValid && buff.Name.StartsWith(buff.CharData.BaseSkinName)
+                        && BuffsThatActuallyMakeSenseToSmite.Contains(buff.CharData.BaseSkinName)
+                        && !buff.Name.Contains("Mini") && !buff.Name.Contains("Spawn"));
 
             if (Minion == null)
             {
@@ -537,8 +539,9 @@
                                     hpBarPosition.X - 22 + (float)(barWidth * x),
                                     hpBarPosition.Y - 5,
                                     Color.Chartreuse,
-                                    sDamage.ToString());
+                                     sDamage.ToString());
                                 break;
+
                             case "SRU_Dragon":
                                 barWidth = 145;
                                 Drawing.DrawLine(
@@ -550,8 +553,9 @@
                                     hpBarPosition.X - 22 + (float)(barWidth * x),
                                     hpBarPosition.Y - 5,
                                     Color.Chartreuse,
-                                    sDamage.ToString());
+                                     sDamage.ToString());
                                 break;
+
                             case "SRU_Red":
                             case "SRU_Blue":
                                 barWidth = 145;
@@ -564,8 +568,9 @@
                                     hpBarPosition.X - 22 + (float)(barWidth * x),
                                     hpBarPosition.Y - 5,
                                     Color.Chartreuse,
-                                    sDamage.ToString());
+                                     sDamage.ToString());
                                 break;
+
                             case "SRU_Baron":
                                 barWidth = 194;
                                 Drawing.DrawLine(
@@ -577,72 +582,77 @@
                                     hpBarPosition.X - 22 + (float)(barWidth * x),
                                     hpBarPosition.Y - 3,
                                     Color.Chartreuse,
-                                    sDamage.ToString());
+                                     sDamage.ToString());
                                 break;
-                            /*case "Sru_Crab":
-                                barWidth = 61;
-                                Drawing.DrawLine(
-                                    new Vector2(hpBarPosition.X + 45 + (float)(barWidth * x), hpBarPosition.Y + 35),
-                                    new Vector2(hpBarPosition.X + 45 + (float)(barWidth * x), hpBarPosition.Y + 37),
-                                    2f,
-                                    Color.Chartreuse);
-                                Drawing.DrawText(
-                                    hpBarPosition.X + 40 + (float)(barWidth * x),
-                                    hpBarPosition.Y + 16,
-                                    Color.Chartreuse,
-                                    sDamage.ToString());
-                                break;
-                            case "SRU_Murkwolf":
-                                barWidth = 75;
-                                Drawing.DrawLine(
-                                    new Vector2(hpBarPosition.X + 54 + (float)(barWidth * x), hpBarPosition.Y + 20),
-                                    new Vector2(hpBarPosition.X + 54 + (float)(barWidth * x), hpBarPosition.Y + 24),
-                                    2f,
-                                    Color.Chartreuse);
-                                Drawing.DrawText(
-                                    hpBarPosition.X + 50 + (float)(barWidth * x),
-                                    hpBarPosition.Y,
-                                    Color.Chartreuse,
-                                    sDamage.ToString());
-                                break;
-                            case "SRU_Razorbeak":
-                                barWidth = 75;
-                                Drawing.DrawLine(
-                                    new Vector2(hpBarPosition.X + 24 + (float)(barWidth * x), hpBarPosition.Y + 20),
-                                    new Vector2(hpBarPosition.X + 24 + (float)(barWidth * x), hpBarPosition.Y + 24),
-                                    2f,
-                                    Color.Chartreuse);
-                                Drawing.DrawText(
-                                    hpBarPosition.X + 54 + (float)(barWidth * x),
-                                    hpBarPosition.Y,
-                                    Color.DeepSkyBlue,
-                                    sDamage.ToString());
-                                break;
-                            case "SRU_Krug":
-                                barWidth = 81;
-                                Drawing.DrawLine(
-                                    new Vector2(hpBarPosition.X + 58 + (float)(barWidth * x), hpBarPosition.Y + 20),
-                                    new Vector2(hpBarPosition.X + 58 + (float)(barWidth * x), hpBarPosition.Y + 24),
-                                    2f,
-                                    Color.Chartreuse);
-                                Drawing.DrawText(
-                                    hpBarPosition.X + 54 + (float)(barWidth * x),
-                                    hpBarPosition.Y,
-                                    Color.Chartreuse,
-                                    sDamage.ToString());
-                                break;*/
+
                             case "SRU_Gromp":
                                 barWidth = 87;
                                 Drawing.DrawLine(
-                                    new Vector2(hpBarPosition.X + 62 + (float)(barWidth * x), hpBarPosition.Y + 18),
-                                    new Vector2(hpBarPosition.X + 62 + (float)(barWidth * x), hpBarPosition.Y + 24),
+                                    new Vector2(hpBarPosition.X + (float)(barWidth * x), hpBarPosition.Y + 11),
+                                    new Vector2(hpBarPosition.X + (float)(barWidth * x), hpBarPosition.Y + 4),
                                     2f,
                                     Color.Chartreuse);
                                 Drawing.DrawText(
-                                    hpBarPosition.X + 58 + (float)(barWidth * x),
-                                    hpBarPosition.Y,
+                                    hpBarPosition.X + (float)(barWidth * x),
+                                    hpBarPosition.Y - 15,
+                                    Color.Chartreuse,
+                                     sDamage.ToString());
+                                break;
+
+                            case "SRU_Murkwolf":
+                                barWidth = 75;
+                                Drawing.DrawLine(
+                                    new Vector2(hpBarPosition.X + (float)(barWidth * x), hpBarPosition.Y + 11),
+                                    new Vector2(hpBarPosition.X + (float)(barWidth * x), hpBarPosition.Y + 4),
+                                    2f,
+                                    Color.Chartreuse);
+                                Drawing.DrawText(
+                                    hpBarPosition.X + (float)(barWidth * x),
+                                    hpBarPosition.Y - 15,
+                                    Color.Chartreuse,
+                                     sDamage.ToString());
+                                break;
+
+                            case "Sru_Crab":
+                                barWidth = 61;
+                                Drawing.DrawLine(
+                                    new Vector2(hpBarPosition.X + (float)(barWidth * x), hpBarPosition.Y + 8),
+                                    new Vector2(hpBarPosition.X + (float)(barWidth * x), hpBarPosition.Y + 4),
+                                    2f,
+                                    Color.Chartreuse);
+                                Drawing.DrawText(
+                                    hpBarPosition.X + (float)(barWidth * x),
+                                    hpBarPosition.Y - 15,
+                                    Color.Chartreuse,
+                                     sDamage.ToString());
+                                break;
+
+                            case "SRU_Razorbeak":
+                                barWidth = 75;
+                                Drawing.DrawLine(
+                                    new Vector2(hpBarPosition.X + (float)(barWidth * x), hpBarPosition.Y + 11),
+                                    new Vector2(hpBarPosition.X + (float)(barWidth * x), hpBarPosition.Y + 4),
+                                    2f,
+                                    Color.Chartreuse);
+                                Drawing.DrawText(
+                                    hpBarPosition.X + (float)(barWidth * x),
+                                    hpBarPosition.Y - 15,
                                     Color.Chartreuse,
                                     sDamage.ToString());
+                                break;
+
+                            case "SRU_Krug":
+                                barWidth = 81;
+                                Drawing.DrawLine(
+                                    new Vector2(hpBarPosition.X + (float)(barWidth * x), hpBarPosition.Y + 11),
+                                    new Vector2(hpBarPosition.X + (float)(barWidth * x), hpBarPosition.Y + 4),
+                                    2f,
+                                    Color.Chartreuse);
+                                Drawing.DrawText(
+                                    hpBarPosition.X + (float)(barWidth * x),
+                                    hpBarPosition.Y - 15,
+                                    Color.Chartreuse,
+                                     sDamage.ToString());
                                 break;
                         }
                     }
