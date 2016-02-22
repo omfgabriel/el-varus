@@ -448,7 +448,7 @@
 
             Minion =
                 (Obj_AI_Minion)
-                MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 500, MinionTypes.All, MinionTeam.Neutral)
+                MinionManager.GetMinions(this.Player.ServerPosition, 500, MinionTypes.All, MinionTeam.Neutral)
                     .FirstOrDefault(
                         buff =>
                         buff.IsValid && buff.Name.StartsWith(buff.CharData.BaseSkinName)
