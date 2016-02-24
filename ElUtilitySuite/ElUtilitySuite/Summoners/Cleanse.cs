@@ -59,10 +59,10 @@ namespace ElUtilitySuite.Summoners
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W,
                                      Interval = 1.0
                                  },
-                             new CleanseSpell
+                             new CleanseSpell 
                                  {
                                      Champion = "Leona", Name = "stun", MenuName = "Leona Stun", Evade = false,
-                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q,
+                                     DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.Q,
                                      Interval = 1.0
                                  },
                              new CleanseSpell
