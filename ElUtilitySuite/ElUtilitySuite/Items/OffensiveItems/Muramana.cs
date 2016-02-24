@@ -80,7 +80,7 @@
         /// <returns></returns>
         public override bool ShouldUseItem()
         {
-            if (this.Menu.Item("UseMuramana").IsActive()
+            if (Game.Version.Contains("6.3") && this.Menu.Item("UseMuramana").IsActive()
                 && (this.Menu.Item("MuramanaMode").GetValue<StringList>().SelectedIndex == 0
                     || (this.Menu.Item("MuramanaMode").GetValue<StringList>().SelectedIndex == 1 && this.ComboModeActive))
                 && !(this.Player.ManaPercent < this.Menu.Item("MuramanaMana").GetValue<Slider>().Value))
