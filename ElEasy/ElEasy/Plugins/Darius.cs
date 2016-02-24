@@ -339,6 +339,11 @@
 
             if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target))
             {
+                if (target.IsInvulnerable || target.HasBuffOfType(BuffType.SpellImmunity) || target.HasBuffOfType(BuffType.Invulnerability))
+                {
+                    return;
+                }
+
                 foreach (var hero in
                     ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(spells[Spells.R].Range)))
                 {
