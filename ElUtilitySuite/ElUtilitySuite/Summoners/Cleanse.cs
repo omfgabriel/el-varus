@@ -907,8 +907,8 @@ namespace ElUtilitySuite.Summoners
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
                         () =>
                             {
-                                //Check if player still has buff or is zhonya'd
-                                if (!Player.HasBuff(buff.Name) || Player.IsInvulnerable)
+                                //Check if ally still has buff or is zhonya'd
+                                if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable)
                                 {
                                     return;
                                 }
