@@ -3,6 +3,7 @@ namespace ElUtilitySuite.Summoners
     using System;
     using System.Collections.Generic;
     using System.Drawing;
+    using System.IO;
     using System.Linq;
 
     using LeagueSharp;
@@ -150,7 +151,13 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "FiddleSticks", Name = "paranoiamisschance", MenuName = "Fiddle Fear", Evade = false,
+                                     Champion = "FiddleSticks", Name = "fleeslow", MenuName = "Fiddle Fear", Evade = false,
+                                     DoT = true, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q,
+                                     Interval = 1.0
+                                 },
+                              new CleanseSpell
+                                 {
+                                     Champion = "FiddleSticks", Name = "Silence", MenuName = "Fiddle Silence", Evade = false,
                                      DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E,
                                      Interval = 1.0
                                  },
@@ -426,6 +433,12 @@ namespace ElUtilitySuite.Summoners
                                      Champion = "braum", Name = "braumstundebuff", MenuName = "Braum Passive",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
                                      Slot = SpellSlot.Unknown
+                                 },
+                              new CleanseSpell
+                                 {
+                                     Champion = "nunu", Name = "IceBlast", MenuName = "Nunu Q",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
+                                     Slot = SpellSlot.Q
                                  },
                              new CleanseSpell
                                  {
@@ -826,6 +839,9 @@ namespace ElUtilitySuite.Summoners
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void GameOnUpdate(EventArgs args)
         {
+            //Console.WriteLine("Buffs: {0}", string.Join(" | ", target.Buffs.Where(b => b.Caster.NetworkId == Player.NetworkId).Select(b => b.DisplayName)));
+            //Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Select(b => b.DisplayName)));
+
             if (Player.IsInvulnerable || Player.HasBuffOfType(BuffType.SpellImmunity)
                 || Player.HasBuffOfType(BuffType.Invulnerability))
             {
