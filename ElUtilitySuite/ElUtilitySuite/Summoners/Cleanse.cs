@@ -438,7 +438,7 @@ namespace ElUtilitySuite.Summoners
                                  {
                                      Champion = "nunu", Name = "IceBlast", MenuName = "Nunu Q",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
-                                     Slot = SpellSlot.Q
+                                     Slot = SpellSlot.E
                                  },
                              new CleanseSpell
                                  {
