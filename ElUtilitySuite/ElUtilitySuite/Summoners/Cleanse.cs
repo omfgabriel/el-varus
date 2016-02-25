@@ -144,13 +144,13 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "FiddleSticks", Name = "drainchannel", MenuName = "Fiddle Drain",
+                                     Champion = "FiddleSticks", Name = "Drain", MenuName = "Fiddle Drain",
                                      Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.W, Interval = 1.0
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "FiddleSticks", Name = "fear", MenuName = "Fiddle Fear", Evade = false,
+                                     Champion = "FiddleSticks", Name = "paranoiamisschance", MenuName = "Fiddle Fear", Evade = false,
                                      DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E,
                                      Interval = 1.0
                                  },
