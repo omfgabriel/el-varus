@@ -67,7 +67,6 @@
     <Compile Include="Items\OffensiveItems\FrostQueen.cs" />
     <Compile Include="Items\OffensiveItems\Hextech.cs" />
     <Compile Include="Items\OffensiveItems\Hydra.cs" />
-    <Compile Include="Items\OffensiveItems\Muramana.cs" />
     <Compile Include="Items\OffensiveItems\Tiamat.cs" />
     <Compile Include="Items\OffensiveItems\TitanicHydra.cs" />
     <Compile Include="Items\OffensiveItems\Youmuu.cs" />
