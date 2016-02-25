@@ -272,9 +272,9 @@
             var ghost = ItemData.Youmuus_Ghostblade.GetItem();
             var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
 
-            var useYoumuu = this.Menu.Item("ElEasy.Darius.Items.Youmuu").GetValue<bool>();
-            var useCutlass = this.Menu.Item("ElEasy.Darius.Items.Cutlass").GetValue<bool>();
-            var useBlade = this.Menu.Item("ElEasy.Darius.Items.Blade").GetValue<bool>();
+            var useYoumuu = this.Menu.Item("ElEasy.Darius.Items.Youmuu").IsActive();
+            var useCutlass = this.Menu.Item("ElEasy.Darius.Items.Cutlass").IsActive();
+            var useBlade = this.Menu.Item("ElEasy.Darius.Items.Blade").IsActive();
 
             var useBladeEhp = this.Menu.Item("ElEasy.Darius.Items.Blade.EnemyEHP").GetValue<Slider>().Value;
             var useBladeMhp = this.Menu.Item("ElEasy.Darius.Items.Blade.EnemyMHP").GetValue<Slider>().Value;
@@ -337,13 +337,8 @@
                 spells[Spells.W].Cast();
             }
 
-            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target))
+            if (useR && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range))
             {
-                if (target.IsInvulnerable || target.HasBuffOfType(BuffType.SpellImmunity) || target.HasBuffOfType(BuffType.Invulnerability))
-                {
-                    return;
-                }
-
                 foreach (var hero in
                     ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(spells[Spells.R].Range)))
                 {
