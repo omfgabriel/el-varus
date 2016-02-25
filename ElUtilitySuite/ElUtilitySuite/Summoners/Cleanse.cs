@@ -368,9 +368,15 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "Poppy", Name = "Stun",
+                                     MenuName = "Poppy wall stun", Evade = false, DoT = false, EvadeTimer = 0,
+                                     Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "Poppy", Name = "poppyulttargetmark",
                                      MenuName = "Poppy Diplomatic Immunity", Evade = false, DoT = false, EvadeTimer = 0,
-                                     Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R
+                                     Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.R
                                  },
                              new CleanseSpell
                                  {
@@ -839,8 +845,15 @@ namespace ElUtilitySuite.Summoners
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void GameOnUpdate(EventArgs args)
         {
-            //Console.WriteLine("Buffs: {0}", string.Join(" | ", target.Buffs.Where(b => b.Caster.NetworkId == Player.NetworkId).Select(b => b.DisplayName)));
-            //Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Select(b => b.DisplayName)));
+
+            /*var target = TargetSelector.GetTarget(1500f, TargetSelector.DamageType.Physical);
+            if (target.IsValidTarget() == false)
+            {
+                return;
+            }
+
+            Console.WriteLine("Buffs: {0}", string.Join(" | ", target.Buffs.Where(b => b.Caster.NetworkId == Player.NetworkId).Select(b => b.DisplayName)));
+            /Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Select(b => b.DisplayName)));*/
 
             if (Player.IsInvulnerable || Player.HasBuffOfType(BuffType.SpellImmunity)
                 || Player.HasBuffOfType(BuffType.Invulnerability))
