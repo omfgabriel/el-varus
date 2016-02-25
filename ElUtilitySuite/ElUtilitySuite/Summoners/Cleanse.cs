@@ -3,12 +3,12 @@ namespace ElUtilitySuite.Summoners
     using System;
     using System.Collections.Generic;
     using System.Drawing;
-    using System.IO;
     using System.Linq;
 
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using Color = SharpDX.Color;
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
     internal class Cleanse : IPlugin
@@ -32,9 +32,9 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Name = "summonerexhaustdebuff", MenuName = "Summoner Exhaust", Evade = false, DoT = true,
-                                     EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.Unknown,
-                                     Interval = 1.0
+                                     Name = "summonerexhaustdebuff", MenuName = "Summoner Exhaust", Evade = false,
+                                     DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
+                                     Slot = SpellSlot.Unknown, Interval = 1.0
                                  },
                              new CleanseSpell
                                  {
@@ -54,7 +54,7 @@ namespace ElUtilitySuite.Summoners
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W,
                                      Interval = 1.0
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
                                      Champion = "Nocturne", Name = "fear", MenuName = "Nocturne Fear", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E,
@@ -66,7 +66,7 @@ namespace ElUtilitySuite.Summoners
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W,
                                      Interval = 1.0
                                  },
-                             new CleanseSpell 
+                             new CleanseSpell
                                  {
                                      Champion = "Leona", Name = "stun", MenuName = "Leona Stun", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.Q,
@@ -74,9 +74,9 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Quinn", Name = "QuinnQSightReduction", MenuName = "Quinn Blind", Evade = false,
-                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q,
-                                     Interval = 1.0
+                                     Champion = "Quinn", Name = "QuinnQSightReduction", MenuName = "Quinn Blind",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.Q, Interval = 1.0
                                  },
                              new CleanseSpell
                                  {
@@ -151,9 +151,9 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "FiddleSticks", Name = "Drain", MenuName = "Fiddle Drain",
-                                     Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
-                                     Slot = SpellSlot.W, Interval = 1.0
+                                     Champion = "FiddleSticks", Name = "Drain", MenuName = "Fiddle Drain", Evade = false,
+                                     DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.W,
+                                     Interval = 1.0
                                  },
                              new CleanseSpell
                                  {
@@ -161,11 +161,11 @@ namespace ElUtilitySuite.Summoners
                                      DoT = true, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q,
                                      Interval = 1.0
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
-                                     Champion = "FiddleSticks", Name = "Silence", MenuName = "Fiddle Silence", Evade = false,
-                                     DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E,
-                                     Interval = 1.0
+                                     Champion = "FiddleSticks", Name = "Silence", MenuName = "Fiddle Silence",
+                                     Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
+                                     Slot = SpellSlot.E, Interval = 1.0
                                  },
                              new CleanseSpell
                                  {
@@ -374,9 +374,8 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Poppy", Name = "Stun",
-                                     MenuName = "Poppy wall stun", Evade = false, DoT = false, EvadeTimer = 0,
-                                     Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                     Champion = "Poppy", Name = "Stun", MenuName = "Poppy wall stun", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
                                  },
                              new CleanseSpell
                                  {
@@ -386,9 +385,8 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "LeeSin", Name = "blindmonkqone", MenuName = "Lee Sin Q",
-                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
-                                     Slot = SpellSlot.Q
+                                     Champion = "LeeSin", Name = "blindmonkqone", MenuName = "Lee Sin Q", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
                                  },
                              new CleanseSpell
                                  {
@@ -446,11 +444,10 @@ namespace ElUtilitySuite.Summoners
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
                                      Slot = SpellSlot.Unknown
                                  },
-                              new CleanseSpell
+                             new CleanseSpell
                                  {
-                                     Champion = "nunu", Name = "IceBlast", MenuName = "Nunu Q",
-                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
-                                     Slot = SpellSlot.E
+                                     Champion = "nunu", Name = "IceBlast", MenuName = "Nunu Q", Evade = false, DoT = false,
+                                     EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E
                                  },
                              new CleanseSpell
                                  {
@@ -585,7 +582,7 @@ namespace ElUtilitySuite.Summoners
                                  {
                                      Champion = "zilean", Name = "stun", MenuName = "Zilean double Q", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
-                                 },
+                                 }
                          };
 
             Spells =
@@ -603,7 +600,7 @@ namespace ElUtilitySuite.Summoners
 
             Items = new List<CleanseItem>
                         {
-                            new CleanseItem()
+                            new CleanseItem
                                 {
                                     Slot =
                                         () =>
@@ -762,15 +759,17 @@ namespace ElUtilitySuite.Summoners
         /// <param name="rootMenu">The root menu.</param>
         public void CreateMenu(Menu rootMenu)
         {
-            this.Menu = new Menu("Cleanse/QSS", "CleanseV3").SetFontStyle(FontStyle.Regular, SharpDX.Color.Aqua);
+            this.Menu = new Menu("Cleanse/QSS", "CleanseV3").SetFontStyle(FontStyle.Regular, Color.Aqua);
             {
                 var spellsMenu = new Menu("Spells", "CleanseV3Spells");
                 {
                     foreach (var spell in Spells)
                     {
                         spellsMenu.AddItem(
-                            new MenuItem(spell.MenuName != null ? spell.MenuName.Replace(" ", string.Empty) : spell.Name, string.IsNullOrEmpty(spell.MenuName) ? spell.Name : spell.MenuName)
-                                .SetValue(spell.Cleanse));
+                            new MenuItem(
+                                spell.MenuName != null ? spell.MenuName.Replace(" ", string.Empty) : spell.Name,
+                                string.IsNullOrEmpty(spell.MenuName) ? spell.Name : spell.MenuName).SetValue(
+                                    spell.Cleanse));
                     }
                 }
 
@@ -851,7 +850,6 @@ namespace ElUtilitySuite.Summoners
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void GameOnUpdate(EventArgs args)
         {
-
             /*var target = TargetSelector.GetTarget(1500f, TargetSelector.DamageType.Physical);
             if (target.IsValidTarget() == false)
             {
@@ -859,7 +857,7 @@ namespace ElUtilitySuite.Summoners
             }
 
             Console.WriteLine("Buffs: {0}", string.Join(" | ", target.Buffs.Where(b => b.Caster.NetworkId == Player.NetworkId).Select(b => b.DisplayName)));*/
-           // Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Select(b => b.DisplayName)));
+            // Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Select(b => b.DisplayName)));
 
             if (Player.IsInvulnerable || Player.HasBuffOfType(BuffType.SpellImmunity)
                 || Player.HasBuffOfType(BuffType.Invulnerability))
@@ -877,7 +875,9 @@ namespace ElUtilitySuite.Summoners
                 var ally1 = ally;
                 foreach (var spell in Spells.Where(x => ally1.HasBuff(x.Name)))
                 {
-                    if (!this.Menu.Item(spell.MenuName != null ? spell.MenuName.Replace(" ", string.Empty) : spell.Name).IsActive())
+                    if (
+                        !this.Menu.Item(spell.MenuName != null ? spell.MenuName.Replace(" ", string.Empty) : spell.Name)
+                             .IsActive())
                     {
                         continue;
                     }
