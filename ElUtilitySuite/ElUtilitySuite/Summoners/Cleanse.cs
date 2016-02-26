@@ -151,6 +151,12 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "Soraka", Name = "SorakaESnare", MenuName = "Soraka E snare", Evade = false,
+                                     DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E,
+                                     Interval = 1.0
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "FiddleSticks", Name = "Drain", MenuName = "Fiddle Drain", Evade = false,
                                      DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.W,
                                      Interval = 1.0
