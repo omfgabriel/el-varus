@@ -876,7 +876,7 @@ namespace ElUtilitySuite.Summoners
                 return;
             }
 
-            foreach (var ally in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly && x.IsValidTarget(800f)))
+            foreach (var ally in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly && x.IsValidTarget(800f, false)))
             {
                 var ally1 = ally;
                 foreach (var spell in Spells.Where(x => ally1.HasBuff(x.Name)))
@@ -913,7 +913,7 @@ namespace ElUtilitySuite.Summoners
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
                         () =>
                             {
-                                //Check if ally2 still has buff or is zhonya'd
+                                //Check if ally still has buff or is zhonya'd
                                 if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable)
                                 {
                                     return;
