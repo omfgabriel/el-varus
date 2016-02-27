@@ -47,8 +47,7 @@
         public override void CreateMenu()
         {
             this.Menu.AddItem(new MenuItem("UseBotrkCombo", "Use on Combo").SetValue(true));
-            this.Menu.AddItem(new MenuItem("BotrkEnemyHp", "Use on Enemy Hp %").SetValue(new Slider(70)));
-            this.Menu.AddItem(new MenuItem("BotrkMyHp", "Use on My Hp %").SetValue(new Slider(70)));
+            this.Menu.AddItem(new MenuItem("BotrkMyHp", "Use on My Hp %").SetValue(new Slider(100)));
         }
 
         /// <summary>
@@ -58,11 +57,7 @@
         public override bool ShouldUseItem()
         {
             return this.Menu.Item("UseBotrkCombo").IsActive() && this.ComboModeActive
-                   && (HeroManager.Enemies.Any(
-                       x =>
-                       x.HealthPercent < this.Menu.Item("BotrkEnemyHp").GetValue<Slider>().Value
-                       && x.Distance(this.Player) < 550)
-                       || this.Player.HealthPercent < this.Menu.Item("BotrkMyHp").GetValue<Slider>().Value);
+                   && this.Player.HealthPercent < this.Menu.Item("BotrkMyHp").GetValue<Slider>().Value;
         }
 
         /// <summary>
@@ -71,11 +66,7 @@
         public override void UseItem()
         {
             Items.UseItem(
-                (int)this.Id,
-                HeroManager.Enemies.First(
-                    x =>
-                    x.HealthPercent < this.Menu.Item("BotrkEnemyHp").GetValue<Slider>().Value
-                    && x.Distance(this.Player) < 550));
+                (int)this.Id, TargetSelector.GetTarget(550, TargetSelector.DamageType.Physical));
         }
 
         #endregion
