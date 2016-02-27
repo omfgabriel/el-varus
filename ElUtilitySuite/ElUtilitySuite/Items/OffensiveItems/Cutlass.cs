@@ -47,7 +47,6 @@
         public override void CreateMenu()
         {
             this.Menu.AddItem(new MenuItem("UseCutlassCombo", "Use on Combo").SetValue(true));
-            this.Menu.AddItem(new MenuItem("CutlassEnemyHp", "Use on Enemy Hp %").SetValue(new Slider(70)));
         }
 
         /// <summary>
@@ -56,11 +55,7 @@
         /// <returns></returns>
         public override bool ShouldUseItem()
         {
-            return this.Menu.Item("UseCutlassCombo").IsActive() && this.ComboModeActive
-                   && HeroManager.Enemies.Any(
-                       x =>
-                       x.HealthPercent < this.Menu.Item("CutlassEnemyHp").GetValue<Slider>().Value
-                       && x.Distance(this.Player) < 550);
+            return this.Menu.Item("UseCutlassCombo").IsActive() && this.ComboModeActive;
         }
 
         /// <summary>
@@ -69,11 +64,7 @@
         public override void UseItem()
         {
             Items.UseItem(
-                (int)this.Id,
-                HeroManager.Enemies.First(
-                    x =>
-                    x.HealthPercent < this.Menu.Item("CutlassEnemyHp").GetValue<Slider>().Value
-                    && x.Distance(this.Player) < 550));
+                (int)this.Id, TargetSelector.GetTarget(550, TargetSelector.DamageType.Physical));
         }
 
         #endregion
