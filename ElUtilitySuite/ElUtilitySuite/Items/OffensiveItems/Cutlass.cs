@@ -47,6 +47,7 @@
         public override void CreateMenu()
         {
             this.Menu.AddItem(new MenuItem("UseCutlassCombo", "Use on Combo").SetValue(true));
+            this.Menu.AddItem(new MenuItem("CutlassMyHp", "Use on My Hp %").SetValue(new Slider(100)));
         }
 
         /// <summary>
@@ -55,7 +56,7 @@
         /// <returns></returns>
         public override bool ShouldUseItem()
         {
-            return this.Menu.Item("UseCutlassCombo").IsActive() && this.ComboModeActive;
+            return this.Menu.Item("UseCutlassCombo").IsActive() && this.ComboModeActive && this.Player.HealthPercent < this.Menu.Item("CutlassMyHp").GetValue<Slider>().Value;
         }
 
         /// <summary>
