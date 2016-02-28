@@ -1,4 +1,4 @@
-﻿namespace ElUtilitySuite.Items
+namespace ElUtilitySuite.Items
 {
     using System.Linq;
 
@@ -22,7 +22,7 @@
         {
             get
             {
-                return Orbwalking.Orbwalker.Instances.Any(x => x.ActiveMode == Orbwalking.OrbwalkingMode.Combo);
+                return Entry.Menu.Item("usecombo").GetValue<bool>();
             }
         }
 
