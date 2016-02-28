@@ -22,7 +22,7 @@ namespace ElUtilitySuite.Items
         {
             get
             {
-                return Entry.Menu.Item("usecombo").GetValue<bool>();
+                return Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active;
             }
         }
 
