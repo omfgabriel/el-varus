@@ -22,7 +22,7 @@ namespace ElUtilitySuite.Items
         {
             get
             {
-                return Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active;
+                return Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active || Orbwalking.Orbwalker.Instances.Any(x => x.ActiveMode == Orbwalking.OrbwalkingMode.Combo);
             }
         }
 
