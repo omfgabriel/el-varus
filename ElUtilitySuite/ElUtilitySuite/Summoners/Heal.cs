@@ -74,13 +74,10 @@
         /// </summary>
         public void Load()
         {
-            var healSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name == "summonerheal"
-                               ? SpellSlot.Summoner1
-                               : this.Player.GetSpell(SpellSlot.Summoner2).Name == "summonerheal"
-                                     ? SpellSlot.Summoner2
-                                     : SpellSlot.Unknown;
+            var healSlot = this.Player.GetSpellSlot("summonerheal");
 
-            if (healSlot == SpellSlot.Unknown)
+            if (healSlot == SpellSlot.Unknown ||
+                ObjectManager.Player.Spellbook.CanUseSpell(healSlot) != SpellState.Ready)
             {
                 return;
             }
