@@ -75,11 +75,7 @@
         /// </summary>
         public void Load()
         {
-            var barrierSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name == "summonerbarrier"
-                                  ? SpellSlot.Summoner1
-                                  : this.Player.GetSpell(SpellSlot.Summoner2).Name == "summonerbarrier"
-                                        ? SpellSlot.Summoner2
-                                        : SpellSlot.Unknown;
+            var barrierSlot = this.Player.GetSpellSlot("summonerbarrier");
 
             if (barrierSlot == SpellSlot.Unknown)
             {
