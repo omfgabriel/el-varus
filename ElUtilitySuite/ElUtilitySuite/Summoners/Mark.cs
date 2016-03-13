@@ -83,11 +83,7 @@
                 return;
             }
 
-            var markSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name == "summonersnowball"
-                               ? SpellSlot.Summoner1
-                               : this.Player.GetSpell(SpellSlot.Summoner2).Name == "summonersnowball"
-                                     ? SpellSlot.Summoner2
-                                     : SpellSlot.Unknown;
+            var markSlot = this.Player.GetSpellSlot("summonersnowball");
 
             if (markSlot == SpellSlot.Unknown)
             {

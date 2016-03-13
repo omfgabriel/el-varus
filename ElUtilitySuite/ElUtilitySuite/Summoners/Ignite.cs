@@ -83,11 +83,7 @@
         {
             try
             {
-                var igniteSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name.ToLower().Contains("summonerdot")
-                                    ? SpellSlot.Summoner1
-                                    : this.Player.GetSpell(SpellSlot.Summoner2).Name.ToLower().Contains("summonerdot")
-                                          ? SpellSlot.Summoner2
-                                          : SpellSlot.Unknown;
+                var igniteSlot = this.Player.GetSpellSlot("summonerdot");
 
                 if (igniteSlot == SpellSlot.Unknown)
                 {
