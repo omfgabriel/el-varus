@@ -608,13 +608,7 @@ namespace ElUtilitySuite.Summoners
                         {
                             new CleanseItem
                                 {
-                                    Slot =
-                                        () =>
-                                        Player.GetSpell(SpellSlot.Summoner1).Name == "summonerboost"
-                                            ? SpellSlot.Summoner1
-                                            : Player.GetSpell(SpellSlot.Summoner2).Name == "summonerboost"
-                                                  ? SpellSlot.Summoner2
-                                                  : SpellSlot.Unknown,
+                                    Slot = () => Player.GetSpellSlot("summonerboost") ?? SpellSlot.Unknown,
                                     WorksOn =
                                         new[]
                                             {
