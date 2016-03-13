@@ -76,8 +76,7 @@
         {
             var healSlot = this.Player.GetSpellSlot("summonerheal");
 
-            if (healSlot == SpellSlot.Unknown ||
-                ObjectManager.Player.Spellbook.CanUseSpell(healSlot) != SpellState.Ready)
+            if (healSlot == SpellSlot.Unknown)
             {
                 return;
             }
