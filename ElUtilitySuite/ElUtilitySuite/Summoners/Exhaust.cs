@@ -62,11 +62,7 @@
         /// </summary>
         public void Load()
         {
-            var exhaustSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name == "summonerexhaust"
-                                  ? SpellSlot.Summoner1
-                                  : this.Player.GetSpell(SpellSlot.Summoner2).Name == "summonerexhaust"
-                                        ? SpellSlot.Summoner2
-                                        : SpellSlot.Unknown;
+            var exhaustSlot = this.Player.GetSpellSlot("summonerexhaust");
 
             if (exhaustSlot == SpellSlot.Unknown)
             {
