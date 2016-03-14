@@ -246,6 +246,11 @@
                                  {
                                      ChampionName = "Renekton", Range = 350f, Slot = SpellSlot.W, Stage = 0,
                                      TargetType = SpellDataTargetType.Unit
+                                 },
+                              new Smite
+                                 {
+                                     ChampionName = "Irelia", Range = 750f, Slot = SpellSlot.Q, Stage = 0,
+                                     TargetType = SpellDataTargetType.Unit
                                  }
                          };
         }
@@ -322,6 +327,20 @@
             }
         }
 
+        /// <summary>
+        ///     Gets a value indicating whether the combo mode is active.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if combo mode is active; otherwise, <c>false</c>.
+        /// </value>
+        public bool ComboModeActive
+        {
+            get
+            {
+                return Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active || Orbwalking.Orbwalker.Instances.Any(x => x.ActiveMode == Orbwalking.OrbwalkingMode.Combo);
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
@@ -385,21 +404,17 @@
         {
             try
             {
-                var smiteSlot = this.Player.GetSpell(SpellSlot.Summoner1).Name.ToLower().Contains("smite")
-                                    ? SpellSlot.Summoner1
-                                    : this.Player.GetSpell(SpellSlot.Summoner2).Name.ToLower().Contains("smite")
-                                          ? SpellSlot.Summoner2
-                                          : SpellSlot.Unknown;
+                var smiteSlot =
+                    this.Player.Spellbook.Spells.FirstOrDefault(
+                        x => x.Name.ToLower().Contains("smite"));
 
-                if (smiteSlot == SpellSlot.Unknown)
-                {
-                    return;
+                if (smiteSlot != null)
+                {   
+                    this.SmiteSpell = new Spell(smiteSlot.Slot, 750f, TargetSelector.DamageType.True);
+
+                    Drawing.OnDraw += this.OnDraw;
+                    Game.OnUpdate += this.OnUpdate;
                 }
-
-                this.SmiteSpell = new Spell(smiteSlot);
-
-                Drawing.OnDraw += this.OnDraw;
-                Game.OnUpdate += this.OnUpdate;
             }
             catch (Exception e)
             {
@@ -485,7 +500,7 @@
             var playerPos = Drawing.WorldToScreen(this.Player.Position);
             var drawDamage = this.Menu.Item("ElSmite.Draw.Damage").IsActive();
 
-            if (smiteActive)
+            if (smiteActive && this.SmiteSpell != null)
             {
                 if (drawText && this.Player.Spellbook.CanUseSpell(this.SmiteSpell.Slot) == SpellState.Ready)
                 {
@@ -660,21 +675,25 @@
             }
             else
             {
-                if (drawText)
+                if (drawText && this.SmiteSpell != null)
                 {
                     Drawing.DrawText(playerPos.X - 70, playerPos.Y + 40, Color.Red, "Smite not active");
                 }
             }
 
-            if (smiteActive && drawSmite.Active
-                && this.Player.Spellbook.CanUseSpell(this.SmiteSpell.Slot) == SpellState.Ready)
+            var smiteSpell = this.SmiteSpell;
+            if (smiteSpell != null)
             {
-                Render.Circle.DrawCircle(this.Player.Position, 500, Color.Green);
-            }
+                if (smiteActive && drawSmite.Active
+                                && this.Player.Spellbook.CanUseSpell(smiteSpell.Slot) == SpellState.Ready)
+                {
+                    Render.Circle.DrawCircle(this.Player.Position, 500, Color.Green);
+                }
 
-            if (drawSmite.Active && this.Player.Spellbook.CanUseSpell(this.SmiteSpell.Slot) != SpellState.Ready)
-            {
-                Render.Circle.DrawCircle(this.Player.Position, 500, Color.Red);
+                if (drawSmite.Active && this.Player.Spellbook.CanUseSpell(smiteSpell.Slot) != SpellState.Ready)
+                {
+                    Render.Circle.DrawCircle(this.Player.Position, 500, Color.Red);
+                }
             }
         }
 
@@ -687,8 +706,11 @@
 
             try
             {
-                this.JungleSmite();
-                this.SmiteKill();
+                if (this.SmiteSpell != null)
+                {
+                    this.JungleSmite();
+                    this.SmiteKill();
+                }
             }
             catch (Exception e)
             {
@@ -706,7 +728,7 @@
         private void SmiteKill()
         {
             if (this.Menu.Item("ElSmite.KS.Combo").IsActive()
-                && this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() == "s5_summonersmiteduel" && Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active) 
+                && this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() == "s5_summonersmiteduel" && this.ComboModeActive) 
             {
                 var smiteComboEnemy = HeroManager.Enemies.FirstOrDefault(hero => !hero.IsZombie && hero.IsValidTarget(500));
                 if (smiteComboEnemy != null)

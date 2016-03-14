@@ -175,6 +175,12 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "Chogath", Name = "Silence", MenuName = "Cho Silence",
+                                     Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
+                                     Slot = SpellSlot.W, Interval = 1.0
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "Galio", Name = "galioidolofdurand", MenuName = "Galio Idol of Durand",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
                                      Slot = SpellSlot.R, Interval = 1.0
