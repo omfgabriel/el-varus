@@ -78,13 +78,12 @@
         /// </summary>
         public void Load()
         {
-            if (Game.MapId == GameMapId.HowlingAbyss)
+            if (Game.MapId != GameMapId.HowlingAbyss)
             {
                 return;
             }
 
             var markSlot = this.Player.GetSpellSlot("summonersnowball");
-
             if (markSlot == SpellSlot.Unknown)
             {
                 return;
@@ -111,7 +110,7 @@
                 return;
             }
 
-            foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy && x.IsValidTarget(1400f)))
+            foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy && x.IsValidTarget(1500f)))
             {
                 if (this.Menu.Item(string.Format("snowballon{0}", enemy.ChampionName)).IsActive())
                 {
