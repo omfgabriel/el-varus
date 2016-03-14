@@ -4,6 +4,7 @@ namespace ElUtilitySuite.Summoners
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
+    using System.Runtime.InteropServices;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -609,12 +610,11 @@ namespace ElUtilitySuite.Summoners
             #endregion
 
             #region Item Data
-
             Items = new List<CleanseItem>
                         {
                             new CleanseItem
                                 {
-                                    Slot = () => Player.GetSpellSlot("summonerboost"),
+                                    Slot = () => Player.GetSpellSlot("summonerboost") == SpellSlot.Q ? SpellSlot.Unknown : Player.GetSpellSlot("summonerboost"),
                                     WorksOn =
                                         new[]
                                             {
@@ -856,15 +856,6 @@ namespace ElUtilitySuite.Summoners
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void GameOnUpdate(EventArgs args)
         {
-            /*var target = TargetSelector.GetTarget(1500f, TargetSelector.DamageType.Physical);
-            if (target.IsValidTarget() == false)
-            {
-                return;
-            }
-
-            Console.WriteLine("Buffs: {0}", string.Join(" | ", target.Buffs.Where(b => b.Caster.NetworkId == Player.NetworkId).Select(b => b.DisplayName)));*/
-            // Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Select(b => b.DisplayName)));
-
             if (Player.IsInvulnerable || Player.HasBuffOfType(BuffType.SpellImmunity)
                 || Player.HasBuffOfType(BuffType.Invulnerability))
             {
@@ -913,7 +904,6 @@ namespace ElUtilitySuite.Summoners
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
                         () =>
                             {
-                                //Check if ally still has buff or is zhonya'd
                                 if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable)
                                 {
                                     return;
