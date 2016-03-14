@@ -4,8 +4,6 @@ namespace ElUtilitySuite.Summoners
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
-    using System.Runtime.InteropServices;
-
     using LeagueSharp;
     using LeagueSharp.Common;
 
