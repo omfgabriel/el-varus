@@ -23,14 +23,24 @@
                                                                                  Orbwalking.GetRealAutoAttackRange(
                                                                                      Player) + 100) // + 150
                                                                              },
-                                                                             { Spells.W, new Spell(SpellSlot.W, 500) },
-                                                                             { Spells.E, new Spell(SpellSlot.E, 1000) },
+                                                                             {
+                                                                                 Spells.W,
+                                                                                 new Spell(
+                                                                                 SpellSlot.W,
+                                                                                 500 + Player.BoundingRadius)
+                                                                             },
+                                                                             {
+                                                                                 Spells.E,
+                                                                                 new Spell(
+                                                                                 SpellSlot.E,
+                                                                                 1000 + Player.BoundingRadius)
+                                                                             },
                                                                              { Spells.R, new Spell(SpellSlot.R, 2000) }
                                                                          };
 
         public static int LastSwitch;
 
-        protected internal static Orbwalking.Orbwalker Orbwalker;
+        public static Orbwalking.Orbwalker Orbwalker;
 
         protected static SpellSlot Ignite;
 
@@ -42,64 +52,21 @@
 
         #region Public Properties
 
-        public static string ScriptVersion
-        {
-            get
-            {
-                return typeof(Rengar).Assembly.GetName().Version.ToString();
-            }
-        }
+        public static int Ferocity => (int)ObjectManager.Player.Mana;
 
-        #endregion
+        public static bool HasPassive => Player.Buffs.Any(x => x.Name.ToLower().Contains("rengarpassivebuff"));
 
-        #region Properties
+        public static Obj_AI_Hero Player => ObjectManager.Player;
 
-        protected static int Ferocity
-        {
-            get
-            {
-                return (int)ObjectManager.Player.Mana;
-            }
-        }
+        public static bool RengarR => Player.Buffs.Any(x => x.Name.ToLower().Contains("RengarR"));
 
-        protected static bool HasPassive
-        {
-            get
-            {
-                return Player.HasBuff("rengarpassivebuff");
-            }
-        }
-
-        protected static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
-
-        protected static bool RengarR
-        {
-            get
-            {
-                return Player.Buffs.Any(x => x.Name.Contains("RengarR"));
-            }
-        }
+        public static string ScriptVersion => typeof(Rengar).Assembly.GetName().Version.ToString();
 
         #endregion
 
         #region Public Methods and Operators
 
-        public static bool IsActive(string menuItem)
-        {
-            return MenuInit.Menu.Item(menuItem).GetValue<bool>();
-        }
-
-        #endregion
-
-        #region Methods
-
-        protected static float IgniteDamage(Obj_AI_Hero target)
+        public static float IgniteDamage(Obj_AI_Hero target)
         {
             if (Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
             {
@@ -108,10 +75,13 @@
             return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
-        protected static StringList IsListActive(string menuItem)
-        {
-            return MenuInit.Menu.Item(menuItem).GetValue<StringList>();
-        }
+        public static bool IsActive(string menuItem) => MenuInit.Menu.Item(menuItem).GetValue<bool>();
+
+        #endregion
+
+        #region Methods
+
+        protected static StringList IsListActive(string menuItem) => MenuInit.Menu.Item(menuItem).GetValue<StringList>();
 
         protected static void SmiteCombo()
         {

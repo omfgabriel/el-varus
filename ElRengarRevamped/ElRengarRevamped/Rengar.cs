@@ -33,13 +33,7 @@
 
         #region Properties
 
-        private static IEnumerable<Obj_AI_Hero> Enemies
-        {
-            get
-            {
-                return HeroManager.Enemies;
-            }
-        }
+        private static IEnumerable<Obj_AI_Hero> Enemies => HeroManager.Enemies;
 
         #endregion
 
@@ -75,7 +69,6 @@
                 Youmuu = new Items.Item(3142, 0f);
 
                 Ignite = Player.GetSpellSlot("summonerdot");
-                Notifications.AddNotification(string.Format("ElRengarRevamped by jQuery v{0}", ScriptVersion), 6000);
                 Game.PrintChat(
                     "[00:00] <font color='#CC0000'>DATABASE!</font> Make sure to update in the database! (only if you liked it!)");
                 Game.PrintChat(
@@ -185,6 +178,7 @@
                 var target =
                     Enemies.FirstOrDefault(
                         x => x.IsValidTarget(spells[Spells.W].Range) && x.Health < spells[Spells.W].GetDamage(x));
+
                 if (target != null)
                 {
                     spells[Spells.W].Cast();
@@ -408,32 +402,23 @@
                 {
                     switch (args.SData.Name.ToLower())
                     {
-                        case "rengarr":
+                        case "RengarR":
                             if (Items.CanUseItem(3142))
                             {
                                 Utility.DelayAction.Add(2000, () => Items.UseItem(3142));
                             }
                             break;
-                        case "rengarq":
+
+                        case "RengarQ":
                             LastQ = Environment.TickCount;
-                            LastSpell = Environment.TickCount;
-                            Orbwalking.ResetAutoAttackTimer();
                             break;
 
-                        case "rengare":
+                        case "RengarE":
                             LastE = Environment.TickCount;
-                            LastSpell = Environment.TickCount;
-                            if (Orbwalking.LastAATick < Utils.GameTimeTickCount - Game.Ping / 2
-                                && Utils.GameTimeTickCount - Game.Ping / 2
-                                < Orbwalking.LastAATick + Player.AttackCastDelay * 1000 + 40)
-                            {
-                                Orbwalking.ResetAutoAttackTimer();
-                            }
                             break;
 
-                        case "rengarw":
+                        case "RengarW":
                             LastW = Environment.TickCount;
-                            LastSpell = Environment.TickCount;
                             break;
                     }
                 }

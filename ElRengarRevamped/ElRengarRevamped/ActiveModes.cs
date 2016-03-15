@@ -31,35 +31,26 @@ namespace ElRengarRevamped
                 if (Rengar.SelectedEnemy.IsValidTarget(spells[Spells.E].Range))
                 {
                     Orbwalker.ForceTarget(target);
-                    if (Hud.SelectedUnit != null)
-                    {
-                        Hud.SelectedUnit = Rengar.SelectedEnemy;
-                    }
                 }
-
-                //CastItems(target);
 
                 #region RengarR
 
                 if (Ferocity <= 4)
                 {
-                    if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady())
-                    {
-                        CastW(target);
-                    }
-
                     if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q")
                         && target.IsValidTarget(spells[Spells.Q].Range))
                     {
                         spells[Spells.Q].Cast();
                     }
 
-                    if (!HasPassive && IsActive("Combo.Use.E") && spells[Spells.E].IsReady())
+                    if (spells[Spells.W].IsReady() && IsActive("Combo.Use.W"))
                     {
-                        if (target.IsValidTarget(spells[Spells.E].Range) && !RengarR)
-                        {
-                            CastE(target);
-                        }
+                        CastW();
+                    }
+
+                    if (spells[Spells.E].IsReady() && !HasPassive && IsActive("Combo.Use.E") && !RengarR)
+                    {
+                        CastE(target);
                     }
                 }
 
@@ -68,33 +59,30 @@ namespace ElRengarRevamped
                     switch (IsListActive("Combo.Prio").SelectedIndex)
                     {
                         case 0:
-                            if (!RengarR && target.IsValidTarget(spells[Spells.E].Range) && spells[Spells.E].IsReady())
+                            if (spells[Spells.E].IsReady() && !RengarR)
                             {
-                                var prediction = spells[Spells.E].GetPrediction(target);
-                                if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
+                                CastE(target);
+
+                                if (IsActive("Combo.Switch.E") && Environment.TickCount - Rengar.LastE >= 500
+                                    && Utils.GameTimeTickCount - LastSwitch >= 350)
                                 {
-                                    if (spells[Spells.E].Cast(target).IsCasted())
-                                    {
-                                        if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
-                                        {
-                                            MenuInit.Menu.Item("Combo.Prio")
-                                                .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
-                                            LastSwitch = Utils.GameTimeTickCount;
-                                        }
-                                    }
+                                    MenuInit.Menu.Item("Combo.Prio")
+                                        .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
+                                    LastSwitch = Utils.GameTimeTickCount;
                                 }
                             }
                             break;
                         case 1:
-                            if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady()
-                                && Player.Distance(target) < 500 && !HasPassive)
+                            if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady() && !HasPassive
+                                && Environment.TickCount - Rengar.LastE >= 300)
                             {
-                                CastW(target);
+                                CastW();
                             }
                             break;
                         case 2:
                             if (IsActive("Combo.Use.Q") && spells[Spells.Q].IsReady()
-                                && target.IsValidTarget(spells[Spells.Q].Range))
+                                && target.IsValidTarget(spells[Spells.Q].Range)
+                                && Environment.TickCount - Rengar.LastE >= 500)
                             {
                                 spells[Spells.Q].Cast();
                             }
@@ -103,13 +91,9 @@ namespace ElRengarRevamped
 
                     if (!RengarR)
                     {
-                        if (IsActive("Combo.Use.E.OutOfRange") && target.IsValidTarget(spells[Spells.E].Range))
+                        if (IsActive("Combo.Use.E.OutOfRange"))
                         {
-                            var prediction = spells[Spells.E].GetPrediction(target);
-                            if (prediction.Hitchance >= HitChance.VeryHigh && prediction.CollisionObjects.Count == 0)
-                            {
-                                spells[Spells.E].Cast(target);
-                            }
+                            CastE(target);
                         }
                     }
                 }
@@ -146,6 +130,47 @@ namespace ElRengarRevamped
 
         #region Methods
 
+        private static void CastE(Obj_AI_Base target)
+        {
+            try
+            {
+                if (!spells[Spells.E].IsReady() || !target.IsValidTarget(spells[Spells.E].Range))
+                {
+                    return;
+                }
+
+                var prediction = spells[Spells.E].GetPrediction(target);
+                if (prediction.CollisionObjects.Count == 0)
+                {
+                    spells[Spells.E].Cast(prediction.CastPosition);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        private static void CastW()
+        {
+            try
+            {
+                if (!spells[Spells.W].IsReady() || Environment.TickCount - Rengar.LastE <= 200)
+                {
+                    return;
+                }
+
+                if (GetWHits().Item1 > 0)
+                {
+                    spells[Spells.W].Cast();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
         private static Tuple<int, List<Obj_AI_Hero>> GetWHits()
         {
             try
@@ -163,48 +188,6 @@ namespace ElRengarRevamped
                 Console.WriteLine(ex);
             }
             return new Tuple<int, List<Obj_AI_Hero>>(0, null);
-        }
-
-        private static void CastE(Obj_AI_Base target)
-        {
-            try
-            {
-                if (!spells[Spells.E].IsReady() || !target.IsValidTarget(spells[Spells.E].Range))
-                {
-                    return;
-                }
-
-                var prediction = spells[Spells.E].GetPrediction(target);
-
-                if (prediction.Hitchance >= HitChance.High)
-                {
-                    spells[Spells.E].Cast(prediction.CastPosition);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        }
-
-        private static void CastW(Obj_AI_Base target)
-        {
-            try
-            {
-                if (!spells[Spells.W].IsReady())
-                {
-                    return;
-                }
-
-                if (GetWHits().Item1 > 0)
-                {
-                    spells[Spells.W].Cast();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
         }
 
         #endregion
@@ -228,14 +211,9 @@ namespace ElRengarRevamped
                 switch (IsListActive("Harass.Prio").SelectedIndex)
                 {
                     case 0:
-                        if (!HasPassive && IsActive("Harass.Use.E") && spells[Spells.E].IsReady()
-                            && target.IsValidTarget(spells[Spells.E].Range))
+                        if (!HasPassive && IsActive("Harass.Use.E") && spells[Spells.E].IsReady())
                         {
-                            var prediction = spells[Spells.E].GetPrediction(target);
-                            if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
-                            {
-                                spells[Spells.E].Cast(target);
-                            }
+                            CastE(target);
                         }
                         break;
 
@@ -262,19 +240,14 @@ namespace ElRengarRevamped
 
                 CastItems(target);
 
-                if (!HasPassive && IsActive("Harass.Use.E") && spells[Spells.E].IsReady()
-                    && target.IsValidTarget(spells[Spells.E].Range))
+                if (!HasPassive && IsActive("Harass.Use.E") && spells[Spells.E].IsReady())
                 {
-                    var prediction = spells[Spells.E].GetPrediction(target);
-                    if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
-                    {
-                        spells[Spells.E].Cast(target);
-                    }
+                    CastE(target);
                 }
 
-                if (IsActive("Harass.Use.W") && target.IsValidTarget(spells[Spells.W].Range))
+                if (IsActive("Harass.Use.W"))
                 {
-                    spells[Spells.W].Cast();
+                    CastW();
                 }
             }
         }
@@ -385,13 +358,7 @@ namespace ElRengarRevamped
         /// <value>
         ///     Youmuus Ghostblade
         /// </value>
-        private static Items.Item Youmuu
-        {
-            get
-            {
-                return ItemData.Youmuus_Ghostblade.GetItem();
-            }
-        }
+        private static Items.Item Youmuu => ItemData.Youmuus_Ghostblade.GetItem();
 
         /// <summary>
         ///     Gets Ravenous Hydra
@@ -399,13 +366,7 @@ namespace ElRengarRevamped
         /// <value>
         ///     Ravenous Hydra
         /// </value>
-        private static Items.Item Hydra
-        {
-            get
-            {
-                return ItemData.Ravenous_Hydra_Melee_Only.GetItem();
-            }
-        }
+        private static Items.Item Hydra => ItemData.Ravenous_Hydra_Melee_Only.GetItem();
 
         /// <summary>
         ///     Gets Tiamat Item
@@ -413,13 +374,7 @@ namespace ElRengarRevamped
         /// <value>
         ///     Tiamat Item
         /// </value>
-        private static Items.Item Tiamat
-        {
-            get
-            {
-                return ItemData.Tiamat_Melee_Only.GetItem();
-            }
-        }
+        private static Items.Item Tiamat => ItemData.Tiamat_Melee_Only.GetItem();
 
         /// <summary>
         ///     Gets Titanic Hydra
@@ -427,13 +382,7 @@ namespace ElRengarRevamped
         /// <value>
         ///     Titanic Hydra
         /// </value>
-        private static Items.Item Titanic
-        {
-            get
-            {
-                return ItemData.Titanic_Hydra_Melee_Only.GetItem();
-            }
-        }
+        private static Items.Item Titanic => ItemData.Titanic_Hydra_Melee_Only.GetItem();
 
         public static bool CastItems(Obj_AI_Base target)
         {
@@ -442,14 +391,10 @@ namespace ElRengarRevamped
                 return false;
             }
 
-            var youmuus = Youmuu;
-            if (Youmuu.IsReady() && youmuus.Cast())
-            {
-                return true;
-            }
-
+            var units =
+                MinionManager.GetMinions(385, MinionTypes.All, MinionTeam.NotAlly).Count(o => !(o is Obj_AI_Turret));
             var heroes = Player.GetEnemiesInRange(385).Count;
-            var count = heroes;
+            var count = units + heroes;
 
             var tiamat = Tiamat;
             if (tiamat.IsReady() && count > 0 && tiamat.Cast())
@@ -459,6 +404,13 @@ namespace ElRengarRevamped
 
             var hydra = Hydra;
             if (Hydra.IsReady() && count > 0 && hydra.Cast())
+            {
+                return true;
+            }
+
+            var youmuus = Youmuu;
+            if (Youmuu.IsReady() && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
+                || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed && youmuus.Cast())
             {
                 return true;
             }
