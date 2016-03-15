@@ -151,9 +151,9 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Soraka", Name = "SorakaESnare", MenuName = "Soraka E snare", Evade = false,
-                                     DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E,
-                                     Interval = 1.0
+                                     Champion = "Soraka", Name = "SorakaESnare", MenuName = "Soraka E snare",
+                                     Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
+                                     Slot = SpellSlot.E, Interval = 1.0
                                  },
                              new CleanseSpell
                                  {
@@ -175,9 +175,9 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Chogath", Name = "Silence", MenuName = "Cho Silence",
-                                     Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
-                                     Slot = SpellSlot.W, Interval = 1.0
+                                     Champion = "Chogath", Name = "Silence", MenuName = "Cho Silence", Evade = false,
+                                     DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.W,
+                                     Interval = 1.0
                                  },
                              new CleanseSpell
                                  {
@@ -609,11 +609,16 @@ namespace ElUtilitySuite.Summoners
             #endregion
 
             #region Item Data
+
             Items = new List<CleanseItem>
                         {
                             new CleanseItem
                                 {
-                                    Slot = () => Player.GetSpellSlot("summonerboost"), // == SpellSlot.Q ? SpellSlot.Unknown : Player.GetSpellSlot("summonerboost")
+                                    Slot =
+                                        () =>
+                                        Player.GetSpellSlot("summonerboost") == SpellSlot.Unknown
+                                            ? SpellSlot.Unknown
+                                            : Player.GetSpellSlot("summonerboost"),
                                     WorksOn =
                                         new[]
                                             {
@@ -625,36 +630,10 @@ namespace ElUtilitySuite.Summoners
                                 },
                             new CleanseItem
                                 {
-                                    Slot = () => ItemData.Quicksilver_Sash.GetItem().Slots.FirstOrDefault(),
-                                    WorksOn =
-                                        new[]
-                                            {
-                                                BuffType.Blind, BuffType.Charm, BuffType.Flee, BuffType.Slow,
-                                                BuffType.Polymorph, BuffType.Silence, BuffType.Snare, BuffType.Stun,
-                                                BuffType.Taunt, BuffType.Damage, BuffType.CombatEnchancer
-                                            },
-                                    Priority = 0
-                                },
-                            new CleanseItem
-                                {
-                                    Slot = () => ItemData.Dervish_Blade.GetItem().Slots.FirstOrDefault(),
-                                    WorksOn =
-                                        new[]
-                                            {
-                                                BuffType.Blind, BuffType.Charm, BuffType.Flee, BuffType.Slow,
-                                                BuffType.Polymorph, BuffType.Silence, BuffType.Snare, BuffType.Stun,
-                                                BuffType.Taunt, BuffType.Damage, BuffType.CombatEnchancer
-                                            },
-                                    Priority = 0
-                                },
-                            new CleanseItem
-                                {
                                     Slot = () =>
                                         {
-                                            var item =
-                                                Player.InventoryItems.FirstOrDefault(
-                                                    x => x.Id == ItemId.Mercurial_Scimitar);
-                                            return item != null ? item.SpellSlot : SpellSlot.Unknown;
+                                            var slots = ItemData.Quicksilver_Sash.GetItem().Slots;
+                                            return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
                                         },
                                     WorksOn =
                                         new[]
@@ -668,7 +647,45 @@ namespace ElUtilitySuite.Summoners
                                 },
                             new CleanseItem
                                 {
-                                    Slot = () => ItemData.Mikaels_Crucible.GetItem().Slots.FirstOrDefault(),
+                                    Slot = () =>
+                                        {
+                                            var slots = ItemData.Dervish_Blade.GetItem().Slots;
+                                            return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
+                                        },
+                                    WorksOn =
+                                        new[]
+                                            {
+                                                BuffType.Blind, BuffType.Charm, BuffType.Flee, BuffType.Slow,
+                                                BuffType.Polymorph, BuffType.Silence, BuffType.Snare,
+                                                BuffType.Stun, BuffType.Taunt, BuffType.Damage,
+                                                BuffType.CombatEnchancer
+                                            },
+                                    Priority = 0
+                                },
+                            new CleanseItem
+                                {
+                                    Slot = () =>
+                                        {
+                                            var slots = ItemData.Mercurial_Scimitar.GetItem().Slots;
+                                            return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
+                                        },
+                                    WorksOn =
+                                        new[]
+                                            {
+                                                BuffType.Blind, BuffType.Charm, BuffType.Flee, BuffType.Slow,
+                                                BuffType.Polymorph, BuffType.Silence, BuffType.Snare,
+                                                BuffType.Stun, BuffType.Taunt, BuffType.Damage,
+                                                BuffType.CombatEnchancer
+                                            },
+                                    Priority = 0
+                                },
+                            new CleanseItem
+                                {
+                                    Slot = () =>
+                                        {
+                                            var slots = ItemData.Mikaels_Crucible.GetItem().Slots;
+                                            return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
+                                        },
                                     WorksOn =
                                         new[]
                                             {
@@ -787,14 +804,14 @@ namespace ElUtilitySuite.Summoners
                         new MenuItem("CleanseMaxDelay", "Maximum Delay (MS)").SetValue(new Slider(800, 0, 1500)));
 
                     humanizerDelay.Item("CleanseMaxDelay").ValueChanged +=
-                        delegate (object sender, OnValueChangeEventArgs args)
-                        {
-                            if (args.GetNewValue<Slider>().Value
-                                < this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value)
+                        delegate(object sender, OnValueChangeEventArgs args)
                             {
-                                args.Process = false;
-                            }
-                        };
+                                if (args.GetNewValue<Slider>().Value
+                                    < this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value)
+                                {
+                                    args.Process = false;
+                                }
+                            };
                 }
 
                 this.Menu.AddSubMenu(humanizerDelay);
@@ -894,7 +911,6 @@ namespace ElUtilitySuite.Summoners
                         continue;
                     }
 
-
                     var ally2 = ally;
                     Utility.DelayAction.Add(
                         spell.CleanseTimer
@@ -902,18 +918,17 @@ namespace ElUtilitySuite.Summoners
                             this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value,
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
                         () =>
-                        {
-                            if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable)
                             {
-                                return;
-                            }
+                                if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable)
+                                {
+                                    return;
+                                }
 
-                            if (item.Slot != SpellSlot.Unknown)
-                            {
-                                Console.WriteLine("Random??");
-                                Player.Spellbook.CastSpell(item.Slot, ally2);
-                            }
-                        });
+                                if (item.Slot != SpellSlot.Unknown)
+                                {
+                                    Player.Spellbook.CastSpell(item.Slot, ally2);
+                                }
+                            });
                 }
             }
         }
