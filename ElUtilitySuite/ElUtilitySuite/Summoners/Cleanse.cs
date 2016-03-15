@@ -613,7 +613,7 @@ namespace ElUtilitySuite.Summoners
                         {
                             new CleanseItem
                                 {
-                                    Slot = () => Player.GetSpellSlot("summonerboost") == SpellSlot.Q ? SpellSlot.Unknown : Player.GetSpellSlot("summonerboost"),
+                                    Slot = () => Player.GetSpellSlot("summonerboost"), // == SpellSlot.Q ? SpellSlot.Unknown : Player.GetSpellSlot("summonerboost")
                                     WorksOn =
                                         new[]
                                             {
@@ -649,7 +649,6 @@ namespace ElUtilitySuite.Summoners
                                 },
                             new CleanseItem
                                 {
-                                    // joduskame pls
                                     Slot = () =>
                                         {
                                             var item =
@@ -788,14 +787,14 @@ namespace ElUtilitySuite.Summoners
                         new MenuItem("CleanseMaxDelay", "Maximum Delay (MS)").SetValue(new Slider(800, 0, 1500)));
 
                     humanizerDelay.Item("CleanseMaxDelay").ValueChanged +=
-                        delegate(object sender, OnValueChangeEventArgs args)
+                        delegate (object sender, OnValueChangeEventArgs args)
+                        {
+                            if (args.GetNewValue<Slider>().Value
+                                < this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value)
                             {
-                                if (args.GetNewValue<Slider>().Value
-                                    < this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value)
-                                {
-                                    args.Process = false;
-                                }
-                            };
+                                args.Process = false;
+                            }
+                        };
                 }
 
                 this.Menu.AddSubMenu(humanizerDelay);
@@ -838,7 +837,7 @@ namespace ElUtilitySuite.Summoners
                     continue;
                 }
 
-                if (!item.Spell.IsReady() || !item.Spell.IsInRange(ally))
+                if (!item.Spell.IsReady() || !item.Spell.IsInRange(ally) || item.Spell.Slot == SpellSlot.Unknown)
                 {
                     continue;
                 }
@@ -895,6 +894,7 @@ namespace ElUtilitySuite.Summoners
                         continue;
                     }
 
+
                     var ally2 = ally;
                     Utility.DelayAction.Add(
                         spell.CleanseTimer
@@ -902,14 +902,18 @@ namespace ElUtilitySuite.Summoners
                             this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value,
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
                         () =>
+                        {
+                            if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable)
                             {
-                                if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable)
-                                {
-                                    return;
-                                }
+                                return;
+                            }
 
+                            if (item.Slot != SpellSlot.Unknown)
+                            {
+                                Console.WriteLine("Random??");
                                 Player.Spellbook.CastSpell(item.Slot, ally2);
-                            });
+                            }
+                        });
                 }
             }
         }
