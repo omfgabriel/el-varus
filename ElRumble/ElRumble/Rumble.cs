@@ -180,12 +180,12 @@ namespace ElRumble
             var useI = ElRumbleMenu._menu.Item("ElRumble.Combo.Ignite").GetValue<bool>();
             var countEnemies = ElRumbleMenu._menu.Item("ElRumble.Combo.Count.Enemies").GetValue<Slider>().Value;
 
-            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast(target);
             }
 
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
                 var pred = spells[Spells.E].GetPrediction(target);
                 if (pred.Hitchance >= CustomHitChance)
@@ -432,16 +432,6 @@ namespace ElRumble
         }
 
         #endregion
-
-        #region Notifications 
-
-        private static void ShowNotification(string message, Color color, int duration = -1, bool dispose = true)
-        {
-            Notifications.AddNotification(new Notification(message, duration, dispose).SetTextColor(color));
-        }
-
-        #endregion
-
         #region Wall
 
         //CREDITS TO XSALICE
