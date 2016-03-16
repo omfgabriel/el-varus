@@ -66,7 +66,6 @@ namespace ElRumble
             miscMenu.AddItem(new MenuItem("ElRumble.Draw.E", "Draw E").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElRumble.Draw.R", "Draw R").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("xxxxx", ""));
-            miscMenu.AddItem(new MenuItem("ElRumble.misc.Notifications", "Use notifications").SetValue(true));
             miscMenu.AddItem(new MenuItem("ElRumble.Misc.R", "Manual R").SetValue(new KeyBind("L".ToCharArray()[0], KeyBindType.Press)));
 
             var dmgAfterE = new MenuItem("ElRumble.DrawComboDamage", "Draw combo damage").SetValue(true);

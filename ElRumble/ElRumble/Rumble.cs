@@ -66,7 +66,6 @@ namespace ElRumble
 
         public static Orbwalking.Orbwalker Orbwalker;
         private static SpellSlot _ignite;
-        private static int _lastNotification = 0;
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>()
         {
@@ -82,7 +81,7 @@ namespace ElRumble
 
         public static void OnLoad(EventArgs args)
         {
-            if (ObjectManager.Player.BaseSkinName != "Rumble")
+            if (ObjectManager.Player.CharData.BaseSkinName != "Rumble")
                 return;
 
             Notifications.AddNotification("ElRumble by jQuery", 5000);
@@ -159,17 +158,6 @@ namespace ElRumble
             if (ElRumbleMenu._menu.Item("ElRumble.Misc.R").GetValue<KeyBind>().Active && spells[Spells.R].IsReady())
             {
                 CastR();
-            }
-
-            var showNotifications = ElRumbleMenu._menu.Item("ElRumble.misc.Notifications").GetValue<bool>();
-
-            if (showNotifications && Environment.TickCount - _lastNotification > 5000)
-            {
-                foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(1000) && GetComboDamage(h) > h.Health))
-                {
-                    ShowNotification(enemy.ChampionName + ": is killable", Color.White, 4000);
-                    _lastNotification = Environment.TickCount;
-                }
             }
         }
 
