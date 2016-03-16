@@ -140,13 +140,13 @@ namespace ElUtilitySuite.Summoners
                              new CleanseSpell
                                  {
                                      Champion = "Malzahar", Name = "alzaharnethergrasp",
-                                     MenuName = "Malzahar Nether Grasp", Evade = false, DoT = true, EvadeTimer = 0,
+                                     MenuName = "Malzahar Nether Grasp (R)", Evade = false, DoT = true, EvadeTimer = 0,
                                      Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.R, Interval = .8
                                  },
                              new CleanseSpell
                                  {
                                      Champion = "Malzahar", Name = "alzaharmaleficvisions",
-                                     MenuName = "Malzahar Ficvisions", Evade = false, DoT = true, EvadeTimer = 0,
+                                     MenuName = "Malzahar Ficvisions (E)", Evade = false, DoT = true, EvadeTimer = 0,
                                      Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.E, Interval = .8
                                  },
                              new CleanseSpell
