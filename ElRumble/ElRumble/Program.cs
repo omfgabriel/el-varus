@@ -13,7 +13,7 @@ namespace ElRumble
     {
         private static void Main(string[] args)
         {
-            CustomEvents.Game.OnGameLoad += BROKEN.OnLoad;
+            CustomEvents.Game.OnGameLoad += Rumble.OnLoad;
         }
     }
 }
