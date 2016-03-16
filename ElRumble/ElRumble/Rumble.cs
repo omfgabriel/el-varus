@@ -188,8 +188,8 @@ namespace ElRumble
             if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
                 var pred = spells[Spells.E].GetPrediction(target);
-                if (pred.Hitchance >= CustomHitChance)
-                    spells[Spells.E].Cast(target);
+                if (pred.Hitchance >= HitChance.High)
+                    spells[Spells.E].Cast(pred.CastPosition);
             }
 
 
