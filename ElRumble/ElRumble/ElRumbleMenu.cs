@@ -34,7 +34,6 @@ namespace ElRumble
             comboMenu.AddItem(new MenuItem("ElRumble.Combo.R", "Use R").SetValue(true));
             comboMenu.AddItem(new MenuItem("ElRumble.Combo.Count.Enemies", "Enemies in range for R").SetValue(new Slider(2, 1, 5)));
             comboMenu.AddItem(new MenuItem("ElRumble.Combo.Ignite", "Use Ignite").SetValue(true));
-            comboMenu.AddItem(new MenuItem("ElRumble.hitChance", "Hitchance E").SetValue(new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
 
             _menu.AddSubMenu(comboMenu);
 

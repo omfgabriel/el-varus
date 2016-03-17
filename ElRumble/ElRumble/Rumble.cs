@@ -9,32 +9,6 @@
 
     using SharpDX;
 
-    /// <summary>
-    ///     ElRumble by jQuery - BETA
-    ///     Version 1.0.0.1
-    ///     Combo
-    ///     Q, W, E, R
-    ///     Auto ignite when target is killable
-    ///     Harass
-    ///     Q, E
-    ///     Autoheat
-    ///     Q, W to control heat (Rumble passive)
-    ///     Clear settings
-    ///     - Lane clear
-    ///     Q,  E
-    ///     - Jungleclear
-    ///     Q, E
-    ///     - Lasthit
-    ///     E
-    ///     Drawings (Misc)
-    ///     Draws combo damage
-    ///     Q, W, E, R ranges
-    ///     Extra
-    ///     Custom hitchanes in combo menu, default is set to high.
-    ///     Notifications when target is killable
-    ///     Credits to xSalice for a part of his Rumble ult
-    ///     Updated and tested 4/9/2015
-    /// </summary>
     internal enum Spells
     {
         Q,
@@ -69,13 +43,7 @@
 
         #region Properties
 
-        private static HitChance CustomHitChance
-        {
-            get
-            {
-                return GetHitchance();
-            }
-        }
+
 
         private static Obj_AI_Hero Player
         {
@@ -173,7 +141,7 @@
             }
             else if (!IsPassWall(pred.UnitPosition, vector1) && !IsPassWall(pred.UnitPosition, pred.CastPosition))
             {
-                if (pred.Hitchance >= CustomHitChance)
+                if (pred.Hitchance >= HitChance.High)
                 {
                     CastR2(vector1, pred.CastPosition);
                 }
@@ -190,22 +158,6 @@
             spells[Spells.R].Cast(start, end);
         }
 
-        private static HitChance GetHitchance()
-        {
-            switch (ElRumbleMenu._menu.Item("ElRumble.hitChance").GetValue<StringList>().SelectedIndex)
-            {
-                case 0:
-                    return HitChance.Low;
-                case 1:
-                    return HitChance.Medium;
-                case 2:
-                    return HitChance.High;
-                case 3:
-                    return HitChance.VeryHigh;
-                default:
-                    return HitChance.Medium;
-            }
-        }
 
         private static float IgniteDamage(Obj_AI_Hero target)
         {
@@ -258,8 +210,8 @@
 
         private static void OnClear()
         {
-            var useQ = ElRumbleMenu._menu.Item("ElRumble.LaneClear.Q").GetValue<bool>();
-            var useE = ElRumbleMenu._menu.Item("ElRumble.LaneClear.E").GetValue<bool>();
+            var useQ = ElRumbleMenu._menu.Item("ElRumble.LaneClear.Q").IsActive();
+            var useE = ElRumbleMenu._menu.Item("ElRumble.LaneClear.E").IsActive();
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
             if (minions.Count <= 0)
@@ -337,8 +289,8 @@
                 return;
             }
 
-            var useQ = ElRumbleMenu._menu.Item("ElRumble.Harass.Q").GetValue<bool>();
-            var useE = ElRumbleMenu._menu.Item("ElRumble.Harass.E").GetValue<bool>();
+            var useQ = ElRumbleMenu._menu.Item("ElRumble.Harass.Q").IsActive();
+            var useE = ElRumbleMenu._menu.Item("ElRumble.Harass.E").IsActive();
 
             if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
@@ -348,7 +300,7 @@
             if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
             {
                 var pred = spells[Spells.E].GetPrediction(target);
-                if (pred.Hitchance >= CustomHitChance)
+                if (pred.Hitchance >= HitChance.High)
                 {
                     spells[Spells.E].Cast(target);
                 }
@@ -389,7 +341,7 @@
 
         private static void OnLastHit()
         {
-            var useE = ElRumbleMenu._menu.Item("ElRumble.LastHit.E").GetValue<bool>();
+            var useE = ElRumbleMenu._menu.Item("ElRumble.LastHit.E").IsActive();
             if (useE && spells[Spells.E].IsReady())
             {
                 var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, spells[Spells.E].Range);
