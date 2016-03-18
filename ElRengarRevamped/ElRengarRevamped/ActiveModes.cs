@@ -23,14 +23,9 @@ namespace ElRengarRevamped
                                  ? TargetSelector.GetSelectedTarget()
                                  : TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
 
-                if (target == null)
+                if (target.IsValidTarget() == false)
                 {
                     return;
-                }
-
-                if (Rengar.SelectedEnemy.IsValidTarget(spells[Spells.E].Range))
-                {
-                    Orbwalker.ForceTarget(target);
                 }
 
                 #region RengarR
@@ -43,14 +38,27 @@ namespace ElRengarRevamped
                         spells[Spells.Q].Cast();
                     }
 
+                    if (!RengarR) 
+                    {
+                        if (!HasPassive)
+                        {
+                            if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
+                            {
+                                CastE(target);
+                            }
+                        }
+                        else
+                        {
+                            if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E") && Player.IsDashing())
+                            {
+                                CastE(target);
+                            }
+                        }
+                    }
+
                     if (spells[Spells.W].IsReady() && IsActive("Combo.Use.W"))
                     {
                         CastW();
-                    }
-
-                    if (spells[Spells.E].IsReady() && !HasPassive && IsActive("Combo.Use.E") && !RengarR)
-                    {
-                        CastE(target);
                     }
                 }
 
@@ -59,30 +67,31 @@ namespace ElRengarRevamped
                     switch (IsListActive("Combo.Prio").SelectedIndex)
                     {
                         case 0:
-                            if (spells[Spells.E].IsReady() && !RengarR)
+                            if (!RengarR)
                             {
-                                CastE(target);
-
-                                if (IsActive("Combo.Switch.E") && Environment.TickCount - Rengar.LastE >= 500
-                                    && Utils.GameTimeTickCount - LastSwitch >= 350)
+                                if (spells[Spells.E].IsReady())
                                 {
-                                    MenuInit.Menu.Item("Combo.Prio")
-                                        .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
-                                    LastSwitch = Utils.GameTimeTickCount;
+                                    CastE(target);
+
+                                    if (IsActive("Combo.Switch.E") && Environment.TickCount - Rengar.LastE >= 500
+                                        && Utils.GameTimeTickCount - LastSwitch >= 350)
+                                    {
+                                        MenuInit.Menu.Item("Combo.Prio")
+                                            .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
+                                        LastSwitch = Utils.GameTimeTickCount;
+                                    }
                                 }
                             }
                             break;
                         case 1:
-                            if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady() && !HasPassive
-                                && Environment.TickCount - Rengar.LastE >= 300)
+                            if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady())
                             {
                                 CastW();
                             }
                             break;
                         case 2:
                             if (IsActive("Combo.Use.Q") && spells[Spells.Q].IsReady()
-                                && target.IsValidTarget(spells[Spells.Q].Range)
-                                && Environment.TickCount - Rengar.LastE >= 500)
+                                && target.IsValidTarget(spells[Spells.Q].Range))
                             {
                                 spells[Spells.Q].Cast();
                             }
@@ -199,7 +208,7 @@ namespace ElRengarRevamped
                              ? TargetSelector.GetSelectedTarget()
                              : TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
 
-            if (target == null)
+            if (target.IsValidTarget() == false)
             {
                 return;
             }
