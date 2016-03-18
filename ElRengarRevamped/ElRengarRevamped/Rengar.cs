@@ -70,8 +70,6 @@
 
                 Ignite = Player.GetSpellSlot("summonerdot");
                 Game.PrintChat(
-                    "[00:00] <font color='#CC0000'>DATABASE!</font> Make sure to update in the database! (only if you liked it!)");
-                Game.PrintChat(
                     "[00:01] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
                 spells[Spells.E].SetSkillshot(0.25f, 70f, 1500f, true, SkillshotType.SkillshotLine);
 
@@ -214,7 +212,8 @@
                             case 0:
                                 if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
                                 {
-                                    spells[Spells.E].Cast(target);
+                                    var pred = spells[Spells.E].GetPrediction(target);
+                                    spells[Spells.E].Cast(pred.CastPosition);
                                 }
                                 break;
                             case 2:
@@ -248,7 +247,8 @@
                         case 0:
                             if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
                             {
-                                spells[Spells.E].Cast(target);
+                                var pred = spells[Spells.E].GetPrediction(target);
+                                spells[Spells.E].Cast(pred.CastPosition);
                             }
                             break;
 
