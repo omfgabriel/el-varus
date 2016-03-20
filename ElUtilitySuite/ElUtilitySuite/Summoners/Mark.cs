@@ -44,6 +44,20 @@
             }
         }
 
+        /// <summary>
+        ///     Gets a value indicating whether the combo mode is active.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if combo mode is active; otherwise, <c>false</c>.
+        /// </value>
+        public bool ComboModeActive
+        {
+            get
+            {
+                return Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active || Orbwalking.Orbwalker.Instances.Any(x => x.ActiveMode == Orbwalking.OrbwalkingMode.Combo);
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
@@ -112,7 +126,7 @@
 
             foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy && x.IsValidTarget(1500f)))
             {
-                if (this.Menu.Item(string.Format("snowballon{0}", enemy.ChampionName)).IsActive())
+                if (this.Menu.Item(string.Format("snowballon{0}", enemy.ChampionName)).IsActive() && this.ComboModeActive)
                 {
                     this.MarkSpell.CastIfHitchanceEquals(enemy, HitChance.High);
                 }
