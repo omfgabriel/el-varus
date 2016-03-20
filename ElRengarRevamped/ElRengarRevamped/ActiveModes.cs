@@ -33,7 +33,7 @@ namespace ElRengarRevamped
                 if (Ferocity <= 4)
                 {
                     if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q")
-                        && target.IsValidTarget(spells[Spells.Q].Range))
+                        && Player.Distance(target) <= spells[Spells.Q].Range)
                     {
                         spells[Spells.Q].Cast();
                     }
@@ -90,8 +90,7 @@ namespace ElRengarRevamped
                             }
                             break;
                         case 2:
-                            if (IsActive("Combo.Use.Q") && spells[Spells.Q].IsReady()
-                                && target.IsValidTarget(spells[Spells.Q].Range))
+                            if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q") && Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
                             {
                                 spells[Spells.Q].Cast();
                             }
