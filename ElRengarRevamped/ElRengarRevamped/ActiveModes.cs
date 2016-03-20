@@ -37,6 +37,7 @@ namespace ElRengarRevamped
                     {
                         spells[Spells.Q].Cast();
                     }
+                    CastItems(target);
 
                     if (!RengarR) 
                     {
@@ -49,8 +50,13 @@ namespace ElRengarRevamped
                         }
                         else
                         {
-                            if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E") && Player.IsDashing())
+                            if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
                             {
+                                if (!Player.IsDashing())
+                                {
+                                    return;
+                                }
+
                                 CastE(target);
                             }
                         }
@@ -83,7 +89,7 @@ namespace ElRengarRevamped
                                 }
                             }
                             break;
-                        case 1:
+                        case 1:     
                             if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady())
                             {
                                 CastW();
