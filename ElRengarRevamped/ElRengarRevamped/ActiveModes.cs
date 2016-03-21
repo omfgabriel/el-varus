@@ -37,10 +37,11 @@ namespace ElRengarRevamped
                     {
                         spells[Spells.Q].Cast();
                     }
-                    CastItems(target);
 
                     if (!RengarR) 
                     {
+                        CastItems(target);
+
                         if (!HasPassive)
                         {
                             if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
