@@ -56,7 +56,7 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Nocturne", Name = "fear", MenuName = "Nocturne Fear", Evade = false,
+                                     Champion = "Nocturne", Name = "flee", MenuName = "Nocturne Fear", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E,
                                      Interval = 1.0
                                  },
@@ -559,7 +559,7 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "lux", Name = "luxlightbinding", MenuName = "Lux (Q)", Evade = false,
+                                     Champion = "lux", Name = "luxlightbindingmis", MenuName = "Lux (Q)", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
                                  },
                              new CleanseSpell
