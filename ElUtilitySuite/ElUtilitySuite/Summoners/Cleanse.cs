@@ -423,6 +423,7 @@ namespace ElUtilitySuite.Summoners
                                      Champion = "Rengar", Name = "RengarERoot", MenuName = "Rengar EMP (E)", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
                                  },
+
                              new CleanseSpell
                                  {
                                      Champion = "amumu", Name = "stun", MenuName = "bandagetoss (Q)", Evade = false,

@@ -18,11 +18,7 @@ namespace ElRengarRevamped
         {
             try
             {
-                // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
-                var target = TargetSelector.GetSelectedTarget() != null
-                                 ? TargetSelector.GetSelectedTarget()
-                                 : TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
-
+                var target = TargetSelector.GetSelectedTarget() ?? TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
                 if (target.IsValidTarget() == false)
                 {
                     return;
@@ -76,7 +72,7 @@ namespace ElRengarRevamped
                         case 0:
                             if (!RengarR)
                             {
-                                if (spells[Spells.E].IsReady())
+                                if (spells[Spells.E].IsReady() && !HasPassive)
                                 {
                                     CastE(target);
 
@@ -87,6 +83,18 @@ namespace ElRengarRevamped
                                             .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
                                         LastSwitch = Utils.GameTimeTickCount;
                                     }
+                                }
+                            }
+                            else
+                            {
+                                if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
+                                {
+                                    if (!Player.IsDashing())
+                                    {
+                                        return;
+                                    }
+
+                                    CastE(target);
                                 }
                             }
                             break;
@@ -135,7 +143,7 @@ namespace ElRengarRevamped
             }
             catch (Exception e)
             {
-                throw new Exception(e.ToString());
+                Console.WriteLine(e);
             }
         }
 
@@ -155,7 +163,7 @@ namespace ElRengarRevamped
                 }
 
                 var prediction = spells[Spells.E].GetPrediction(target);
-                if (prediction.CollisionObjects.Count == 0)
+                if (prediction.Hitchance >= HitChance.High)
                 {
                     spells[Spells.E].Cast(prediction.CastPosition);
                 }

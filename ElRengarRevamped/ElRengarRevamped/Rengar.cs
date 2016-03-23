@@ -198,7 +198,7 @@
                     return;
                 }
 
-                var target = TargetSelector.GetTarget(1500, TargetSelector.DamageType.Physical);
+                var target = TargetSelector.GetTarget(1500f, TargetSelector.DamageType.Physical);
                 if (!target.IsValidTarget())
                 {
                     return;
@@ -439,10 +439,6 @@
                     return;
                 }
 
-                SwitchCombo();
-                SmiteCombo();
-                Heal();
-                KillstealHandler();
                 switch (Orbwalker.ActiveMode)
                 {
                     case Orbwalking.OrbwalkingMode.Combo:
@@ -457,6 +453,51 @@
                     case Orbwalking.OrbwalkingMode.Mixed:
                         ActiveModes.Harass();
                         break;
+                }
+
+
+                SwitchCombo();
+                SmiteCombo();
+                Heal();
+                KillstealHandler();
+
+                if (MenuInit.Menu.Item("Combo.TripleQ").GetValue<KeyBind>().Active)
+                {
+                    var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+                    if (!target.IsValidTarget())
+                    {
+                        return;
+                    }
+
+                    Orbwalking.Orbwalk(target, Game.CursorPos);
+
+                    if (Player.HasBuff("RengarR"))
+                    {
+                        if (Ferocity == 5 && Player.Distance(target) <= spells[Spells.Q].Range)
+                        {
+                            spells[Spells.Q].Cast();
+                        }
+                    }
+                    else
+                    {
+                        spells[Spells.Q].Cast();
+                    }
+
+                    if (Ferocity <= 4)
+                    {
+                        if (Player.Distance(target) <= spells[Spells.Q].Range)
+                        {
+                            spells[Spells.Q].Cast();
+                        }
+                        if (Player.Distance(target) <= spells[Spells.W].Range)
+                        {
+                            spells[Spells.W].Cast();
+                        }
+                        if (Player.Distance(target) <= spells[Spells.E].Range)
+                        {
+                            spells[Spells.E].Cast(target);
+                        }
+                    }
                 }
 
                 if (IsActive("Beta.Cast.Q") && IsListActive("Combo.Prio").SelectedIndex == 2)

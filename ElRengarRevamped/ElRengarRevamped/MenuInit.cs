@@ -40,6 +40,8 @@
                     .AddItem(
                         new MenuItem("Combo.Switch", "Switch priority").SetValue(
                             new KeyBind("L".ToCharArray()[0], KeyBindType.Press)));
+                comboMenu.AddItem(new MenuItem("Combo.TripleQ", "Triple Q").SetValue(new KeyBind("A".ToCharArray()[0], KeyBindType.Press)));
+
 
                 comboMenu.SubMenu("Harass").AddItem(new MenuItem("Harass.Use.Q", "Use Q").SetValue(true));
                 comboMenu.SubMenu("Harass").AddItem(new MenuItem("Harass.Use.W", "Use W").SetValue(true));
