@@ -463,6 +463,8 @@
 
                 if (MenuInit.Menu.Item("Combo.TripleQ").GetValue<KeyBind>().Active)
                 {
+                    Orbwalking.Orbwalk(null, Game.CursorPos);
+                    
                     var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
                     if (!target.IsValidTarget())
                     {
