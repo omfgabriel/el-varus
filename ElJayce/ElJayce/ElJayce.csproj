@@ -56,7 +56,6 @@
   <ItemGroup>
     <Compile Include="Drawings.cs" />
     <Compile Include="ElJayceMenu.cs" />
-    <Compile Include="Jayce.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
