@@ -140,6 +140,10 @@
 
                 Game.OnUpdate += OnUpdate;
                 Drawing.OnDraw += OnDraw;
+                Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
+                AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+                Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
+
             }
             catch (Exception exception)
             {
@@ -230,6 +234,9 @@
                 var miscMenu = new Menu("Misc", "Misc");
                 {
                     miscMenu.AddItem(new MenuItem("Misc.Auto.W", "Auto deactivate W").SetValue(true));
+                    miscMenu.AddItem(new MenuItem("AA.Block", "Don't use AA in combo").SetValue(false));
+                    miscMenu.AddItem(new MenuItem("inter", "Anti interupt").SetValue(true));
+                    miscMenu.AddItem(new MenuItem("gapcloser", "Anti gapcloser").SetValue(true));
                 }
 
                 Menu.AddSubMenu(miscMenu);
@@ -378,6 +385,83 @@
             catch (Exception e)
             {
                 Console.WriteLine(e);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            if (Menu.Item("AA.Block").IsActive() && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            {
+                args.Process = false;
+            }
+            else
+            {
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                {
+                    args.Process =
+                        !(Q.IsReady() 
+                          || Player.Distance(args.Target) >= 1000);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private static void Interrupter2_OnInterruptableTarget(
+            Obj_AI_Hero sender,
+            Interrupter2.InterruptableTargetEventArgs args)
+        {
+
+            if (!IsActive("inter"))
+            {
+                return;
+            }
+
+            if (args.DangerLevel != Interrupter2.DangerLevel.High
+                || sender.Distance(Player) > Q.Range)
+            {
+                return;
+            }
+
+            if (sender.IsValidTarget(Q.Range) && args.DangerLevel == Interrupter2.DangerLevel.High
+                && Q.IsReady())
+            {
+                var prediction = Q.GetPrediction(sender);
+                if (prediction.Hitchance >= HitChance.High)
+                {
+                    Q.Cast(prediction.CastPosition);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="gapcloser"></param>
+        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        {
+            if (!IsActive("gapcloser"))
+            {
+                return;
+            }
+
+            if (Q.IsReady() && gapcloser.Sender.Distance(Player) < Q.Range)
+            {
+                if (gapcloser.Sender.IsValidTarget(Q.Range) && Q.IsReady())
+                {
+                    var prediction = Q.GetPrediction(gapcloser.Sender);
+                    if (prediction.Hitchance >= HitChance.High)
+                    {
+                        Q.Cast(prediction.CastPosition);
+                    }
+                }
             }
         }
 
