@@ -556,7 +556,7 @@
 
                 if (IsActive("laneclear.Q") && Q.IsReady())
                 {
-                    var prediction = Q.GetCircularFarmLocation(minion, Q.Width);
+                    var prediction = Q.GetCircularFarmLocation(minion);
                     if (prediction.MinionsHit >= 2)
                     {
                         Q.Cast(prediction.Position);
