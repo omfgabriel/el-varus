@@ -492,7 +492,10 @@
                 if (IsActive("jungleclear.Q") && Q.IsReady())
                 {
                     var prediction = Q.GetCircularFarmLocation(minion);
-                    Q.Cast(prediction.Position);
+                    if (prediction.MinionsHit >= 1)
+                    {
+                        Q.Cast(prediction.Position);
+                    }
                 }
             }
             catch (Exception exception)
