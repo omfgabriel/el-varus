@@ -370,7 +370,7 @@
                     }
                 }
 
-                if (R.IsReady() && IsActive("Combo.R") && RDamage(target) > target.Health) 
+                if (R.IsReady() && IsActive("Combo.R") && RDamage(target) > target.Health + target.PhysicalShield) 
                 {
                     var prediction = R.GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.High)
