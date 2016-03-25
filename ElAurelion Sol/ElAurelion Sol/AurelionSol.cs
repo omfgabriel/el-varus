@@ -131,10 +131,10 @@
                 W1 = new Spell(SpellSlot.W, 350f);
                 W = new Spell(SpellSlot.W, 600f);
                 E = new Spell(SpellSlot.E, 400f);
-                R = new Spell(SpellSlot.R, 1300f);
+                R = new Spell(SpellSlot.R, 1420f);
 
-                Q.SetSkillshot(0.25f, 110, 850, false, SkillshotType.SkillshotLine);
-                R.SetSkillshot(0.25f, 0.25f, 1300, false, SkillshotType.SkillshotLine);
+                Q.SetSkillshot(0.25f, 180, 850, false, SkillshotType.SkillshotLine);
+                R.SetSkillshot(0.25f, 300, 4500, false, SkillshotType.SkillshotLine);
 
                 GenerateMenu();
 
@@ -358,14 +358,12 @@
                     }
                     else if(HasPassive())
                     {
-                        // Keep W
                         if (Player.Distance(target) > W1.Range && Player.Distance(target) < W.Range + 100)
                         {
                             return;
                         }
 
-                        // Back to normal
-                        if (Player.Distance(target) > W1.Range + 200)
+                        if (Player.Distance(target) > W1.Range + 150)
                         {
                             W.Cast();
                         }
@@ -380,7 +378,6 @@
                         R.Cast(prediction.CastPosition);
                     }
                 }
-
             }
             catch (Exception e)
             {
@@ -703,8 +700,8 @@
 
                 if (IsActive("Combo.R.Multiple"))
                 {
-                    float RDistance = 1300;
-                    float RWidth = 100;
+                    float RDistance = 1420;
+                    float RWidth = 120;
                     var minREnemies = Menu.Item("Combo.R.Count").GetValue<Slider>().Value;
                     foreach (var enemy in HeroManager.Enemies)
                     {
