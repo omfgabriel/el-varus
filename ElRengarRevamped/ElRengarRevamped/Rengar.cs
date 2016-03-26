@@ -82,7 +82,6 @@
                 Orbwalking.AfterAttack += AfterAttack;
                 Orbwalking.BeforeAttack += BeforeAttack;
                 Game.OnWndProc += OnClick;
-
             }
             catch (Exception e)
             {

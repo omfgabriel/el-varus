@@ -409,7 +409,7 @@ namespace ElRengarRevamped
 
         public static bool CastItems(Obj_AI_Base target)
         {
-            if (Player.IsDashing() || Player.IsWindingUp)
+            if (Player.IsDashing() || Player.IsWindingUp || RengarR)
             {
                 return false;
             }
