@@ -381,7 +381,7 @@ namespace ElRengarRevamped
         /// <value>
         ///     Youmuus Ghostblade
         /// </value>
-        private static Items.Item Youmuu => ItemData.Youmuus_Ghostblade.GetItem();
+        private static new Items.Item Youmuu => ItemData.Youmuus_Ghostblade.GetItem();
 
         /// <summary>
         ///     Gets Ravenous Hydra

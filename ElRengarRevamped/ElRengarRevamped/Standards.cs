@@ -75,7 +75,7 @@
             return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
-        public static bool IsActive(string menuItem) => MenuInit.Menu.Item(menuItem).GetValue<bool>();
+        public static bool IsActive(string menuItem) => MenuInit.Menu.Item(menuItem).IsActive();
 
         #endregion
 

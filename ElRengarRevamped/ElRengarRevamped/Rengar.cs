@@ -82,6 +82,7 @@
                 Orbwalking.AfterAttack += AfterAttack;
                 Orbwalking.BeforeAttack += BeforeAttack;
                 Game.OnWndProc += OnClick;
+                Game.OnNotify += OnNotify;
             }
             catch (Exception e)
             {
@@ -92,6 +93,19 @@
         #endregion
 
         #region Methods
+
+        private static void OnNotify(GameNotifyEventArgs args)
+        {
+            if (!IsActive("Misc.Mastery"))
+            {
+                return;
+            }
+
+            if (args.EventId == GameEventId.OnChampionKill)
+            {
+                Game.Say("/masterybadge");
+            }
+        }
 
         private static void AfterAttack(AttackableUnit unit, AttackableUnit target)
         {
@@ -472,7 +486,7 @@
 
                     Orbwalking.Orbwalk(target, Game.CursorPos);
 
-                    if (Player.HasBuff("RengarR"))
+                    if (RengarR)
                     {
                         if (Ferocity == 5 && Player.Distance(target) <= spells[Spells.Q].Range)
                         {
