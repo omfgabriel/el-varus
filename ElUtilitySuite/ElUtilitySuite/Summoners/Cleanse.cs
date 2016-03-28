@@ -91,6 +91,11 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "AurelionSol", Name = "stun", MenuName = "Aurelion Sol stun", Evade = false, DoT = false,
+                                     EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "Brand", Name = "stun", MenuName = "Brand stun", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
                                      Slot = SpellSlot.Unknown, Interval = 1.0
