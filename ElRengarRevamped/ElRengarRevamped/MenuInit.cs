@@ -105,7 +105,7 @@
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.W", "Draw W").SetValue(new Circle()));
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.E", "Draw E").SetValue(new Circle()));
                 miscMenu.AddItem(new MenuItem("Misc.Drawings.Minimap", "Draw R on minimap").SetValue(true));
-                miscMenu.AddItem(new MenuItem("Misc.Mastery", "Mastery badge on kill").SetValue(true));
+                miscMenu.AddItem(new MenuItem("Misc.Mastery", "Mastery badge on kill").SetValue(false));
 
             }
 

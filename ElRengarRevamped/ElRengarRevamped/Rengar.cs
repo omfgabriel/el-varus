@@ -334,7 +334,7 @@
                 {
                     if (spells[Spells.R].Level > 0)
                     {
-                        Render.Circle.DrawCircle(ObjectManager.Player.Position, 1250f, Color.DeepSkyBlue);
+                        Render.Circle.DrawCircle(ObjectManager.Player.Position, 1450f, Color.DeepSkyBlue);
                     }
                 }
 
