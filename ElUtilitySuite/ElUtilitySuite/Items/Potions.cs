@@ -136,8 +136,6 @@
                     return;
                 }
 
-                Console.WriteLine(this.IsBuffActive());
-
                 if (this.Player.HealthPercent < this.PlayerHp)
                 {
                     if (this.IsBuffActive())
