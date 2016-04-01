@@ -106,31 +106,39 @@
 
         private void IgniteKs()
         {
-            if (!Menu.Item("Ignite.Activated").GetValue<bool>())
+            try
             {
-                return;
+                if (!Menu.Item("Ignite.Activated").GetValue<bool>())
+                {
+                    return;
+                }
+
+                var kSableEnemy =
+                    HeroManager.Enemies.FirstOrDefault(
+                        hero =>
+                        hero.IsValidTarget(550) && hero.IgniteCheck() && !hero.IsZombie
+                        && this.Player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite) >= hero.Health);
+
+                if (kSableEnemy != null)
+                {
+                    this.Player.Spellbook.CastSpell(this.IgniteSpell.Slot, kSableEnemy);
+                }
             }
-
-            var kSableEnemy =
-                HeroManager.Enemies.FirstOrDefault(
-                    hero =>
-                    hero.IsValidTarget(550) && hero.IgniteCheck() && !hero.IsZombie && this.Player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite) >= hero.Health);
-
-            if (kSableEnemy != null)
+            catch (Exception e)
             {
-                this.Player.Spellbook.CastSpell(this.IgniteSpell.Slot, kSableEnemy);
+                Console.WriteLine("An error occurred: '{0}'", e);
             }
         }
 
         private void OnUpdate(EventArgs args)
         {
-            if (this.Player.IsDead)
-            {
-                return;
-            }
-
             try
             {
+                if (this.Player.IsDead)
+                {
+                    return;
+                }
+
                 this.IgniteKs();
             }
             catch (Exception e)

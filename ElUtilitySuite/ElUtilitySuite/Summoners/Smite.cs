@@ -514,6 +514,11 @@
         {
             try
             {
+                if (this.Player.IsDead)
+                {
+                    return;
+                }
+
                 var smiteActive = this.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active;
                 var drawSmite = this.Menu.Item("ElSmite.Draw.Range").GetValue<Circle>();
                 var drawText = this.Menu.Item("ElSmite.Draw.Text").IsActive();

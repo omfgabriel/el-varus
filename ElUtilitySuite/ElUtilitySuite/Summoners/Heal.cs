@@ -1,5 +1,6 @@
 ﻿namespace ElUtilitySuite.Summoners
 {
+    using System;
     using System.Linq;
 
     using LeagueSharp;
@@ -17,6 +18,9 @@
         /// </value>
         public Spell HealSpell { get; set; }
 
+        /// <summary>
+        /// The Menu
+        /// </summary>
         public Menu Menu { get; set; }
 
         #endregion
@@ -74,16 +78,23 @@
         /// </summary>
         public void Load()
         {
-            var healSlot = this.Player.GetSpellSlot("summonerheal");
-
-            if (healSlot == SpellSlot.Unknown)
+            try
             {
-                return;
+                var healSlot = this.Player.GetSpellSlot("summonerheal");
+
+                if (healSlot == SpellSlot.Unknown)
+                {
+                    return;
+                }
+
+                this.HealSpell = new Spell(healSlot, 550);
+
+                AttackableUnit.OnDamage += this.AttackableUnit_OnDamage;
             }
-
-            this.HealSpell = new Spell(healSlot, 550);
-
-            AttackableUnit.OnDamage += this.AttackableUnit_OnDamage;
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred: '{0}'", e);
+            }
         }
 
         #endregion
@@ -92,31 +103,38 @@
 
         private void AttackableUnit_OnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
         {
-            if (!this.Menu.Item("Heal.Activated").IsActive())
+            try
             {
-                return;
+                if (!this.Menu.Item("Heal.Activated").IsActive())
+                {
+                    return;
+                }
+
+                var source = ObjectManager.GetUnitByNetworkId<GameObject>(args.SourceNetworkId);
+                var obj = ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId);
+
+                if (obj.Type != GameObjectType.obj_AI_Hero || source.Type != GameObjectType.obj_AI_Hero)
+                {
+                    return;
+                }
+
+                var hero = (Obj_AI_Hero)obj;
+
+                if (hero.IsEnemy || (!hero.IsMe && !this.HealSpell.IsInRange(obj))
+                    || !this.Menu.Item(string.Format("healon{0}", hero.ChampionName)).IsActive())
+                {
+                    return;
+                }
+
+                if (((int)(args.Damage / hero.Health) > this.Menu.Item("Heal.Damage").GetValue<Slider>().Value)
+                    || (hero.HealthPercent < this.Menu.Item("Heal.HP").GetValue<Slider>().Value))
+                {
+                    this.Player.Spellbook.CastSpell(this.HealSpell.Slot);
+                }
             }
-
-            var source = ObjectManager.GetUnitByNetworkId<GameObject>(args.SourceNetworkId);
-            var obj = ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId);
-
-            if (obj.Type != GameObjectType.obj_AI_Hero || source.Type != GameObjectType.obj_AI_Hero)
+            catch (Exception e)
             {
-                return;
-            }
-
-            var hero = (Obj_AI_Hero)obj;
-
-            if (hero.IsEnemy || (!hero.IsMe && !this.HealSpell.IsInRange(obj))
-                || !this.Menu.Item(string.Format("healon{0}", hero.ChampionName)).IsActive())
-            {
-                return;
-            }
-
-            if (((int)(args.Damage / hero.Health) > this.Menu.Item("Heal.Damage").GetValue<Slider>().Value)
-                || (hero.HealthPercent < this.Menu.Item("Heal.HP").GetValue<Slider>().Value))
-            {
-                this.Player.Spellbook.CastSpell(this.HealSpell.Slot);
+                Console.WriteLine("An error occurred: '{0}'", e);
             }
         }
 

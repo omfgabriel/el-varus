@@ -99,11 +99,11 @@
         {
             this.Items = new List<HealthItem>
                              {
-                                 new HealthItem { GetItem = () => ItemData.Health_Potion.GetItem() },
-                                 new HealthItem { GetItem = () => ItemData.Total_Biscuit_of_Rejuvenation2.GetItem() },
-                                 new HealthItem { GetItem = () => ItemData.Refillable_Potion.GetItem() }, //2031
-                                 new HealthItem { GetItem = () => ItemData.Hunters_Potion.GetItem() }, //2032
-                                 new HealthItem { GetItem = () => ItemData.Corrupting_Potion.GetItem() } //2033
+                                 new HealthItem { GetItem = () => ItemData.Health_Potion.GetItem(), BuffName = "RegenerationPotion" },
+                                 new HealthItem { GetItem = () => ItemData.Total_Biscuit_of_Rejuvenation2.GetItem(), BuffName = "ItemMiniRegenPotion"},
+                                 new HealthItem { GetItem = () => ItemData.Refillable_Potion.GetItem(), BuffName = "ItemCrystalFlask" }, 
+                                 new HealthItem { GetItem = () => ItemData.Hunters_Potion.GetItem(), BuffName = "ItemCrystalFlaskJungle"},
+                                 new HealthItem { GetItem = () => ItemData.Corrupting_Potion.GetItem(), BuffName = "ItemDarkCrystalFlask"}
                              };
 
             Game.OnUpdate += this.OnUpdate;
@@ -119,11 +119,12 @@
         /// <value>
         ///     The player buffs
         /// </value>
-        private bool CheckPlayerBuffs()
+        private bool IsBuffActive()
         {
-            return this.Player.HasBuff("RegenerationPotion") || this.Player.HasBuff("ItemMiniRegenPotion")
-                   || this.Player.HasBuff("ItemCrystalFlask") || this.Player.HasBuff("ItemCrystalFlaskJungle")
-                   || this.Player.HasBuff("ItemDarkCrystalFlask");
+            return
+                this.Items.Any(
+                    potion => this.Player.Buffs.Any(
+                        b => b.Name.Equals(potion.BuffName, StringComparison.OrdinalIgnoreCase)));
         }
 
         private void OnUpdate(EventArgs args)
@@ -135,9 +136,11 @@
                     return;
                 }
 
+                Console.WriteLine(this.IsBuffActive());
+
                 if (this.Player.HealthPercent < this.PlayerHp)
                 {
-                    if (this.CheckPlayerBuffs())
+                    if (this.IsBuffActive())
                     {
                         return;
                     }
@@ -172,6 +175,14 @@
             ///     The get item.
             /// </value>
             public GetHealthItemDelegate GetItem { get; set; }
+
+            /// <summary>
+            ///     Gets the buffname
+            /// </summary>
+            /// <value>
+            ///     The buffname
+            /// </value>
+            public String BuffName { get; set; }
 
             /// <summary>
             ///     Gets the item.
