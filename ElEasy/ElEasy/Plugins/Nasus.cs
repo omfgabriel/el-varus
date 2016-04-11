@@ -140,13 +140,17 @@
                     lasthitMenu.AddItem(
                         new MenuItem("ElEasy.Nasus.Lasthit.Activated", "Auto Lasthit").SetValue(
                             new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle)));
+                    lasthitMenu.AddItem(
+                        new MenuItem("ElEasy.Nasus.Lasthitrange", "Auto last hit range").SetValue(new Slider(100, 100, 500)));
                 }
 
+               
                 this.Menu.AddSubMenu(lasthitMenu);
 
                 var miscellaneousMenu = new Menu("Miscellaneous", "Miscellaneous");
                 {
                     miscellaneousMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.off", "Turn drawings off").SetValue(true));
+                    miscellaneousMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.LastHitRange", "Draw Last hit range").SetValue(new Circle()));
                     miscellaneousMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.W", "Draw W").SetValue(new Circle()));
                     miscellaneousMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.E", "Draw E").SetValue(new Circle()));
                     miscellaneousMenu.AddItem(new MenuItem("ElEasy.Nasus.Draw.Text", "Draw text").SetValue(true));
@@ -182,7 +186,7 @@
         private void AutoLastHit()
         {
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
-                || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed || this.Player.IsRecalling())
+                || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed || this.Player.IsRecalling() || !spells[Spells.Q].IsReady())
             {
                 return;
             }
@@ -198,7 +202,7 @@
             {
                 if (this.GetBonusDmg(minion) > minion.Health
                     && Vector3.Distance(ObjectManager.Player.ServerPosition, minion.Position)
-                    < this.Player.AttackRange + 50 && spells[Spells.Q].IsReady())
+                    < Orbwalking.GetRealAutoAttackRange(ObjectManager.Player) + this.Menu.Item("ElEasy.Nasus.Lasthitrange").GetValue<Slider>().Value)
                 {
                     Orbwalker.SetAttack(false);
                     this.Player.IssueOrder(GameObjectOrder.AttackUnit, minion);
@@ -325,10 +329,7 @@
         private void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Physical);
-            var eTarget = TargetSelector.GetTarget(
-                spells[Spells.E].Range + spells[Spells.E].Width,
-                TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValid)
+            if (!target.IsValidTarget())
             {
                 return;
             }
@@ -352,12 +353,12 @@
             }
 
 
-            if (useE && spells[Spells.E].IsReady() && eTarget.IsValidTarget() && spells[Spells.E].IsInRange(eTarget))
+            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget())
             {
-                var pred = spells[Spells.E].GetPrediction(eTarget).Hitchance;
-                if (pred >= HitChance.High)
+                var pred = spells[Spells.E].GetPrediction(target);
+                if (pred.Hitchance >= HitChance.High)
                 {
-                    spells[Spells.E].Cast(eTarget.ServerPosition);
+                    spells[Spells.E].Cast(pred.CastPosition);
                 }
             }
 
@@ -382,12 +383,24 @@
             var drawText = this.Menu.Item("ElEasy.Nasus.Draw.Text").IsActive();
             var rBool = this.Menu.Item("ElEasy.Nasus.Lasthit.Activated").GetValue<KeyBind>().Active;
             var helper = this.Menu.Item("ElEasy.Nasus.Draw.MinionHelper").IsActive();
+            var drawLastHit = this.Menu.Item("ElEasy.Nasus.Draw.LastHitRange").GetValue<Circle>();
+
+
+            
 
             var playerPos = Drawing.WorldToScreen(this.Player.Position);
 
             if (drawOff)
             {
                 return;
+            }
+
+            if (drawLastHit.Active)
+            {
+                if (spells[Spells.Q].Level > 0)
+                {
+                    Render.Circle.DrawCircle(this.Player.Position, Orbwalking.GetRealAutoAttackRange(ObjectManager.Player) + this.Menu.Item("ElEasy.Nasus.Lasthitrange").GetValue<Slider>().Value, Color.Orange);
+                }
             }
 
             if (drawE.Active)
@@ -429,7 +442,7 @@
                     {
                         if ((this.GetBonusDmg(minion) > minion.Health))
                         {
-                            Render.Circle.DrawCircle(minion.ServerPosition, minion.BoundingRadius, Color.Black);
+                            Render.Circle.DrawCircle(minion.ServerPosition, minion.BoundingRadius, Color.Green);
                         }
                     }
                 }
