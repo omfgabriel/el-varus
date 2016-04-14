@@ -48,7 +48,10 @@
         /// <returns></returns>
         public void CreateMenu(Menu rootMenu)
         {
-            var protectMenu = rootMenu.AddSubMenu(new Menu("Anti-Stealth", "AntiStealth"));
+            var predicate = new Func<Menu, bool>(x => x.Name == "MiscMenu");
+            var menu = !rootMenu.Children.Any(predicate) ? rootMenu.AddSubMenu(new Menu("Misc", "MiscMenu")) : rootMenu.Children.First(predicate);
+
+            var protectMenu = menu.AddSubMenu(new Menu("Anti-Stealth", "AntiStealth"));
             {
                 protectMenu.AddItem(new MenuItem("AntiStealthActive", "Place Pink Ward on Unit Stealth").SetValue(true));
             }
