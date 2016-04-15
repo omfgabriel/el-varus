@@ -142,7 +142,7 @@
         {
             try
             {
-                if (this.Player.IsDead || !this.Menu.Item("ThreshLantern").IsActive())
+                if (this.Player.IsDead || !this.Menu.Item("ThreshLantern").IsActive() || !this.ThreshLantern.IsValid || this.ThreshLantern == null)
                 {
                     return;
                 }
