@@ -84,7 +84,6 @@ namespace ElEkko
 
             var miscMenu = new Menu("Misc", "Misc");
 
-            miscMenu.AddItem(new MenuItem("ElEkko.misc.Notifications", "Use Notifications").SetValue(true));
             miscMenu.SubMenu("R misc").AddItem(new MenuItem("ElEkko.R.text", "Display how many people in R").SetValue(true));
             miscMenu.SubMenu("Drawings").AddItem(new MenuItem("ElEkko.Draw.off", "Turn drawings off").SetValue(false));
             miscMenu.SubMenu("Drawings").AddItem(new MenuItem("ElEkko.Draw.Q", "Draw Q").SetValue(new Circle()));
