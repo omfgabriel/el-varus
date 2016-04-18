@@ -177,6 +177,22 @@
             }
         }
 
+        private static BuffInstance GetEBuff()
+        {
+            try
+            {
+                return
+                    Player.Buffs.FirstOrDefault(
+                        b => b.Name.Equals("vladimirtidesofbloodcost", StringComparison.OrdinalIgnoreCase));
+            }
+            catch (Exception e)
+            {
+                //
+            }
+            return null;
+        }
+
+
         private static void OnAutoStack()
         {
             if (Player.IsRecalling() || Player.InFountain() || MenuGUI.IsChatOpen || MenuGUI.IsShopOpen)
@@ -184,10 +200,8 @@
                 return;
             }
 
-            var stackHp = ElVladimirMenu.Menu.Item("ElVladimir.Settings.Stack.HP").GetValue<Slider>().Value;
-
-            if (Environment.TickCount - spells[Spells.E].LastCastAttemptT >= 9900 && spells[Spells.E].IsReady()
-                && (Player.Health / Player.MaxHealth) * 100 >= stackHp)
+            var buff = GetEBuff();
+            if (buff == null || buff.EndTime - Game.Time <= Game.Ping / 2000f + 0.5f)
             {
                 spells[Spells.E].Cast();
             }
