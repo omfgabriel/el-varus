@@ -174,23 +174,23 @@
                 var pred = spells[Spells.Q].GetPrediction(target);
                 if (pred.Hitchance >= HitChance.VeryHigh)
                 {
-                    spells[Spells.Q].Cast(target);
+                    spells[Spells.Q].Cast(pred.CastPosition);
                 }
             }
 
-            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target)
+            if (useR && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range)
                 && target.HasBuff("dianamoonlight")
                 && (!target.UnderTurret(true) || (minHpToDive <= Player.HealthPercent)))
             {
                 spells[Spells.R].Cast(target);
             }
 
-            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+            if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
             {
                 spells[Spells.W].Cast();
             }
 
-            if (useE && spells[Spells.E].IsReady() && Player.Distance(target) <= spells[Spells.E].Range)
+            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(400f))
             {
                 spells[Spells.E].Cast();
             }
