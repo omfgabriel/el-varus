@@ -131,7 +131,6 @@
                     || (hero.HealthPercent < this.Menu.Item("Heal.HP").GetValue<Slider>().Value))
                 {
                     this.Player.Spellbook.CastSpell(this.HealSpell.Slot);
-                    Console.WriteLine("Heal");
                 }
             }
             catch (Exception e)
