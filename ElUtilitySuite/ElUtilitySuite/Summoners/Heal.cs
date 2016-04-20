@@ -110,8 +110,9 @@
                     return;
                 }
 
+
+                var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(args.SourceNetworkId);
                 var source = ObjectManager.GetUnitByNetworkId<GameObject>(args.SourceNetworkId);
-                var obj = ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId);
 
                 if (obj.Type != GameObjectType.obj_AI_Hero || source.Type != GameObjectType.obj_AI_Hero)
                 {
@@ -130,6 +131,7 @@
                     || (hero.HealthPercent < this.Menu.Item("Heal.HP").GetValue<Slider>().Value))
                 {
                     this.Player.Spellbook.CastSpell(this.HealSpell.Slot);
+                    Console.WriteLine("Heal");
                 }
             }
             catch (Exception e)
