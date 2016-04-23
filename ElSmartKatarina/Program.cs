@@ -51,8 +51,6 @@ namespace ElKatarina
 
         private static long lastECast;
 
-        private static int lastNotification;
-
         private static int lastPlaced;
 
         private static Vector3 lastWardPos;
@@ -383,31 +381,28 @@ namespace ElKatarina
 
             switch (menuItem)
             {
-                case 0: 
+                case 0:
                     if (spells[Spells.Q].IsReady())
                     {
                         spells[Spells.Q].CastOnUnit(target);
-                        return;
                     }
                     break;
-                case 1: 
+                case 1:
                     if (spells[Spells.Q].IsReady() && spells[Spells.W].IsReady())
                     {
                         spells[Spells.Q].Cast(target);
                         if (spells[Spells.W].IsInRange(target))
                         {
                             spells[Spells.W].Cast();
-                            return;
                         }
                     }
                     break;
-                case 2: 
+                case 2:
                     if (spells[Spells.Q].IsReady() && spells[Spells.W].IsReady() && spells[Spells.E].IsReady())
                     {
                         spells[Spells.Q].Cast(target);
                         CastE(target);
                         spells[Spells.W].Cast();
-                        return;
                     }
                     break;
             }
@@ -416,7 +411,7 @@ namespace ElKatarina
         private static bool HasRBuff()
         {
             return player.HasBuff("KatarinaR") || player.IsChannelingImportantSpell()
-                   || player.HasBuff("katarinarsound");
+                   || player.HasBuff("KatarinaRSound");
         }
 
         private static void JungleClear()
@@ -438,17 +433,17 @@ namespace ElKatarina
                 return;
             }
 
-            if (config.Item("qJungle").GetValue<bool>() && spells[Spells.Q].IsReady())
+            if (config.Item("qJungle").IsActive() && spells[Spells.Q].IsReady())
             {
                 spells[Spells.Q].CastOnUnit(mob);
             }
 
-            if (config.Item("wJungle").GetValue<bool>() && spells[Spells.W].IsReady())
+            if (config.Item("wJungle").IsActive() && spells[Spells.W].IsReady())
             {
                 spells[Spells.W].CastOnUnit(mob);
             }
 
-            if (config.Item("eJungle").GetValue<bool>() && spells[Spells.E].IsReady())
+            if (config.Item("eJungle").IsActive() && spells[Spells.E].IsReady())
             {
                 spells[Spells.E].CastOnUnit(mob);
             }
@@ -456,195 +451,36 @@ namespace ElKatarina
 
         private static void KillSteal()
         {
-            if (config.Item("KillSteal").GetValue<bool>())
+            if (config.Item("KillSteal").IsActive())
             {
-                foreach (var hero in
-                    ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(
-                            hero =>
-                            ObjectManager.Player.Distance(hero.ServerPosition) <= spells[Spells.E].Range && !hero.IsMe
-                            && hero.IsValidTarget() && hero.IsEnemy && !hero.IsInvulnerable))
+                var channeling = player.IsChannelingImportantSpell();
+                if (channeling)
                 {
-                    var qdmg = spells[Spells.Q].GetDamage(hero);
-                    var wdmg = spells[Spells.W].GetDamage(hero);
-                    var edmg = spells[Spells.E].GetDamage(hero);
-                    var markDmg = player.CalcDamage(
-                        hero,
-                        Damage.DamageType.Magical,
-                        player.FlatMagicDamageMod * 0.15 + player.Level * 15);
-                    float ignitedmg;
-
-                    if (igniteSlot != SpellSlot.Unknown)
-                    {
-                        ignitedmg = (float)player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite);
-                    }
-                    else
-                    {
-                        ignitedmg = 0f;
-                    }
-
-                    if (hero.HasBuff("katarinaqmark") && hero.Health - wdmg - markDmg < 0 && spells[Spells.W].IsReady()
-                        && spells[Spells.W].IsInRange(hero))
-                    {
-                        spells[Spells.W].Cast();
-                        return;
-                    }
-
-                    if (hero.Health - ignitedmg < 0 && igniteSlot.IsReady())
-                    {
-                        player.Spellbook.CastSpell(igniteSlot, hero);
-                        return;
-                    }
-
-                    if (hero.Health - edmg < 0 && spells[Spells.E].IsReady())
-                    {
-                        spells[Spells.E].Cast(hero);
-                        return;
-                    }
-
-                    if (hero.Health - qdmg < 0 && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(hero))
-                    {
-                        spells[Spells.Q].Cast(hero);
-                        return;
-                    }
-
-                    if (hero.Health - edmg - wdmg < 0 && spells[Spells.E].IsReady() && spells[Spells.W].IsReady()
-                        && spells[Spells.E].IsInRange(hero))
-                    {
-                        CastE(hero);
-                        if (spells[Spells.W].IsInRange(hero))
-                        {
-                            spells[Spells.W].Cast();
-                        }
-
-                        return;
-                    }
-
-                    if (hero.Health - edmg - qdmg < 0 && spells[Spells.E].IsReady() && spells[Spells.Q].IsReady()
-                        && spells[Spells.E].IsInRange(hero))
-                    {
-                        CastE(hero);
-                        spells[Spells.Q].Cast(hero);
-                        return;
-                    }
-
-                    if (hero.Health - edmg - wdmg - qdmg < 0 && spells[Spells.E].IsReady() && spells[Spells.Q].IsReady()
-                        && spells[Spells.W].IsReady() && spells[Spells.E].IsInRange(hero))
-                    {
-                        CastE(hero);
-                        spells[Spells.Q].Cast(hero);
-                        if (spells[Spells.W].IsInRange(hero))
-                        {
-                            spells[Spells.W].Cast();
-                        }
-                        return;
-                    }
-
-                    if (hero.Health - edmg - wdmg - qdmg - markDmg < 0 && spells[Spells.E].IsReady()
-                        && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady())
-                    {
-                        CastE(hero);
-                        spells[Spells.Q].Cast(hero);
-                        if (spells[Spells.W].IsInRange(hero))
-                        {
-                            spells[Spells.W].Cast();
-                        }
-                        return;
-                    }
-
-                    if (hero.Health - edmg - wdmg - qdmg - ignitedmg < 0 && spells[Spells.E].IsReady()
-                        && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady() && igniteSlot.IsReady())
-                    {
-                        CastE(hero);
-                        spells[Spells.Q].Cast(hero);
-                        if (spells[Spells.W].IsInRange(hero))
-                        {
-                            spells[Spells.W].Cast();
-                        }
-                        player.Spellbook.CastSpell(igniteSlot, hero);
-                        return;
-                    }
+                    return;
                 }
 
-                foreach (var target in
-                    ObjectManager.Get<Obj_AI_Base>()
-                        .Where(
-                            target =>
-                            ObjectManager.Player.Distance(target.ServerPosition) <= spells[Spells.E].Range
-                            && !target.IsMe && target.IsTargetable && !target.IsInvulnerable))
+                foreach (var enemy in
+                    HeroManager.Enemies.Where(
+                        x => x.IsValidTarget(spells[Spells.E].Range + spells[Spells.Q].Range) && !x.IsZombie)
+                        .OrderBy(x => x.Health))
                 {
-                    foreach (var focus in
-                        ObjectManager.Get<Obj_AI_Hero>()
-                            .Where(
-                                focus =>
-                                focus.Distance(focus.ServerPosition) <= spells[Spells.Q].Range && focus.IsEnemy
-                                && !focus.IsMe && !focus.IsInvulnerable && focus.IsValidTarget()))
+                    if (spells[Spells.E].IsInRange(enemy))
                     {
-
-                        var qdmg = spells[Spells.Q].GetDamage(focus);
-                        var wdmg = spells[Spells.W].GetDamage(focus);
-                        float ignitedmg;
-
-                        if (igniteSlot != SpellSlot.Unknown)
+                        if (spells[Spells.Q].IsReady() && spells[Spells.Q].GetDamage(enemy) > enemy.Health)
                         {
-                            ignitedmg = (float)player.GetSummonerSpellDamage(focus, Damage.SummonerSpell.Ignite);
-                        }
-                        else
-                        {
-                            ignitedmg = 0f;
-                        }
-
-                        var markDmg = player.CalcDamage(
-                            focus,
-                            Damage.DamageType.Magical,
-                            player.FlatMagicDamageMod * 0.15 + player.Level * 15);
-
-
-                        if (focus.Health - qdmg < 0 && spells[Spells.E].IsReady() && spells[Spells.Q].IsReady()
-                            && focus.Distance(target.ServerPosition) <= spells[Spells.Q].Range)
-                        {
-                            CastE(target);
-                            spells[Spells.Q].Cast(focus);
+                            spells[Spells.Q].Cast();
                             return;
                         }
 
-                        if (focus.Distance(target.ServerPosition) <= spells[Spells.W].Range
-                            && focus.Health - qdmg - wdmg < 0 && spells[Spells.E].IsReady()
-                            && spells[Spells.Q].IsReady())
+                        if (spells[Spells.E].IsReady() && spells[Spells.E].GetDamage(enemy) > enemy.Health)
                         {
-                            CastE(target);
-                            spells[Spells.Q].Cast(focus);
+                            spells[Spells.E].CastOnUnit(enemy);
+                            return;
+                        }
+
+                        if (spells[Spells.W].IsReady() && spells[Spells.W].GetDamage(enemy) > enemy.Health)
+                        {
                             spells[Spells.W].Cast();
-                            return;
-                        }
-
-                        if (focus.Distance(target.ServerPosition) <= spells[Spells.W].Range
-                            && focus.Health - qdmg - wdmg - markDmg < 0 && spells[Spells.E].IsReady()
-                            && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady())
-                        {
-                            CastE(target);
-                            spells[Spells.Q].Cast(focus);
-                            spells[Spells.W].Cast();
-                            return;
-                        }
-
-                        if (focus.Distance(target.ServerPosition) <= 600 && focus.Health - qdmg - ignitedmg < 0
-                            && spells[Spells.E].IsReady() && spells[Spells.Q].IsReady() && igniteSlot.IsReady())
-                        {
-                            CastE(target);
-                            spells[Spells.Q].Cast(focus);
-                            player.Spellbook.CastSpell(igniteSlot, focus);
-                            return;
-                        }
-
-                        if (focus.Distance(target.ServerPosition) <= spells[Spells.W].Range
-                            && focus.Health - qdmg - wdmg - ignitedmg < 0 && spells[Spells.E].IsReady()
-                            && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady() && igniteSlot.IsReady())
-                        {
-                            CastE(target);
-                            spells[Spells.Q].Cast(focus);
-                            spells[Spells.W].Cast();
-                            player.Spellbook.CastSpell(igniteSlot, focus);
                             return;
                         }
                     }
@@ -654,9 +490,9 @@ namespace ElKatarina
 
         private static void Laneclear()
         {
-            var useQ = config.Item("qFarm").GetValue<bool>();
-            var useW = config.Item("qFarm").GetValue<bool>();
-            var useE = config.Item("eFarm").GetValue<bool>();
+            var useQ = config.Item("qFarm").IsActive();
+            var useW = config.Item("qFarm").IsActive();
+            var useE = config.Item("eFarm").IsActive();
 
             var minions = MinionManager.GetMinions(player.ServerPosition, spells[Spells.Q].Range);
             if (minions.Count <= 0)
@@ -696,8 +532,9 @@ namespace ElKatarina
             {
                 var edmg = spells[Spells.E].GetDamage(minion);
 
-                if (useE && minion.Health - edmg <= 0 && minion.Distance(player.ServerPosition) <= spells[Spells.E].Range
-                    && spells[Spells.E].IsReady() && (config.Item("eFarm").GetValue<bool>()))
+                if (useE && minion.Health - edmg <= 0
+                    && minion.Distance(player.ServerPosition) <= spells[Spells.E].Range && spells[Spells.E].IsReady()
+                    && (config.Item("eFarm").GetValue<bool>()))
                 {
                     CastE(minion);
                     return;
@@ -723,9 +560,11 @@ namespace ElKatarina
             TargetSelector.AddToMenu(tsMenu);
             config.AddSubMenu(tsMenu);
 
-            config.AddSubMenu(new Menu("Smart Combo", "combo"));
+            config.AddSubMenu(new Menu("Combo", "combo"));
             config.SubMenu("combo").AddItem(new MenuItem("smartR", "Use Smart R").SetValue(true));
             config.SubMenu("combo").AddItem(new MenuItem("wjCombo", "Use WardJump in Combo").SetValue(true));
+            config.SubMenu("combo")
+                .AddItem(new MenuItem("ElKatarina.Items.hextech", "Use Hextech Gunblade").SetValue(true));
 
             config.AddSubMenu(new Menu("Harass", "harass"));
             config.SubMenu("harass")
@@ -744,24 +583,19 @@ namespace ElKatarina
                 .SubMenu("AutoHarass settings")
                 .AddItem(new MenuItem("ElKatarina.AutoHarass.W", "Use W").SetValue(true));
 
-            config.AddSubMenu(new Menu("Farming", "farm"));
+            config.AddSubMenu(new Menu("Farm", "farm"));
             config.SubMenu("farm").AddItem(new MenuItem("smartFarm", "Use Smart Farm").SetValue(true));
-            config.SubMenu("farm").AddItem(new MenuItem("qFarm", "Use Q").SetValue(true));
-            config.SubMenu("farm").AddItem(new MenuItem("wFarm", "Use W").SetValue(true));
-            config.SubMenu("farm").AddItem(new MenuItem("eFarm", "Use E").SetValue(true));
+            config.SubMenu("farm").AddItem(new MenuItem("qFarm", "Lane Q").SetValue(true));
+            config.SubMenu("farm").AddItem(new MenuItem("wFarm", "Lane W").SetValue(true));
+            config.SubMenu("farm").AddItem(new MenuItem("eFarm", "Lane E").SetValue(true));
 
-            config.AddSubMenu(new Menu("Jungle Clear", "jungle"));
-            config.SubMenu("jungle").AddItem(new MenuItem("qJungle", "Use Q").SetValue(true));
-            config.SubMenu("jungle").AddItem(new MenuItem("wJungle", "Use W").SetValue(true));
-            config.SubMenu("jungle").AddItem(new MenuItem("eJungle", "Use E").SetValue(true));
+            config.SubMenu("farm").AddItem(new MenuItem("qJungle", "Jungle Q").SetValue(true));
+            config.SubMenu("farm").AddItem(new MenuItem("wJungle", "Jungle W").SetValue(true));
+            config.SubMenu("farm").AddItem(new MenuItem("eJungle", "Jungle E").SetValue(true));
 
             config.AddSubMenu(new Menu("Killsteal", "KillSteal"));
             config.SubMenu("KillSteal").AddItem(new MenuItem("KillSteal", "Smart").SetValue(true));
             config.SubMenu("KillSteal").AddItem(new MenuItem("jumpsS", "Use E").SetValue(true));
-
-            config.AddSubMenu(new Menu("Items", "Items"));
-            config.SubMenu("Items")
-                .AddItem(new MenuItem("ElKatarina.Items.hextech", "Use Hextech Gunblade").SetValue(true));
 
             config.AddSubMenu(new Menu("Draw", "drawing"));
             config.SubMenu("drawing").AddItem(new MenuItem("mDraw", "Disable all drawings").SetValue(false));
@@ -807,8 +641,6 @@ namespace ElKatarina
             config.SubMenu("misc").AddItem(new MenuItem("playLegit", "Legit E").SetValue(false));
             config.SubMenu("misc")
                 .AddItem(new MenuItem("legitCastDelay", "Legit E Delay").SetValue(new Slider(1000, 0, 2000)));
-            config.SubMenu("misc")
-                .AddItem(new MenuItem("ElKatarina.misc.Notifications", "Use notifications").SetValue(true));
 
             var wMenu = new Menu("Wardjump", "Wardjump");
             wMenu.AddItem(
@@ -832,7 +664,7 @@ namespace ElKatarina
             config.AddSubMenu(credits);
 
             config.AddItem(new MenuItem("422442fsaafs4242f", ""));
-            config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.7"));
+            config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.9"));
             config.AddItem(new MenuItem("fsasfafsfsafsa", "Made By Jouza - jQuery "));
 
             config.AddToMainMenu();
@@ -900,11 +732,15 @@ namespace ElKatarina
             GameObject.OnCreate += GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             Orbwalking.BeforeAttack += BeforeAttack;
-            Notifications.AddNotification("SmartKatarina by Jouza - jQuery", 5000);
         }
 
         private static void OnUpdate(EventArgs args)
         {
+            if (player.IsDead)
+            {
+                return;
+            }
+
             if (HasRBuff())
             {
                 orbwalker.SetAttack(false);
@@ -940,18 +776,6 @@ namespace ElKatarina
                 WardjumpToMouse();
             }
 
-            var showNotifications = config.Item("ElKatarina.misc.Notifications").GetValue<bool>();
-
-            if (spells[Spells.R].IsReady() && showNotifications && Environment.TickCount - lastNotification > 5000)
-            {
-                foreach (var enemy in
-                    ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget() && GetComboDamage(h) > h.Health))
-                {
-                    ShowNotification(enemy.ChampionName + ": is killable", Color.White, 4000);
-                    lastNotification = Environment.TickCount;
-                }
-            }
-
             var autoHarass = config.Item("ElKatarina.AutoHarass.Activated", true).GetValue<KeyBind>().Active;
             if (autoHarass)
             {
@@ -962,11 +786,6 @@ namespace ElKatarina
         private static void Orbwalk(Vector3 pos, Obj_AI_Hero target = null)
         {
             player.IssueOrder(GameObjectOrder.MoveTo, pos);
-        }
-
-        private static void ShowNotification(string message, Color color, int duration = -1, bool dispose = true)
-        {
-            Notifications.AddNotification(new Notification(message, duration, dispose).SetTextColor(color));
         }
 
         private static void UseItems(Obj_AI_Base target)
