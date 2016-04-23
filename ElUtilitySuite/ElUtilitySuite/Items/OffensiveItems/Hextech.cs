@@ -70,7 +70,7 @@
         {
             Items.UseItem(
                 (int)this.Id,
-                HeroManager.Enemies.First(
+                HeroManager.Enemies.FirstOrDefault(
                     x =>
                     x.HealthPercent < this.Menu.Item("HextechEnemyHp").GetValue<Slider>().Value
                     && x.Distance(this.Player) < 700 && !x.IsDead && !x.IsZombie));

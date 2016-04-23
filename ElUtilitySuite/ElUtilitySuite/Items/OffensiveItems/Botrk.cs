@@ -72,7 +72,7 @@
         {
             Items.UseItem(
                 (int)this.Id,
-                HeroManager.Enemies.First(
+                HeroManager.Enemies.FirstOrDefault(
                     x =>
                     x.HealthPercent < this.Menu.Item("BotrkEnemyHp").GetValue<Slider>().Value
                     && x.Distance(this.Player) < 550));
