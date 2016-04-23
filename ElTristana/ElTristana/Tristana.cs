@@ -232,7 +232,7 @@
             if (spells[Spells.E].IsReady() && IsActive("ElTristana.Combo.E")
                 && Player.ManaPercent > MenuInit.Menu.Item("ElTristana.Combo.E.Mana").GetValue<Slider>().Value)
             {
-                foreach (var hero in HeroManager.Enemies.OrderByDescending(x => x.Health))
+                foreach (var hero in HeroManager.Enemies.OrderBy(x => x.Health))
                 {
                     if (hero.IsEnemy)
                     {
