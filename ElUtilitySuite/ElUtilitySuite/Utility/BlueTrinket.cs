@@ -136,7 +136,7 @@
 
                     Utility.DelayAction.Add(
                         random.Next(100, 1000),
-                        () => this.Player.BuyItem(ItemId.Scrying_Orb_Trinket));
+                        () => this.Player.BuyItem(ItemId.Farsight_Orb_Trinket));
                 }
             }
             catch (Exception e)
