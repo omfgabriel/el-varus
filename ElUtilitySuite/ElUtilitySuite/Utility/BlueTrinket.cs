@@ -15,7 +15,6 @@
         /// <summary>
         ///     The Check Interval
         /// </summary>
-        /// 
         private const float CheckInterval = 333f;
 
         #endregion
@@ -34,7 +33,6 @@
         /// <summary>
         ///     The lastCheck
         /// </summary>
-        /// 
         private float lastCheck = Environment.TickCount;
 
         #endregion
@@ -44,7 +42,6 @@
         /// <summary>
         ///     The Menu
         /// </summary>
-        /// 
         public Menu Menu { get; set; }
 
         #endregion
@@ -119,7 +116,7 @@
                 {
                     return;
                 }
-
+                        
                 if (this.lastCheck + CheckInterval > Environment.TickCount)
                 {
                     return;
@@ -133,10 +130,8 @@
                     {
                         return;
                     }
-
-                    Utility.DelayAction.Add(
-                        random.Next(100, 1000),
-                        () => this.Player.BuyItem(ItemId.Farsight_Orb_Trinket));
+                    
+                    ObjectManager.Player.BuyItem(ItemId.Farsight_Orb_Trinket);
                 }
             }
             catch (Exception e)
