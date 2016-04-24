@@ -134,7 +134,9 @@
                         return;
                     }
 
-                    Utility.DelayAction.Add(random.Next(100, 1000), () => this.Player.BuyItem((ItemId)3363));
+                    Utility.DelayAction.Add(
+                        random.Next(100, 1000),
+                        () => this.Player.BuyItem(ItemId.Scrying_Orb_Trinket));
                 }
             }
             catch (Exception e)
