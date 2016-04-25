@@ -8,7 +8,7 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    public class Taric : IPlugin
+    public class Taric //: IPlugin
     {
         #region Static Fields
 
