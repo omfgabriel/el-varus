@@ -110,6 +110,11 @@ namespace ElTristana
 
             Menu.AddSubMenu(jungleClearMenu);
 
+            var killstealMenu = new Menu("Killsteal", "Killsteal");
+            killstealMenu.AddItem(new MenuItem("ElTristana.killsteal.Active", "Activate killsteal").SetValue(true));
+            killstealMenu.AddItem(new MenuItem("ElTristana.Killsteal.R", "Use R").SetValue(true));
+            Menu.AddSubMenu(killstealMenu);
+
             #endregion
 
             #region 

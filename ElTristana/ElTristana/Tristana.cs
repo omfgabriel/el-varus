@@ -547,6 +547,11 @@
                         break;
                 }
 
+                if (IsActive("ElTristana.killsteal.Active"))
+                {
+                    DoKillsteal();
+                }
+
                 spells[Spells.Q].Range = 550 + 9 * (Player.Level - 1);
                 spells[Spells.E].Range = 625 + 9 * (Player.Level - 1);
                 spells[Spells.R].Range = 517 + 9 * (Player.Level - 1);
@@ -578,6 +583,30 @@
             }
 
             return damage;
+        }
+
+        private static void DoKillsteal()
+        {
+            try
+            {
+                foreach (
+                    var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(spells[Spells.R].Range) && !x.IsDead && !x.IsZombie).OrderBy(x => x.Health))
+                {
+                    if (enemy.IsValidTarget(spells[Spells.R].Range) && spells[Spells.R].GetDamage(enemy) > enemy.Health)
+                    {
+                        if (!IsActive("ElTristana.Killsteal.R"))
+                        {
+                            return;
+                        }
+
+                        spells[Spells.R].Cast(enemy);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
         }
 
         private static void UseItems(Obj_AI_Base target)
