@@ -13,6 +13,11 @@
         #region Constants
 
         /// <summary>
+        ///     A collection of champions that should not buy the blue trinket
+        /// </summary>
+        public static string[] BlacklistedChampions = { "Elise", "Nidalee", "Udyr", "LeeSin", "Monkeyking", "Hecarim", "Nautilus", "Thresh", "Bard", "Soraka", "Nami", "Rengar", "Zilean", "Fiddlesticks", "Blitzcrank", "Braum", "Katarina", "Alistar", "Maokai", "MasterYi", "Rammus", "Pantheon", "Evelynn", "Warwick", "Ryze" };
+
+        /// <summary>
         ///     The Check Interval
         /// </summary>
         private const float CheckInterval = 333f;
@@ -93,7 +98,12 @@
         {
             try
             {
-                Game.OnUpdate += this.OnUpdate;
+                if (
+               !BlacklistedChampions.Any(
+                   x => x.Equals(ObjectManager.Player.ChampionName, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    Game.OnUpdate += this.OnUpdate;
+                }
             }
             catch (Exception e)
             {
@@ -124,14 +134,17 @@
 
                 this.lastCheck = Environment.TickCount;
 
-                if ((this.Player.IsDead || this.Player.InShop()) && this.Player.Level >= 9)
+                if (MenuGUI.IsShopOpen && !this.Player.IsDead)
                 {
-                    if (ItemData.Farsight_Alteration.GetItem().IsOwned())
+                    if (this.Player.InShop() && this.Player.Level >= 9)
                     {
-                        return;
+                        if (ItemData.Farsight_Alteration.GetItem().IsOwned())
+                        {
+                            return;
+                        }
+
+                        ObjectManager.Player.BuyItem(ItemId.Farsight_Orb_Trinket);
                     }
-                    
-                    ObjectManager.Player.BuyItem(ItemId.Farsight_Orb_Trinket);
                 }
             }
             catch (Exception e)
