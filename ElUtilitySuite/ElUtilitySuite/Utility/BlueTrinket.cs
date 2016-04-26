@@ -135,7 +135,7 @@
 
                 this.lastCheck = Environment.TickCount;
 
-                if (MenuGUI.IsShopOpen && !this.Player.IsDead)
+                if (MenuGUI.IsShopOpen)
                 {
                     if (this.Player.InShop() && this.Player.Level >= 9)
                     {
