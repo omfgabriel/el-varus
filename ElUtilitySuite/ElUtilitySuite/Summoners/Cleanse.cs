@@ -44,7 +44,7 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Taric", Name = "stun", MenuName = "Taric Stun", Evade = false,
+                                     Champion = "Taric", Name = "taricE", MenuName = "Taric Stun", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E,
                                      Interval = 1.0
                                  },
@@ -887,6 +887,7 @@ namespace ElUtilitySuite.Summoners
             {
                 return;
             }
+
 
             if (!this.Menu.Item("CleanseActivated").IsActive())
             {
