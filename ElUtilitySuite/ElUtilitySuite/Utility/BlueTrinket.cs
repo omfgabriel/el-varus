@@ -15,14 +15,12 @@
         /// <summary>
         ///     A collection of champions that should not buy the blue trinket
         /// </summary>
-        public static string[] BlacklistedChampions = { "Elise", "Nidalee", "Udyr", "LeeSin", "Monkeyking", "Hecarim", "Nautilus", "Thresh", "Bard", "Soraka", "Nami", "Rengar", "Zilean", "Fiddlesticks", "Blitzcrank", "Braum", "Katarina", "Alistar", "Maokai", "MasterYi", "Rammus", "Pantheon", "Evelynn", "Warwick", "Ryze", "Zed " };
+        public static string[] BlacklistedChampions = { "Elise", "Nidalee", "Udyr", "LeeSin", "Monkeyking", "Hecarim", "Nautilus", "Thresh", "Bard", "Soraka", "Nami", "Rengar", "Zilean", "Fiddlesticks", "Blitzcrank", "Braum", "Katarina", "Alistar", "Maokai", "MasterYi", "Rammus", "Pantheon", "Evelynn", "Warwick", "Ryze", "Zed", "Fizz", "Taric" };
 
         /// <summary>
         ///     The Check Interval
         /// </summary>
         private const float CheckInterval = 333f;
-
-        #endregion
 
         #region Static Fields
 
@@ -30,6 +28,8 @@
         ///     The random
         /// </summary>
         private static Random random;
+
+        #endregion
 
         #endregion
 
@@ -89,6 +89,7 @@
             }
 
             this.Menu = autoTrinketMenu;
+            random = new Random(Environment.TickCount);
         }
 
         /// <summary>
@@ -143,7 +144,7 @@
                             return;
                         }
 
-                        ObjectManager.Player.BuyItem(ItemId.Farsight_Orb_Trinket);
+                        Utility.DelayAction.Add(random.Next(100, 1000), () => ObjectManager.Player.BuyItem(ItemId.Farsight_Orb_Trinket));
                     }
                 }
             }
