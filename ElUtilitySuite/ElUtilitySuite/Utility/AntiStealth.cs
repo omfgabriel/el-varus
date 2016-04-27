@@ -128,8 +128,7 @@
             this.Items = new List<AntiStealthRevealItem>
                              {
                                  new AntiStealthRevealItem { GetItem = () => ItemData.Vision_Ward.GetItem() },
-                                 new AntiStealthRevealItem
-                                     { GetItem = () => ItemData.Greater_Vision_Totem_Trinket.GetItem() }
+                                 new AntiStealthRevealItem { GetItem = () => ItemData.Greater_Vision_Totem_Trinket.GetItem() }
                              };
 
             this.rengar = HeroManager.Enemies.Find(x => x.ChampionName.ToLower() == "rengar");
@@ -172,7 +171,10 @@
                                 this.Items.Select(x => x.Item).FirstOrDefault(x => x.IsInRange(hero) && x.IsReady());
                             if (item != null)
                             {
-                                Utility.DelayAction.Add(random.Next(100, 1000), () => item.Cast(this.Player.Position));
+                                Utility.DelayAction.Add(
+                                    random.Next(100, 1000),
+                                    () =>
+                                    this.Player.Spellbook.CastSpell(item.Slots.FirstOrDefault(), this.Player.Position));
                             }
                         }
                     }
@@ -207,7 +209,9 @@
                     if (item != null)
                     {
                         var spellCastPosition = this.Player.Distance(args.End) > 600 ? this.Player.Position : args.End;
-                        Utility.DelayAction.Add(random.Next(100, 1000), () => item.Cast(spellCastPosition));
+                        Utility.DelayAction.Add(
+                            random.Next(100, 1000),
+                            () => this.Player.Spellbook.CastSpell(item.Slots.FirstOrDefault(), spellCastPosition));
                     }
                 }
             }
