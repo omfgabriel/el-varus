@@ -98,7 +98,11 @@
         #endregion
 
         #region Methods
-
+        /// <summary>
+        ///     Fired when an object is created
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void OnCreate(GameObject sender, EventArgs args)
         {
             try
@@ -118,6 +122,11 @@
             }
         }
 
+        /// <summary>
+        ///     Fired when an object is deleted
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void OnDelete(GameObject sender, EventArgs args)
         {
             try
@@ -138,6 +147,10 @@
             }
         }
 
+        /// <summary>
+        ///     Fired when the game is updated.
+        /// </summary>
+        /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void OnUpdate(EventArgs args)
         {
             try

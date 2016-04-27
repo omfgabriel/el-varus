@@ -727,6 +727,10 @@
             }
         }
 
+        /// <summary>
+        ///     Fired when the game is updated.
+        /// </summary>
+        /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void OnUpdate(EventArgs args)
         {
             try
