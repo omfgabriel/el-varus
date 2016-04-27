@@ -60,6 +60,7 @@
             var healMenu = rootMenu.AddSubMenu(new Menu("Heal", "Heal"));
             {
                 healMenu.AddItem(new MenuItem("Heal.Activated", "Heal").SetValue(true));
+                healMenu.AddItem( new MenuItem("PauseHealHotkey", "Don't use heal key").SetValue(new KeyBind('L', KeyBindType.Press)));
                 healMenu.AddItem(new MenuItem("Heal.HP", "Health percentage").SetValue(new Slider(20, 1)));
                 healMenu.AddItem(new MenuItem("Heal.Damage", "Heal on % incoming damage").SetValue(new Slider(20, 1)));
                 healMenu.AddItem(new MenuItem("seperator21", ""));
@@ -105,11 +106,10 @@
         {
             try
             {
-                if (!this.Menu.Item("Heal.Activated").IsActive())
+                if (!this.Menu.Item("Heal.Activated").IsActive() || this.Menu.Item("PauseHealHotkey").GetValue<KeyBind>().Active)
                 {
                     return;
                 }
-
 
                 var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(args.SourceNetworkId);
                 var source = ObjectManager.GetUnitByNetworkId<GameObject>(args.SourceNetworkId);
