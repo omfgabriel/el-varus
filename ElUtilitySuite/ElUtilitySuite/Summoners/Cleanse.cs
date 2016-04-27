@@ -50,7 +50,7 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Lulu", Name = "polymorph", MenuName = "Lulu polymorph", Evade = false,
+                                     Champion = "Lulu", Name = "LuluWDebuff", MenuName = "Lulu polymorph", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W,
                                      Interval = 1.0
                                  },
@@ -517,7 +517,7 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "udyr", Name = "stun", MenuName = "Udyr Stun", Evade = false, DoT = false,
+                                     Champion = "udyr", Name = "UdyrBearStunCheck", MenuName = "Udyr Stun", Evade = false, DoT = false,
                                      EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
                                  },
                              new CleanseSpell
