@@ -15,7 +15,7 @@
         /// <summary>
         ///     A collection of champions that should not buy the blue trinket
         /// </summary>
-        public static string[] BlacklistedChampions = { "Elise", "Nidalee", "Udyr", "LeeSin", "Monkeyking", "Hecarim", "Nautilus", "Thresh", "Bard", "Soraka", "Nami", "Rengar", "Zilean", "Fiddlesticks", "Blitzcrank", "Braum", "Katarina", "Alistar", "Maokai", "MasterYi", "Rammus", "Pantheon", "Evelynn", "Warwick", "Ryze", "Zed", "Fizz", "Taric" };
+        public static string[] BlacklistedChampions = { "Elise", "Nidalee", "Udyr", "LeeSin", "Monkeyking", "Hecarim", "Nautilus", "Thresh", "Bard", "Soraka", "Nami", "Rengar", "Zilean", "Fiddlesticks", "Blitzcrank", "Braum", "Katarina", "Alistar", "Maokai", "MasterYi", "Rammus", "Pantheon", "Evelynn", "Warwick", "Ryze", "Zed", "Fizz", "Taric", "Malphite", "JarvanIV"};
 
         /// <summary>
         ///     The Check Interval
