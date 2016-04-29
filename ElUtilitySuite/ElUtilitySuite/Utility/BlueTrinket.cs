@@ -136,9 +136,9 @@
 
                 this.lastCheck = Environment.TickCount;
 
-                if (MenuGUI.IsShopOpen)
+                if (this.Player.InShop() || this.Player.IsDead)
                 {
-                    if (this.Player.InShop() && this.Player.Level >= 9)
+                    if (this.Player.Level >= 9)
                     {
                         if (ItemData.Farsight_Alteration.GetItem().IsOwned())
                         {
