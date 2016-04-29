@@ -77,6 +77,7 @@
             var snowballMenu = rootMenu.AddSubMenu(new Menu("ARAM Snowball", "Snowball"));
             {
                 snowballMenu.AddItem(new MenuItem("Snowball.Activated", "Snowball activated").SetValue(true));
+                snowballMenu.AddItem(new MenuItem("SnowballHotkey", "Throw snowball").SetValue(new KeyBind('Z', KeyBindType.Press)));
                 foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy))
                 {
                     snowballMenu.AddItem(new MenuItem("snowballon" + x.ChampionName, "Use for " + x.ChampionName))
@@ -119,14 +120,14 @@
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void GameOnUpdate(EventArgs args)
         {
-            if (!this.Menu.Item("Snowball.Activated").IsActive())
+            if (!this.Menu.Item("Snowball.Activated").IsActive() || !this.Menu.Item("SnowballHotkey").GetValue<KeyBind>().Active)
             {
                 return;
             }
 
             foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy && x.IsValidTarget(1500f)))
             {
-                if (this.Menu.Item(string.Format("snowballon{0}", enemy.ChampionName)).IsActive() && this.ComboModeActive)
+                if (this.Menu.Item(string.Format("snowballon{0}", enemy.ChampionName)).IsActive())
                 {
                     this.MarkSpell.CastIfHitchanceEquals(enemy, HitChance.High);
                 }
