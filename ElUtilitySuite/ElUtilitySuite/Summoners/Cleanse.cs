@@ -828,6 +828,12 @@ namespace ElUtilitySuite.Summoners
                 this.Menu.AddSubMenu(humanizerDelay);
 
                 this.Menu.AddItem(new MenuItem("CleanseActivated", "Use Cleanse").SetValue(true));
+                this.Menu.AddItem(new MenuItem("seperator211", ""));
+                foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
+                { 
+                    this.Menu.AddItem(new MenuItem("cleanseon" + x.ChampionName, "Use for " + x.ChampionName))
+                        .SetValue(true);
+                }
             }
 
             rootMenu.AddSubMenu(this.Menu);
@@ -888,7 +894,6 @@ namespace ElUtilitySuite.Summoners
                 return;
             }
 
-
             if (!this.Menu.Item("CleanseActivated").IsActive())
             {
                 return;
@@ -931,7 +936,7 @@ namespace ElUtilitySuite.Summoners
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
                         () =>
                             {
-                                if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable)
+                                if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable || !this.Menu.Item(string.Format("cleanseon{0}", ally2.ChampionName)).IsActive())
                                 {
                                     return;
                                 }
