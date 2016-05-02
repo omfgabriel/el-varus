@@ -77,7 +77,7 @@
 
         #region Public Methods and Operators
 
-        // <summary>
+        /// <summary>
         ///     Gets or sets the last harass position
         /// </summary>
         /// <value>
@@ -284,12 +284,6 @@
             return target.HasBuff("TristanaECharge");
         }
 
-        private static int GetEStacks(this Obj_AI_Base target)
-        {
-            return HasEBuff(target) ? 3 : target.GetBuffCount("TristanaECharge");
-        }
-
-
         private static void OnDraw(EventArgs args)
         {
           
@@ -321,7 +315,7 @@
                         {
                             for (var i = 0; 4 > i; i++)
                             {
-                                Drawing.DrawLine( x + i * 20, y, x + i * 20 + 10, y, 10, i > stacks ? Color.DarkGray : Color.DeepSkyBlue);
+                                Drawing.DrawLine( x + i * 20, y, x + i * 20 + 10, y, 10, i > stacks ? Color.DarkGray : Color.OrangeRed);
                             }
                         }
 
@@ -346,7 +340,11 @@
 
                                             if (spells[Spells.W].GetDamage(target) > target.Health + 15)
                                             {
-                                                spells[Spells.W].Cast(target.ServerPosition);
+                                                var prediction = spells[Spells.W].GetPrediction(target);
+                                                if (prediction.Hitchance >= HitChance.High)
+                                                {
+                                                    spells[Spells.W].Cast(prediction.CastPosition);
+                                                }
                                             }
                                         }
                                     }
