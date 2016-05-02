@@ -1,5 +1,6 @@
 ﻿namespace ElUtilitySuite.Summoners
 {
+    using System;
     using System.Linq;
 
     using LeagueSharp;
@@ -59,7 +60,12 @@
                 return;
             }
 
-            var barrierMenu = rootMenu.AddSubMenu(new Menu("Barrier", "Barrier"));
+            var predicate = new Func<Menu, bool>(x => x.Name == "SummonersMenu");
+            var menu = !rootMenu.Children.Any(predicate)
+                           ? rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"))
+                           : rootMenu.Children.First(predicate);
+
+            var barrierMenu = menu.AddSubMenu(new Menu("Barrier", "Barrier"));
             {
                 barrierMenu.AddItem(new MenuItem("Barrier.Activated", "Barrier activated").SetValue(true));
                 barrierMenu.AddItem(new MenuItem("Barrier.HP", "Barrier percentage").SetValue(new Slider(20, 1)));

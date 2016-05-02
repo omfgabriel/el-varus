@@ -57,7 +57,12 @@
                 return;
             }
 
-            var healMenu = rootMenu.AddSubMenu(new Menu("Heal", "Heal"));
+            var predicate = new Func<Menu, bool>(x => x.Name == "SummonersMenu");
+            var menu = !rootMenu.Children.Any(predicate)
+                           ? rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"))
+                           : rootMenu.Children.First(predicate);
+
+            var healMenu = menu.AddSubMenu(new Menu("Heal", "Heal"));
             {
                 healMenu.AddItem(new MenuItem("Heal.Activated", "Heal").SetValue(true));
                 healMenu.AddItem(new MenuItem("PauseHealHotkey", "Don't use heal key").SetValue(new KeyBind('L', KeyBindType.Press)));
@@ -106,13 +111,18 @@
         {
             try
             {
-                if (!this.Menu.Item("Heal.Activated").IsActive() || this.Menu.Item("PauseHealHotkey").GetValue<KeyBind>().Active)
+                if (!this.Menu.Item("Heal.Activated").IsActive())
                 {
                     return;
                 }
 
-                var obj = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(args.SourceNetworkId);
+                if (this.Menu.Item("PauseHealHotkey").GetValue<KeyBind>().Active)
+                {
+                    return;
+                }
+
                 var source = ObjectManager.GetUnitByNetworkId<GameObject>(args.SourceNetworkId);
+                var obj = ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId);
 
                 if (obj.Type != GameObjectType.obj_AI_Hero || source.Type != GameObjectType.obj_AI_Hero)
                 {

@@ -352,7 +352,12 @@
         /// <returns></returns>
         public void CreateMenu(Menu rootMenu)
         {
-            var smiteMenu = rootMenu.AddSubMenu(new Menu("Smite", "Smite"));
+            var predicate = new Func<Menu, bool>(x => x.Name == "SummonersMenu");
+            var menu = !rootMenu.Children.Any(predicate)
+                           ? rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"))
+                           : rootMenu.Children.First(predicate);
+
+            var smiteMenu = menu.AddSubMenu(new Menu("Smite", "Smite"));
             {
                 smiteMenu.AddItem(
                     new MenuItem("ElSmite.Activated", "Smite Activated").SetValue(

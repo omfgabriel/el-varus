@@ -76,7 +76,12 @@
         /// <returns></returns>
         public void CreateMenu(Menu rootMenu)
         {
-            var potionsMenu = rootMenu.AddSubMenu(new Menu("Potions", "Potions"));
+            var predicate = new Func<Menu, bool>(x => x.Name == "MiscMenu");
+            var menu = !rootMenu.Children.Any(predicate)
+                           ? rootMenu.AddSubMenu(new Menu("Misc", "MiscMenu"))
+                           : rootMenu.Children.First(predicate);
+
+            var potionsMenu = menu.AddSubMenu(new Menu("Potions", "Potions"));
             {
                 potionsMenu.AddItem(new MenuItem("Potions.Activated", "Potions activated").SetValue(true));
                 potionsMenu.AddItem(new MenuItem("Potions.Health", "Health potions").SetValue(true));

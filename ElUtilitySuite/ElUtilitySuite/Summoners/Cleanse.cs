@@ -797,6 +797,11 @@ namespace ElUtilitySuite.Summoners
         /// <param name="rootMenu">The root menu.</param>
         public void CreateMenu(Menu rootMenu)
         {
+            var predicate = new Func<Menu, bool>(x => x.Name == "SummonersMenu");
+            var menu = !rootMenu.Children.Any(predicate)
+                           ? rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"))
+                           : rootMenu.Children.First(predicate);
+
             this.Menu = new Menu("Cleanse/QSS", "CleanseV3").SetFontStyle(FontStyle.Regular, Color.Aqua);
             {
                 var spellsMenu = new Menu("Spells", "CleanseV3Spells");
