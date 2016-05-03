@@ -60,6 +60,14 @@
         #region Public Properties
 
         /// <summary>
+        ///     A delegate that returns a <see cref="SpellSlot" />
+        /// </summary>
+        /// <returns>
+        ///     <see cref="SpellSlot" />
+        /// </returns>
+        public delegate SpellSlot GetSlotDelegate();
+
+        /// <summary>
         ///     Gets or sets the spells.
         /// </summary>
         /// <value>
@@ -127,9 +135,27 @@
         {
             this.Items = new List<AntiStealthRevealItem>
                              {
-                                 new AntiStealthRevealItem { GetItem = () => ItemData.Vision_Ward.GetItem() },
-                                 new AntiStealthRevealItem { GetItem = () => ItemData.Greater_Vision_Totem_Trinket.GetItem() }
+                                 new AntiStealthRevealItem
+                                     {
+                                     Slot = () =>
+                                        {
+                                            var slots = ItemData.Vision_Ward.GetItem().Slots;
+                                            return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
+                                        },
+                                         Priority = 0
+                                     },
+                                 new AntiStealthRevealItem
+                                     {
+                                     Slot = () =>
+                                        {
+                                            var slots = ItemData.Greater_Vision_Totem_Trinket.GetItem().Slots;
+                                            return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
+                                        },
+                                         Priority = 1
+                                     }
                              };
+
+            this.Items = this.Items.OrderBy(x => x.Priority).ToList();
 
             this.rengar = HeroManager.Enemies.Find(x => x.ChampionName.ToLower() == "rengar");
 
@@ -140,6 +166,25 @@
         #endregion
 
         #region Methods
+
+        /// <summary>
+        ///     Gets the best ward item.
+        /// </summary>
+        /// <returns></returns>
+        private Spell GetBestWardItem()
+        {
+            foreach (var item in this.Items.OrderBy(x => x.Priority))
+            {
+                if (!item.Spell.IsReady() || item.Spell.Slot == SpellSlot.Unknown)
+                {
+                    continue;
+                }
+
+                return item.Spell;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// </summary>
@@ -167,14 +212,13 @@
                                 return;
                             }
 
-                            var item =
-                                this.Items.Select(x => x.Item).FirstOrDefault(x => x.IsInRange(hero) && x.IsReady());
+                            var item = this.GetBestWardItem();
                             if (item != null)
                             {
                                 Utility.DelayAction.Add(
-                                    random.Next(100, 1000),
-                                    () =>
-                                    this.Player.Spellbook.CastSpell(item.Slots.FirstOrDefault(), this.Player.Position));
+                                   random.Next(100, 1000),
+                                   () =>
+                                   this.Player.Spellbook.CastSpell(item.Slot, this.Player.Position));
                             }
                         }
                     }
@@ -205,13 +249,13 @@
 
                 if (stealthChampion != null)
                 {
-                    var item = this.Items.Select(x => x.Item).FirstOrDefault(x => x.IsInRange(hero) && x.IsReady());
+                    var item = this.GetBestWardItem();
                     if (item != null)
                     {
                         var spellCastPosition = this.Player.Distance(args.End) > 600 ? this.Player.Position : args.End;
                         Utility.DelayAction.Add(
                             random.Next(100, 1000),
-                            () => this.Player.Spellbook.CastSpell(item.Slots.FirstOrDefault(), spellCastPosition));
+                            () => this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition));
                     }
                 }
             }
@@ -265,18 +309,35 @@
             public GetAntiStealthItemDelegate GetItem { get; set; }
 
             /// <summary>
-            ///     Gets the item.
+            ///     Gets or sets the priority.
             /// </summary>
             /// <value>
-            ///     The item.
+            ///     The priority.
             /// </value>
-            public Items.Item Item
+            public int Priority { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the spell.
+            /// </summary>
+            /// <value>
+            ///     The spell.
+            /// </value>
+            public Spell Spell
             {
                 get
                 {
-                    return this.GetItem();
+                    return new Spell(this.Slot());
                 }
             }
+
+            /// <summary>
+            ///     Gets or sets the slot delegate.
+            /// </summary>
+            /// <value>
+            ///     The slot delegate.
+            /// </value>
+            public GetSlotDelegate Slot { get; set; }
+
 
             #endregion
         }
