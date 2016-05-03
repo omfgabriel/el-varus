@@ -148,18 +148,18 @@ namespace Elvarus
                 return;
             }
 
-            var harassQ = ElVarusMenu.Menu.Item("ElVarus.Harass.Q").IsActive();
-            var harassE = ElVarusMenu.Menu.Item("ElVarus.Harass.E").IsActive();
-            var minmana = ElVarusMenu.Menu.Item("minmanaharass").GetValue<Slider>().Value;
-
-            if (Player.ManaPercent > minmana)
+            if (Player.ManaPercent > ElVarusMenu.Menu.Item("minmanaharass").GetValue<Slider>().Value)
             {
-                if (harassE && spells[Spells.E].IsReady())
+                if (ElVarusMenu.Menu.Item("ElVarus.Harass.E").IsActive() && spells[Spells.E].IsReady() && GetWStacks(target) >= 1)
                 {
-                    spells[Spells.E].CastOnBestTarget();
+                    var prediction = spells[Spells.E].GetPrediction(target);
+                    if (prediction.Hitchance >= HitChance.VeryHigh)
+                    {
+                        spells[Spells.E].Cast(prediction.CastPosition);
+                    }
                 }
 
-                if (harassQ && spells[Spells.Q].IsReady())
+                if (ElVarusMenu.Menu.Item("ElVarus.Harass.Q").IsActive() && spells[Spells.Q].IsReady())
                 {
                     if (!spells[Spells.Q].IsCharging)
                     {
@@ -282,13 +282,7 @@ namespace Elvarus
 
         private static void LaneClear()
         {
-            var useQ = ElVarusMenu.Menu.Item("useQFarm").IsActive();
-            var useE = ElVarusMenu.Menu.Item("useQFarm").IsActive();
-            var countMinions = ElVarusMenu.Menu.Item("ElVarus.Count.Minions").GetValue<Slider>().Value;
-            var countMinionsE = ElVarusMenu.Menu.Item("ElVarus.Count.Minions.E").GetValue<Slider>().Value;
-            var minmana = ElVarusMenu.Menu.Item("minmanaclear").GetValue<Slider>().Value;
-
-            if (Player.ManaPercent < minmana)
+            if (Player.ManaPercent < ElVarusMenu.Menu.Item("minmanaclear").GetValue<Slider>().Value)
             {
                 return;
             }
@@ -299,7 +293,7 @@ namespace Elvarus
                 return;
             }
 
-            if (spells[Spells.Q].IsReady() && useQ)
+            if (spells[Spells.Q].IsReady() && ElVarusMenu.Menu.Item("useQFarm").IsActive())
             {
                 var allMinions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
                 {
@@ -320,7 +314,7 @@ namespace Elvarus
                             }
                         }
 
-                        if (killcount >= countMinions)
+                        if (killcount >= ElVarusMenu.Menu.Item("ElVarus.Count.Minions").GetValue<Slider>().Value)
                         {
                             if (minion.IsValidTarget())
                             {
@@ -332,7 +326,7 @@ namespace Elvarus
                 }
             }
 
-            if (!useE || !spells[Spells.E].IsReady())
+            if (!ElVarusMenu.Menu.Item("useQFarm").IsActive() || !spells[Spells.E].IsReady())
             {
                 return;
             }
@@ -340,7 +334,7 @@ namespace Elvarus
             var minionkillcount =
                 minions.Count(x => spells[Spells.E].CanCast(x) && x.Health <= spells[Spells.E].GetDamage(x));
 
-            if (minionkillcount >= countMinionsE)
+            if (minionkillcount >= ElVarusMenu.Menu.Item("ElVarus.Count.Minions.E").GetValue<Slider>().Value)
             {
                 foreach (var minion in minions.Where(x => x.Health <= spells[Spells.E].GetDamage(x)))
                 {
