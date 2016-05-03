@@ -74,7 +74,12 @@
                 return;
             }
 
-            var snowballMenu = rootMenu.AddSubMenu(new Menu("ARAM Snowball", "Snowball"));
+            var predicate = new Func<Menu, bool>(x => x.Name == "SummonersMenu");
+            var menu = !rootMenu.Children.Any(predicate)
+                           ? rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"))
+                           : rootMenu.Children.First(predicate);
+
+            var snowballMenu = menu.AddSubMenu(new Menu("ARAM Snowball", "Snowball"));
             {
                 snowballMenu.AddItem(new MenuItem("Snowball.Activated", "Snowball activated").SetValue(true));
                 snowballMenu.AddItem(new MenuItem("SnowballHotkey", "Throw snowball").SetValue(new KeyBind('Z', KeyBindType.Press)));

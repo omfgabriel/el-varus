@@ -1,5 +1,6 @@
 ﻿namespace ElUtilitySuite.Summoners
 {
+    using System;
     using System.Linq;
 
     using LeagueSharp;
@@ -43,7 +44,12 @@
                 return;
             }
 
-            var exhaustMenu = rootMenu.AddSubMenu(new Menu("Exhaust", "Exhaust"));
+            var predicate = new Func<Menu, bool>(x => x.Name == "SummonersMenu");
+            var menu = !rootMenu.Children.Any(predicate)
+                           ? rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"))
+                           : rootMenu.Children.First(predicate);
+
+            var exhaustMenu = menu.AddSubMenu(new Menu("Exhaust", "Exhaust"));
             {
                 exhaustMenu.AddItem(new MenuItem("Exhaust.Activated", "Exhaust activated").SetValue(true));
                 exhaustMenu.AddItem(new MenuItem("blank_line", ""));
