@@ -60,7 +60,6 @@
             spells[Spells.Q].SetTargetted(0.25f, spells[Spells.Q].Instance.SData.MissileSpeed);
             spells[Spells.R].SetSkillshot(0.25f, 175, 700, false, SkillshotType.SkillshotCircle);
 
-            Notifications.AddNotification("ElVladimirReborn", 1000);
             ignite = Player.GetSpellSlot("summonerdot");
 
             ElVladimirMenu.Initialize();
@@ -81,7 +80,7 @@
                 && gapcloser.Sender.Distance(Player) < spells[Spells.W].Range
                 && Player.CountEnemiesInRange(spells[Spells.Q].Range) >= 1)
             {
-                spells[Spells.W].Cast(Player);
+                spells[Spells.W].Cast();
             }
         }
 
@@ -187,7 +186,7 @@
             }
             catch (Exception e)
             {
-                //
+                Console.WriteLine(e);
             }
             return null;
         }

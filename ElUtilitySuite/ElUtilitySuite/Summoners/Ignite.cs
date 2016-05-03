@@ -69,8 +69,12 @@
             {
                 return;
             }
+            var predicate = new Func<Menu, bool>(x => x.Name == "SummonersMenu");
+            var menu = !rootMenu.Children.Any(predicate)
+                           ? rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"))
+                           : rootMenu.Children.First(predicate);
 
-            var igniteMenu = rootMenu.AddSubMenu(new Menu("Ignite", "Ignite"));
+            var igniteMenu = menu.AddSubMenu(new Menu("Ignite", "Ignite"));
             {
                 igniteMenu.AddItem(new MenuItem("Ignite.Activated", "Ignite").SetValue(true));
                 igniteMenu.AddItem(new MenuItem("Ignite.shieldCheck", "Check for shields").SetValue(true));

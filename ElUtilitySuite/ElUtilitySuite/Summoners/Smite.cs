@@ -352,6 +352,15 @@
         /// <returns></returns>
         public void CreateMenu(Menu rootMenu)
         {
+            var smiteSlot =
+                    this.Player.Spellbook.Spells.FirstOrDefault(
+                        x => x.Name.ToLower().Contains("smite"));
+
+            if (smiteSlot == null)
+            {
+                return;
+            }
+
             var predicate = new Func<Menu, bool>(x => x.Name == "SummonersMenu");
             var menu = !rootMenu.Children.Any(predicate)
                            ? rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"))
