@@ -159,26 +159,19 @@ namespace Elvarus
                     spells[Spells.E].CastOnBestTarget();
                 }
 
-                if (harassQ)
+                if (harassQ && spells[Spells.Q].IsReady())
                 {
                     if (!spells[Spells.Q].IsCharging)
                     {
                         spells[Spells.Q].StartCharging();
                     }
 
-                    if (spells[Spells.Q].IsReady())
+                    if (spells[Spells.Q].IsCharging)
                     {
                         var prediction = spells[Spells.Q].GetPrediction(target);
-                        var distance =
-                            Player.ServerPosition.Distance(
-                                prediction.UnitPosition
-                                + 200 * (prediction.UnitPosition - Player.ServerPosition).Normalized(),
-                                true);
-                        if (distance < spells[Spells.Q].RangeSqr)
+                        if (prediction.Hitchance >= HitChance.VeryHigh)
                         {
-                            if (spells[Spells.Q].Cast(prediction.CastPosition))
-                            {
-                            }
+                            spells[Spells.Q].Cast(prediction.CastPosition);
                         }
                     }
                 }
