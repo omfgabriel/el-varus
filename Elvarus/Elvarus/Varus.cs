@@ -270,14 +270,17 @@ namespace Elvarus
                         enemy.IsValidTarget() && spells[Spells.Q].IsKillable(enemy)
                         && Player.Distance(enemy.Position) <= spells[Spells.Q].ChargedMaxRange))
                 {
-                    spells[Spells.Q].StartCharging();
+                    if (!spells[Spells.Q].IsCharging)
+                    {
+                        spells[Spells.Q].StartCharging();
+                    }
 
                     if (spells[Spells.Q].IsCharging)
                     {
-                        Orbwalker.SetAttack(false);
-                        if (spells[Spells.Q].IsKillable(target) && !target.IsInvulnerable)
+                        var prediction = spells[Spells.Q].GetPrediction(target);
+                        if (prediction.Hitchance >= HitChance.VeryHigh)
                         {
-                            spells[Spells.Q].Cast(target);
+                            spells[Spells.Q].Cast(prediction.CastPosition);
                         }
                     }
                 }
