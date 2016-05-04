@@ -49,19 +49,6 @@
             {
                 harassMenu.AddItem(new MenuItem("ElVladimir.Harass.Q", "Use Q").SetValue(true));
                 harassMenu.AddItem(new MenuItem("ElVladimir.Harass.E", "Use E").SetValue(true));
-
-                harassMenu.SubMenu("AutoHarass settings")
-                    .AddItem(
-                        new MenuItem("ElVladimir.AutoHarass.Health.E", "Minimum Health for E").SetValue(new Slider(20)));
-                harassMenu.SubMenu("AutoHarass settings")
-                    .AddItem(
-                        new MenuItem("ElVladimir.AutoHarass.Activated", "Auto harass", true).SetValue(
-                            new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle)));
-                harassMenu.SubMenu("AutoHarass settings").AddItem(new MenuItem("spacespacespace", ""));
-                harassMenu.SubMenu("AutoHarass settings")
-                    .AddItem(new MenuItem("ElVladimir.AutoHarass.Q", "Use Q").SetValue(true));
-                harassMenu.SubMenu("AutoHarass settings")
-                    .AddItem(new MenuItem("ElVladimir.AutoHarass.E", "Use E").SetValue(true));
             }
             Menu.AddSubMenu(harassMenu);
 
@@ -76,19 +63,6 @@
             }
 
             Menu.AddSubMenu(clearMenu);
-
-            var settingsMenu = new Menu("Settings", "Settings");
-            {
-                settingsMenu.AddItem(
-                    new MenuItem("ElVladimir.Settings.Stack.E", "Automatic stack E").SetValue(
-                        new KeyBind("T".ToCharArray()[0], KeyBindType.Toggle)));
-                settingsMenu.AddItem(new MenuItem("ElVladimir.Settings.Stack.HP", "Minimum automatic stack HP"))
-                    .SetValue(new Slider(20));
-                settingsMenu.AddItem(new MenuItem("ElVladimir.Settings.AntiGapCloser.Active", "Anti gapcloser"))
-                    .SetValue(true);
-            }
-
-            Menu.AddSubMenu(settingsMenu);
 
             var miscMenu = new Menu("Misc", "Misc");
             {
