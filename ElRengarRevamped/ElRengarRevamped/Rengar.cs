@@ -82,7 +82,6 @@
                 Orbwalking.AfterAttack += AfterAttack;
                 Orbwalking.BeforeAttack += BeforeAttack;
                 Game.OnWndProc += OnClick;
-                Game.OnNotify += OnNotify;
             }
             catch (Exception e)
             {
@@ -93,19 +92,6 @@
         #endregion
 
         #region Methods
-
-        private static void OnNotify(GameNotifyEventArgs args)
-        {
-            if (!IsActive("Misc.Mastery"))
-            {
-                return;
-            }
-
-            if (args.EventId == GameEventId.OnChampionKill)
-            {
-                Game.Say("/masterybadge");
-            }
-        }
 
         private static void AfterAttack(AttackableUnit unit, AttackableUnit target)
         {
