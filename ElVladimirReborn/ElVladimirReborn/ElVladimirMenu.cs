@@ -35,8 +35,8 @@
                 comboMenu.AddItem(new MenuItem("ElVladimir.Combo.E", "Use E").SetValue(true));
                 comboMenu.AddItem(new MenuItem("ElVladimir.Combo.R", "Use R").SetValue(true));
                 comboMenu.AddItem(new MenuItem("ElVladimir.Combo.SmartUlt", "Use Smartult").SetValue(true));
-                comboMenu.AddItem(new MenuItem("ElVladimir.Combo.Count.R", "Minimum targets for R"))
-                    .SetValue(new Slider(1, 1, 5));
+                comboMenu.AddItem(new MenuItem("ElVladimir.Combo.Count.R", "R when >= target"))
+                    .SetValue(new Slider(2, 2, 5));
                 comboMenu.AddItem(new MenuItem("separator", ""));
                 comboMenu.AddItem(
                     new MenuItem("ElVladimir.Combo.R.Killable", "Use R only when killable").SetValue(true));

@@ -1,10 +1,13 @@
 ﻿namespace ElVladimirReborn
 {
     using System;
-    using System.Drawing;
 
     using LeagueSharp;
     using LeagueSharp.Common;
+
+    using SharpDX;
+
+    using Color = System.Drawing.Color;
 
     internal class Drawings
     {
@@ -78,3 +81,4 @@
         #endregion
     }
 }
+ 

@@ -47,7 +47,7 @@
             rMenu.AddItem(new MenuItem("ElXerath.R.Block", "Block movement").SetValue(true));
 
             rMenu.SubMenu("CustomDelay").AddItem(new MenuItem("ElXerath.R.Delay", "Custom delays").SetValue(true));
-            for (var i = 1; i <= 3; i++)
+            for (var i = 1; i <= 5; i++)
             {
                 rMenu.SubMenu("CustomDelay")
                     .SubMenu("Custom delay")
