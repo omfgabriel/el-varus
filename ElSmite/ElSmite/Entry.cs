@@ -18,7 +18,7 @@
 
         private static readonly string[] BuffsThatActuallyMakeSenseToSmite =
             {
-                "SRU_Red", "SRU_Blue", "SRU_Dragon",
+                "SRU_Red", "SRU_Blue", "SRU_Dragon_Water",  "SRU_Dragon_Fire", "SRU_Dragon_Earth", "SRU_Dragon_Air", "SRU_Dragon_Elder",
                 "SRU_Baron", "SRU_Gromp", "SRU_Murkwolf",
                 "SRU_Razorbeak", "SRU_RiftHerald",
                 "SRU_Krug", "Sru_Crab", "TT_Spiderboss",
@@ -441,8 +441,7 @@
                     (Obj_AI_Minion)
                     MinionManager.GetMinions(Player.ServerPosition, 570f, MinionTypes.All, MinionTeam.Neutral)
                         .FirstOrDefault(
-                            buff =>
-                            buff.IsValid && buff.Name.StartsWith(buff.CharData.BaseSkinName)
+                            buff => buff.Name.StartsWith(buff.CharData.BaseSkinName)
                             && BuffsThatActuallyMakeSenseToSmite.Contains(buff.CharData.BaseSkinName)
                             && !buff.Name.Contains("Mini") && !buff.Name.Contains("Spawn"));
 
@@ -548,7 +547,10 @@
                                         smiteDamage.ToString());
                                     break;
 
-                                case "SRU_Dragon":
+                                case "SRU_Dragon_Air":
+                                case "SRU_Dragon_Water":
+                                case "SRU_Dragon_Fire":
+                                case "SRU_Dragon_Elder":
                                     barWidth = 145;
                                     Drawing.DrawLine(
                                         new Vector2(hpBarPosition.X + 3 + (float)(barWidth * x), hpBarPosition.Y + 22),

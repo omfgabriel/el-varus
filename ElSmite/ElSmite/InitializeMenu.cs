@@ -25,17 +25,23 @@
                            new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle, true)));
 
                 if (Entry.IsSummonersRift)
-                {                   
-                    mainMenu.AddItem(new MenuItem("SRU_Dragon", "Dragon").SetValue(true));
-                    mainMenu.AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
-                    mainMenu.AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
-                    mainMenu.AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
-                    mainMenu.AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(false));
-                    mainMenu.AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
-                    mainMenu.AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
-                    mainMenu.AddItem(new MenuItem("SRU_Krug", "Krug").SetValue(false));
-                    mainMenu.AddItem(new MenuItem("SRU_Razorbeak", "Chicken camp").SetValue(false));
-                    mainMenu.AddItem(new MenuItem("Sru_Crab", "Crab").SetValue(false));
+                {
+                    mainMenu.SubMenu("Big Mobs").SubMenu("Dragons").AddItem(new MenuItem("SRU_Dragon_Air", "Air Dragon").SetValue(true));
+                    mainMenu.SubMenu("Big Mobs").SubMenu("Dragons").AddItem(new MenuItem("SRU_Dragon_Earth", "Earth Dragon").SetValue(true));
+                    mainMenu.SubMenu("Big Mobs").SubMenu("Dragons").AddItem(new MenuItem("SRU_Dragon_Fire", "Fire Dragon").SetValue(true));
+                    mainMenu.SubMenu("Big Mobs").SubMenu("Dragons").AddItem(new MenuItem("SRU_Dragon_Water", "Water Dragon").SetValue(true));
+                    mainMenu.SubMenu("Big Mobs").SubMenu("Dragons").AddItem(new MenuItem("SRU_Dragon_Elder", "Elder Dragon").SetValue(true));
+
+                    mainMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
+                    mainMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
+                    mainMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
+                    mainMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(true));
+
+                    mainMenu.SubMenu("Small Mobs").AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
+                    mainMenu.SubMenu("Small Mobs").AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
+                    mainMenu.SubMenu("Small Mobs").AddItem(new MenuItem("SRU_Krug", "Krug").SetValue(false));
+                    mainMenu.SubMenu("Small Mobs").AddItem(new MenuItem("SRU_Razorbeak", "Chicken camp").SetValue(false));
+                    mainMenu.SubMenu("Small Mobs").AddItem(new MenuItem("Sru_Crab", "Crab").SetValue(false));
                 }
 
                 if (Entry.IsTwistedTreeline)
