@@ -260,11 +260,7 @@
         private static void Combo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].ChargedMaxRange, TargetSelector.DamageType.Magical);
-            var wTarget = TargetSelector.GetTarget(
-                spells[Spells.W].Range + spells[Spells.W].Width * 0.5f,
-                TargetSelector.DamageType.Magical);
-
-            if (target == null || !target.IsValidTarget())
+            if (!target.IsValidTarget())
             {
                 return;
             }
@@ -273,30 +269,33 @@
             var comboW = ElXerathMenu.Menu.Item("ElXerath.Combo.W").IsActive();
             var comboE = ElXerathMenu.Menu.Item("ElXerath.Combo.E").IsActive();
 
-            if (wTarget != null && comboW && spells[Spells.W].IsReady())
-            {
-                spells[Spells.W].CastIfHitchanceEquals(wTarget, CustomHitChance);
-            }
-
             if (comboE && spells[Spells.E].IsReady() && Player.Distance(target) < spells[Spells.E].Range)
             {
                 spells[Spells.E].Cast(target);
             }
 
-            if (comboQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+            if (comboW && spells[Spells.W].IsReady())
+            {
+                var prediction = spells[Spells.W].GetPrediction(target);
+                if (prediction.Hitchance >= HitChance.VeryHigh)
+                {
+                    spells[Spells.W].Cast(prediction.CastPosition);
+                }
+            }
+
+            if (comboQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].ChargedMaxRange))
             {
                 if (!spells[Spells.Q].IsCharging)
                 {
                     spells[Spells.Q].StartCharging();
-                    return;
                 }
 
                 if (spells[Spells.Q].IsCharging)
                 {
-                    var pred = spells[Spells.Q].GetPrediction(target);
-                    if (pred.Hitchance >= HitChance.VeryHigh)
+                    var prediction = spells[Spells.Q].GetPrediction(target);
+                    if (prediction.Hitchance >= HitChance.VeryHigh)
                     {
-                        spells[Spells.Q].Cast(target);
+                        spells[Spells.Q].Cast(prediction.CastPosition);
                     }
                 }
             }
