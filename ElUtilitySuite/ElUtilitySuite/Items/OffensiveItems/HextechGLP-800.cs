@@ -5,9 +5,9 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    class HextechGLP_800 //: Item
+    class HextechGLP_800 : Item
     {
-        /*#region Public Properties
+        #region Public Properties
 
         /// <summary>
         ///     Gets or sets the identifier.
@@ -69,8 +69,7 @@
         public override void UseItem()
         {
             var objAiHero = HeroManager.Enemies.FirstOrDefault(
-                x =>
-                x.HealthPercent < this.Menu.Item("Hextech800EnemyHp").GetValue<Slider>().Value
+                x => x.HealthPercent < this.Menu.Item("Hextech800EnemyHp").GetValue<Slider>().Value 
                 && x.Distance(this.Player) < 500 && !x.IsDead && !x.IsZombie);
 
             if (objAiHero != null)
@@ -79,6 +78,6 @@
             }
         }
 
-        #endregion*/
+        #endregion
     }
 }
