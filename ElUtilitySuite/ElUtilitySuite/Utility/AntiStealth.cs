@@ -27,6 +27,12 @@
         /// </summary>
         private Obj_AI_Hero rengar;
 
+
+        /// <summary>
+        ///     Vayne
+        /// </summary>
+        private Obj_AI_Hero vayne;
+
         #endregion
 
         #region Constructors and Destructors
@@ -66,6 +72,11 @@
         ///     <see cref="SpellSlot" />
         /// </returns>
         public delegate SpellSlot GetSlotDelegate();
+
+        /// <summary>
+        ///     The Vayne buff stealth end time
+        /// </summary>
+        public float VayneBuffEndTime = 0;
 
         /// <summary>
         ///     Gets or sets the spells.
@@ -161,11 +172,39 @@
 
             GameObject.OnCreate += this.GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += this.OnProcessSpellCast;
+            Game.OnUpdate += this.OnUpdate;
         }
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        ///     Fired when the game is updated.
+        /// </summary>
+        /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
+        private void OnUpdate(EventArgs args)
+        {
+            try
+            {
+                this.vayne = HeroManager.Enemies.Find(x => x.ChampionName.ToLower() == "vayne");
+                if (this.vayne == null)
+                {
+                    return;
+                }
+                    
+                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy &&
+                    x.ChampionName.ToLower().Contains("vayne") &&
+                    x.Buffs.Any(y => y.Name == "VayneInquisition")))
+                {
+                    this.VayneBuffEndTime = hero.Buffs.First(x => x.Name == "VayneInquisition").EndTime;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred: '{0}'", e);
+            }
+        }
 
         /// <summary>
         ///     Gets the best ward item.
@@ -203,7 +242,8 @@
                 {
                     if (sender.Name.Contains("Rengar_Base_R_Alert"))
                     {
-                        if (this.Player.HasBuff("rengarralertsound") && !this.rengar.IsVisible && !this.rengar.IsDead)
+                        if (this.Player.HasBuff("rengarralertsound") && !this.rengar.IsVisible && !this.rengar.IsDead && 
+                            this.Player.Distance(sender.Position) < 1700)
                         {
                             var hero = (Obj_AI_Hero)sender;
 
@@ -249,6 +289,11 @@
                     return;
                 }
 
+                if (args.SData.Name.ToLower().Contains("vaynetumble") && Game.Time > this.VayneBuffEndTime)
+                {
+                    return;
+                }
+                   
                 var stealthChampion =
                 Spells.FirstOrDefault(x => x.SDataName.Equals(args.SData.Name, StringComparison.OrdinalIgnoreCase));
 
