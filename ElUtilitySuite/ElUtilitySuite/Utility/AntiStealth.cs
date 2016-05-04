@@ -244,11 +244,16 @@
                     return;
                 }
 
+                if (this.Player.Distance(sender.Position) > 800)
+                {
+                    return;
+                }
+
                 var stealthChampion =
-                    Spells.FirstOrDefault(x => x.SDataName.Equals(args.SData.Name, StringComparison.OrdinalIgnoreCase));
+                Spells.FirstOrDefault(x => x.SDataName.Equals(args.SData.Name, StringComparison.OrdinalIgnoreCase));
 
                 if (stealthChampion != null)
-                {
+                { 
                     var item = this.GetBestWardItem();
                     if (item != null)
                     {
