@@ -36,12 +36,12 @@ namespace ElUtilitySuite.Summoners
                                      DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.Unknown, Interval = 1.0
                                  },
-                             new CleanseSpell
+                             /*new CleanseSpell
                                  {
                                      Name = "itemdusknightfall", MenuName = "Duskblade", Evade = false, DoT = true,
                                      EvadeTimer = 0, Cleanse = false, CleanseTimer = 1650, Slot = SpellSlot.Unknown,
                                      Interval = 1.0
-                                 },
+                                 },*/
                              new CleanseSpell
                                  {
                                      Champion = "Taric", Name = "taricE", MenuName = "Taric Stun", Evade = false,
@@ -291,12 +291,12 @@ namespace ElUtilitySuite.Summoners
                                      MenuName = "Sejuani Glacial Prison", Evade = false, DoT = false, EvadeTimer = 0,
                                      Cleanse = true, CleanseTimer = 100, Slot = SpellSlot.R, Interval = 1.0
                                  },
-                             new CleanseSpell
+                             /*new CleanseSpell
                                  {
                                      Champion = "Fiora", Name = "fiorarmark", MenuName = "Fiora Grand Challenge",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 100,
                                      Slot = SpellSlot.R, Interval = 1.0
-                                 },
+                                 },*/
                              new CleanseSpell
                                  {
                                      Champion = "Twitch", Name = "twitchdeadlyvenon", MenuName = "Twitch Deadly Venom",
