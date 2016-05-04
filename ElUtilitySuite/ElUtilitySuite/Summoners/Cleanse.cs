@@ -314,7 +314,7 @@ namespace ElUtilitySuite.Summoners
                                      Champion = "Zac", Name = "zacr", Evade = true, DoT = true, EvadeTimer = 150,
                                      Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.R, Interval = 1.5
                                  },
-                             new CleanseSpell
+                             /*new CleanseSpell
                                  {
                                      Champion = "Mordekaiser", Name = "mordekaiserchildrenofthegrave",
                                      MenuName = "Mordekaiser Children of the Grave", Evade = false, DoT = true,
@@ -326,7 +326,7 @@ namespace ElUtilitySuite.Summoners
                                      Champion = "Zed", Name = "zedrtargetmark", MenuName = "Zed Mark", Evade = true,
                                      DoT = false, EvadeTimer = 2600, Cleanse = true, CleanseTimer = 1000,
                                      Slot = SpellSlot.R, Interval = 1.0
-                                 },
+                                 },*/
                              new CleanseSpell
                                  {
                                      Champion = "Karthus", Name = "fallenonetarget", Evade = true, DoT = false,
@@ -336,6 +336,11 @@ namespace ElUtilitySuite.Summoners
                                  {
                                      Champion = "Karthus", Name = "karthusfallenonetarget", Evade = true, DoT = false,
                                      EvadeTimer = 2600, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.R
+                                 },
+                              new CleanseSpell
+                                 {
+                                     Champion = "Karthus", Name = "KarthusWallOfPain ",  MenuName = "Karthus W", Evade = true, DoT = false,
+                                     EvadeTimer = 1600, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.W
                                  },
                              new CleanseSpell
                                  {
@@ -367,12 +372,12 @@ namespace ElUtilitySuite.Summoners
                                      MenuName = "Caitlyn Ace in the Hole", Evade = true, DoT = false, EvadeTimer = 900,
                                      Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.R
                                  },
-                             new CleanseSpell
+                             /*new CleanseSpell
                                  {
                                      Champion = "Vladimir", Name = "vladimirhemoplague", MenuName = "Vladimir Hemoplague",
                                      Evade = true, DoT = false, EvadeTimer = 4500, Cleanse = true, CleanseTimer = 0,
                                      Slot = SpellSlot.R
-                                 },
+                                 },*/
                              new CleanseSpell
                                  {
                                      Champion = "Diana", Name = "dianamoonlight", MenuName = "Diana Moonlight",

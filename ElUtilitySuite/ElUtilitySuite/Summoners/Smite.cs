@@ -16,11 +16,11 @@
     {
         #region Static Fields
 
-        public static Obj_AI_Minion Minion;
+        public static Obj_AI_Minion Minion; 
 
         private static readonly string[] BuffsThatActuallyMakeSenseToSmite =
             {
-                "SRU_Red", "SRU_Blue", "SRU_Dragon",
+                "SRU_Red", "SRU_Blue", "SRU_Dragon_Water",  "SRU_Dragon_Fire", "SRU_Dragon_Earth", "SRU_Dragon_Air", "SRU_Dragon_Elder",
                 "SRU_Baron", "SRU_Gromp", "SRU_Murkwolf",
                 "SRU_Razorbeak", "SRU_RiftHerald",
                 "SRU_Krug", "Sru_Crab", "TT_Spiderboss",
@@ -376,17 +376,23 @@
 
                 if (Game.MapId == GameMapId.SummonersRift)
                 {
-                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Dragon", "Dragon").SetValue(true));
-                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
-                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
-                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
-                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs").SubMenu("Dragons").AddItem(new MenuItem("SRU_Dragon_Air", "Air Dragon").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs").SubMenu("Dragons").AddItem(new MenuItem("SRU_Dragon_Earth", "Earth Dragon").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs").SubMenu("Dragons").AddItem(new MenuItem("SRU_Dragon_Fire", "Fire Dragon").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs").SubMenu("Dragons").AddItem(new MenuItem("SRU_Dragon_Water", "Water Dragon").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs").SubMenu("Dragons").AddItem(new MenuItem("SRU_Dragon_Elder", "Elder Dragon").SetValue(true));
 
-                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
-                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
-                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Krug", "Krug").SetValue(false));
-                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("SRU_Razorbeak", "Chicken camp").SetValue(false));
-                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("Sru_Crab", "Crab").SetValue(false));
+                    
+                    smiteMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(true));
+
+                    smiteMenu.SubMenu("Small Mobs").AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
+                    smiteMenu.SubMenu("Small Mobs").AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
+                    smiteMenu.SubMenu("Small Mobs").AddItem(new MenuItem("SRU_Krug", "Krug").SetValue(false));
+                    smiteMenu.SubMenu("Small Mobs").AddItem(new MenuItem("SRU_Razorbeak", "Chicken camp").SetValue(false));
+                    smiteMenu.SubMenu("Small Mobs").AddItem(new MenuItem("Sru_Crab", "Crab").SetValue(false));
                 }
 
                 if (Game.MapId == GameMapId.TwistedTreeline)
@@ -489,10 +495,10 @@
                     (Obj_AI_Minion)
                     MinionManager.GetMinions(this.Player.ServerPosition, 570f, MinionTypes.All, MinionTeam.Neutral)
                         .FirstOrDefault(
-                            buff =>
-                            buff.IsValid && buff.Name.StartsWith(buff.CharData.BaseSkinName)
+                            buff => buff.Name.StartsWith(buff.CharData.BaseSkinName)
                             && BuffsThatActuallyMakeSenseToSmite.Contains(buff.CharData.BaseSkinName)
                             && !buff.Name.Contains("Mini") && !buff.Name.Contains("Spawn"));
+
 
                 if (Minion == null)
                 {
@@ -596,7 +602,10 @@
                                         sDamage.ToString());
                                     break;
 
-                                case "SRU_Dragon":
+                                case "SRU_Dragon_Air":
+                                case "SRU_Dragon_Water":
+                                case "SRU_Dragon_Fire":
+                                case "SRU_Dragon_Elder":
                                     barWidth = 145;
                                     Drawing.DrawLine(
                                         new Vector2(hpBarPosition.X + 3 + (float)(barWidth * x), hpBarPosition.Y + 22),

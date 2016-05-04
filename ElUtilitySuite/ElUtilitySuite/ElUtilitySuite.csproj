@@ -66,6 +66,8 @@
     <Compile Include="Items\OffensiveItems\Cutlass.cs" />
     <Compile Include="Items\OffensiveItems\FrostQueen.cs" />
     <Compile Include="Items\OffensiveItems\Hextech.cs" />
+    <Compile Include="Items\OffensiveItems\HextechGLP-800.cs" />
+    <Compile Include="Items\OffensiveItems\HextechProtobelt-01.cs" />
     <Compile Include="Items\OffensiveItems\Hydra.cs" />
     <Compile Include="Items\OffensiveItems\Tiamat.cs" />
     <Compile Include="Items\OffensiveItems\TitanicHydra.cs" />
