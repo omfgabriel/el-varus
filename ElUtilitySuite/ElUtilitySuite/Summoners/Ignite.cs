@@ -6,25 +6,6 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    public static class IgniteExtensions
-    {
-        #region Public Methods and Operators
-
-        public static bool IgniteCheck(this Obj_AI_Base hero)
-        {
-            if (Ignite.Menu.Item("Ignite.shieldCheck").GetValue<bool>())
-            {
-                return !hero.HasBuff("summonerdot") || !hero.HasBuff("summonerbarrier") || !hero.HasBuff("BlackShield")
-                       || !hero.HasBuff("SivirShield") || !hero.HasBuff("BansheesVeil")
-                       || !hero.HasBuff("ShroudofDarkness");
-            }
-
-            return true;
-        }
-
-        #endregion
-    }
-
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Ignite : IPlugin
     {
@@ -77,7 +58,6 @@
             var igniteMenu = menu.AddSubMenu(new Menu("Ignite", "Ignite"));
             {
                 igniteMenu.AddItem(new MenuItem("Ignite.Activated", "Ignite").SetValue(true));
-                igniteMenu.AddItem(new MenuItem("Ignite.shieldCheck", "Check for shields").SetValue(true));
             }
 
             Menu = igniteMenu;
@@ -123,8 +103,8 @@
                 var kSableEnemy =
                     HeroManager.Enemies.FirstOrDefault(
                         hero =>
-                        hero.IsValidTarget(550) && hero.IgniteCheck() && !hero.IsZombie
-                        && this.Player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite) >= hero.Health);
+                        hero.IsValidTarget(600) && !hero.IsZombie
+                        && this.Player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite) > hero.Health);
 
                 if (kSableEnemy != null)
                 {
