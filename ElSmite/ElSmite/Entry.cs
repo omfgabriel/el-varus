@@ -550,6 +550,7 @@
                                 case "SRU_Dragon_Air":
                                 case "SRU_Dragon_Water":
                                 case "SRU_Dragon_Fire":
+                                case "SRU_Dragon_Earth":
                                 case "SRU_Dragon_Elder":
                                     barWidth = 145;
                                     Drawing.DrawLine(
