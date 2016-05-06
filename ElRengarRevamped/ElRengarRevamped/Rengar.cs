@@ -234,8 +234,9 @@
                                                 }
 
                                                 spells[Spells.E].Cast(target);
-                                                ActiveModes.CastItems(target);
                                             });
+                                    ActiveModes.CastItems(target);
+
                                 }
 
                                 break;

@@ -14,6 +14,9 @@ namespace ElRengarRevamped
     {
         #region Public Methods and Operators
 
+        /// <summary>
+        ///     Handles combo
+        /// </summary>
         public static void Combo()
         {
             try
@@ -36,8 +39,6 @@ namespace ElRengarRevamped
 
                     if (!RengarR) 
                     {
-                        CastItems(target);
-
                         if (!HasPassive)
                         {
                             if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
@@ -58,6 +59,8 @@ namespace ElRengarRevamped
                             }
                         }
                     }
+
+                    CastItems(target);
 
                     if (spells[Spells.W].IsReady() && IsActive("Combo.Use.W"))
                     {
@@ -102,6 +105,7 @@ namespace ElRengarRevamped
                             if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady())
                             {
                                 CastW();
+                                CastItems(target);
                             }
                             break;
                         case 2:
@@ -153,6 +157,10 @@ namespace ElRengarRevamped
 
         #region Methods
 
+        /// <summary>
+        ///     Handles E cast
+        /// </summary>
+        /// <param name="target"></param>
         private static void CastE(Obj_AI_Base target)
         {
             try
@@ -174,6 +182,9 @@ namespace ElRengarRevamped
             }
         }
 
+        /// <summary>
+        ///     Handles W casting
+        /// </summary>
         private static void CastW()
         {
             try
@@ -194,6 +205,10 @@ namespace ElRengarRevamped
             }
         }
 
+        /// <summary>
+        ///     Get W hits
+        /// </summary>
+        /// <returns></returns>
         private static Tuple<int, List<Obj_AI_Hero>> GetWHits()
         {
             try
@@ -215,6 +230,9 @@ namespace ElRengarRevamped
 
         #endregion
 
+        /// <summary>
+        ///     Harass
+        /// </summary>
         public static void Harass()
         {
             // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
@@ -275,6 +293,9 @@ namespace ElRengarRevamped
             }
         }
 
+        /// <summary>
+        ///     Jungle clear
+        /// </summary>
         public static void Jungleclear()
         {
             try
@@ -327,6 +348,9 @@ namespace ElRengarRevamped
             }
         }
 
+        /// <summary>
+        ///     Lane clear
+        /// </summary>
         public static void Laneclear()
         {
             try
@@ -407,6 +431,11 @@ namespace ElRengarRevamped
         /// </value>
         private static Items.Item Titanic => ItemData.Titanic_Hydra_Melee_Only.GetItem();
 
+        /// <summary>
+        ///     Cast items
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns>true or false</returns>
         public static bool CastItems(Obj_AI_Base target)
         {
             if (Player.IsDashing() || Player.IsWindingUp || RengarR)
