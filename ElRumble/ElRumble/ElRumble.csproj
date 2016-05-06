@@ -55,7 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DrawDamage.cs" />
-    <Compile Include="Drawings.cs" />
     <Compile Include="ElRumbleMenu.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

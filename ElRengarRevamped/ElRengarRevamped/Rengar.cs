@@ -127,7 +127,7 @@
                     && !(IsListActive("Combo.Prio").SelectedIndex == 0
                          || IsListActive("Combo.Prio").SelectedIndex == 1 && Ferocity == 5))
                 {
-                    var x = Prediction.GetPrediction(args.Target as Obj_AI_Base, Player.AttackCastDelay + 0.04f);
+                    var x = Prediction.GetPrediction(args.Target as Obj_AI_Base, Player.AttackCastDelay * 1000);
                     if (Player.Position.To2D().Distance(x.UnitPosition.To2D())
                         >= Player.BoundingRadius + Player.AttackRange + args.Target.BoundingRadius)
                     {
@@ -192,7 +192,7 @@
         {
             try
             {
-                if (!sender.IsMe)
+                if (!sender.IsMe || Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
                 {
                     return;
                 }
@@ -203,46 +203,8 @@
                     return;
                 }
 
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                if (Ferocity == 5)
                 {
-                    if (Ferocity == 5)
-                    {
-                        switch (IsListActive("Combo.Prio").SelectedIndex)
-                        {
-                            case 0:
-                                if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
-                                {
-                                    var pred = spells[Spells.E].GetPrediction(target);
-                                    spells[Spells.E].Cast(pred.CastPosition);
-                                }
-                                break;
-                            case 2:
-                                if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
-                                {
-                                    spells[Spells.Q].Cast();
-                                }
-
-                                if (target.IsValidTarget(spells[Spells.Q].Range))
-                                {
-                                    Utility.DelayAction.Add(
-                                        50,
-                                        () =>
-                                            {
-                                                if (target.IsValidTarget(spells[Spells.W].Range))
-                                                {
-                                                    spells[Spells.W].Cast();
-                                                }
-
-                                                spells[Spells.E].Cast(target);
-                                            });
-                                    ActiveModes.CastItems(target);
-
-                                }
-
-                                break;
-                        }
-                    }
-
                     switch (IsListActive("Combo.Prio").SelectedIndex)
                     {
                         case 0:
@@ -252,21 +214,50 @@
                                 spells[Spells.E].Cast(pred.CastPosition);
                             }
                             break;
-
                         case 2:
-                            if (IsActive("Beta.Cast.Q") && RengarR)
+                            if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                             {
                                 spells[Spells.Q].Cast();
                             }
+
+                            if (target.IsValidTarget(spells[Spells.Q].Range))
+                            {
+                                ActiveModes.CastItems(target);
+                                Utility.DelayAction.Add(
+                                    50,
+                                    () =>
+                                        {
+                                            if (target.IsValidTarget(spells[Spells.W].Range))
+                                            {
+                                                spells[Spells.W].Cast();
+                                            }
+
+                                            spells[Spells.E].Cast(target);
+                                        });
+                            }
+
                             break;
                     }
+                }
 
-                    if (args.Duration - 100 - Game.Ping / 2 > 0)
-                    {
-                        Utility.DelayAction.Add(
-                            args.Duration - 100 - Game.Ping / 2,
-                            () => { ActiveModes.CastItems(target); });
-                    }
+                ActiveModes.CastItems(target);
+
+                switch (IsListActive("Combo.Prio").SelectedIndex)
+                {
+                    case 0:
+                        if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
+                        {
+                            var pred = spells[Spells.E].GetPrediction(target);
+                            spells[Spells.E].Cast(pred.CastPosition);
+                        }
+                        break;
+
+                    case 2:
+                        if (IsActive("Beta.Cast.Q") && RengarR)
+                        {
+                            spells[Spells.Q].Cast();
+                        }
+                        break;
                 }
             }
             catch (Exception e)
@@ -455,7 +446,6 @@
                         break;
                 }
 
-
                 SwitchCombo();
                 SmiteCombo();
                 Heal();
@@ -464,7 +454,7 @@
                 if (MenuInit.Menu.Item("Combo.TripleQ").GetValue<KeyBind>().Active)
                 {
                     Orbwalking.Orbwalk(null, Game.CursorPos);
-                    
+
                     var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
                     if (!target.IsValidTarget())
                     {

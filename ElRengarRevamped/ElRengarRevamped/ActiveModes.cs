@@ -65,6 +65,7 @@ namespace ElRengarRevamped
                     if (spells[Spells.W].IsReady() && IsActive("Combo.Use.W"))
                     {
                         CastW();
+                        CastItems(target);
                     }
                 }
 
@@ -105,7 +106,6 @@ namespace ElRengarRevamped
                             if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady())
                             {
                                 CastW();
-                                CastItems(target);
                             }
                             break;
                         case 2:
@@ -189,7 +189,7 @@ namespace ElRengarRevamped
         {
             try
             {
-                if (!spells[Spells.W].IsReady() || Environment.TickCount - Rengar.LastE <= 200)
+                if (!spells[Spells.W].IsReady())
                 {
                     return;
                 }

@@ -9,6 +9,8 @@
 
     using SharpDX;
 
+    using Color = System.Drawing.Color;
+
     internal enum Spells
     {
         Q,
@@ -30,9 +32,9 @@
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
                                                              {
-                                                                 { Spells.Q, new Spell(SpellSlot.Q, 600) },
+                                                                 { Spells.Q, new Spell(SpellSlot.Q, 500) },
                                                                  { Spells.W, new Spell(SpellSlot.W, 0) },
-                                                                 { Spells.E, new Spell(SpellSlot.E, 850) },
+                                                                 { Spells.E, new Spell(SpellSlot.E, 950) },
                                                                  { Spells.R, new Spell(SpellSlot.R, 1700) },
                                                                  { Spells.R1, new Spell(SpellSlot.R, 800) }
                                                              };
@@ -42,8 +44,6 @@
         #endregion
 
         #region Properties
-
-
 
         private static Obj_AI_Hero Player
         {
@@ -56,6 +56,13 @@
         #endregion
 
         #region Public Methods and Operators
+
+        public static int CountEnemiesNearPosition(Vector3 pos, float range)
+        {
+            return
+                ObjectManager.Get<Obj_AI_Hero>()
+                    .Count(hero => hero.IsEnemy && !hero.IsDead && hero.IsValid && hero.Distance(pos) <= range);
+        }
 
         public static float GetComboDamage(Obj_AI_Base enemy)
         {
@@ -89,6 +96,96 @@
             return damage;
         }
 
+        public static void OnDraw(EventArgs args)
+        {
+            var drawOff = ElRumbleMenu._menu.Item("ElRumble.Draw.off").GetValue<bool>();
+            var drawQ = ElRumbleMenu._menu.Item("ElRumble.Draw.Q").GetValue<Circle>();
+            var drawE = ElRumbleMenu._menu.Item("ElRumble.Draw.E").GetValue<Circle>();
+            var drawR = ElRumbleMenu._menu.Item("ElRumble.Draw.R").GetValue<Circle>();
+
+            if (drawOff)
+            {
+                return;
+            }
+
+            if (drawQ.Active)
+            {
+                if (spells[Spells.Q].Level > 0)
+                {
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.Q].Range, Color.White);
+                }
+            }
+
+            if (drawE.Active)
+            {
+                if (spells[Spells.E].Level > 0)
+                {
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.E].Range, Color.White);
+                }
+            }
+
+            if (drawR.Active)
+            {
+                if (spells[Spells.R].Level > 0)
+                {
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.R].Range, Color.White);
+                }
+
+                if (CountEnemiesNearPosition(Player.ServerPosition, spells[Spells.R].Range + 500) < 2)
+                {
+                    var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
+
+                    if (target == null)
+                    {
+                        return;
+                    }
+
+                    var vector1 = target.ServerPosition
+                                  - Vector3.Normalize(target.ServerPosition - Player.ServerPosition) * 300;
+
+                    spells[Spells.R1].UpdateSourcePosition(vector1, vector1);
+
+                    var pred = spells[Spells.R1].GetPrediction(target, true);
+
+                    var midpoint = (Player.ServerPosition + pred.UnitPosition) / 2;
+                    var vector2 = midpoint - Vector3.Normalize(pred.UnitPosition - Player.ServerPosition) * 300;
+
+                    if (Player.Distance(target.Position) < 400)
+                    {
+                        vector1 = midpoint + Vector3.Normalize(pred.UnitPosition - Player.ServerPosition) * 800;
+                        if (!IsPassWall(pred.UnitPosition, vector1) && !IsPassWall(pred.UnitPosition, vector2))
+                        {
+                            var wts = Drawing.WorldToScreen(Player.Position);
+                            Drawing.DrawText(wts[0], wts[1], Color.Wheat, "Hit: " + 1);
+
+                            var wtsPlayer = Drawing.WorldToScreen(vector1);
+                            var wtsPred = Drawing.WorldToScreen(vector2);
+
+                            Drawing.DrawLine(wtsPlayer, wtsPred, 1, Color.Wheat);
+                            Render.Circle.DrawCircle(vector1, 50, Color.Aqua);
+                            Render.Circle.DrawCircle(vector2, 50, Color.Yellow);
+                            Render.Circle.DrawCircle(pred.UnitPosition, 50, Color.Red);
+                        }
+                    }
+                    else if (!IsPassWall(pred.UnitPosition, vector1) && !IsPassWall(pred.UnitPosition, pred.CastPosition))
+                    {
+                        if (pred.Hitchance >= HitChance.Medium)
+                        {
+                            var wts = Drawing.WorldToScreen(Player.Position);
+                            Drawing.DrawText(wts[0], wts[1], Color.Wheat, "Hit: " + 1);
+
+                            var wtsPlayer = Drawing.WorldToScreen(vector1);
+                            var wtsPred = Drawing.WorldToScreen(pred.CastPosition);
+
+                            Drawing.DrawLine(wtsPlayer, wtsPred, 1, Color.Wheat);
+                            Render.Circle.DrawCircle(vector1, 50, Color.Aqua);
+                            Render.Circle.DrawCircle(pred.CastPosition, 50, Color.Yellow);
+                        }
+                    }
+                }
+            }
+        }
+
         public static void OnLoad(EventArgs args)
         {
             if (ObjectManager.Player.CharData.BaseSkinName != "Rumble")
@@ -96,16 +193,15 @@
                 return;
             }
 
-            Notifications.AddNotification("ElRumble by jQuery", 5000);
             _ignite = Player.GetSpellSlot("summonerdot");
 
-            spells[Spells.R].SetSkillshot(1700, 120, 1400, false, SkillshotType.SkillshotLine);
+            spells[Spells.R].SetSkillshot(0.25f, 110, 2500, false, SkillshotType.SkillshotLine);
             spells[Spells.R1].SetSkillshot(0.25f, 110, 2600, false, SkillshotType.SkillshotLine);
-            spells[Spells.E].SetSkillshot(0.5f, 90, 1200, true, SkillshotType.SkillshotLine);
+            spells[Spells.E].SetSkillshot(0.45f, 90, 1200, true, SkillshotType.SkillshotLine);
 
             ElRumbleMenu.Initialize();
             Game.OnUpdate += OnUpdate;
-            Drawing.OnDraw += Drawings.OnDraw;
+            Drawing.OnDraw += OnDraw;
         }
 
         #endregion
@@ -157,7 +253,6 @@
 
             spells[Spells.R].Cast(start, end);
         }
-
 
         private static float IgniteDamage(Obj_AI_Hero target)
         {
@@ -273,6 +368,14 @@
             if (useR && spells[Spells.R].IsReady() && Player.CountEnemiesInRange(spells[Spells.R].Range) >= countEnemies)
             {
                 CastR();
+            }
+
+            if (useR && spells[Spells.R].IsReady())
+            {
+                if (target.Health < spells[Spells.R].GetDamage(target))
+                {
+                    CastR();
+                }
             }
 
             if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
