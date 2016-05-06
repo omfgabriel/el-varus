@@ -134,16 +134,9 @@
             if (CheckMenu("ElVladimir.Combo.E") && spells[Spells.E].IsReady() && target.IsValidTarget(800))
             {
                 Orbwalking.Orbwalk(target ?? null, Game.CursorPos);
-                if (Player.Distance(target) < 800)
+                if (Player.Distance(target) > 300 && Player.Distance(target) < spells[Spells.E].Range)
                 {
                     spells[Spells.E].StartCharging();
-                    if (spells[Spells.E].IsCharging)
-                    {
-                        if (Player.Distance(target) >= 550)
-                        {
-                            spells[Spells.E].Cast();
-                        }
-                    }
                 }
             }
 
