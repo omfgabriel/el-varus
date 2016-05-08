@@ -30,12 +30,12 @@ namespace ElUtilitySuite.Summoners
                                      EvadeTimer = 0, Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.Unknown,
                                      Interval = 1.0
                                  },
-                             /*new CleanseSpell
+                             new CleanseSpell
                                  {
                                      Name = "summonerexhaustdebuff", MenuName = "Summoner Exhaust", Evade = false,
                                      DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.Unknown, Interval = 1.0
-                                 },*/
+                                 },
                              /*new CleanseSpell
                                  {
                                      Name = "itemdusknightfall", MenuName = "Duskblade", Evade = false, DoT = true,
