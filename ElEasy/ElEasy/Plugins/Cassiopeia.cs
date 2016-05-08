@@ -8,7 +8,7 @@ namespace ElEasy.Plugins
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    internal class Cassiopeia : IPlugin
+    internal class Cassiopeia //: IPlugin
     {
         #region Static Fields
 
