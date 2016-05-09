@@ -1,4 +1,4 @@
-﻿namespace ElSinged
+namespace ElSinged
 {
     using System;
     using System.Collections.Generic;
@@ -35,8 +35,6 @@
                                                                  { Spells.R, new Spell(SpellSlot.R, 0) }
                                                              };
 
-        private static int checkTime = 0;
-
         private static SpellSlot ignite;
 
         private static bool posionActivation = false;
@@ -66,8 +64,6 @@
                 return;
             }
 
-            Console.WriteLine("Injected");
-
             ignite = Player.GetSpellSlot("summonerdot");
 
             spells[Spells.W].SetSkillshot(0.5f, 350, 700, false, SkillshotType.SkillshotCircle);
@@ -78,8 +74,6 @@
             Game.OnUpdate += OnGameUpdate;
             Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
-            checkTime = Environment.TickCount;
-            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
         }
 
         #endregion
@@ -226,14 +220,6 @@
         private static bool MenuReady(string menuName)
         {
             return ElSingedMenu.Menu.Item(menuName).IsActive();
-        }
-
-        private static void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
-        {
-            if (spells[Spells.Q].Instance.Name == args.SData.Name)
-            {
-                checkTime = Environment.TickCount + 1000;
-            }
         }
 
         private static void OnGameUpdate(EventArgs args)
