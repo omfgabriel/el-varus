@@ -454,7 +454,7 @@
                 {
                     if (SmiteSpell.IsReady())
                     {
-                        if (Minion.IsValidTarget(SmiteSpell.Range))
+                        if (Minion.IsValidTarget(570f))
                         {
                             if (Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite) >= Minion.Health && SmiteSpell.CanCast(Minion))
                             {
@@ -677,12 +677,12 @@
 
                 if (smiteActive && drawSmite.Active && Player.Spellbook.CanUseSpell(SmiteSpell.Slot) == SpellState.Ready)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, 500, Color.Green);
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, 570, Color.Green);
                 }
 
                 if (drawSmite.Active && Player.Spellbook.CanUseSpell(SmiteSpell.Slot) != SpellState.Ready)
                 {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, 500, Color.Red);
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, 570, Color.Red);
                 }
             }
             catch (Exception e)
@@ -741,7 +741,7 @@
 
                 var kSableEnemy =
                     HeroManager.Enemies.FirstOrDefault(
-                        hero => !hero.IsZombie && hero.IsValidTarget(500) && 20 + 8 * Player.Level >= hero.Health);
+                        hero => !hero.IsZombie && hero.IsValidTarget(570) && 20 + 8 * Player.Level >= hero.Health);
                 if (kSableEnemy != null)
                 {
                     Player.Spellbook.CastSpell(SmiteSpell.Slot, kSableEnemy);
