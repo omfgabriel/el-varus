@@ -319,6 +319,7 @@
 
             if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 1)
             {
+                var prediction = spells[Spells.Q].GetPrediction(target);
                 if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                 {
                     spells[Spells.Q].Cast(target);
@@ -336,8 +337,10 @@
                     spells[Spells.R].Cast();
                 }
             }
-            if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 2)
+
+            if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") <= 2)
             {
+                var prediction = spells[Spells.Q].GetPrediction(target);
                 if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                 {
                     spells[Spells.Q].Cast(target);
@@ -352,21 +355,26 @@
                     spells[Spells.W].CastOnUnit(target);
                 }
 
-                if (useR && spells[Spells.R].IsReady())
+                if (useR && spells[Spells.R].IsReady() && this.Player.HealthPercent <= rHp)
                 {
-                    spells[Spells.R].Cast();
+                    spells[Spells.R].Cast(this.Player);
                 }
             }
-            if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 3)
+            else if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 3)
             {
                 if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
                 {
                     spells[Spells.W].CastOnUnit(target);
                 }
 
-                if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
-                    spells[Spells.Q].Cast(target);
+                    var prediction = spells[Spells.Q].GetPrediction(target);
+                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange
+                        && prediction.Hitchance != HitChance.Collision)
+                    {
+                        spells[Spells.Q].Cast(target);
+                    }
                 }
 
                 if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
@@ -374,31 +382,36 @@
                     spells[Spells.E].CastOnUnit(target);
                 }
 
-                if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
-                    spells[Spells.Q].Cast(target);
+                    var prediction = spells[Spells.Q].GetPrediction(target);
+                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange
+                        && prediction.Hitchance != HitChance.Collision)
+                    {
+                        spells[Spells.Q].Cast(target);
+                    }
                 }
 
-                if (useR && spells[Spells.R].IsReady())
+                if (useR && spells[Spells.R].IsReady() && this.Player.HealthPercent <= rHp)
                 {
-                    spells[Spells.R].Cast();
+                    spells[Spells.R].Cast(this.Player);
                 }
             }
-            if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 4)
+            else if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 4)
             {
-                if (useR && spells[Spells.R].IsReady())
-                {
-                    spells[Spells.R].Cast();
-                }
-
                 if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
                 {
                     spells[Spells.W].CastOnUnit(target);
                 }
 
-                if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                 {
-                    spells[Spells.Q].Cast(target);
+                    var prediction = spells[Spells.Q].GetPrediction(target);
+                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange
+                        && prediction.Hitchance != HitChance.Collision)
+                    {
+                        spells[Spells.Q].Cast(target);
+                    }
                 }
 
                 if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
