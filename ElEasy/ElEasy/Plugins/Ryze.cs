@@ -336,7 +336,7 @@
                     spells[Spells.R].Cast();
                 }
             }
-            else if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 2)
+            if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 2)
             {
                 if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
                 {
@@ -357,7 +357,7 @@
                     spells[Spells.R].Cast();
                 }
             }
-            else if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 3)
+            if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 3)
             {
                 if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
                 {
@@ -384,7 +384,7 @@
                     spells[Spells.R].Cast();
                 }
             }
-            else if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 4)
+            if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 4)
             {
                 if (useR && spells[Spells.R].IsReady())
                 {
