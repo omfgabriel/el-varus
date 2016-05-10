@@ -39,6 +39,7 @@
 
         static AntiStealth()
         {
+            // add akali health here
             Spells = new List<AntiStealthSpell>
                          {
                              new AntiStealthSpell { ChampionName = "Akali", SDataName = "akalismokebomb" },
