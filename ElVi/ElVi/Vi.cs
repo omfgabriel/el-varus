@@ -1,45 +1,152 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LeagueSharp;
-using LeagueSharp.Common;
-using LeagueSharp.Common.Data;
-using SharpDX;
-using Color = System.Drawing.Color;
-using ItemData = LeagueSharp.Common.Data.ItemData;
-
 namespace ElVi
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using LeagueSharp;
+    using LeagueSharp.Common;
+
+    using ItemData = LeagueSharp.Common.Data.ItemData;
+
     internal enum Spells
     {
         Q,
+
         W,
+
         E,
+
         R
     }
 
     internal static class Vi
     {
-        private static Obj_AI_Hero Player
-        {
-            get { return ObjectManager.Player; }
-        }
+        #region Static Fields
+
+        public static readonly Dictionary<Spells, Spell> Spells = new Dictionary<Spells, Spell>
+                                                                      {
+                                                                          { ElVi.Spells.Q, new Spell(SpellSlot.Q, 800) },
+                                                                          { ElVi.Spells.W, new Spell(SpellSlot.W) },
+                                                                          { ElVi.Spells.E, new Spell(SpellSlot.E, 600) },
+                                                                          { ElVi.Spells.R, new Spell(SpellSlot.R, 800) }
+                                                                      };
 
         public static Orbwalking.Orbwalker Orbwalker;
-        private static SpellSlot _ignite;
-        private static SpellSlot _flash;
-        private static int _lastNotification = 0;
-        private static Obj_AI_Hero _qTargetLock = null;
 
-        public static readonly Dictionary<Spells, Spell> Spells = new Dictionary<Spells, Spell>()
+        private static SpellSlot flash;
+
+        private static SpellSlot ignite;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        ///     Gets Ravenous Hydra
+        /// </summary>
+        /// <value>
+        ///     Ravenous Hydra
+        /// </value>
+        private static Items.Item Hydra => ItemData.Ravenous_Hydra_Melee_Only.GetItem();
+
+        private static Obj_AI_Hero Player
         {
-            { ElVi.Spells.Q, new Spell(SpellSlot.Q, 800) },
-            { ElVi.Spells.W, new Spell(SpellSlot.W) },
-            { ElVi.Spells.E, new Spell(SpellSlot.E, 600) },
-            { ElVi.Spells.R, new Spell(SpellSlot.R, 800) }
-        };
+            get
+            {
+                return ObjectManager.Player;
+            }
+        }
+
+        /// <summary>
+        ///     Gets Tiamat Item
+        /// </summary>
+        /// <value>
+        ///     Tiamat Item
+        /// </value>
+        private static Items.Item Tiamat => ItemData.Tiamat_Melee_Only.GetItem();
+
+        /// <summary>
+        ///     Gets Titanic Hydra
+        /// </summary>
+        /// <value>
+        ///     Titanic Hydra
+        /// </value>
+        private static Items.Item Titanic => ItemData.Titanic_Hydra_Melee_Only.GetItem();
+
+        /// <summary>
+        ///     Gets Youmuus Ghostblade
+        /// </summary>
+        /// <value>
+        ///     Youmuus Ghostblade
+        /// </value>
+        private static Items.Item Youmuu => ItemData.Youmuus_Ghostblade.GetItem();
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     Cast items
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns>true or false</returns>
+        public static bool CastItems(Obj_AI_Base target)
+        {
+            if (Player.IsDashing() || Player.IsWindingUp)
+            {
+                return false;
+            }
+
+            var units =
+                MinionManager.GetMinions(385, MinionTypes.All, MinionTeam.NotAlly).Count(o => !(o is Obj_AI_Turret));
+            var heroes = Player.GetEnemiesInRange(385).Count;
+            var count = units + heroes;
+
+            var tiamat = Tiamat;
+            if (tiamat.IsReady() && count > 0 && tiamat.Cast())
+            {
+                return true;
+            }
+
+            var hydra = Hydra;
+            if (Hydra.IsReady() && count > 0 && hydra.Cast())
+            {
+                return true;
+            }
+
+            var youmuus = Youmuu;
+            if (Youmuu.IsReady() && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
+                || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed && youmuus.Cast())
+            {
+                return true;
+            }
+
+            var titanic = Titanic;
+            return titanic.IsReady() && count > 0 && titanic.Cast();
+        }
+
+        public static float GetComboDamage(Obj_AI_Base enemy)
+        {
+            var damage = 0d;
+
+            if (Spells[ElVi.Spells.Q].IsReady())
+            {
+                damage += Player.GetSpellDamage(enemy, SpellSlot.Q);
+            }
+            if (Spells[ElVi.Spells.E].IsReady())
+            {
+                damage += Player.GetSpellDamage(enemy, SpellSlot.E) * Spells[ElVi.Spells.E].Instance.Ammo
+                          + (float)Player.GetAutoAttackDamage(enemy);
+            }
+
+            if (Spells[ElVi.Spells.R].IsReady())
+            {
+                damage += Player.GetSpellDamage(enemy, SpellSlot.R);
+            }
+
+            return (float)damage;
+        }
 
         public static void OnLoad(EventArgs args)
         {
@@ -48,18 +155,13 @@ namespace ElVi
                 return;
             }
 
-            Notifications.AddNotification("ElVi by jQuery v1.0.0.1", 5000);
-            _ignite = Player.GetSpellSlot("summonerdot");
-            _flash = Player.GetSpellSlot("SummonerFlash");
+            ignite = Player.GetSpellSlot("summonerdot");
+            flash = Player.GetSpellSlot("SummonerFlash");
 
-
-            Spells[ElVi.Spells.Q].SetSkillshot(
-                Spells[ElVi.Spells.Q].Instance.SData.SpellCastTime, Spells[ElVi.Spells.Q].Instance.SData.LineWidth,
-                Spells[ElVi.Spells.Q].Instance.SData.MissileSpeed, false, SkillshotType.SkillshotLine);
+            Spells[ElVi.Spells.Q].SetSkillshot(0.5f, 75f, float.MaxValue, false, SkillshotType.SkillshotLine);
             Spells[ElVi.Spells.Q].SetCharged("ViQ", "ViQ", 100, 860, 1f);
-            Spells[ElVi.Spells.E].SetSkillshot(
-                Spells[ElVi.Spells.E].Instance.SData.SpellCastTime, Spells[ElVi.Spells.E].Instance.SData.LineWidth,
-                Spells[ElVi.Spells.E].Instance.SData.MissileSpeed, false, SkillshotType.SkillshotLine);
+
+            Spells[ElVi.Spells.E].SetSkillshot(0.15f, 150f, float.MaxValue, false, SkillshotType.SkillshotLine);
             Spells[ElVi.Spells.R].SetTargetted(0.15f, 1500f);
 
             ElViMenu.Initialize();
@@ -70,86 +172,15 @@ namespace ElVi
             Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
         }
 
-        private static void OrbwalkingAfterAttack(AttackableUnit unit, AttackableUnit target)
-        {
-            if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
-            {
-                return;
-            }
-
-            var useE = ElViMenu._menu.Item("ElVi.Combo.E").GetValue<bool>();
-
-            if (unit.IsMe && useE)
-            {
-                Spells[ElVi.Spells.E].Cast();
-            }
-
-            Orbwalking.ResetAutoAttackTimer();
-        }
-
-        #region OnGameUpdate
-
-        private static void OnUpdate(EventArgs args)
-        {
-            if (Player.IsDead)
-                return;
-
-            switch (Orbwalker.ActiveMode)
-            {
-                case Orbwalking.OrbwalkingMode.Combo:
-                    Obj_AI_Hero target = TargetSelector.GetTarget(
-                        Spells[ElVi.Spells.Q].Range, TargetSelector.DamageType.Physical);
-
-                    if (_qTargetLock == null)
-                    {
-                        _qTargetLock = target;
-                        OnCombo(_qTargetLock);
-                    }
-                    else
-                    {
-                        _qTargetLock = null;
-                    }
-
-                    break;
-                case Orbwalking.OrbwalkingMode.LaneClear:
-                    OnLaneClear();
-                    OnJungleClear();
-                    break;
-                case Orbwalking.OrbwalkingMode.Mixed:
-                    OnHarass();
-                    break;
-            }
-
-            if (ElViMenu._menu.Item("ElVi.Combo.Flash").GetValue<KeyBind>().Active)
-            {
-                FlashQ();
-            }
-
-            var showNotifications = ElViMenu._menu.Item("ElVi.misc.Notifications").GetValue<bool>();
-
-            if (showNotifications && Environment.TickCount - _lastNotification > 5000)
-            {
-                foreach (
-                    var enemy in
-                        ObjectManager.Get<Obj_AI_Hero>()
-                            .Where(h => h.IsValidTarget(1000) && GetComboDamage(h) > h.Health))
-                {
-                    ShowNotification(enemy.ChampionName + ": is killable", Color.White, 4000);
-                    _lastNotification = Environment.TickCount;
-                }
-            }
-        }
-
         #endregion
 
-        #region Interrupters
+        #region Methods
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
             if (ElViMenu._menu.Item("ElVi.misc.AntiGapCloser").GetValue<bool>())
             {
-                if (Spells[ElVi.Spells.Q].IsReady() &&
-                gapcloser.Sender.Distance(Player) < Spells[ElVi.Spells.Q].Range)
+                if (Spells[ElVi.Spells.Q].IsReady() && gapcloser.Sender.Distance(Player) < Spells[ElVi.Spells.Q].Range)
                 {
                     if (!Spells[ElVi.Spells.Q].IsCharging)
                     {
@@ -163,15 +194,56 @@ namespace ElVi
             }
         }
 
-        private static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender,
+        private static void FlashQ()
+        {
+            var target = TargetSelector.GetTarget(
+                Spells[ElVi.Spells.Q].ChargedMaxRange,
+                TargetSelector.DamageType.Physical);
+            if (!target.IsValidTarget())
+            {
+                return;
+            }
+
+            var position = Spells[ElVi.Spells.Q].GetPrediction(target, true).CastPosition;
+
+            if (Spells[ElVi.Spells.Q].IsReady())
+            {
+                if (!Spells[ElVi.Spells.Q].IsCharging)
+                {
+                    Spells[ElVi.Spells.Q].StartCharging();
+                }
+                else
+                {
+                    ObjectManager.Player.Spellbook.CastSpell(flash, position);
+                    Spells[ElVi.Spells.Q].Cast(target.ServerPosition);
+                }
+            }
+        }
+
+        private static float IgniteDamage(Obj_AI_Hero target)
+        {
+            if (ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(ignite) != SpellState.Ready)
+            {
+                return 0f;
+            }
+            return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+        }
+
+        private static void Interrupter2_OnInterruptableTarget(
+            Obj_AI_Hero sender,
             Interrupter2.InterruptableTargetEventArgs args)
         {
             var useInterrupter = ElViMenu._menu.Item("ElVi.misc.Interrupter").GetValue<bool>();
-            if(!useInterrupter)
+            if (!useInterrupter)
+            {
                 return;
-                
-             if (args.DangerLevel != Interrupter2.DangerLevel.High || sender.Distance(Player) > Spells[ElVi.Spells.Q].Range)
+            }
+
+            if (args.DangerLevel != Interrupter2.DangerLevel.High
+                || sender.Distance(Player) > Spells[ElVi.Spells.Q].Range)
+            {
                 return;
+            }
 
             if (Spells[ElVi.Spells.Q].IsReady())
             {
@@ -191,9 +263,81 @@ namespace ElVi
             }
         }
 
-        #endregion
+        private static void OnCombo()
+        {
+            var target = TargetSelector.GetTarget(
+                Spells[ElVi.Spells.Q].ChargedMaxRange,
+                TargetSelector.DamageType.Physical);
+            if (!target.IsValidTarget())
+            {
+                return;
+            }
 
-        #region OnJungleClear
+            if (ElViMenu._menu.Item("ElVi.Combo.Q").GetValue<bool>() && Spells[ElVi.Spells.Q].IsReady())
+            {
+                if (Spells[ElVi.Spells.Q].IsCharging)
+                {
+                    Spells[ElVi.Spells.Q].Cast(target);
+                }
+                else
+                {
+                    Spells[ElVi.Spells.Q].StartCharging();
+                }
+            }
+
+            CastItems(target);
+
+            if (ElViMenu._menu.Item("ElVi.Combo.R").GetValue<bool>() && Spells[ElVi.Spells.R].IsReady()
+                && target.IsValidTarget(Spells[ElVi.Spells.R].Range))
+            {
+                var enemy =
+                    HeroManager.Enemies.Where(
+                        hero => ElViMenu._menu.Item("ElVi.Settings.R" + hero.CharData.BaseSkinName).GetValue<bool>())
+                        .OrderByDescending(x => x.MaxHealth)
+                        .FirstOrDefault();
+
+                if (enemy.IsValidTarget() == false)
+                {
+                    return;
+                }
+
+                Spells[ElVi.Spells.R].CastOnUnit(enemy);
+            }
+
+            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health
+                && ElViMenu._menu.Item("ElVi.Combo.I").GetValue<bool>())
+            {
+                Player.Spellbook.CastSpell(ignite, target);
+            }
+        }
+
+        private static void OnHarass()
+        {
+            var target = TargetSelector.GetTarget(
+                Spells[ElVi.Spells.Q].ChargedMaxRange,
+                TargetSelector.DamageType.Physical);
+            if (!target.IsValidTarget())
+            {
+                return;
+            }
+
+            if (ElViMenu._menu.Item("ElVi.Harass.Q").GetValue<bool>() && Spells[ElVi.Spells.Q].IsReady())
+            {
+                if (Spells[ElVi.Spells.Q].IsCharging)
+                {
+                    Spells[ElVi.Spells.Q].Cast(target);
+                }
+                else
+                {
+                    Spells[ElVi.Spells.Q].StartCharging();
+                }
+            }
+
+            if (ElViMenu._menu.Item("ElVi.Harass.E").GetValue<bool>() && Spells[ElVi.Spells.E].IsReady())
+            {
+                Spells[ElVi.Spells.E].Cast();
+            }
+        }
 
         private static void OnJungleClear()
         {
@@ -202,10 +346,15 @@ namespace ElVi
             var playerMana = ElViMenu._menu.Item("ElVi.Clear.Player.Mana").GetValue<Slider>().Value;
 
             if (Player.ManaPercent < playerMana)
+            {
                 return;
+            }
 
             var minions = MinionManager.GetMinions(
-                ObjectManager.Player.ServerPosition, Spells[ElVi.Spells.E].Range, MinionTypes.All, MinionTeam.Neutral,
+                ObjectManager.Player.ServerPosition,
+                Spells[ElVi.Spells.E].Range,
+                MinionTypes.All,
+                MinionTeam.Neutral,
                 MinionOrderTypes.MaxHealth);
 
             if (minions.Count <= 0)
@@ -231,17 +380,13 @@ namespace ElVi
             if (useE && Spells[ElVi.Spells.E].IsReady())
             {
                 var bestFarmPos = Spells[ElVi.Spells.E].GetLineFarmLocation(minions);
-                if (minions.Count == minions.Count(x => Player.Distance(x) < Spells[ElVi.Spells.E].Range) &&
-                    bestFarmPos.Position.IsValid() && bestFarmPos.MinionsHit > 1)
+                if (minions.Count == minions.Count(x => Player.Distance(x) < Spells[ElVi.Spells.E].Range)
+                    && bestFarmPos.Position.IsValid() && bestFarmPos.MinionsHit > 1)
                 {
                     Spells[ElVi.Spells.E].Cast();
                 }
             }
         }
-
-        #endregion
-
-        #region OnLaneClear
 
         private static void OnLaneClear()
         {
@@ -250,7 +395,9 @@ namespace ElVi
             var playerMana = ElViMenu._menu.Item("ElVi.Clear.Player.Mana").GetValue<Slider>().Value;
 
             if (Player.ManaPercent < playerMana)
+            {
                 return;
+            }
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, Spells[ElVi.Spells.Q].Range);
             if (minions.Count <= 1)
@@ -267,8 +414,8 @@ namespace ElVi
                 else
                 {
                     var bestFarmPos = Spells[ElVi.Spells.Q].GetLineFarmLocation(minions);
-                    if (minions.Count == minions.Count(x => Player.Distance(x) < Spells[ElVi.Spells.Q].Range) &&
-                        bestFarmPos.Position.IsValid() && bestFarmPos.MinionsHit > 2)
+                    if (minions.Count == minions.Count(x => Player.Distance(x) < Spells[ElVi.Spells.Q].Range)
+                        && bestFarmPos.Position.IsValid() && bestFarmPos.MinionsHit > 2)
                     {
                         Spells[ElVi.Spells.Q].Cast(bestFarmPos.Position);
                     }
@@ -277,282 +424,53 @@ namespace ElVi
 
             if (useE && Spells[ElVi.Spells.E].IsReady())
             {
-                var bestFarmPos = Spells[ElVi.Spells.E].GetLineFarmLocation(minions);
-                if (minions.Count == minions.Count(x => Player.Distance(x) < Spells[ElVi.Spells.E].Range) &&
-                    bestFarmPos.Position.IsValid() && bestFarmPos.MinionsHit > 1)
+                if (minions.Count == minions.Count(x => Player.Distance(x) < Spells[ElVi.Spells.E].Range))
                 {
                     Spells[ElVi.Spells.E].Cast();
                 }
             }
         }
 
-        #endregion
-
-        #region Harass
-
-        private static void OnHarass()
+        private static void OnUpdate(EventArgs args)
         {
-            Obj_AI_Hero target = TargetSelector.GetTarget(
-                Spells[ElVi.Spells.Q].Range, TargetSelector.DamageType.Physical);
-
-            if (_qTargetLock == null)
-            {
-                _qTargetLock = target;
-            }
-            else
-            {
-                _qTargetLock = null;
-            }
-
-            if (target == null || !target.IsValid)
+            if (Player.IsDead)
             {
                 return;
             }
 
-            var useQ = ElViMenu._menu.Item("ElVi.Harass.Q").GetValue<bool>();
-            var useE = ElViMenu._menu.Item("ElVi.Harass.E").GetValue<bool>();
-
-
-            if (useQ && Spells[ElVi.Spells.Q].IsReady())
+            switch (Orbwalker.ActiveMode)
             {
-                if (Spells[ElVi.Spells.Q].IsCharging)
-                {
-                    Spells[ElVi.Spells.Q].Cast(target);
-                    return;
-                }
-
-                if (!Spells[ElVi.Spells.Q].IsCharging)
-                {
-                    Spells[ElVi.Spells.Q].StartCharging();
-                    return;
-                }
+                case Orbwalking.OrbwalkingMode.Combo:
+                    OnCombo();
+                    break;
+                case Orbwalking.OrbwalkingMode.LaneClear:
+                    OnLaneClear();
+                    OnJungleClear();
+                    break;
+                case Orbwalking.OrbwalkingMode.Mixed:
+                    OnHarass();
+                    break;
             }
 
-            if (useE && Spells[ElVi.Spells.E].IsReady())
+            if (ElViMenu._menu.Item("ElVi.Combo.Flash").GetValue<KeyBind>().Active)
+            {
+                FlashQ();
+            }
+        }
+
+        private static void OrbwalkingAfterAttack(AttackableUnit unit, AttackableUnit target)
+        {
+            if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
+            {
+                return;
+            }
+
+            if (unit.IsMe && ElViMenu._menu.Item("ElVi.Combo.E").GetValue<bool>())
             {
                 Spells[ElVi.Spells.E].Cast();
             }
-        }
 
-        #endregion
-
-        #region Combo
-
-        private static void OnCombo(Obj_AI_Hero target)
-        {
-            /* var target = TargetSelector.GetTarget(Spells[ElVi.Spells.Q].Range, TargetSelector.DamageType.Physical);
-            if (target == null || !target.IsValid)
-                return;*/
-
-            if (_qTargetLock != null)
-            {
-                target = _qTargetLock;
-            }
-            else
-            {
-                _qTargetLock = target;
-            }
-
-            if (target == null || !target.IsValid)
-            {
-                return;
-            }
-
-            var useQ = ElViMenu._menu.Item("ElVi.Combo.Q").GetValue<bool>();
-            var useR = ElViMenu._menu.Item("ElVi.Combo.R").GetValue<bool>();
-            var useI = ElViMenu._menu.Item("ElVi.Combo.I").GetValue<bool>();
-
-            if (useQ && Spells[ElVi.Spells.Q].IsReady())
-            {
-                if (Spells[ElVi.Spells.Q].IsCharging)
-                {
-                    Spells[ElVi.Spells.Q].Cast(target);
-                    return;
-                }
-
-                if (!Spells[ElVi.Spells.Q].IsCharging)
-                {
-                    Spells[ElVi.Spells.Q].StartCharging();
-                    return;
-                }
-            }
-
-            UseItems(target);
-
-            if (useR && Spells[ElVi.Spells.R].IsReady() && Spells[ElVi.Spells.R].IsInRange(target))
-            {
-                var selectedEnemy =
-                    HeroManager.Enemies.Where(
-                        hero =>
-                            hero.IsEnemy && !hero.HasBuff("BlackShield") || !hero.HasBuff("SivirShield") ||
-                            !hero.HasBuff("BansheesVeil") ||
-                            !hero.HasBuff("ShroudofDarkness") &&
-                            ElViMenu._menu.Item("ElVi.Settings.R" + hero.BaseSkinName).GetValue<bool>())
-                        .OrderByDescending(x => x.MaxHealth)
-                        .FirstOrDefault();
-
-                if (selectedEnemy == null || !selectedEnemy.IsValid)
-                {
-                    return;
-                }
-
-                var rTarget = TargetSelector.GetTarget(Spells[ElVi.Spells.R].Range, TargetSelector.DamageType.Physical);
-
-                if (Spells[ElVi.Spells.R].CanCast(rTarget) &&
-                    rTarget.Health <= (Spells[ElVi.Spells.Q].GetDamage(rTarget) * 2) + GetComboDamage(rTarget))
-                {
-                    Spells[ElVi.Spells.R].CastOnUnit(rTarget);
-                }
-
-                // Console.WriteLine(selectedEnemy);
-                //Console.WriteLine("R Damage 1: {0}", rDamage);
-                //Console.WriteLine("R Damage: {0}", Spells[ElVi.Spells.R].GetDamage(selectedEnemy));
-            }
-
-
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
-            {
-                Player.Spellbook.CastSpell(_ignite, target);
-            }
-        }
-
-        #endregion
-
-        #region FlashQ
-
-        private static void FlashQ()
-        {
-            var target = TargetSelector.GetTarget(Spells[ElVi.Spells.Q].ChargedMaxRange, TargetSelector.DamageType.Physical);
-            if (target == null || !target.IsValid)
-                return;
-
-            var position = Spells[ElVi.Spells.Q].GetPrediction(target, true).CastPosition;
-
-            if (Spells[ElVi.Spells.Q].IsReady())
-            {
-                if (!Spells[ElVi.Spells.Q].IsCharging)
-                {
-                    Spells[ElVi.Spells.Q].StartCharging();
-                }
-                else
-                {
-                    ObjectManager.Player.Spellbook.CastSpell(_flash, position);
-                    Spells[ElVi.Spells.Q].Cast(target.ServerPosition);
-                }
-            }
-        }
-
-        #endregion
-
-        #region itemusage
-
-        private static void UseItems(Obj_AI_Base target)
-        {
-            var botrk = ItemData.Blade_of_the_Ruined_King.GetItem();
-            var ghost = ItemData.Youmuus_Ghostblade.GetItem();
-            var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
-            var tiamat = ItemData.Tiamat_Melee_Only.GetItem();
-            var hydra = ItemData.Ravenous_Hydra_Melee_Only.GetItem();
-
-            var useYoumuu = ElViMenu._menu.Item("ElVi.Items.Youmuu").GetValue<bool>();
-            var useCutlass = ElViMenu._menu.Item("ElVi.Items.Cutlass").GetValue<bool>();
-            var useBlade = ElViMenu._menu.Item("ElVi.Items.Blade").GetValue<bool>();
-
-            var useBladeEhp = ElViMenu._menu.Item("ElVi.Items.Blade.EnemyEHP").GetValue<Slider>().Value;
-            var useBladeMhp = ElViMenu._menu.Item("ElVi.Items.Blade.EnemyMHP").GetValue<Slider>().Value;
-
-
-            if (tiamat.IsReady() && tiamat.IsOwned(Player) && tiamat.IsInRange(target))
-            {
-                tiamat.Cast();
-            }
-
-            if (hydra.IsReady() && hydra.IsOwned(Player) && hydra.IsInRange(target))
-            {
-                hydra.Cast();
-            }
-            // && (Player.Health / Player.MaxHealth) * 100 <= useBladeMhp
-
-            //Console.WriteLine("Player healt {0}", Player.HealthPercentage());
-            if (botrk.IsReady() && botrk.IsOwned(Player) && botrk.IsInRange(target) && useBlade &&
-                Player.HealthPercent < useBladeMhp)
-            {
-                botrk.Cast(target);
-            }
-            //&& (target.Health / target.MaxHealth) * 100 <= useBladeEhp
-
-            //Console.WriteLine("Target healt {0}", target.HealthPercentage());
-            if (cutlass.IsReady() && cutlass.IsOwned(Player) && cutlass.IsInRange(target) && useCutlass &&
-                target.HealthPercent < useBladeEhp)
-            {
-                cutlass.Cast(target);
-            }
-
-            if (ghost.IsReady() && ghost.IsOwned(Player) && target.IsValidTarget(Spells[ElVi.Spells.Q].Range) &&
-                useYoumuu)
-            {
-                ghost.Cast();
-            }
-        }
-
-        #endregion
-
-        #region GetComboDamage   
-
-        private static float GetRDamage(Obj_AI_Base enemy)
-        {
-            var damage = 0d;
-
-            if (Spells[ElVi.Spells.R].IsReady())
-            {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.R);
-            }
-
-            return (float) damage;
-        }
-
-        public static float GetComboDamage(Obj_AI_Base enemy)
-        {
-            var damage = 0d;
-
-            if (Spells[ElVi.Spells.Q].IsReady())
-            {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.Q);
-            }
-            if (Spells[ElVi.Spells.E].IsReady())
-            {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.E) * Spells[ElVi.Spells.E].Instance.Ammo +
-                          (float) Player.GetAutoAttackDamage(enemy);
-            }
-
-            if (Spells[ElVi.Spells.R].IsReady())
-            {
-                damage += Player.GetSpellDamage(enemy, SpellSlot.R);
-            }
-
-            return (float) damage;
-        }
-
-        #endregion
-
-        #region Notifications 
-
-        private static void ShowNotification(string message, Color color, int duration = -1, bool dispose = true)
-        {
-            Notifications.AddNotification(new Notification(message, duration, dispose).SetTextColor(color));
-        }
-
-        #endregion
-
-        #region IgniteDamage
-
-        private static float IgniteDamage(Obj_AI_Hero target)
-        {
-            if (_ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(_ignite) != SpellState.Ready)
-            {
-                return 0f;
-            }
-            return (float) Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+            Orbwalking.ResetAutoAttackTimer();
         }
 
         #endregion
