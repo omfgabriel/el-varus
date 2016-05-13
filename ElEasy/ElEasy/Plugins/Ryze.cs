@@ -739,30 +739,6 @@
                     break;
             }
 
-            switch (Orbwalker.ActiveMode)
-            {
-                case Orbwalking.OrbwalkingMode.Combo:
-                    if (this.Player.Buffs.Count(buf => buf.Name == "Muramana") == 0)
-                    {
-                        var muramana = ItemData.Muramana.GetItem();
-                        if (muramana.IsOwned(this.Player))
-                        {
-                            muramana.Cast();
-                        }
-                    }
-                    break;
-                default:
-                    if (this.Player.Buffs.Count(buf => buf.Name == "Muramana") != 0)
-                    {
-                        var muramana = ItemData.Muramana.GetItem();
-                        if (muramana.IsOwned(this.Player))
-                        {
-                            muramana.Cast();
-                        }
-                    }
-                    break;
-            }
-
             if (this.Menu.Item("ElEasy.Ryze.AutoHarass.Activated", true).GetValue<KeyBind>().Active)
             {
                 this.OnAutoHarass();
