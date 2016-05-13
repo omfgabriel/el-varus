@@ -191,7 +191,6 @@
                 }
 
                 this.Menu.AddSubMenu(miscellaneousMenu);
-
             }
 
             rootMenu.AddSubMenu(this.Menu);
@@ -202,7 +201,7 @@
             Console.WriteLine("Loaded Ryze");
             Ignite = this.Player.GetSpellSlot("summonerdot");
             spells[Spells.Q].SetSkillshot(
-                spells[Spells.Q].Instance.SData.SpellCastTime,
+                0.25f,
                 spells[Spells.Q].Instance.SData.LineWidth,
                 spells[Spells.Q].Instance.SData.MissileSpeed,
                 true,
@@ -302,10 +301,13 @@
             }
         }
 
+        /// <summary>
+        /// WHAT A MESS
+        /// </summary>
         private void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.W].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValid)
+            if (!target.IsValidTarget())
             {
                 return;
             }
@@ -317,106 +319,177 @@
             var rHp = this.Menu.Item("ElEasy.Ryze.Combo.R.HP").GetValue<Slider>().Value;
             var useI = this.Menu.Item("ElEasy.Ryze.Combo.Ignite").IsActive();
 
-            if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 1)
+            if (this.Player.Level < 6)
             {
-                var prediction = spells[Spells.Q].GetPrediction(target);
-                if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                switch (
+                    this.Player.Buffs.Count(
+                        buf => buf.Name.Equals("RyzePassiveStack", StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    spells[Spells.Q].Cast(target);
-                }
-                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
-                {
-                    spells[Spells.W].CastOnUnit(target);
-                }
-                if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
-                {
-                    spells[Spells.E].CastOnUnit(target);
-                }
-                if (useR && spells[Spells.R].IsReady())
-                {
-                    spells[Spells.R].Cast();
+                    case 0:
+                    case 1:
+                        if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+
+                        if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                        {
+                            spells[Spells.E].CastOnUnit(target);
+                        }
+                        if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+                        {
+                            spells[Spells.W].CastOnUnit(target);
+                        }
+
+                        break;
+
+                    case 2:
+                        if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                        {
+                            spells[Spells.E].CastOnUnit(target);
+                        }
+                        if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+                        if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+                        {
+                            spells[Spells.W].CastOnUnit(target);
+                        }
+                        break;
+                    case 3:
+                        if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+                        if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+                        {
+                            spells[Spells.W].CastOnUnit(target);
+                        }
+                        if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+                        if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                        {
+                            spells[Spells.E].CastOnUnit(target);
+                        }
+                        break;
+
+                    case 4:
+                        if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+                        {
+                            spells[Spells.W].CastOnUnit(target);
+                        }
+                        if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+                        if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
+                        {
+                            spells[Spells.E].CastOnUnit(target);
+                        }
+                        break;
                 }
             }
 
-            if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") <= 2)
+            if (this.Player.Level >= 6)
             {
-                var prediction = spells[Spells.Q].GetPrediction(target);
-                if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                switch (
+                    this.Player.Buffs.Count(
+                        buf => buf.Name.Equals("RyzePassiveStack", StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    spells[Spells.Q].Cast(target);
-                }
+                    case 0:
+                        if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
 
-                if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
-                {
-                    spells[Spells.E].CastOnUnit(target);
-                }
-                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
-                {
-                    spells[Spells.W].CastOnUnit(target);
-                }
+                        if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                        {
+                            spells[Spells.E].CastOnUnit(target);
+                        }
+                        if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+                        {
+                            spells[Spells.W].CastOnUnit(target);
+                        }
+                        break;
 
-                if (useR && spells[Spells.R].IsReady() && this.Player.HealthPercent <= rHp)
-                {
-                    spells[Spells.R].Cast(this.Player);
-                }
-            }
-            else if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 3)
-            {
-                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
-                {
-                    spells[Spells.W].CastOnUnit(target);
-                }
+                    case 1:
+                        if (useR && spells[Spells.R].IsReady())
+                        {
+                            spells[Spells.R].Cast();
+                        }
+                        if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+                        {
+                            spells[Spells.E].CastOnUnit(target);
+                        }
+                        if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+                        if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
+                        {
+                            spells[Spells.W].CastOnUnit(target);
+                        }
+                        break;
+       
+                    case 2:
+                        if (useR && spells[Spells.R].IsReady())
+                        {
+                            spells[Spells.R].Cast();
+                        }
+                        if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
+                        {
+                            spells[Spells.W].CastOnUnit(target);
+                        }
+                        if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+                        if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+                        if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
+                        {
+                            spells[Spells.E].CastOnUnit(target);
+                        }
+                        break;
 
-                if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-                {
-                    var prediction = spells[Spells.Q].GetPrediction(target);
-                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange
-                        && prediction.Hitchance != HitChance.Collision)
-                    {
-                        spells[Spells.Q].Cast(target);
-                    }
-                }
+                    case 3:
+                        if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+                        if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
+                        {
+                            spells[Spells.W].CastOnUnit(target);
+                        }
+                        if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+                        if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
+                        {
+                            spells[Spells.E].CastOnUnit(target);
+                        }
+                        break;
 
-                if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
-                {
-                    spells[Spells.E].CastOnUnit(target);
-                }
-
-                if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-                {
-                    var prediction = spells[Spells.Q].GetPrediction(target);
-                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange
-                        && prediction.Hitchance != HitChance.Collision)
-                    {
-                        spells[Spells.Q].Cast(target);
-                    }
-                }
-
-                if (useR && spells[Spells.R].IsReady() && this.Player.HealthPercent <= rHp)
-                {
-                    spells[Spells.R].Cast(this.Player);
-                }
-            }
-            else if (this.Player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 4)
-            {
-                if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
-                {
-                    spells[Spells.W].CastOnUnit(target);
-                }
-
-                if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-                {
-                    var prediction = spells[Spells.Q].GetPrediction(target);
-                    if (prediction.Hitchance != HitChance.Impossible && prediction.Hitchance != HitChance.OutOfRange
-                        && prediction.Hitchance != HitChance.Collision)
-                    {
-                        spells[Spells.Q].Cast(target);
-                    }
-                }
-
-                if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
-                {
-                    spells[Spells.E].CastOnUnit(target);
+                    case 4:
+                        if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
+                        {
+                            spells[Spells.W].CastOnUnit(target);
+                        }
+                        if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                        {
+                            spells[Spells.Q].Cast(target);
+                        }
+                        if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
+                        {
+                            spells[Spells.E].CastOnUnit(target);
+                        }
+                        break;
                 }
             }
 
