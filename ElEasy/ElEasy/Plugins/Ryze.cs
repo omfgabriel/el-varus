@@ -232,7 +232,11 @@
 
             if (spells[Spells.Q].IsReady())
             {
-                damage += this.Player.GetSpellDamage(enemy, SpellSlot.Q);
+                damage +=
+                    this.Player.Buffs.Count(
+                        buf => buf.Name.Equals("RyzePassiveStack", StringComparison.InvariantCultureIgnoreCase)) > 0
+                        ? this.Player.GetSpellDamage(enemy, SpellSlot.Q) * 2.5f
+                        : this.Player.GetSpellDamage(enemy, SpellSlot.Q);
             }
 
             if (spells[Spells.W].IsReady())
