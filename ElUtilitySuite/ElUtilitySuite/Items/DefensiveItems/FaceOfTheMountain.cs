@@ -6,6 +6,8 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using ItemData = LeagueSharp.Common.Data.ItemData;
+
     internal class FaceOfTheMountain : Item
     {
         #region Static Fields
@@ -121,7 +123,7 @@
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id))
+            if (!ItemData.Face_of_the_Mountain.GetItem().IsOwned() || !this.Menu.Item("UseFaceCombo").IsActive() || !this.ComboModeActive)
             {
                 return;
             }
