@@ -208,10 +208,13 @@
                     switch (IsListActive("Combo.Prio").SelectedIndex)
                     {
                         case 0:
-                            if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
+                            if (spells[Spells.E].IsReady())
                             {
-                                var pred = spells[Spells.E].GetPrediction(target);
-                                spells[Spells.E].Cast(pred.CastPosition);
+                                var targetE = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+                                if (targetE.IsValidTarget())
+                                {
+                                    spells[Spells.E].Cast(targetE);
+                                }
                             }
                             break;
                         case 2:

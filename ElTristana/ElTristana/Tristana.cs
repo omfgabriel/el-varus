@@ -165,7 +165,7 @@
         {
             if (IsActive("ElTristana.Antigapcloser"))
             {
-                if (gapcloser.Sender.IsValidTarget(250f) && spells[Spells.R].IsReady())
+                if (spells[Spells.R].IsReady()) //gapcloser.Sender.IsValidTarget(250f) && 
                 {
                     spells[Spells.R].Cast(gapcloser.Sender);
                 }
@@ -258,7 +258,7 @@
             {
                 if (spells[Spells.R].GetDamage(target) > target.Health)
                 {
-                    spells[Spells.R].Cast(target);
+                    spells[Spells.R].CastOnUnit(target);
                 }
             }
 
@@ -268,7 +268,7 @@
                     + spells[Spells.E].GetDamage(target) * ((0.3 * target.GetBuffCount("TristanaECharge") + 1))
                     > target.Health)
                 {
-                    spells[Spells.R].Cast(target);
+                    spells[Spells.R].CastOnUnit(target);
                 }
             }
 
@@ -597,7 +597,7 @@
                             return;
                         }
 
-                        spells[Spells.R].Cast(enemy);
+                        spells[Spells.R].CastOnUnit(enemy);
                     }
                 }
             }
