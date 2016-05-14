@@ -90,7 +90,7 @@
         #region Methods
 
         /// <summary>
-        ///    Gets the allies, old sucks need to rewrite soontm
+        ///     Gets the allies, old sucks need to rewrite soontm
         /// </summary>
         /// <returns>Allies</returns>
         private Obj_AI_Hero Allies()
@@ -121,15 +121,16 @@
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.Type == GameObjectType.obj_AI_Hero && sender.IsEnemy)
+            if (sender.Type != GameObjectType.obj_AI_Hero && !sender.IsEnemy)
             {
-                var heroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
-                if (heroSender.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown
-                    && args.Target.Type == this.Player.Type)
-                {
-                    aggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
-                    incomingDamage = (float)heroSender.GetAutoAttackDamage(aggroTarget);
-                }
+                return;
+            }
+
+            var heroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
+            if (heroSender.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown && args.Target.Type == this.Player.Type)
+            {
+                aggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
+                incomingDamage = (float)heroSender.GetAutoAttackDamage(aggroTarget);
             }
         }
 
