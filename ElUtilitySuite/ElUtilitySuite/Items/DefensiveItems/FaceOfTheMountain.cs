@@ -123,7 +123,12 @@
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!ItemData.Face_of_the_Mountain.GetItem().IsOwned() || !this.Menu.Item("UseFaceCombo").IsActive() || !this.ComboModeActive)
+            if (!ItemData.Face_of_the_Mountain.GetItem().IsOwned())
+            {
+                return;
+            }
+
+            if (!this.Menu.Item("UseFaceCombo").IsActive() || !this.ComboModeActive)
             {
                 return;
             }
