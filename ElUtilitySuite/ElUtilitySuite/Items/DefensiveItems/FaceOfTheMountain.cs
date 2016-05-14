@@ -121,6 +121,11 @@
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
+            if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id))
+            {
+                return;
+            }
+
             if (sender.Type != GameObjectType.obj_AI_Hero && !sender.IsEnemy)
             {
                 return;
@@ -141,11 +146,6 @@
         private void UseItem(float itemRange = float.MaxValue)
         {
             if (this.Player.InFountain())
-            {
-                return;
-            }
-
-            if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id))
             {
                 return;
             }

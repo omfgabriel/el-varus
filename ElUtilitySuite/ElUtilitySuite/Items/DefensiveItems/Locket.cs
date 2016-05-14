@@ -115,6 +115,11 @@
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
+            if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id))
+            {
+                return;
+            }
+
             if (sender.Type != GameObjectType.obj_AI_Hero && !sender.IsEnemy)
             {
                 return;
