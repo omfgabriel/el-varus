@@ -113,6 +113,11 @@
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Game_OnUpdate(EventArgs args)
         {
+            if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id) || !this.Menu.Item("UseFaceCombo").IsActive() || !this.ComboModeActive)
+            {
+                return;
+            }
+
             this.UseItem(700f);
         }
 
@@ -123,12 +128,7 @@
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!ItemData.Face_of_the_Mountain.GetItem().IsOwned())
-            {
-                return;
-            }
-
-            if (!this.Menu.Item("UseFaceCombo").IsActive() || !this.ComboModeActive)
+            if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id) || !this.Menu.Item("UseFaceCombo").IsActive() || !this.ComboModeActive)
             {
                 return;
             }

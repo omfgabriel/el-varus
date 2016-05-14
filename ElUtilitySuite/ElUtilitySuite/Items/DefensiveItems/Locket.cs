@@ -6,6 +6,8 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using ItemData = LeagueSharp.Common.Data.ItemData;
+
     internal class Locket : Item
     {
         #region Static Fields
@@ -105,6 +107,11 @@
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Game_OnUpdate(EventArgs args)
         {
+            if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id) || !this.Menu.Item("UseLocketCombo").IsActive() || !this.ComboModeActive)
+            {
+                return;
+            }
+
             this.UseItem(600f);
         }
 
@@ -115,7 +122,7 @@
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id))
+            if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id) || !this.Menu.Item("UseLocketCombo").IsActive() || !this.ComboModeActive)
             {
                 return;
             }
