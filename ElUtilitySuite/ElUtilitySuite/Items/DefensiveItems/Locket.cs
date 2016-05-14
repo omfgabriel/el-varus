@@ -90,10 +90,8 @@
         private Obj_AI_Hero Allies()
         {
             var target = this.Player;
-            foreach (var unit in
-                ObjectManager.Get<Obj_AI_Hero>()
-                    .Where(x => x.IsAlly && x.IsValidTarget(900, false))
-                    .OrderByDescending(xe => xe.Health / xe.MaxHealth * 100))
+
+            foreach (var unit in HeroManager.Allies.Where(x => x.IsValidTarget(900, false)).OrderByDescending(h => h.Health / h.MaxHealth * 100))
             {
                 target = unit;
             }
