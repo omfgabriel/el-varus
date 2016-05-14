@@ -34,20 +34,6 @@
         public static Menu Menu { get; set; }
 
         /// <summary>
-        ///     Gets the player.
-        /// </summary>
-        /// <value>
-        ///     The player.
-        /// </value>
-        public static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
-
-        /// <summary>
         ///     Gets script version
         /// </summary>
         /// <value>

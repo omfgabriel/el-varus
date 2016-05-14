@@ -60,6 +60,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Items\Defensive2.cs" />
+    <Compile Include="Items\DefensiveItems\FaceOfTheMountain.cs" />
+    <Compile Include="Items\DefensiveItems\Locket.cs" />
+    <Compile Include="Items\DefensiveItems\Randuins.cs" />
+    <Compile Include="Items\DefensiveItems\Seraphs.cs" />
+    <Compile Include="Items\DefensiveItems\Talisman.cs" />
     <Compile Include="Items\Item.cs" />
     <Compile Include="Items\Offensive2.cs" />
     <Compile Include="Items\OffensiveItems\Botrk.cs" />
@@ -78,7 +84,6 @@
     <Compile Include="Summoners\Mark.cs" />
     <Compile Include="Trackers\HealthTracker.cs" />
     <Compile Include="Utility\AntiStealth.cs" />
-    <Compile Include="Items\Defensive.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="Summoners\Heal.cs" />
     <Compile Include="Summoners\Ignite.cs" />
@@ -97,6 +102,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
