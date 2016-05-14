@@ -170,11 +170,13 @@ namespace ElRengarRevamped
                     return;
                 }
 
-                var prediction = spells[Spells.E].GetPrediction(target);
+                spells[Spells.E].Cast(target.ServerPosition);
+
+                /*var prediction = spells[Spells.E].GetPrediction(target);
                 if (prediction.Hitchance >= HitChance.High)
                 {
-                    spells[Spells.E].Cast(prediction.CastPosition);
-                }
+                    
+                }*/
             }
             catch (Exception e)
             {
