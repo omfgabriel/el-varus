@@ -306,7 +306,6 @@ namespace ElVi
                             }
                         }
                     }
-                    Spells[ElVi.Spells.Q].Cast(target);
                 }
                 else
                 {
