@@ -174,7 +174,7 @@ namespace ElUtilitySuite.Summoners
                                  },*/
                              new CleanseSpell
                                  {
-                                     Champion = "FiddleSticks", Name = "fleeslow", MenuName = "Fiddle Fear", Evade = false,
+                                     Champion = "FiddleSticks", Name = "flee", MenuName = "Fiddle Fear", Evade = false,
                                      DoT = true, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q,
                                      Interval = 1.0
                                  },

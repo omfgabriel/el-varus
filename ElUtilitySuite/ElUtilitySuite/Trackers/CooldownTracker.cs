@@ -587,7 +587,7 @@ namespace ElUtilitySuite.Trackers
                 if (this._abilities.TryGetValue(sender.Name.ToLower(), out ability))
                 {
                     this._drawings.Add(
-                        new AbilityDraw { Object = sender, End = Game.Time + ability.Time, Color = ability.Color });
+                        new AbilityDraw { Object = sender, End = Game.Time + ability.Time});
                 }
             }
             catch (Exception ex)
@@ -626,11 +626,6 @@ namespace ElUtilitySuite.Trackers
             #region Public Properties
 
             /// <summary>
-            ///     Ability drawing colour
-            /// </summary>
-            public Color Color { get; set; }
-
-            /// <summary>
             ///     Ability endtime
             /// </summary>
             public float End { get; set; }
@@ -664,14 +659,11 @@ namespace ElUtilitySuite.Trackers
             /// <param name="champ"></param>
             /// <param name="name"></param>
             /// <param name="time"></param>
-            /// <param name="color"></param>
-            public AbilityItem(string champ, string name, float time, Color color = default(Color))
+            public AbilityItem(string champ, string name, float time)
             {
                 this.Name = name;
                 this.Champ = champ;
                 this.Time = time;
-                this.Enabled = false;
-                this.Color = color == default(Color) ? Color.White : color;
             }
 
             #endregion
@@ -682,16 +674,6 @@ namespace ElUtilitySuite.Trackers
             ///     The champion
             /// </summary>
             public string Champ { get; private set; }
-
-            /// <summary>
-            ///     The selected colour
-            /// </summary>
-            public Color Color { get; set; }
-
-            /// <summary>
-            ///     Ability enabled true/false
-            /// </summary>
-            public bool Enabled { get; set; }
 
             /// <summary>
             ///     Ability name
