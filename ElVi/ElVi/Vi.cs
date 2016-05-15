@@ -277,6 +277,35 @@ namespace ElVi
             {
                 if (Spells[ElVi.Spells.Q].IsCharging)
                 {
+                    if (Spells[ElVi.Spells.Q].IsInRange(target))
+                    {
+                        var prediction = Spells[ElVi.Spells.Q].GetPrediction(target);
+                        if (prediction.Hitchance >= HitChance.High)
+                        {
+                            if (Spells[ElVi.Spells.Q].Range == Spells[ElVi.Spells.Q].ChargedMaxRange)
+                            {
+                                if (Spells[ElVi.Spells.Q].Cast(prediction.CastPosition))
+                                {
+                                    return;
+                                }
+                            }
+                            else if (Spells[ElVi.Spells.Q].GetDamage(target) > target.Health)
+                            {
+                                var distance =
+                                    Player.ServerPosition.Distance(
+                                        prediction.UnitPosition
+                                        * (prediction.UnitPosition - Player.ServerPosition).Normalized(),
+                                        true);
+                                if (distance < Spells[ElVi.Spells.Q].RangeSqr)
+                                {
+                                    if (Spells[ElVi.Spells.Q].Cast(prediction.CastPosition))
+                                    {
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
                     Spells[ElVi.Spells.Q].Cast(target);
                 }
                 else
