@@ -213,7 +213,11 @@
                                 var targetE = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
                                 if (targetE.IsValidTarget())
                                 {
-                                    spells[Spells.E].Cast(targetE);
+                                    var pred = spells[Spells.E].GetPrediction(targetE);
+                                    if (pred.Hitchance >= HitChance.High)
+                                    {
+                                        spells[Spells.E].Cast(pred.CastPosition);
+                                    }
                                 }
                             }
                             break;
