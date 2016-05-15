@@ -99,7 +99,7 @@
                 if (((int)(args.Damage / hero.Health) > this.Menu.Item("Seraphs.Damage").GetValue<Slider>().Value)
                    || (hero.HealthPercent < this.Menu.Item("Seraphs.HP").GetValue<Slider>().Value))
                 {
-                    ItemData.Seraphs_Embrace.GetItem().Cast();
+                    Items.UseItem((int)this.Id);
                 }
             }
             catch (Exception e)
