@@ -146,7 +146,7 @@
                     clearMenu.SubMenu("Laneclear")
                         .AddItem(new MenuItem("ElEasy.Ryze.LaneClear.R", "Use R").SetValue(true));
                     clearMenu.SubMenu("Laneclear").AddItem(
-                       new MenuItem("ElEasy.Ryze.Clear.Player.Mana.Lane", "Minimum Mana for clear").SetValue(new Slider(55)));
+                       new MenuItem("ElEasy.Ryze.Clear.Player.Mana.Lane1", "Minimum Mana for clear").SetValue(new Slider(1)));
 
 
                     clearMenu.SubMenu("Jungleclear")
@@ -631,7 +631,7 @@
             var useW = this.Menu.Item("ElEasy.Ryze.LaneClear.W").IsActive();
             var useE = this.Menu.Item("ElEasy.Ryze.LaneClear.E").IsActive();
             var useR = this.Menu.Item("ElEasy.Ryze.LaneClear.R").IsActive();
-            var mana = this.Menu.Item("ElEasy.Ryze.Clear.Player.Mana.Lane").GetValue<Slider>().Value;
+            var mana = this.Menu.Item("ElEasy.Ryze.Clear.Player.Mana.Lane1").GetValue<Slider>().Value;
 
             if (this.Player.ManaPercent < mana)
             {
