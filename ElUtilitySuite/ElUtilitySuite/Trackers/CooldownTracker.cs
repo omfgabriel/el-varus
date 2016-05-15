@@ -404,6 +404,27 @@ namespace ElUtilitySuite.Trackers
                                                                               {
                                                                                   "alistar_trample_",
                                                                                   new AbilityItem("Alistar", "R", 7f)
+                                                                              },
+                                                                              {
+                                                                                  "itemzhonya_base_stasis.troy",
+                                                                                  new AbilityItem(
+                                                                                  "Misc",
+                                                                                  "Zhonya Hourglass",
+                                                                                  2.5f)
+                                                                              },
+                                                                              {
+                                                                                  "gatemarker_green.troy",
+                                                                                  new AbilityItem(
+                                                                                  "TwistedFate",
+                                                                                  "R",
+                                                                                  1.5f)
+                                                                              },
+                                                                              {
+                                                                                  "global_ss_teleport_target_blue.troy",
+                                                                                  new AbilityItem(
+                                                                                  "Misc",
+                                                                                  "Teleport",
+                                                                                  3.5f)
                                                                               }
                                                                           };
 
