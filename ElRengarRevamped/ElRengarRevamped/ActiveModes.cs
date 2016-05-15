@@ -52,10 +52,6 @@ namespace ElRengarRevamped
                                 {
                                     spells[Spells.E].Cast(targetE);
                                 }
-                                foreach (var target2 in HeroManager.Enemies.Where(x => x.IsValidTarget(spells[Spells.E].Range) && !x.IsZombie))
-                                {
-                                    spells[Spells.E].Cast(target2);
-                                }
                             }
                         }
                         else
@@ -68,10 +64,6 @@ namespace ElRengarRevamped
                                     if (targetE.IsValidTarget())
                                     {
                                         spells[Spells.E].Cast(targetE);
-                                    }
-                                    foreach (var target2 in HeroManager.Enemies.Where(x => x.IsValidTarget(spells[Spells.E].Range) && !x.IsZombie))
-                                    {
-                                        spells[Spells.E].Cast(target2);
                                     }
                                 }
                             }
@@ -103,10 +95,6 @@ namespace ElRengarRevamped
                                         {
                                             spells[Spells.E].Cast(targetE);
                                         }
-                                        foreach (var target2 in HeroManager.Enemies.Where(x => x.IsValidTarget(spells[Spells.E].Range) && !x.IsZombie))
-                                        {
-                                            spells[Spells.E].Cast(target2);
-                                        }
                                     }
 
                                     if (IsActive("Combo.Switch.E") && Environment.TickCount - Rengar.LastE >= 500
@@ -128,10 +116,6 @@ namespace ElRengarRevamped
                                         if (targetE.IsValidTarget())
                                         {
                                             spells[Spells.E].Cast(targetE);
-                                        }
-                                        foreach (var target2 in HeroManager.Enemies.Where(x => x.IsValidTarget(spells[Spells.E].Range) && !x.IsZombie))
-                                        {
-                                            spells[Spells.E].Cast(target2);
                                         }
                                     }
                                 }
