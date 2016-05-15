@@ -79,14 +79,19 @@
         /// <returns></returns>
         public void CreateMenu(Menu rootMenu)
         {
-            var notificationsMenu = rootMenu.AddSubMenu(new Menu("Recall tracker", "Recall tracker"));
+            var predicate = new Func<Menu, bool>(x => x.Name == "Trackers");
+            var menu = !rootMenu.Children.Any(predicate)
+                           ? rootMenu.AddSubMenu(new Menu("Trackers", "Trackers"))
+                           : rootMenu.Children.First(predicate);
+
+            var notificationsMenu = menu.AddSubMenu(new Menu("Recall tracker", "Recall tracker"));
             {
                 notificationsMenu.AddItem(new MenuItem("showRecalls", "Show Recalls").SetValue(true));
                 notificationsMenu.AddItem(new MenuItem("notifRecFinished", "Recall finished").SetValue(true));
                 notificationsMenu.AddItem(new MenuItem("notifRecAborted", "Recall aborted").SetValue(true));
             }
 
-            this.Menu = notificationsMenu;
+            this.Menu = menu;
         }
 
         public void Load()

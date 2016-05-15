@@ -97,6 +97,7 @@
     <Compile Include="Items\Zhonya.cs" />
     <Compile Include="Utility\AutoLantern.cs" />
     <Compile Include="Utility\BlueTrinket.cs" />
+    <Compile Include="Trackers\CooldownTracker.cs" />
     <Compile Include="Utility\UltimateLeveler.cs" />
   </ItemGroup>
   <ItemGroup>

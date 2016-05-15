@@ -87,6 +87,9 @@
         /// </value>
         public static List<AntiStealthSpell> Spells { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the menu
+        /// </summary>
         public Menu Menu { get; set; }
 
         #endregion

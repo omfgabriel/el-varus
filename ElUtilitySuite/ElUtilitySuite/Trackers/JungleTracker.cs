@@ -235,11 +235,17 @@
         /// <returns></returns>
         public void CreateMenu(Menu rootMenu)
         {
-            var jngTimerMenu = new Menu("Jungle Timer", "JngTimer");
-            jngTimerMenu.AddItem(new MenuItem("DrawTimers", "Draw Jungle Timers").SetValue(true));
-            rootMenu.AddSubMenu(jngTimerMenu);
+            var predicate = new Func<Menu, bool>(x => x.Name == "Trackers");
+            var menu = !rootMenu.Children.Any(predicate)
+                           ? rootMenu.AddSubMenu(new Menu("Trackers", "Trackers"))
+                           : rootMenu.Children.First(predicate);
 
-            this.Menu = jngTimerMenu;
+            var jngTimerMenu = menu.AddSubMenu(new Menu("Jungle timers", "Jungle"));
+            {
+                jngTimerMenu.AddItem(new MenuItem("DrawTimers", "Draw Jungle Timers").SetValue(true));
+            }
+
+            this.Menu = menu;
         }
 
         public void Load()

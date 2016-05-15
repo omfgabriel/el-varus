@@ -567,6 +567,11 @@ namespace ElUtilitySuite.Summoners
                                      Champion = "thresh", Name = "threshq", MenuName = "Thresh (Q)", Evade = true,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
                                  },
+                              new CleanseSpell
+                                 {
+                                     Champion = "viktor", Name = "ViktorGravitonStun", MenuName = "Viktor (W) stun", Evade = true,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q
+                                 },
                              new CleanseSpell
                                  {
                                      Champion = "Lissandra", Name = "lissandrarenemy2", MenuName = "Lissandra (R)",
