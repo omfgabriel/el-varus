@@ -127,9 +127,7 @@
                     && !(IsListActive("Combo.Prio").SelectedIndex == 0
                          || IsListActive("Combo.Prio").SelectedIndex == 1 && Ferocity == 5))
                 {
-                    var x = Prediction.GetPrediction(args.Target as Obj_AI_Base, Player.AttackCastDelay * 1000);
-                    if (Player.Position.To2D().Distance(x.UnitPosition.To2D())
-                        >= Player.BoundingRadius + Player.AttackRange + args.Target.BoundingRadius)
+                    if (Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
                     {
                         args.Process = false;
                         spells[Spells.Q].Cast();
