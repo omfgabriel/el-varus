@@ -286,7 +286,7 @@
                     return;
                 }
 
-                if (IsActive("Beta.Cast.Q"))
+                if (IsActive("Beta.Cast.Q1"))
                 {
                     if (drawSearchRange.Active && spells[Spells.R].Level > 0)
                     {
