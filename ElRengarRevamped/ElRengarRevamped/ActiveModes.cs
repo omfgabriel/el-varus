@@ -21,7 +21,8 @@ namespace ElRengarRevamped
         {
             try
             {
-                var target = TargetSelector.GetSelectedTarget() ?? TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+                var target = TargetSelector.GetSelectedTarget()
+                             ?? TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
                 if (target.IsValidTarget() == false)
                 {
                     return;
@@ -32,8 +33,7 @@ namespace ElRengarRevamped
                 if (Ferocity <= 4)
                 {
                     if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q")
-                         && Player.CountEnemiesInRange(Player.AttackRange
-                            + Player.BoundingRadius + 100) != 0)
+                        && Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
                     {
                         if (Orbwalking.CanMove(0))
                         {
@@ -41,13 +41,15 @@ namespace ElRengarRevamped
                         }
                     }
 
-                    if (!RengarR) 
+                    if (!RengarR)
                     {
                         if (!HasPassive)
                         {
                             if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
                             {
-                                var targetE = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+                                var targetE = TargetSelector.GetTarget(
+                                    spells[Spells.E].Range,
+                                    TargetSelector.DamageType.Physical);
                                 if (targetE.IsValidTarget())
                                 {
                                     spells[Spells.E].Cast(targetE);
@@ -60,7 +62,9 @@ namespace ElRengarRevamped
                             {
                                 if (Player.IsDashing())
                                 {
-                                    var targetE = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+                                    var targetE = TargetSelector.GetTarget(
+                                        spells[Spells.E].Range,
+                                        TargetSelector.DamageType.Physical);
                                     if (targetE.IsValidTarget())
                                     {
                                         spells[Spells.E].Cast(targetE);
@@ -90,7 +94,9 @@ namespace ElRengarRevamped
                                 {
                                     if (Orbwalking.CanMove(40))
                                     {
-                                        var targetE = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+                                        var targetE = TargetSelector.GetTarget(
+                                            spells[Spells.E].Range,
+                                            TargetSelector.DamageType.Physical);
                                         if (targetE.IsValidTarget())
                                         {
                                             spells[Spells.E].Cast(targetE);
@@ -112,7 +118,9 @@ namespace ElRengarRevamped
                                 {
                                     if (Player.IsDashing())
                                     {
-                                        var targetE = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+                                        var targetE = TargetSelector.GetTarget(
+                                            spells[Spells.E].Range,
+                                            TargetSelector.DamageType.Physical);
                                         if (targetE.IsValidTarget())
                                         {
                                             spells[Spells.E].Cast(targetE);
@@ -121,14 +129,15 @@ namespace ElRengarRevamped
                                 }
                             }
                             break;
-                        case 1:     
+                        case 1:
                             if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady())
                             {
                                 CastW();
                             }
                             break;
                         case 2:
-                            if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q") && Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
+                            if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q")
+                                && Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
                             {
                                 if (Orbwalking.CanMove(0))
                                 {
@@ -354,16 +363,15 @@ namespace ElRengarRevamped
 
                 LaneItems(minion);
 
-                if (Ferocity == 5
-                    && (Player.Health / Player.MaxHealth) * 100
-                    <= 20)
+                if (Ferocity == 5 && (Player.Health / Player.MaxHealth) * 100 <= 20)
                 {
                     spells[Spells.W].Cast();
                 }
 
                 if (!HasPassive)
                 {
-                    if (IsActive("Jungle.Use.W") && spells[Spells.W].IsReady() && minion.IsValidTarget(spells[Spells.W].Range))
+                    if (IsActive("Jungle.Use.W") && spells[Spells.W].IsReady()
+                        && minion.IsValidTarget(spells[Spells.W].Range))
                     {
                         if (Ferocity == 5 && spells[Spells.Q].IsReady())
                         {
@@ -376,11 +384,10 @@ namespace ElRengarRevamped
                 if (IsActive("Jungle.Use.E") && spells[Spells.E].IsReady()
                     && minion.IsValidTarget(spells[Spells.E].Range))
                 {
-
-                    if (Ferocity == 5 )
+                    if (Ferocity == 5)
                     {
                         return;
-                    } 
+                    }
 
                     spells[Spells.E].Cast(minion.Position);
                 }
@@ -432,7 +439,8 @@ namespace ElRengarRevamped
                     spells[Spells.W].Cast();
                 }
 
-                if (IsActive("Clear.Use.E") && spells[Spells.E].IsReady() && minion.IsValidTarget(spells[Spells.E].Range))
+                if (IsActive("Clear.Use.E") && spells[Spells.E].IsReady()
+                    && minion.IsValidTarget(spells[Spells.E].Range))
                 {
                     if (Ferocity == 5)
                     {
@@ -480,15 +488,14 @@ namespace ElRengarRevamped
         /// </value>
         private static Items.Item Titanic => ItemData.Titanic_Hydra_Melee_Only.GetItem();
 
-
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
         public static bool LaneItems(Obj_AI_Base target)
         {
-            var units = MinionManager.GetMinions(385, MinionTypes.All, MinionTeam.NotAlly).Count(o => !(o is Obj_AI_Turret));
+            var units =
+                MinionManager.GetMinions(385, MinionTypes.All, MinionTeam.NotAlly).Count(o => !(o is Obj_AI_Turret));
             var count = units;
             var tiamat = Tiamat;
             if (tiamat.IsReady() && count > 0 && tiamat.Cast())

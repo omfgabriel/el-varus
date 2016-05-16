@@ -40,8 +40,6 @@
                     .AddItem(
                         new MenuItem("Combo.Switch", "Switch priority").SetValue(
                             new KeyBind("L".ToCharArray()[0], KeyBindType.Press)));
-                comboMenu.AddItem(new MenuItem("Combo.TripleQ", "Triple Q").SetValue(new KeyBind("A".ToCharArray()[0], KeyBindType.Press)));
-
 
                 comboMenu.SubMenu("Harass").AddItem(new MenuItem("Harass.Use.Q", "Use Q").SetValue(true));
                 comboMenu.SubMenu("Harass").AddItem(new MenuItem("Harass.Use.W", "Use W").SetValue(true));
@@ -81,16 +79,16 @@
 
             var betaMenu = Menu.AddSubMenu(new Menu("Beta options", "BetaOptions"));
             {
-                betaMenu.AddItem(new MenuItem("Beta.Cast.Q", "Use beta Q").SetValue(true));
-                betaMenu.AddItem(new MenuItem("Beta.Cast.Youmuu", "Youmuu's required").SetValue(true));
-                betaMenu.AddItem(new MenuItem("Beta.Cast.Q.Delay", "Cast Q delay").SetValue(new Slider(500, 100, 2000)));
+                betaMenu.AddItem(new MenuItem("Beta.Cast.Q1", "Use beta Q").SetValue(true));
+                betaMenu.AddItem(
+                    new MenuItem("Beta.Cast.Q1.Delay", "Cast Q delay").SetValue(new Slider(300, 100, 2000)));
                 betaMenu.AddItem(new MenuItem("Assassin.searchrange", "Assassin search range"));
 
                 betaMenu.AddItem(
-                    new MenuItem("Beta.searchrange", "Search range").SetValue(new Slider(2000, 1000, 2500)));
+                    new MenuItem("Beta.searchrange", "Search range").SetValue(new Slider(1500, 1000, 2500)));
 
                 betaMenu.AddItem(
-                    new MenuItem("Beta.searchrange.Q", "Q cast range").SetValue(new Slider(1000, 500, 1500)));
+                    new MenuItem("Beta.searchrange.Q", "Q cast range").SetValue(new Slider(600, 500, 1500)));
 
                 betaMenu.AddItem(new MenuItem("Beta.Search.Range", "Draw search range").SetValue(new Circle()));
                 betaMenu.AddItem(new MenuItem("Beta.Search.QCastRange", "Draw Q cast range").SetValue(new Circle()));

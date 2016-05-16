@@ -21,7 +21,7 @@
                                                                                  new Spell(
                                                                                  SpellSlot.Q,
                                                                                  Orbwalking.GetRealAutoAttackRange(
-                                                                                     Player) + 100) // + 150
+                                                                                     Player) + 100)
                                                                              },
                                                                              {
                                                                                  Spells.W,

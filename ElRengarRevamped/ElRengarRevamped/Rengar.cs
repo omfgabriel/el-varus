@@ -208,7 +208,9 @@
                         case 0:
                             if (spells[Spells.E].IsReady())
                             {
-                                var targetE = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+                                var targetE = TargetSelector.GetTarget(
+                                    spells[Spells.E].Range,
+                                    TargetSelector.DamageType.Physical);
                                 if (targetE.IsValidTarget())
                                 {
                                     var pred = spells[Spells.E].GetPrediction(targetE);
@@ -220,27 +222,11 @@
                             }
                             break;
                         case 2:
-                            if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+                            if (spells[Spells.Q].IsReady()
+                                && Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
                             {
                                 spells[Spells.Q].Cast();
                             }
-
-                            if (target.IsValidTarget(spells[Spells.Q].Range))
-                            {
-                                ActiveModes.CastItems(target);
-                                Utility.DelayAction.Add(
-                                    50,
-                                    () =>
-                                        {
-                                            if (target.IsValidTarget(spells[Spells.W].Range))
-                                            {
-                                                spells[Spells.W].Cast();
-                                            }
-
-                                            spells[Spells.E].Cast(target);
-                                        });
-                            }
-
                             break;
                     }
                 }
@@ -400,7 +386,7 @@
                     switch (args.SData.Name.ToLower())
                     {
                         case "RengarR":
-                            if (Items.CanUseItem(3142))
+                            if (Items.HasItem(3142) && Items.CanUseItem(3142))
                             {
                                 Utility.DelayAction.Add(2000, () => Items.UseItem(3142));
                             }
@@ -456,70 +442,29 @@
                 Heal();
                 KillstealHandler();
 
-                if (MenuInit.Menu.Item("Combo.TripleQ").GetValue<KeyBind>().Active)
+                if (IsActive("Beta.Cast.Q1") && IsListActive("Combo.Prio").SelectedIndex == 2)
                 {
-                    Orbwalking.Orbwalk(null, Game.CursorPos);
-
-                    var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
-                    if (!target.IsValidTarget())
-                    {
-                        return;
-                    }
-
-                    Orbwalking.Orbwalk(target, Game.CursorPos);
-
-                    if (RengarR)
-                    {
-                        if (Ferocity == 5 && Player.Distance(target) <= spells[Spells.Q].Range)
-                        {
-                            spells[Spells.Q].Cast();
-                        }
-                    }
-                    else
-                    {
-                        spells[Spells.Q].Cast();
-                    }
-
-                    if (Ferocity <= 4)
-                    {
-                        if (Player.Distance(target) <= spells[Spells.Q].Range)
-                        {
-                            spells[Spells.Q].Cast();
-                        }
-                        if (Player.Distance(target) <= spells[Spells.W].Range)
-                        {
-                            spells[Spells.W].Cast();
-                        }
-                        if (Player.Distance(target) <= spells[Spells.E].Range)
-                        {
-                            spells[Spells.E].Cast(target);
-                        }
-                    }
-                }
-
-                if (IsActive("Beta.Cast.Q") && IsListActive("Combo.Prio").SelectedIndex == 2)
-                {
-                    if (IsActive("Beta.Cast.Youmuu") && !Items.HasItem(3142))
+                    if (Ferocity != 5)
                     {
                         return;
                     }
 
                     var searchrange = MenuInit.Menu.Item("Beta.searchrange").GetValue<Slider>().Value;
-                    var target =
-                        ObjectManager.Get<Obj_AI_Hero>()
-                            .FirstOrDefault(h => h.IsEnemy && h.IsValidTarget(searchrange, false));
+                    var target = HeroManager.Enemies.FirstOrDefault(h => h.IsValidTarget(searchrange, false));
                     if (!target.IsValidTarget())
                     {
                         return;
                     }
 
-                    if (Ferocity == 5 && RengarR)
+                    // Check if Rengar is in ultimate
+                    if (RengarR)
                     {
-                        if (target.Distance(Player.ServerPosition)
-                            <= MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value)
+                        // Check if the player distance <= than the set search range
+                        if (Player.Distance(target) <= MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value)
                         {
+                            // Cast Q with the set delay
                             Utility.DelayAction.Add(
-                                MenuInit.Menu.Item("Beta.Cast.Q.Delay").GetValue<Slider>().Value,
+                                MenuInit.Menu.Item("Beta.Cast.Q1.Delay").GetValue<Slider>().Value,
                                 () => spells[Spells.Q].Cast());
                         }
                     }
