@@ -16,7 +16,12 @@
     {
         #region Static Fields
 
-        public static Obj_AI_Minion Minion; 
+        public static Obj_AI_Minion Minion;
+
+        /// <summary>
+        ///     The smite range
+        /// </summary>
+        public const float SmiteRange = 570f;
 
         private static readonly string[] BuffsThatActuallyMakeSenseToSmite =
             {
@@ -431,7 +436,7 @@
 
                 if (smiteSlot != null)
                 {   
-                    this.SmiteSpell = new Spell(smiteSlot.Slot, 570f, TargetSelector.DamageType.True);
+                    this.SmiteSpell = new Spell(smiteSlot.Slot, SmiteRange, TargetSelector.DamageType.True);
 
                     Drawing.OnDraw += this.OnDraw;
                     Game.OnUpdate += this.OnUpdate;
@@ -493,7 +498,7 @@
 
                 Minion =
                     (Obj_AI_Minion)
-                    MinionManager.GetMinions(this.Player.ServerPosition, 570f, MinionTypes.All, MinionTeam.Neutral)
+                    MinionManager.GetMinions(this.Player.ServerPosition, SmiteRange, MinionTypes.All, MinionTeam.Neutral)
                         .FirstOrDefault(
                             buff => buff.Name.StartsWith(buff.CharData.BaseSkinName)
                             && BuffsThatActuallyMakeSenseToSmite.Contains(buff.CharData.BaseSkinName)
@@ -509,7 +514,7 @@
                 {
                     if (this.SmiteSpell.IsReady())
                     {
-                        if (Minion.IsValidTarget(570f))
+                        if (Minion.IsValidTarget(SmiteRange))
                         {
                             if (this.Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite) >= Minion.Health && this.SmiteSpell.CanCast(Minion))
                             {
@@ -606,6 +611,7 @@
                                 case "SRU_Dragon_Water":
                                 case "SRU_Dragon_Fire":
                                 case "SRU_Dragon_Elder":
+                                case "SRU_Dragon_Earth":
                                     barWidth = 145;
                                     Drawing.DrawLine(
                                         new Vector2(hpBarPosition.X + 3 + (float)(barWidth * x), hpBarPosition.Y + 22),
@@ -735,12 +741,12 @@
                     if (smiteActive && drawSmite.Active
                         && this.Player.Spellbook.CanUseSpell(smiteSpell.Slot) == SpellState.Ready)
                     {
-                        Render.Circle.DrawCircle(this.Player.Position, 570, Color.Green);
+                        Render.Circle.DrawCircle(this.Player.Position, SmiteRange, Color.Green);
                     }
 
                     if (drawSmite.Active && this.Player.Spellbook.CanUseSpell(smiteSpell.Slot) != SpellState.Ready)
                     {
-                        Render.Circle.DrawCircle(this.Player.Position, 570, Color.Red);
+                        Render.Circle.DrawCircle(this.Player.Position, SmiteRange, Color.Red);
                     }
                 }
             }
@@ -817,7 +823,7 @@
                     var kSableEnemy =
                         HeroManager.Enemies.FirstOrDefault(
                             hero =>
-                            !hero.IsZombie && hero.IsValidTarget(570) && 20 + 8 * this.Player.Level >= hero.Health);
+                            !hero.IsZombie && hero.IsValidTarget(SmiteRange) && 20 + 8 * this.Player.Level >= hero.Health);
                     if (kSableEnemy != null)
                     {
                         this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, kSableEnemy);
