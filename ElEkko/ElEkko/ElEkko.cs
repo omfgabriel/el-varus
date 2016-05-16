@@ -173,7 +173,7 @@
 
         private static int CountPassive(Obj_AI_Base target)
         {
-            var ekkoPassive = target.Buffs.FirstOrDefault(x => x.Name == "EkkoStacks");
+            var ekkoPassive = target.Buffs.FirstOrDefault(x => x.Name.Equals("EkkoStacks", StringComparison.InvariantCultureIgnoreCase));
             if (ekkoPassive != null)
             {
                 return ekkoPassive.Count;
@@ -364,7 +364,7 @@
 
                     if (useR && spells[Spells.R].IsReady())
                     {
-                        if (hero.Health < spells[Spells.R].GetDamage(hero))
+                        if (spells[Spells.R].GetDamage(hero) > hero.Health)
                         {
                             if (Troy != null)
                             {
@@ -386,20 +386,22 @@
 
         private static void Obj_AI_Base_OnCreate(GameObject obj, EventArgs args)
         {
-            if (obj.IsValid && obj.IsAlly)
+            var particle = obj as Obj_GeneralParticleEmitter;
+            if (particle != null)
             {
-                if (obj.Name == "Ekko")
+                if (particle.Name.Equals("Ekko_Base_R_TrailEnd.troy"))
                 {
-                    Troy = obj;
+                    Troy = particle;
                 }
             }
         }
 
         private static void Obj_AI_Base_OnDelete(GameObject obj, EventArgs args)
         {
-            if (obj.IsValid && obj.IsAlly)
+            var particle = obj as Obj_GeneralParticleEmitter;
+            if (particle != null)
             {
-                if (obj.Name == "Ekko")
+                if (particle.Name.Equals("Ekko_Base_R_TrailEnd.troy"))
                 {
                     Troy = null;
                 }
@@ -446,7 +448,7 @@
 
             if (sender.IsMe)
             {
-                if (args.SData.Name == "EkkoE")
+                if (args.SData.Name.Equals("EkkoE", StringComparison.InvariantCultureIgnoreCase))
                 {
                     Utility.DelayAction.Add(250, Orbwalking.ResetAutoAttackTimer);
                 }
