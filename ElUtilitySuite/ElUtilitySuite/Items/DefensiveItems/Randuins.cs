@@ -44,7 +44,8 @@
         /// </summary>
         public override void CreateMenu()
         {
-            this.Menu.AddItem(new MenuItem("UseRanduinsCombo", "Use on Combo").SetValue(true));
+            this.Menu.AddItem(new MenuItem("UseRanduinsCombo", "Activate").SetValue(true));
+            this.Menu.AddItem(new MenuItem("Mode", "Activation mode: ")).SetValue(new StringList(new[] { "Use always", "Use in combo" }, 1));
             this.Menu.AddItem(new MenuItem("RanduinsCount", "Use on enemies hit").SetValue(new Slider(3, 1, 5)));
         }
 
@@ -54,8 +55,7 @@
         /// <returns></returns>
         public override bool ShouldUseItem()
         {
-            return this.Menu.Item("UseRanduinsCombo").IsActive() && this.ComboModeActive
-                   && this.Player.CountEnemiesInRange(500f) >= this.Menu.Item("RanduinsCount").GetValue<Slider>().Value;
+            return this.Menu.Item("UseRanduinsCombo").IsActive() && this.Player.CountEnemiesInRange(500f) >= this.Menu.Item("RanduinsCount").GetValue<Slider>().Value;
         }
 
         /// <summary>
@@ -63,6 +63,11 @@
         /// </summary>
         public override void UseItem()
         {
+            if (this.Menu.Item("Mode").GetValue<StringList>().SelectedIndex == 1 && !this.ComboModeActive)
+            {
+                return;
+            }
+
             Items.UseItem((int)this.Id);
         }
 

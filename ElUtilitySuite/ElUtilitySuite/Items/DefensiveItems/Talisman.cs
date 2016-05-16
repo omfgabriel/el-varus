@@ -47,7 +47,8 @@
         /// </summary>
         public override void CreateMenu()
         {
-            this.Menu.AddItem(new MenuItem("UseTalismanCombo", "Use on Combo").SetValue(true));
+            this.Menu.AddItem(new MenuItem("UseTalismanCombo", "Activated").SetValue(true));
+            this.Menu.AddItem(new MenuItem("Mode", "Activation mode: ")).SetValue(new StringList(new[] { "Use always", "Use in combo" }, 1));
             this.Menu.AddItem(new MenuItem("TalismanEnemyHp", "Use on Enemy Hp %").SetValue(new Slider(70)));
             this.Menu.AddItem(new MenuItem("TalismanMyHp", "Use on My Hp %").SetValue(new Slider(50))); 
         }
@@ -58,7 +59,7 @@
         /// <returns></returns>
         public override bool ShouldUseItem()
         {
-            return this.Menu.Item("UseTalismanCombo").IsActive() && this.ComboModeActive
+            return this.Menu.Item("UseTalismanCombo").IsActive() 
                   && (HeroManager.Enemies.Any(
                       x =>
                       x.HealthPercent < this.Menu.Item("TalismanEnemyHp").GetValue<Slider>().Value
@@ -71,6 +72,11 @@
         /// </summary>
         public override void UseItem()
         {
+            if (this.Menu.Item("Mode").GetValue<StringList>().SelectedIndex == 1 && !this.ComboModeActive)
+            {
+                return;
+            }
+
             Items.UseItem((int)this.Id);
         }
 

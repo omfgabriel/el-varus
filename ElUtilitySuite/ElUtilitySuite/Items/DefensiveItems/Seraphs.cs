@@ -60,7 +60,8 @@
         /// </summary>
         public override void CreateMenu()
         {
-            this.Menu.AddItem(new MenuItem("UseSeraphsCombo", "Use on Combo").SetValue(true));
+            this.Menu.AddItem(new MenuItem("UseSeraphsCombo", "Activated").SetValue(true));
+            this.Menu.AddItem(new MenuItem("Mode", "Activation mode: ")).SetValue(new StringList(new[] { "Use always", "Use in combo" }, 1));
             this.Menu.AddItem(new MenuItem("Seraphs.HP", "Health percentage").SetValue(new Slider(20, 1)));
             this.Menu.AddItem(new MenuItem("Seraphs.Damage", "Incoming damage percentage").SetValue(new Slider(20, 1)));
         }
@@ -77,7 +78,12 @@
         {
             try
             {
-                if (!ItemData.Seraphs_Embrace.GetItem().IsOwned() || !this.Menu.Item("UseSeraphsCombo").IsActive() || !this.ComboModeActive)
+                if (!ItemData.Seraphs_Embrace.GetItem().IsOwned() || !this.Menu.Item("UseSeraphsCombo").IsActive())
+                {
+                    return;
+                }
+
+                if (this.Menu.Item("Mode").GetValue<StringList>().SelectedIndex == 1 && !this.ComboModeActive)
                 {
                     return;
                 }

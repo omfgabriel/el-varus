@@ -76,7 +76,8 @@
         /// </summary>
         public override void CreateMenu()
         {
-            this.Menu.AddItem(new MenuItem("UseFaceCombo", "Use on Combo").SetValue(true));
+            this.Menu.AddItem(new MenuItem("UseFaceCombo", "Activate").SetValue(true));
+            this.Menu.AddItem(new MenuItem("Mode", "Activation mode: ")).SetValue(new StringList(new[] { "Use always", "Use in combo" }, 1));
             this.Menu.AddItem(new MenuItem("FaceHp", "Use on Hp %").SetValue(new Slider(50)));
             this.Menu.AddItem(new MenuItem("Face.Damage", "Incoming damage percentage").SetValue(new Slider(50, 1)));
 
@@ -97,14 +98,25 @@
         /// <returns>Allies</returns>
         private Obj_AI_Hero Allies()
         {
-            var target = this.Player;
-
-            foreach (var unit in HeroManager.Allies.Where(x => x.IsValidTarget(900, false)).OrderByDescending(h => h.Health / h.MaxHealth * 100))
+            try
             {
-                target = unit;
-            }
+                var target = this.Player;
 
-            return target;
+                foreach (
+                    var unit in
+                        HeroManager.Allies.Where(x => x.IsValidTarget(900, false))
+                            .OrderByDescending(h => h.Health / h.MaxHealth * 100))
+                {
+                    target = unit;
+                }
+
+                return target;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred: '{0}'", e);
+            }
+            return null;
         }
 
         /// <summary>
@@ -113,12 +125,25 @@
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Game_OnUpdate(EventArgs args)
         {
-            if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id) || !this.Menu.Item("UseFaceCombo").IsActive() || !this.ComboModeActive)
+            try
             {
-                return;
-            }
+                if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id)
+                    || !this.Menu.Item("UseFaceCombo").IsActive())
+                {
+                    return;
+                }
 
-            this.UseItem(700f);
+                if (this.Menu.Item("Mode").GetValue<StringList>().SelectedIndex == 1 && !this.ComboModeActive)
+                {
+                    return;
+                }
+
+                this.UseItem(700f);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred: '{0}'", e);
+            }
         }
 
         /// <summary>
@@ -128,21 +153,28 @@
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id) || !this.Menu.Item("UseFaceCombo").IsActive() || !this.ComboModeActive)
+            try
             {
-                return;
-            }
+                if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id) || !this.Menu.Item("UseFaceCombo").IsActive())
+                {
+                    return;
+                }
 
-            if (sender.Type != GameObjectType.obj_AI_Hero && !sender.IsEnemy)
-            {
-                return;
-            }
+                if (sender.Type != GameObjectType.obj_AI_Hero && !sender.IsEnemy)
+                {
+                    return;
+                }
 
-            var heroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
-            if (heroSender.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown && args.Target.Type == this.Player.Type)
+                var heroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
+                if (heroSender.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown && args.Target.Type == this.Player.Type)
+                {
+                    aggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
+                    incomingDamage = (float)heroSender.GetAutoAttackDamage(aggroTarget);
+                }
+            }
+            catch (Exception e)
             {
-                aggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
-                incomingDamage = (float)heroSender.GetAutoAttackDamage(aggroTarget);
+                Console.WriteLine("An error occurred: '{0}'", e);
             }
         }
 
@@ -152,42 +184,49 @@
         /// <param name="itemRange"></param>
         private void UseItem(float itemRange = float.MaxValue)
         {
-            if (this.Player.InFountain())
+            try
             {
-                return;
-            }
-
-            var target = itemRange > 5000 ? this.Player : this.Allies();
-            if (target.Distance(this.Player.ServerPosition, true) > itemRange * itemRange)
-            {
-                return;
-            }
-
-            var allyHealthPercent = (int)((target.Health / target.MaxHealth) * 100);
-            var incomingDamagePercent = (int)(incomingDamage / target.MaxHealth * 100);
-
-            if (!this.Menu.Item(string.Format("Faceon{0}", target.ChampionName)).IsActive() || target.IsRecalling())
-            {
-                return;
-            }
-
-            if (allyHealthPercent <= this.Menu.Item("FaceHp").GetValue<Slider>().Value)
-            {
-                if ((incomingDamagePercent >= 1 || incomingDamage >= target.Health))
+                if (this.Player.InFountain())
                 {
-                    if (aggroTarget.NetworkId == target.NetworkId)
-                    {
-                        Items.UseItem((int)this.Id, target);
-                    }
+                    return;
                 }
 
-                if (incomingDamagePercent >= this.Menu.Item("Face.Damage").GetValue<Slider>().Value * 100)
+                var target = itemRange > 5000 ? this.Player : this.Allies();
+                if (target.Distance(this.Player.ServerPosition, true) > itemRange * itemRange)
                 {
-                    if (aggroTarget.NetworkId == target.NetworkId)
+                    return;
+                }
+
+                var allyHealthPercent = (int)((target.Health / target.MaxHealth) * 100);
+                var incomingDamagePercent = (int)(incomingDamage / target.MaxHealth * 100);
+
+                if (!this.Menu.Item(string.Format("Faceon{0}", target.ChampionName)).IsActive() || target.IsRecalling())
+                {
+                    return;
+                }
+
+                if (allyHealthPercent <= this.Menu.Item("FaceHp").GetValue<Slider>().Value)
+                {
+                    if ((incomingDamagePercent >= 1 || incomingDamage >= target.Health))
                     {
-                        Items.UseItem((int)this.Id, target);
+                        if (aggroTarget.NetworkId == target.NetworkId)
+                        {
+                            Items.UseItem((int)this.Id, target);
+                        }
+                    }
+
+                    if (incomingDamagePercent >= this.Menu.Item("Face.Damage").GetValue<Slider>().Value * 100)
+                    {
+                        if (aggroTarget.NetworkId == target.NetworkId)
+                        {
+                            Items.UseItem((int)this.Id, target);
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred: '{0}'", e);
             }
         }
 

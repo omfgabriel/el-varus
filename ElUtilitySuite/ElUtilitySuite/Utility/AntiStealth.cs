@@ -148,6 +148,11 @@
         /// </summary>
         public void Load()
         {
+            if (Game.MapId != GameMapId.SummonersRift)
+            {
+                return;
+            }
+
             this.Items = new List<AntiStealthRevealItem>
                              {
                                  new AntiStealthRevealItem
