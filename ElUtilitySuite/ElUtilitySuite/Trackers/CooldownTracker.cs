@@ -410,10 +410,6 @@ namespace ElUtilitySuite.Trackers
                                                                                   new AbilityItem("fizz", "R", 1.5f)
                                                                               },
                                                                               {
-                                                                                  "alistar_trample_",
-                                                                                  new AbilityItem("Alistar", "R", 7f)
-                                                                              },
-                                                                              {
                                                                                   "itemzhonya_base_stasis.troy",
                                                                                   new AbilityItem(
                                                                                   "Misc",
@@ -428,20 +424,6 @@ namespace ElUtilitySuite.Trackers
                                                                                   1.5f)
                                                                               },
                                                                               {
-                                                                                  "global_ss_teleport_target_blue.troy",
-                                                                                  new AbilityItem(
-                                                                                  "Misc",
-                                                                                  "Teleport",
-                                                                                  3.5f)
-                                                                              },
-                                                                              {
-                                                                                  "global_ss_teleport_turret_blue.troy",
-                                                                                  new AbilityItem(
-                                                                                  "Misc",
-                                                                                  "Teleport",
-                                                                                  3.5f)
-                                                                              },
-                                                                              {
                                                                                   "Global_ss_Teleport_",
                                                                                   new AbilityItem(
                                                                                   "Misc",
@@ -451,18 +433,6 @@ namespace ElUtilitySuite.Trackers
                                                                               {
                                                                                   "Kindred_Base_R_",
                                                                                   new AbilityItem("Kindred", "R", 4f)
-                                                                              },
-                                                                              {
-                                                                                  "Card_Blue",
-                                                                                  new AbilityItem("TwistedFate", "W", 6f)
-                                                                              },
-                                                                              {
-                                                                                  "Card_Red",
-                                                                                  new AbilityItem("TwistedFate", "W", 6f)
-                                                                              },
-                                                                              {
-                                                                                  "Card_Yellow",
-                                                                                  new AbilityItem("TwistedFate", "W", 6f)
                                                                               },
                                                                               {
                                                                                   "LifeAura",
