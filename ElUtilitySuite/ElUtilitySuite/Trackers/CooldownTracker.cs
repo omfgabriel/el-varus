@@ -279,6 +279,14 @@ namespace ElUtilitySuite.Trackers
                                                                                   new AbilityItem("shen", "R", 3f)
                                                                               },
                                                                               {
+                                                                                  "ShenTeleport_v2",
+                                                                                  new AbilityItem("shen", "R", 3f)
+                                                                              },
+                                                                              {
+                                                                                  "Shen_StandUnited_shield_v2",
+                                                                                  new AbilityItem("shen", "R", 3f)
+                                                                              },
+                                                                              {
                                                                                   "sion_base_r_cas.troy",
                                                                                   new AbilityItem("sion", "R", 8f)
                                                                               },
@@ -425,6 +433,43 @@ namespace ElUtilitySuite.Trackers
                                                                                   "Misc",
                                                                                   "Teleport",
                                                                                   3.5f)
+                                                                              },
+                                                                              {
+                                                                                  "global_ss_teleport_turret_blue.troy",
+                                                                                  new AbilityItem(
+                                                                                  "Misc",
+                                                                                  "Teleport",
+                                                                                  3.5f)
+                                                                              },
+                                                                              {
+                                                                                  "Global_ss_Teleport_",
+                                                                                  new AbilityItem(
+                                                                                  "Misc",
+                                                                                  "Teleport",
+                                                                                  3.5f)
+                                                                              },
+                                                                              {
+                                                                                  "Kindred_Base_R_",
+                                                                                  new AbilityItem("Kindred", "R", 4f)
+                                                                              },
+                                                                              {
+                                                                                  "Card_Blue",
+                                                                                  new AbilityItem("TwistedFate", "W", 6f)
+                                                                              },
+                                                                              {
+                                                                                  "Card_Red",
+                                                                                  new AbilityItem("TwistedFate", "W", 6f)
+                                                                              },
+                                                                              {
+                                                                                  "Card_Yellow",
+                                                                                  new AbilityItem("TwistedFate", "W", 6f)
+                                                                              },
+                                                                              {
+                                                                                  "LifeAura",
+                                                                                  new AbilityItem(
+                                                                                  "Misc",
+                                                                                  "Guardian Angel",
+                                                                                  4f)
                                                                               }
                                                                           };
 
@@ -583,11 +628,12 @@ namespace ElUtilitySuite.Trackers
                     return;
                 }
 
-                AbilityItem ability;
-                if (this._abilities.TryGetValue(sender.Name.ToLower(), out ability))
+                foreach (var ability in this._abilities)
                 {
-                    this._drawings.Add(
-                        new AbilityDraw { Object = sender, End = Game.Time + ability.Time});
+                    if (sender.Name.ToLower().Contains(ability.Key.ToLower()))
+                    {
+                        this._drawings.Add(new AbilityDraw { Object = sender, End = Game.Time + ability.Value.Time });
+                    }
                 }
             }
             catch (Exception ex)
