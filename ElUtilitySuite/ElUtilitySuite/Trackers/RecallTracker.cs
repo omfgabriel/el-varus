@@ -111,9 +111,9 @@
                     });
 
             Obj_AI_Base.OnTeleport += this.Obj_AI_Base_OnTeleport;
-            Drawing.OnPreReset += this.Drawing_OnPreReset;
-            Drawing.OnPostReset += this.Drawing_OnPostReset;
             Drawing.OnDraw += this.Drawing_OnDraw;
+            Drawing.OnPreReset += args => { this.Text.OnLostDevice(); };
+            Drawing.OnPostReset += args => { this.Text.OnResetDevice(); };
             AppDomain.CurrentDomain.DomainUnload += this.CurrentDomainDomainUnload;
             AppDomain.CurrentDomain.ProcessExit += this.CurrentDomainDomainUnload;
         }
@@ -268,16 +268,6 @@
                     1,
                     Color.FromArgb((int)(255f * fadeout), Color.White));
             }
-        }
-
-        private void Drawing_OnPostReset(EventArgs args)
-        {
-            this.Text.OnResetDevice();
-        }
-
-        private void Drawing_OnPreReset(EventArgs args)
-        {
-            this.Text.OnLostDevice();
         }
 
         private void DrawRect(float x, float y, int width, int height, float thickness, Color color)

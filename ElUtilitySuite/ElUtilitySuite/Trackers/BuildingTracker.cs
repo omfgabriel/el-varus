@@ -69,8 +69,8 @@
                 Drawing.Direct3DDevice,
                 new FontDescription
                     {
-                        FaceName = "Tahoma", Height = this.Menu.Item("FontSize").GetValue<Slider>().Value, OutputPrecision = FontPrecision.Default,
-                        Quality = FontQuality.Default
+                        FaceName = "Tahoma", Height = this.Menu.Item("FontSize").GetValue<Slider>().Value,
+                        OutputPrecision = FontPrecision.Default, Quality = FontQuality.Default
                     });
 
             Drawing.OnEndScene += this.Drawing_OnEndScene;
@@ -107,8 +107,10 @@
                         Font.DrawText(
                             null,
                             healthPercent,
-                            (int)(turretPosition.X - Font.MeasureText(null, healthPercent, FontDrawFlags.Center).Width / 2f),
-                            (int)(turretPosition.Y - Font.MeasureText(null, healthPercent, FontDrawFlags.Center).Height / 2f),
+                            (int)
+                            (turretPosition.X - Font.MeasureText(null, healthPercent, FontDrawFlags.Center).Width / 2f),
+                            (int)
+                            (turretPosition.Y - Font.MeasureText(null, healthPercent, FontDrawFlags.Center).Height / 2f),
                             new ColorBGRA(255, 255, 255, 255));
                     }
                 }
@@ -125,8 +127,10 @@
                         Font.DrawText(
                             null,
                             healthPercent,
-                            (int)(turretPosition.X - Font.MeasureText(null, healthPercent, FontDrawFlags.Center).Width / 2f),
-                            (int)(turretPosition.Y - Font.MeasureText(null, healthPercent, FontDrawFlags.Center).Height / 2f),
+                            (int)
+                            (turretPosition.X - Font.MeasureText(null, healthPercent, FontDrawFlags.Center).Width / 2f),
+                            (int)
+                            (turretPosition.Y - Font.MeasureText(null, healthPercent, FontDrawFlags.Center).Height / 2f),
                             new ColorBGRA(255, 255, 255, 255));
                     }
                 }
