@@ -155,7 +155,11 @@
                                   new JungleCamp(
                                       360000,
                                       new Vector3(9813.83f, 4360.19f, -71.24f),
-                                      new[] { "SRU_Dragon6.1.1" },
+                                      new[]
+                                          {
+                                              "SRU_Dragon_Elder6.5.1", "SRU_Dragon_Air6.1.1", "SRU_Dragon_Fire6.2.1",
+                                              "SRU_Dragon_Water6.3.1", "SRU_Dragon_Elder6.5.1"
+                                          },
                                       Utility.Map.MapType.SummonersRift,
                                       GameObjectTeam.Neutral),
                                   new JungleCamp(
@@ -205,10 +209,10 @@
         public static List<JungleCamp> JungleCamps { get; set; }
 
         /// <summary>
-        /// Gets or sets the menu.
+        ///     Gets or sets the menu.
         /// </summary>
         /// <value>
-        /// The menu.
+        ///     The menu.
         /// </value>
         public Menu Menu { get; set; }
 

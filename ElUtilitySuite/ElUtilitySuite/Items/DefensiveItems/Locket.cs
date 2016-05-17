@@ -121,8 +121,12 @@
         {
             try
             {
-                if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id)
-                    || !this.Menu.Item("UseLocketCombo").IsActive())
+                if (!this.Menu.Item("UseLocketCombo").IsActive())
+                {
+                    return;
+                }
+
+                if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id))
                 {
                     return;
                 }
@@ -155,7 +159,7 @@
                     return;
                 }
 
-                if (sender.Type != GameObjectType.obj_AI_Hero && !sender.IsEnemy)
+                if (!sender.IsEnemy && sender.Type != GameObjectType.obj_AI_Hero)
                 {
                     return;
                 }

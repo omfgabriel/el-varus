@@ -37,19 +37,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LeagueSharp">
-      <HintPath>C:\Users\Nathan\Desktop\LeagueSharp\LeagueSharp\System\LeagueSharp.dll</HintPath>
+      <HintPath>C:\Users\Nathan\Desktop\loader 3\System\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>C:\Users\Nathan\Desktop\LeagueSharp\LeagueSharp\System\LeagueSharp.Common.dll</HintPath>
+      <HintPath>C:\Users\Nathan\Desktop\loader 3\System\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="SharpDX, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\Nathan\Desktop\LeagueSharp\LeagueSharp\System\SharpDX.dll</HintPath>
+      <HintPath>C:\Users\Nathan\Desktop\loader 3\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\Nathan\Desktop\LeagueSharp\LeagueSharp\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>C:\Users\Nathan\Desktop\loader 3\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -82,6 +82,7 @@
     <Compile Include="Summoners\Cleanse.cs" />
     <Compile Include="Summoners\Exhaust.cs" />
     <Compile Include="Summoners\Mark.cs" />
+    <Compile Include="Trackers\BuildingTracker.cs" />
     <Compile Include="Trackers\HealthTracker.cs" />
     <Compile Include="Utility\AntiStealth.cs" />
     <Compile Include="Entry.cs" />
