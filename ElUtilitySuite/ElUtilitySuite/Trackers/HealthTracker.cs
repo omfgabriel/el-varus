@@ -48,6 +48,39 @@
 
         #endregion
 
+        /// <summary>
+        ///     Gets the spacing between HUD elements
+        /// </summary>
+        private int HudSpacing
+        {
+            get
+            {
+                return this.Menu.Item("HealthTracker.Spacing").GetValue<Slider>().Value;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the right offset of the HUD elements
+        /// </summary>
+        private int HudOffsetRight
+        {
+            get
+            {
+                return this.Menu.Item("HealthTracker.OffsetRight").GetValue<Slider>().Value;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the top offset between the HUD elements
+        /// </summary>
+        private int HudOffsetTop
+        {
+            get
+            {
+                return this.Menu.Item("HealthTracker.OffsetTop").GetValue<Slider>().Value;
+            }
+        }
+
         #region Public Methods and Operators
 
         /// <summary>
@@ -65,8 +98,9 @@
             var enemySidebarMenu = menu.AddSubMenu(new Menu("Enemy healthbars", "healthenemies")).SetFontStyle(FontStyle.Regular, SharpDX.Color.Red);
             {
                 enemySidebarMenu.AddItem(new MenuItem("DrawHealth_", "Activated").SetValue(true));
-                enemySidebarMenu.AddItem(new MenuItem("OffsetTop", "Offset Top").SetValue(new Slider(75, 0, 500)));
-                enemySidebarMenu.AddItem(new MenuItem("OffsetRight", "Offset Right").SetValue(new Slider(170, 0, 500)));
+                enemySidebarMenu.AddItem(new MenuItem("HealthTracker.OffsetTop", "Offset Top").SetValue(new Slider(75, 0, 500)));
+                enemySidebarMenu.AddItem(new MenuItem("HealthTracker.OffsetRight", "Offset Right").SetValue(new Slider(170, 0, 500)));
+                enemySidebarMenu.AddItem( new MenuItem("HealthTracker.Spacing", "Spacing").SetValue(new Slider(10, 0, 30)));
                 enemySidebarMenu.AddItem(new MenuItem("FontSize", "Font size").SetValue(new Slider(15, 13, 30)));
             }
 
@@ -108,7 +142,6 @@
 
             float i = 0;
 
-            foreach (var hero in HeroManager.Enemies.Where(x => !x.IsDead))
             {
                 var champion = hero.ChampionName;
                 if (champion.Length > 12)
@@ -116,34 +149,37 @@
                     champion = champion.Remove(7) + "...";
                 }
 
+                // Draws the championnames
                 Font.DrawText(
                     null,
                     champion,
                     (int)
-                    ((float)(Drawing.Width - this.Menu.Item("OffsetRight").GetValue<Slider>().Value) - 60f
-                     - Font.MeasureText(null, champion, FontDrawFlags.Right).Width / 2f),
+                    ((float)(Drawing.Width - this.HudOffsetRight - 60f
+                     - Font.MeasureText(null, champion, FontDrawFlags.Right).Width / 2f)),
                     (int)
-                    (this.Menu.Item("OffsetTop").GetValue<Slider>().Value + i + 4
+                    (this.HudOffsetTop + i + 4
                      - Font.MeasureText(null, champion, FontDrawFlags.Right).Height / 2f),
-                    new ColorBGRA(255, 255, 255, 255));
+                    hero.HealthPercent > 0 ? new ColorBGRA(255, 255, 255, 255) : new ColorBGRA(244, 8, 8, 255));
 
+                // Draws the rectangle
                 this.DrawRect(
-                    Drawing.Width - this.Menu.Item("OffsetRight").GetValue<Slider>().Value,
-                    this.Menu.Item("OffsetTop").GetValue<Slider>().Value + i,
+                    Drawing.Width - this.HudOffsetRight,
+                    this.HudOffsetTop + i,
                     100,
                     this.BarHeight,
                     1,
-                    Color.LightBlue);
+                    Color.FromArgb(255, 51, 55, 51));
 
+                // Fils the rectangle
                 this.DrawRect(
-                    Drawing.Width - this.Menu.Item("OffsetRight").GetValue<Slider>().Value,
-                    this.Menu.Item("OffsetTop").GetValue<Slider>().Value + i,
-                    (int)(hero.HealthPercent),
+                    Drawing.Width - this.HudOffsetRight,
+                    this.HudOffsetTop + i,
+                    hero.HealthPercent <= 0 ? 100 : (int)(hero.HealthPercent),
                     this.BarHeight,
                     1,
-                    hero.HealthPercent < 30 ? Color.Orange : Color.Green);
+                    hero.HealthPercent < 30 && hero.HealthPercent > 0 ? Color.FromArgb(255, 230, 169, 14) : hero.HealthPercent <= 0 ? Color.FromArgb(255, 206, 20, 30) : Color.FromArgb(255, 29, 201, 38));
 
-                i += 20f;
+                i += 20f + this.HudSpacing;
             }
         }
 
