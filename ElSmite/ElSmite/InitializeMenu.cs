@@ -1,5 +1,7 @@
 ﻿namespace ElSmite
 {
+    using System.Drawing;
+
     using LeagueSharp.Common;
 
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -23,6 +25,8 @@
                 mainMenu.AddItem(
                        new MenuItem("ElSmite.Activated", "Activated").SetValue(
                            new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle, true)));
+                mainMenu.AddItem(new MenuItem("Smite.Ammo", "Save 1 smite charge").SetValue(true)).SetFontStyle(FontStyle.Regular, SharpDX.Color.Green);
+
 
                 if (Entry.IsSummonersRift)
                 {

@@ -734,6 +734,11 @@
                     return;
                 }
 
+                if (InitializeMenu.Menu.Item("Smite.Ammo").IsActive() && Player.GetSpell(SmiteSpell.Slot).Ammo == 1)
+                {
+                    return;
+                }
+
                 if (Player.GetSpell(SmiteSpell.Slot).Name.ToLower() != "s5_summonersmiteplayerganker")
                 {
                     return;
