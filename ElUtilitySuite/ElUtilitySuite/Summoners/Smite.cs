@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Linq;
 
     using LeagueSharp;
@@ -797,10 +798,16 @@
             return 0;
         }
 
+
         private void SmiteKill()
         {
             try
             {
+                if (this.Menu.Item("Smite.Ammo").IsActive() && this.Player.GetSpell(this.SmiteSpell.Slot).Ammo == 1)
+                {
+                    return;
+                }
+
                 if (this.Menu.Item("ElSmite.KS.Combo").IsActive()
                     && this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() == "s5_summonersmiteduel"
                     && this.ComboModeActive)
@@ -812,6 +819,7 @@
                         this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, smiteComboEnemy);
                     }
                 }
+
 
                 if (this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() != "s5_summonersmiteplayerganker")
                 {
