@@ -379,6 +379,7 @@
                         new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle, true)));
 
                 smiteMenu.AddItem(new MenuItem("Smite.Spell", "Use spell smite combo").SetValue(true));
+                smiteMenu.AddItem(new MenuItem("Smite.Ammo", "Save 1 smite charge").SetValue(true)).SetFontStyle(FontStyle.Regular, SharpDX.Color.Green);
 
                 if (Game.MapId == GameMapId.SummonersRift)
                 {
