@@ -142,6 +142,7 @@
 
             float i = 0;
 
+            foreach (var hero in HeroManager.Enemies)
             {
                 var champion = hero.ChampionName;
                 if (champion.Length > 12)
