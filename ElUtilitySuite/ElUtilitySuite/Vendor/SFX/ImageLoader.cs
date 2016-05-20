@@ -2,6 +2,20 @@
 
 /*
  Copyright 2014 - 2015 Nikita Bernthaler
+ ImageLoader.cs is part of SFXLastPosition.
+
+ SFXLastPosition is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ SFXLastPosition is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with SFXLastPosition. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #endregion
@@ -22,8 +36,14 @@ namespace ElUtilitySuite.Vendor.SFX
     {
         #region Static Fields
 
+        /// <summary>
+        ///     The base directory
+        /// </summary>
         public static string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
 
+        /// <summary>
+        ///     The Cache directory
+        /// </summary>
         public static string CacheDir = Path.Combine(BaseDir, "ElUtilitySuite" + " - Cache");
 
         #endregion
@@ -61,36 +81,6 @@ namespace ElUtilitySuite.Vendor.SFX
                 Console.WriteLine(@"An error occurred: '{0}'", e);
             }
             return null;
-        }
-
-        public static Bitmap Resize(Bitmap source, int width, int height)
-        {
-            var destRect = new Rectangle(0, 0, width, height);
-            var destImage = new Bitmap(width, height);
-            destImage.SetResolution(source.HorizontalResolution, source.VerticalResolution);
-            using (var graphics = Graphics.FromImage(destImage))
-            {
-                graphics.CompositingMode = CompositingMode.SourceCopy;
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
-                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                using (var wrapMode = new ImageAttributes())
-                {
-                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                    graphics.DrawImage(
-                        source,
-                        destRect,
-                        0,
-                        0,
-                        source.Width,
-                        source.Height,
-                        GraphicsUnit.Pixel,
-                        wrapMode);
-                }
-            }
-            return destImage;
         }
 
         #endregion
