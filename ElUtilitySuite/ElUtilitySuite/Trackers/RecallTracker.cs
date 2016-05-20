@@ -1,4 +1,5 @@
-﻿namespace ElUtilitySuite.Trackers
+﻿#pragma warning disable 618
+namespace ElUtilitySuite.Trackers
 {
     //Recall tracker from BaseUlt
 
@@ -330,8 +331,6 @@
     internal class EnemyInfo
     {
         #region Fields
-
-        public int LastSeen;
 
         public Obj_AI_Hero Player;
 

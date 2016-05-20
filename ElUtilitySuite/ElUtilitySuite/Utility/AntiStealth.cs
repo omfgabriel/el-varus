@@ -235,6 +235,7 @@
         }
 
         /// <summary>
+        ///     Fired when a game object is created
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
@@ -280,9 +281,10 @@
         }
 
         /// <summary>
+        ///     Fired when the game processes a spell cast.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             try
