@@ -6,7 +6,7 @@
 
 #endregion
 
-namespace ElUtilitySuite.Helpers
+namespace ElUtilitySuite.Vendor.SFX
 {
     using System;
     using System.Drawing;

@@ -31,8 +31,6 @@ namespace ElUtilitySuite.Vendor.SFX
     using System;
     using System.Linq;
 
-    using ElUtilitySuite.Helpers;
-
     using global::SharpDX;
 
     using LeagueSharp;
