@@ -175,7 +175,8 @@ namespace ElUtilitySuite.Trackers
         {
             try
             {
-                if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed || !this.Menu.Item("LastPosition.Enabled").IsActive())
+                if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed ||
+                    !this.Menu.Item("LastPosition.Enabled").IsActive())
                 {
                     return;
                 }
