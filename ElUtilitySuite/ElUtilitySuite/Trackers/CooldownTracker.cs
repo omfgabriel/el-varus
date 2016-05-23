@@ -441,6 +441,13 @@ namespace ElUtilitySuite.Trackers
                                                                                   "Guardian Angel",
                                                                                   4f)
                                                                               }
+                                                                             /* {
+                                                                                  "taliyah_base_e_mines",
+                                                                                  new AbilityItem(
+                                                                                  "Taliyah",
+                                                                                  "Tard champ",
+                                                                                  4f)
+                                                                              }*/
                                                                           };
 
         private readonly List<AbilityDraw> _drawings = new List<AbilityDraw>();
