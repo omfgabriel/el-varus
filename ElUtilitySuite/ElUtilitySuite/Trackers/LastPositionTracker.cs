@@ -175,12 +175,10 @@ namespace ElUtilitySuite.Trackers
         {
             try
             {
-                if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed)
+                if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed || !this.Menu.Item("LastPosition.Enabled").IsActive())
                 {
                     return;
                 }
-
-                // || !this.Menu.Item("LastPosition.Enabled").IsActive()
 
                 var map = this.Menu.Item("LastPosition.Map").IsActive();
                 var minimap = this.Menu.Item("LastPosition.Minimap").IsActive();

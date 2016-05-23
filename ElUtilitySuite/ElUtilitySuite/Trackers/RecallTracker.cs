@@ -163,14 +163,14 @@ namespace ElUtilitySuite.Trackers
                         (int)(Scale * enemyInfo.RecallInfo.GetRecallCountdown()),
                         this.BarHeight,
                         1,
-                        Color.FromArgb(255, Color.Green));
+                        Color.FromArgb(255, Color.DeepSkyBlue));
                     this.DrawRect(
                         BarX + Scale * enemyInfo.RecallInfo.GetRecallCountdown() - 1,
                         this.BarY - this.SeperatorHeight,
                         0,
                         this.SeperatorHeight + 1,
                         1,
-                        Color.FromArgb(0, Color.Green));
+                        Color.FromArgb(0, Color.DeepSkyBlue));
 
                     this.Text.DrawText(
                         null,
