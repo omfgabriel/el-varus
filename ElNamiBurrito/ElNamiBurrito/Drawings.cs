@@ -1,49 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LeagueSharp;
-using LeagueSharp.Common;
-using Color = System.Drawing.Color;
-
-namespace ElNamiBurrito
+﻿namespace ElNamiBurrito
 {
+    using System;
+    using System.Drawing;
+
+    using LeagueSharp;
+    using LeagueSharp.Common;
+
     internal class Drawings
     {
+        #region Public Methods and Operators
+
         public static void Drawing_OnDraw(EventArgs args)
         {
-            var drawOff = ElNamiMenu._menu.Item("ElNamiReborn.Draw.off").GetValue<bool>();
-            var drawQ = ElNamiMenu._menu.Item("ElNamiReborn.Draw.Q").GetValue<Circle>();
-            var drawW = ElNamiMenu._menu.Item("ElNamiReborn.Draw.W").GetValue<Circle>();
-            var drawE = ElNamiMenu._menu.Item("ElNamiReborn.Draw.E").GetValue<Circle>();
-            var drawR = ElNamiMenu._menu.Item("ElNamiReborn.Draw.R").GetValue<Circle>();
-            //var drawText = ElNamiMenu._menu.Item("ElNamiReborn.Draw.Text").GetValue<bool>();
-            //var rBool = ElNamiMenu._menu.Item("ElNamiReborn.AutoHarass.Activated").GetValue<KeyBind>().Active;
-
-            if (drawOff)
+            if (ElNamiMenu.Menu.Item("ElNamiReborn.Draw.off").GetValue<bool>())
+            {
                 return;
+            }
 
-            var playerPos = Drawing.WorldToScreen(ObjectManager.Player.Position);
+            var drawQRange = ElNamiMenu.Menu.Item("ElNamiReborn.Draw.Q").GetValue<Circle>();
+            var drawWRange = ElNamiMenu.Menu.Item("ElNamiReborn.Draw.W").GetValue<Circle>();
+            var drawERange = ElNamiMenu.Menu.Item("ElNamiReborn.Draw.E").GetValue<Circle>();
+            var drawRRange = ElNamiMenu.Menu.Item("ElNamiReborn.Draw.R").GetValue<Circle>();
 
-            if (drawQ.Active)
+            if (drawQRange.Active)
+            {
                 if (Nami.spells[Spells.Q].Level > 0)
+                {
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, Nami.spells[Spells.Q].Range, Color.White);
+                }
+            }
 
-            if (drawE.Active)
+            if (drawERange.Active)
+            {
                 if (Nami.spells[Spells.E].Level > 0)
+                {
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, Nami.spells[Spells.E].Range, Color.White);
+                }
+            }
 
-            if (drawW.Active)
+            if (drawWRange.Active)
+            {
                 if (Nami.spells[Spells.W].Level > 0)
+                {
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, Nami.spells[Spells.W].Range, Color.White);
+                }
+            }
 
-            if (drawR.Active)
+            if (drawRRange.Active)
+            {
                 if (Nami.spells[Spells.R].Level > 0)
+                {
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, Nami.spells[Spells.R].Range, Color.White);
-
-            //if (drawText)
-               // Drawing.DrawText(playerPos.X - 70, playerPos.Y + 40, (rBool ? Color.Green : Color.Red), "{0}", (rBool ? "Auto harass Enabled" : "Auto harass Disabled"));
+                }
+            }
         }
+
+        #endregion
     }
 }
