@@ -49,12 +49,12 @@
                            ? rootMenu.AddSubMenu(new Menu("Trackers", "Trackers"))
                            : rootMenu.Children.First(predicate);
 
-            var buildingMenu = menu.AddSubMenu(new Menu("Turrets/Inhib tracker", "healthbuilding"));
+            var buildingMenu = menu.AddSubMenu(new Menu("Tower and Inhib tracker", "healthbuilding"));
             {
                 buildingMenu.AddItem(new MenuItem("DrawHealth", "Activated").SetValue(true));
                 buildingMenu.AddItem(new MenuItem("DrawTurrets", "Turrets").SetValue(true));
                 buildingMenu.AddItem(new MenuItem("DrawInhibs", "Inhibitors").SetValue(true));
-                buildingMenu.AddItem(new MenuItem("FontSize", "Font size").SetValue(new Slider(13, 13, 30)));
+                buildingMenu.AddItem(new MenuItem("Turret.FontSize", "Tower Font size").SetValue(new Slider(13, 13, 30)));
             }
 
             this.Menu = menu;
@@ -69,7 +69,7 @@
                 Drawing.Direct3DDevice,
                 new FontDescription
                     {
-                        FaceName = "Tahoma", Height = this.Menu.Item("FontSize").GetValue<Slider>().Value,
+                        FaceName = "Tahoma", Height = this.Menu.Item("Turret.FontSize").GetValue<Slider>().Value,
                         OutputPrecision = FontPrecision.Default, Quality = FontQuality.Default
                     });
 
@@ -137,7 +137,7 @@
             }
             catch (Exception e)
             {
-                Console.WriteLine("An error occurred: '{0}'", e);
+                Console.WriteLine(@"An error occurred: '{0}'", e);
             }
         }
 
