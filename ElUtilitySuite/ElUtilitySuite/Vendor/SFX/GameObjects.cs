@@ -20,15 +20,18 @@
 
 #endregion License
 
+#region
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using LeagueSharp;
+using LeagueSharp.Common;
+
+#endregion
+
 namespace ElUtilitySuite.Vendor.SFX
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using LeagueSharp;
-    using LeagueSharp.Common;
-
     /// <summary>
     ///     A static (stack) class which contains a sort-of cached versions of the important game objects.
     /// </summary>

@@ -3,6 +3,7 @@ namespace ElUtilitySuite.Trackers
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Linq;
 
     using ElUtilitySuite.Properties;
@@ -13,6 +14,9 @@ namespace ElUtilitySuite.Trackers
 
     using SharpDX;
     using SharpDX.Direct3D9;
+
+    using Color = SharpDX.Color;
+    using Font = SharpDX.Direct3D9.Font;
 
     internal class LastPositionTracker : IPlugin
     {
@@ -82,7 +86,7 @@ namespace ElUtilitySuite.Trackers
                            ? rootMenu.AddSubMenu(new Menu("Trackers", "Trackers"))
                            : rootMenu.Children.First(predicate);
 
-            var ssMenu = menu.AddSubMenu(new Menu("Last position tracker", "lastpostracker"));
+            var ssMenu = menu.AddSubMenu(new Menu("Last position tracker", "lastpostracker")).SetFontStyle(FontStyle.Regular, SharpDX.Color.Green);
             {
                 ssMenu.AddItem(new MenuItem("LastPosition.CircleThickness", "Circle Thickness").SetValue(new Slider(1, 1, 10)));
                 ssMenu.AddItem(
@@ -106,12 +110,17 @@ namespace ElUtilitySuite.Trackers
         /// </summary>
         public void Load()
         {
+            if (!HeroManager.Enemies.Any())
+            {
+                return;
+            }
+
             this.teleportTexture = Resources.LP_Teleport.ToTexture();
 
-            var spawn = GameObjects.EnemySpawnPoints.FirstOrDefault();
+            var spawn = ObjectManager.Get<Obj_SpawnPoint>().FirstOrDefault(x => x.IsEnemy);
             this.spawnPoint = spawn != null ? spawn.Position : Vector3.Zero;
 
-            foreach (var enemy in GameObjects.EnemyHeroes)
+            foreach (var enemy in HeroManager.Enemies)
             {
                 this.heroTextures[enemy.NetworkId] =
                     (ImageLoader.Load("LP", enemy.ChampionName) ?? Resources.LP_Default).ToTexture();
@@ -166,19 +175,22 @@ namespace ElUtilitySuite.Trackers
         {
             try
             {
-                if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed || !this.Menu.Item("LastPosition.Enabled").IsActive())
+                if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed)
                 {
                     return;
                 }
+
+                // || !this.Menu.Item("LastPosition.Enabled").IsActive()
 
                 var map = this.Menu.Item("LastPosition.Map").IsActive();
                 var minimap = this.Menu.Item("LastPosition.Minimap").IsActive();
                 var ssCircle = this.Menu.Item("LastPosition.SSCircle").IsActive();
                 var circleThickness = this.Menu.Item("LastPosition.CircleThickness").GetValue<Slider>().Value;
-                var circleColor = this.Menu.Item("LastPosition.CircleColor").IsActive();
+                //var circleColor = this.Menu.Item("LastPosition.CircleColor").IsActive();
                 var totalSeconds = this.Menu.Item("LastPosition.TimeFormat").GetValue<StringList>().SelectedIndex == 1;
                 var timerOffset = this.Menu.Item("LastPosition.SSTimerOffset").GetValue<Slider>().Value;
                 var timer = this.Menu.Item("LastPosition.SSTimer").IsActive();
+
 
                 this.sprite.Begin(SpriteFlags.AlphaBlend);
                 foreach (var lp in this.lastPositions)

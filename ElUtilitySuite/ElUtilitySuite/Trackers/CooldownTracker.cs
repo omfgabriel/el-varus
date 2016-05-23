@@ -598,28 +598,30 @@ namespace ElUtilitySuite.Trackers
                     return;
                 }
 
-
-                foreach (var ability2 in this._abilities)
+                /*foreach (var ability2 in this._abilities)
                 {
                     var abilities = sender.Name.ToLower();
+
+                    Console.WriteLine(abilities);
+
                     AbilityItem ability;
                     if (this._abilities.TryGetValue(abilities, out ability))
                     {
-                        if (abilities.IndexOf(ability2.Key, StringComparison.OrdinalIgnoreCase) >= 0)
+                        if (abilities.IndexOf(ability2.Key.ToLower(), StringComparison.OrdinalIgnoreCase) >= 0)
                         {
                             this._drawings.Add(
                                new AbilityDraw { Object = sender, End = Game.Time + ability.Time });
                         }
                     }
-                }
-
-                /*foreach (var ability in this._abilities)
+                }*/
+                //if (sender.Name.ToLower().Contains(ability.Key.ToLower()))
+                foreach (var ability in this._abilities)
                 {
                     if (sender.Name.ToLower().Contains(ability.Key.ToLower()))
                     {
                         this._drawings.Add(new AbilityDraw { Object = sender, End = Game.Time + ability.Value.Time });
                     }
-                }*/
+                }
             }
             catch (Exception ex)
             {
