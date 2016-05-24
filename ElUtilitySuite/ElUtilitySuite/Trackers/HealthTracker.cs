@@ -168,7 +168,7 @@
 
 
                 var championInfo = this.Menu.Item("DrawHealth_percent").IsActive()
-                    ? champion + " (" + (int)hero.HealthPercent + ")%"
+                    ? champion + " (" + (int)hero.HealthPercent + "%)"
                     : champion;
 
                 // Draws the championnames
