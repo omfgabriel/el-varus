@@ -25,11 +25,8 @@ namespace ElUtilitySuite.Trackers
     {
         #region Static Fields
 
-        private static readonly float BarX = Drawing.Width * 0.425f;
 
-        private static readonly int BarWidth = (int)(Drawing.Width - 2 * BarX);
 
-        private static readonly float Scale = (float)BarWidth / 8000;
 
         #endregion
 
@@ -37,9 +34,7 @@ namespace ElUtilitySuite.Trackers
 
         public List<EnemyInfo> EnemyInfo = new List<EnemyInfo>();
 
-        private readonly int BarHeight = 10; //6
-
-        private readonly float BarY = Drawing.Height * 0.80f;
+        private readonly int BarHeight = 10;
 
         private readonly int SeperatorHeight = 5;
 
@@ -90,6 +85,8 @@ namespace ElUtilitySuite.Trackers
                 notificationsMenu.AddItem(new MenuItem("showRecalls", "Show Recalls").SetValue(true));
                 notificationsMenu.AddItem(new MenuItem("notifRecFinished", "Recall finished").SetValue(true));
                 notificationsMenu.AddItem(new MenuItem("notifRecAborted", "Recall aborted").SetValue(true));
+                notificationsMenu.AddItem(new MenuItem("RecallTracker.OffsetBottom", "Offset bottom").SetValue(new Slider(52, 0, 1500)));
+                notificationsMenu.AddItem(new MenuItem("RecallTracker.FontSize", "Font size").SetValue(new Slider(13, 13, 30)));
             }
 
             this.Menu = menu;
@@ -107,7 +104,7 @@ namespace ElUtilitySuite.Trackers
                 Drawing.Direct3DDevice,
                 new FontDescription
                     {
-                        FaceName = "Calibri", Height = 13, Width = 6, OutputPrecision = FontPrecision.Default,
+                        FaceName = "Calibri", Height = this.Menu.Item("RecallTracker.FontSize").GetValue<Slider>().Value, Width = 6, OutputPrecision = FontPrecision.Default,
                         Quality = FontQuality.Default
                     });
 
@@ -126,6 +123,45 @@ namespace ElUtilitySuite.Trackers
         private void CurrentDomainDomainUnload(object sender, EventArgs e)
         {
             this.Text.Dispose();
+        }
+
+        /// <summary>
+        ///     
+        /// </summary>
+        private int BarY
+        {
+            get
+            {
+                return (int)(Drawing.Height - 150f - this.Menu.Item("RecallTracker.OffsetBottom").GetValue<Slider>().Value);
+            }
+        }
+
+        /// <summary>
+        ///     
+        /// </summary>
+        private int BarX
+        {
+            get
+            {
+                return (int)(Drawing.Width * 0.425f);
+            }
+        }
+
+
+        private int BarWidth
+        {
+            get
+            {
+                return (int)(Drawing.Width - 2 * this.BarX);
+            }
+        }
+
+        private float Scale
+        {
+            get
+            {
+                return (float)this.BarWidth / 8000;
+            }
         }
 
         private void Drawing_OnDraw(EventArgs args)
@@ -158,27 +194,31 @@ namespace ElUtilitySuite.Trackers
                     }
 
                     this.DrawRect(
-                        BarX,
+                        this.BarX,
                         this.BarY,
-                        (int)(Scale * enemyInfo.RecallInfo.GetRecallCountdown()),
+                        (int)(this.Scale * enemyInfo.RecallInfo.GetRecallCountdown()),
                         this.BarHeight,
                         1,
                         Color.FromArgb(255, Color.DeepSkyBlue));
+
                     this.DrawRect(
-                        BarX + Scale * enemyInfo.RecallInfo.GetRecallCountdown() - 1,
+                        this.BarX + this.Scale * enemyInfo.RecallInfo.GetRecallCountdown() - 1,
                         this.BarY - this.SeperatorHeight,
                         0,
                         this.SeperatorHeight + 1,
                         1,
                         Color.FromArgb(0, Color.DeepSkyBlue));
 
+
+                    var champInfo = enemyInfo.Player.ChampionName + " (" + (int)enemyInfo.Player.HealthPercent + ")% ";
+
                     this.Text.DrawText(
                         null,
-                        enemyInfo.Player.ChampionName,
-                        (int)BarX
+                        champInfo,
+                        (int)this.BarX
                         + (int)
-                          (Scale * enemyInfo.RecallInfo.GetRecallCountdown()
-                           - (float)(enemyInfo.Player.ChampionName.Length * this.Text.Description.Width) / 2),
+                          (this.Scale * enemyInfo.RecallInfo.GetRecallCountdown()
+                           - this.Text.MeasureText(null, champInfo, FontDrawFlags.Right).Width / 2f),
                         (int)this.BarY - this.SeperatorHeight - this.Text.Description.Height - 1,
                         new ColorBGRA(color.R, color.G, color.B, (byte)(color.A * fadeout)));
                 }
@@ -188,7 +228,7 @@ namespace ElUtilitySuite.Trackers
                     {
                         indicated = true;
                         this.DrawRect(
-                            BarX + Scale * enemyInfo.RecallInfo.EstimatedShootT,
+                            this.BarX + this.Scale * enemyInfo.RecallInfo.EstimatedShootT,
                             this.BarY + this.SeperatorHeight + this.BarHeight - 3,
                             0,
                             this.SeperatorHeight * 2,
@@ -197,14 +237,14 @@ namespace ElUtilitySuite.Trackers
                     }
 
                     this.DrawRect(
-                        BarX,
+                        this.BarX,
                         this.BarY,
-                        (int)(Scale * enemyInfo.RecallInfo.GetRecallCountdown()),
+                        (int)(this.Scale * enemyInfo.RecallInfo.GetRecallCountdown()),
                         this.BarHeight,
                         1,
                         Color.FromArgb(255, Color.Red));
                     this.DrawRect(
-                        BarX + Scale * enemyInfo.RecallInfo.GetRecallCountdown() - 1,
+                        this.BarX + this.Scale * enemyInfo.RecallInfo.GetRecallCountdown() - 1,
                         this.BarY + this.SeperatorHeight + this.BarHeight - 3,
                         0,
                         this.SeperatorHeight + 1,
@@ -214,9 +254,9 @@ namespace ElUtilitySuite.Trackers
                     this.Text.DrawText(
                         null,
                         enemyInfo.Player.ChampionName,
-                        (int)BarX
+                        (int)this.BarX
                         + (int)
-                          (Scale * enemyInfo.RecallInfo.GetRecallCountdown()
+                          (this.Scale * enemyInfo.RecallInfo.GetRecallCountdown()
                            - (float)(enemyInfo.Player.ChampionName.Length * this.Text.Description.Width) / 2),
                         (int)this.BarY + this.SeperatorHeight + this.Text.Description.Height / 2,
                         new ColorBGRA(255, 92, 92, 255));
@@ -233,36 +273,36 @@ namespace ElUtilitySuite.Trackers
                 }
 
                 this.DrawRect(
-                    BarX,
+                    this.BarX,
                     this.BarY,
-                    BarWidth,
+                    this.BarWidth,
                     this.BarHeight,
                     1,
                     Color.FromArgb((int)(40f * fadeout), Color.White));
 
                 this.DrawRect(
-                    BarX - 1,
+                    this.BarX - 1,
                     this.BarY + 1,
                     0,
                     this.BarHeight,
                     1,
                     Color.FromArgb((int)(255f * fadeout), Color.White));
                 this.DrawRect(
-                    BarX - 1,
+                    this.BarX - 1,
                     this.BarY - 1,
-                    BarWidth + 2,
+                    this.BarWidth + 2,
                     1,
                     1,
                     Color.FromArgb((int)(255f * fadeout), Color.White));
                 this.DrawRect(
-                    BarX - 1,
+                    this.BarX - 1,
                     this.BarY + this.BarHeight,
-                    BarWidth + 2,
+                    this.BarWidth + 2,
                     1,
                     1,
                     Color.FromArgb((int)(255f * fadeout), Color.White));
                 this.DrawRect(
-                    BarX + 1 + BarWidth,
+                    this.BarX + 1 + this.BarWidth,
                     this.BarY + 1,
                     0,
                     this.BarHeight,
@@ -476,3 +516,4 @@ namespace ElUtilitySuite.Trackers
         #endregion
     }
 }
+ 
