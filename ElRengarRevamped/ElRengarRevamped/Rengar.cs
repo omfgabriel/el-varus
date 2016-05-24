@@ -70,7 +70,7 @@
 
                 Ignite = Player.GetSpellSlot("summonerdot");
                 Game.PrintChat(
-                    "[00:01] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
+                    "[00:01] <font color='#CC0000'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery!!");
                 spells[Spells.E].SetSkillshot(0.25f, 70f, 1500f, true, SkillshotType.SkillshotLine);
 
                 MenuInit.Initialize();
