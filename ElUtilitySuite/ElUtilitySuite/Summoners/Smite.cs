@@ -5,6 +5,8 @@
     using System.Drawing;
     using System.Linq;
 
+    using ElUtilitySuite.Vendor.SFX;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -489,54 +491,6 @@
             }
         }
 
-        private void JungleSmite()
-        {
-            try
-            {
-                if (!this.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
-                {
-                    return;
-                }
-
-                Minion =
-                    (Obj_AI_Minion)
-                    MinionManager.GetMinions(this.Player.ServerPosition, SmiteRange, MinionTypes.All, MinionTeam.Neutral)
-                        .FirstOrDefault(
-                            buff => buff.Name.StartsWith(buff.CharData.BaseSkinName)
-                            && BuffsThatActuallyMakeSenseToSmite.Contains(buff.CharData.BaseSkinName)
-                            && !buff.Name.Contains("Mini") && !buff.Name.Contains("Spawn"));
-
-
-                if (Minion == null)
-                {
-                    return;
-                }
-
-                if (this.Menu.Item(Minion.CharData.BaseSkinName).IsActive())
-                {
-                    if (this.SmiteSpell.IsReady())
-                    {
-                        if (Minion.IsValidTarget(SmiteRange))
-                        {
-                            if (this.Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite) >= Minion.Health && this.SmiteSpell.CanCast(Minion))
-                            {
-                                this.SmiteSpell.Cast(Minion);
-                            }
-                        }
-
-                        if (this.Menu.Item("Smite.Spell").IsActive())
-                        {
-                            this.ChampionSpellSmite((float)this.Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite), Minion);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred: '{0}'", e);
-            }
-        }
-
         private void OnDraw(EventArgs args)
         {
             try
@@ -766,16 +720,49 @@
         {
             try
             {
-                if (this.Player.IsDead)
+                if (this.Player.IsDead || this.SmiteSpell == null)
                 {
                     return;
                 }
 
-                if (this.SmiteSpell != null)
+                if (!this.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
                 {
-                    this.JungleSmite();
-                    this.SmiteKill();
+                    return;
                 }
+
+                Minion =
+                    (Obj_AI_Minion)
+                    MinionManager.GetMinions(this.Player.ServerPosition, SmiteRange, MinionTypes.All, MinionTeam.Neutral)
+                        .FirstOrDefault(
+                            buff => buff.Name.StartsWith(buff.CharData.BaseSkinName)
+                            && BuffsThatActuallyMakeSenseToSmite.Contains(buff.CharData.BaseSkinName)
+                            && !buff.Name.Contains("Mini") && !buff.Name.Contains("Spawn"));
+
+                if (Minion == null)
+                {
+                    return;
+                }
+
+                if (this.Menu.Item(Minion.CharData.BaseSkinName).IsActive())
+                {
+                    if (this.SmiteSpell.IsReady())
+                    {
+                        if (Minion.IsValidTarget(SmiteRange))
+                        {
+                            if (this.Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite) > Minion.Health)
+                            {
+                                this.SmiteSpell.Cast(Minion);
+                            }
+                        }
+
+                        if (this.Menu.Item("Smite.Spell").IsActive())
+                        {
+                            this.ChampionSpellSmite((float)this.Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite), Minion);
+                        }
+                    }
+                }
+
+                this.SmiteKill();
             }
             catch (Exception e)
             {
