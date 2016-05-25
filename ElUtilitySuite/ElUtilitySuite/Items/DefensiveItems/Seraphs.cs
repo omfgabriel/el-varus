@@ -1,6 +1,9 @@
 ﻿namespace ElUtilitySuite.Items.DefensiveItems
 {
     using System;
+    using System.Linq;
+
+    using ElUtilitySuite.Vendor.SFX;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -16,7 +19,9 @@
         /// </summary>
         public Seraphs()
         {
-            AttackableUnit.OnDamage += this.AttackableUnit_OnDamage;
+            IncomingDamageManager.RemoveDelay = 500;
+            IncomingDamageManager.Skillshots = true;
+            Game.OnUpdate += this.Game_OnUpdate;
         }
 
         #endregion
@@ -61,9 +66,9 @@
         public override void CreateMenu()
         {
             this.Menu.AddItem(new MenuItem("UseSeraphsCombo", "Activated").SetValue(true));
-            this.Menu.AddItem(new MenuItem("Mode", "Activation mode: ")).SetValue(new StringList(new[] { "Use always", "Use in combo" }, 1));
-            this.Menu.AddItem(new MenuItem("Seraphs.HP", "Health percentage").SetValue(new Slider(20, 1)));
-            this.Menu.AddItem(new MenuItem("Seraphs.Damage", "Incoming damage percentage").SetValue(new Slider(20, 1)));
+            this.Menu.AddItem(new MenuItem("Mode-seraphs", "Activation mode: ")).SetValue(new StringList(new[] { "Use always", "Use in combo" }, 1));
+            this.Menu.AddItem(new MenuItem("seraphs-min-health", "Health percentage").SetValue(new Slider(20, 1)));
+            this.Menu.AddItem(new MenuItem("seraphs-min-damage", "Incoming damage percentage").SetValue(new Slider(20, 1)));
         }
 
         #endregion
@@ -71,10 +76,10 @@
         #region Methods
 
         /// <summary>
+        ///     Called when the game updates
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void AttackableUnit_OnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
+        /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
+        private void Game_OnUpdate(EventArgs args)
         {
             try
             {
@@ -83,34 +88,30 @@
                     return;
                 }
 
-                if (this.Menu.Item("Mode").GetValue<StringList>().SelectedIndex == 1 && !this.ComboModeActive)
+                if (this.Menu.Item("Mode-seraphs").GetValue<StringList>().SelectedIndex == 1 && !this.ComboModeActive)
                 {
                     return;
                 }
 
-                var source = ObjectManager.GetUnitByNetworkId<GameObject>(args.SourceNetworkId);
-                var obj = ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId);
+                var enemies = this.Player.CountEnemiesInRange(800);
+                var totalDamage = IncomingDamageManager.GetDamage(this.Player) * 1.1f;
 
-                if (obj.Type != GameObjectType.obj_AI_Hero || source.Type != GameObjectType.obj_AI_Hero)
+                if (this.Player.HealthPercent <= this.Menu.Item("seraphs-min-health").GetValue<Slider>().Value && enemies >= 1)
                 {
-                    return;
-                }
-
-                var hero = (Obj_AI_Hero)obj;
-                if (hero.IsEnemy)
-                {
-                    return;
-                }
-
-                if (((int)(args.Damage / hero.Health) > this.Menu.Item("Seraphs.Damage").GetValue<Slider>().Value)
-                   || (hero.HealthPercent < this.Menu.Item("Seraphs.HP").GetValue<Slider>().Value))
-                {
-                    Items.UseItem((int)this.Id);
+                    if ((int)(totalDamage / this.Player.Health)
+                        > this.Menu.Item("seraphs-min-damage").GetValue<Slider>().Value
+                        || this.Player.HealthPercent < this.Menu.Item("seraphs-min-health").GetValue<Slider>().Value)
+                    {
+                        Items.UseItem((int)this.Id, this.Player);
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("[ELUTILITYSUITE - SERAPHS] Used for: {0} - health percentage: {1}%", this.Player.ChampionName, (int)this.Player.HealthPercent);
+                    }
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("An error occurred: '{0}'", e);
+                Console.WriteLine(@"An error occurred: '{0}'", e);
             }
         }
 

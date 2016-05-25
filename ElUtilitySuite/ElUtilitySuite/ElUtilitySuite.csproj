@@ -112,6 +112,7 @@
     <Compile Include="Utility\BlueTrinket.cs" />
     <Compile Include="Trackers\CooldownTracker.cs" />
     <Compile Include="Utility\UltimateLeveler.cs" />
+    <Compile Include="Vendor\SFX\IncomingDamageManager.cs" />
     <Compile Include="Vendor\SFX\MDrawing.cs" />
     <Compile Include="Vendor\SFX\SpriteExtension.cs" />
     <Compile Include="Vendor\SFX\VectorExtensions.cs" />

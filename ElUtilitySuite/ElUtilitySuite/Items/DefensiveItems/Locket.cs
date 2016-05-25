@@ -3,27 +3,13 @@
     using System;
     using System.Linq;
 
+    using ElUtilitySuite.Vendor.SFX;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    using ItemData = LeagueSharp.Common.Data.ItemData;
-
     internal class Locket : Item
     {
-        #region Static Fields
-
-        /// <summary>
-        ///     Targetted ally
-        /// </summary>
-        private static Obj_AI_Hero aggroTarget;
-
-        /// <summary>
-        ///     Incoming hero damage
-        /// </summary>
-        private static float incomingDamage;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -31,8 +17,9 @@
         /// </summary>
         public Locket()
         {
+            IncomingDamageManager.RemoveDelay = 500;
+            IncomingDamageManager.Skillshots = true;
             Game.OnUpdate += this.Game_OnUpdate;
-            Obj_AI_Base.OnProcessSpellCast += this.OnProcessSpellCast;
         }
 
         #endregion
@@ -77,41 +64,16 @@
         public override void CreateMenu()
         {
             this.Menu.AddItem(new MenuItem("UseLocketCombo", "Activate").SetValue(true));
-            this.Menu.AddItem(new MenuItem("Mode", "Activation mode: ")).SetValue(new StringList(new[] { "Use always", "Use in combo" }, 1));
-            this.Menu.AddItem(new MenuItem("Locket.HP", "Health percentage").SetValue(new Slider(50, 1)));
-            this.Menu.AddItem(new MenuItem("Locket.Damage", "Incoming damage percentage").SetValue(new Slider(50, 1)));
+            this.Menu.AddItem(new MenuItem("Mode-locket", "Activation mode: "))
+                .SetValue(new StringList(new[] { "Use always", "Use in combo" }, 1));
+            this.Menu.AddItem(new MenuItem("locket-min-health", "Health percentage").SetValue(new Slider(50, 1)));
+            this.Menu.AddItem(
+                new MenuItem("locket-min-damage", "Incoming damage percentage").SetValue(new Slider(50, 1)));
         }
 
         #endregion
 
         #region Methods
-
-        /// <summary>
-        ///     Gets the allies, old sucks need to rewrite soontm
-        /// </summary>
-        /// <returns>Allies</returns>
-        private Obj_AI_Hero Allies()
-        {
-            try
-            {
-                var target = this.Player;
-
-                foreach (
-                    var unit in
-                        HeroManager.Allies.Where(x => x.IsValidTarget(900, false))
-                            .OrderByDescending(h => h.Health / h.MaxHealth * 100))
-                {
-                    target = unit;
-                }
-
-                return target;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred: '{0}'", e);
-            }
-            return null;
-        }
 
         /// <summary>
         ///     Called when the game updates
@@ -121,117 +83,39 @@
         {
             try
             {
-                if (!this.Menu.Item("UseLocketCombo").IsActive())
+                if (!this.Menu.Item("UseLocketCombo").IsActive() || !Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id))
                 {
                     return;
                 }
 
-                if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id))
+                if (this.Menu.Item("Mode-locket").GetValue<StringList>().SelectedIndex == 1 && !this.ComboModeActive)
                 {
                     return;
                 }
 
-                if (this.Menu.Item("Mode").GetValue<StringList>().SelectedIndex == 1 && !this.ComboModeActive)
+                foreach (var ally in HeroManager.Allies.Where(a => a.IsValidTarget(600f, false) && !a.IsRecalling()))
                 {
-                    return;
-                }
+                    var enemies = ally.CountEnemiesInRange(600f);
+                    var totalDamage = IncomingDamageManager.GetDamage(ally) * 1.1f;
 
-                this.UseItem(600f);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred: '{0}'", e);
-            }
-        }
-
-        /// <summary>
-        ///     Fired when the game processes a spell cast.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
-        private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
-        {
-            try
-            {
-                if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id)
-                    || !this.Menu.Item("UseLocketCombo").IsActive())
-                {
-                    return;
-                }
-
-                if (!sender.IsEnemy && sender.Type != GameObjectType.obj_AI_Hero)
-                {
-                    return;
-                }
-
-                var heroSender = ObjectManager.Get<Obj_AI_Hero>().First(x => x.NetworkId == sender.NetworkId);
-                if (heroSender.GetSpellSlot(args.SData.Name) == SpellSlot.Unknown
-                    && args.Target.Type == this.Player.Type)
-                {
-                    aggroTarget = ObjectManager.GetUnitByNetworkId<Obj_AI_Hero>(args.Target.NetworkId);
-                    incomingDamage = (float)heroSender.GetAutoAttackDamage(aggroTarget);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred: '{0}'", e);
-            }
-        }
-
-        /// <summary>
-        ///     Old use item, need to rewrite this soontm
-        /// </summary>
-        /// <param name="itemRange"></param>
-        private void UseItem(float itemRange = float.MaxValue)
-        {
-            try
-            {
-                if (this.Player.InFountain())
-                {
-                    return;
-                }
-
-                if (!Items.HasItem((int)this.Id) || !Items.CanUseItem((int)this.Id))
-                {
-                    return;
-                }
-
-                var target = itemRange > 5000 ? this.Player : this.Allies();
-                if (target.Distance(this.Player.ServerPosition, true) > itemRange * itemRange)
-                {
-                    return;
-                }
-
-                var allyHealthPercent = (int)((target.Health / target.MaxHealth) * 100);
-                var incomingDamagePercent = (int)(incomingDamage / target.MaxHealth * 100);
-
-                if (target.IsRecalling())
-                {
-                    return;
-                }
-
-                if (allyHealthPercent <= this.Menu.Item("Locket.HP").GetValue<Slider>().Value)
-                {
-                    if ((incomingDamagePercent >= 1 || incomingDamage >= target.Health))
+                    if (ally.HealthPercent <= this.Menu.Item("locket-min-health").GetValue<Slider>().Value
+                        && enemies >= 1)
                     {
-                        if (aggroTarget.NetworkId == target.NetworkId)
+                        if ((int)(totalDamage / ally.Health)
+                            > this.Menu.Item("locket-min-damage").GetValue<Slider>().Value
+                            || ally.HealthPercent < this.Menu.Item("locket-min-health").GetValue<Slider>().Value)
                         {
-                            Items.UseItem((int)this.Id);
+                            Items.UseItem((int)this.Id, ally);
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("[ELUTILITYSUITE - LOCKET] Used for: {0} - health percentage: {1}%", ally.ChampionName, (int)ally.HealthPercent);
                         }
-                    }
-
-                    if (incomingDamagePercent >= this.Menu.Item("Locket.Damage").GetValue<Slider>().Value * 100)
-                    {
-                        if (aggroTarget.NetworkId == target.NetworkId)
-                        {
-                            Items.UseItem((int)this.Id);
-                        }
+                        Console.ForegroundColor = ConsoleColor.White;
                     }
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("An error occurred: '{0}'", e);
+                Console.WriteLine(@"An error occurred: '{0}'", e);
             }
         }
 

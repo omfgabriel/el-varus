@@ -1,5 +1,7 @@
 ﻿namespace ElRengarRevamped
 {
+    using System;
+
     using LeagueSharp.Common;
 
     internal class Program
