@@ -3,6 +3,7 @@
     using System;
     using System.Drawing;
     using System.Linq;
+    using System.Runtime.CompilerServices;
 
     using ElUtilitySuite.Vendor.SFX;
 
@@ -125,21 +126,22 @@
                     return;
                 }
 
-                foreach (var ally in HeroManager.Allies.Where(a => a.IsValidTarget(this.HealSpell.Range, false) && !a.IsRecalling()))
+                foreach (var ally in HeroManager.Allies)
                 {
-                    if (!this.Menu.Item(string.Format("healon{0}", ally.ChampionName)).IsActive())
+                    if (!this.Menu.Item(string.Format("healon{0}", ally.ChampionName)).IsActive() || ally.IsRecalling() || ally.IsInvulnerable)
                     {
                         return;
                     }
 
                     var enemies = ally.CountEnemiesInRange(600);
                     var totalDamage = IncomingDamageManager.GetDamage(ally) * 1.1f;
-                    if (totalDamage > 1)
+                    if (totalDamage <= 0)
                     {
-                        Console.WriteLine(totalDamage);
+                        return;
                     }
 
-                    if (ally.HealthPercent <= this.Menu.Item("min-health").GetValue<Slider>().Value && enemies >= 1)
+                    if (ally.HealthPercent <= this.Menu.Item("min-health").GetValue<Slider>().Value && 
+                        this.HealSpell.IsInRange(ally) && enemies >= 1)
                     {
                         if ((int)(totalDamage / ally.Health) > this.Menu.Item("min-damage").GetValue<Slider>().Value
                             || ally.HealthPercent < this.Menu.Item("min-health").GetValue<Slider>().Value)
