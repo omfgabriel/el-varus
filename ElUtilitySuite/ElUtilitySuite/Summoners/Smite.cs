@@ -26,7 +26,7 @@
         /// </summary>
         public const float SmiteRange = 570f;
 
-        private static readonly string[] BuffsThatActuallyMakeSenseToSmite =
+        private static readonly string[] SmiteObjects =
             {
                 "SRU_Red", "SRU_Blue", "SRU_Dragon_Water",  "SRU_Dragon_Fire", "SRU_Dragon_Earth", "SRU_Dragon_Air", "SRU_Dragon_Elder",
                 "SRU_Baron", "SRU_Gromp", "SRU_Murkwolf",
@@ -391,7 +391,7 @@
                     smiteMenu.SubMenu("Big Mobs").SubMenu("Dragons").AddItem(new MenuItem("SRU_Dragon_Water", "Water Dragon").SetValue(true));
                     smiteMenu.SubMenu("Big Mobs").SubMenu("Dragons").AddItem(new MenuItem("SRU_Dragon_Elder", "Elder Dragon").SetValue(true));
 
-                    
+
                     smiteMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
                     smiteMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
                     smiteMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
@@ -439,7 +439,7 @@
 
 
                 if (smiteSlot != null)
-                {   
+                {
                     this.SmiteSpell = new Spell(smiteSlot.Slot, SmiteRange, TargetSelector.DamageType.True);
 
                     Drawing.OnDraw += this.OnDraw;
@@ -525,7 +525,7 @@
                                 .Where(
                                     m =>
                                     m.Team == GameObjectTeam.Neutral && m.IsValidTarget()
-                                    && BuffsThatActuallyMakeSenseToSmite.Contains(m.CharData.BaseSkinName));
+                                    && SmiteObjects.Contains(m.CharData.BaseSkinName));
 
                         foreach (var minion in minions.Where(m => m.IsHPBarRendered))
                         {
@@ -730,39 +730,35 @@
                     return;
                 }
 
-                Minion =
-                    (Obj_AI_Minion)
-                    MinionManager.GetMinions(this.Player.ServerPosition, SmiteRange, MinionTypes.All, MinionTeam.Neutral)
-                        .FirstOrDefault(
-                            buff => buff.Name.StartsWith(buff.CharData.BaseSkinName)
-                            && BuffsThatActuallyMakeSenseToSmite.Contains(buff.CharData.BaseSkinName)
-                            && !buff.Name.Contains("Mini") && !buff.Name.Contains("Spawn"));
+                this.SmiteKill();
 
-                if (Minion == null)
+                Minion =
+                     (Obj_AI_Minion)
+                     MinionManager.GetMinions(this.Player.ServerPosition, SmiteRange, MinionTypes.All, MinionTeam.Neutral)
+                         .FirstOrDefault(buff => SmiteObjects.Contains(buff.CharData.BaseSkinName) && !buff.Name.Contains("Mini") 
+                         && !buff.Name.Contains("Spawn"));
+
+                if (Minion == null || !this.Menu.Item(Minion.CharData.BaseSkinName).IsActive())
                 {
                     return;
                 }
 
-                if (this.Menu.Item(Minion.CharData.BaseSkinName).IsActive())
+                if (this.SmiteSpell.IsReady())
                 {
-                    if (this.SmiteSpell.IsReady())
+                    if (Minion.IsValidTarget(SmiteRange))
                     {
-                        if (Minion.IsValidTarget(SmiteRange))
+                        if (this.Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite) > Minion.Health)
                         {
-                            if (this.Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite) > Minion.Health)
-                            {
-                                this.SmiteSpell.Cast(Minion);
-                            }
+                            this.SmiteSpell.Cast(Minion);
                         }
+                    }
 
-                        if (this.Menu.Item("Smite.Spell").IsActive())
-                        {
-                            this.ChampionSpellSmite((float)this.Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite), Minion);
-                        }
+                    if (this.Menu.Item("Smite.Spell").IsActive())
+                    {
+                        this.ChampionSpellSmite((float)this.Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite), Minion);
                     }
                 }
 
-                this.SmiteKill();
             }
             catch (Exception e)
             {
