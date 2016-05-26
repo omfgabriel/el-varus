@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Linq;
 
     using LeagueSharp;
@@ -112,7 +111,6 @@
                 return;
             }
 
-            Notifications.AddNotification(string.Format("ElDiana by jQuery v{0}", ScriptVersion), 1000);
             spells[Spells.Q].SetSkillshot(0.25f, 150f, 1400f, false, SkillshotType.SkillshotCircle);
             ignite = Player.GetSpellSlot("summonerdot");
 
@@ -136,9 +134,9 @@
                     {
                         return;
                     }
+
                     var eSlot = spells[Spells.E];
-                    var dis = Player.Distance(source, false);
-                    Console.WriteLine(source.Name + " > " + eSlot.Range + " : " + dis);
+                    var dis = Player.Distance(source);
                     if (!eventArgs.IsBlink && ElDianaMenu._menu.Item("ElDiana.Interrupt.UseEDashes").GetValue<bool>()
                         && eSlot.IsReady() && eSlot.Range >= dis)
                     {
@@ -154,7 +152,7 @@
         private static void Combo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValid)
+            if (target == null)
             {
                 return;
             }
@@ -169,7 +167,7 @@
                 ElDianaMenu._menu.Item("ElDiana.Combo.UseSecondRLimitation").GetValue<Slider>().Value;
             var minHpToDive = ElDianaMenu._menu.Item("ElDiana.Combo.R.PreventUnderTower").GetValue<Slider>().Value;
 
-            if (useQ && spells[Spells.Q].IsReady() && Player.Distance(target) <= spells[Spells.Q].Range)
+            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 var pred = spells[Spells.Q].GetPrediction(target);
                 if (pred.Hitchance >= HitChance.VeryHigh)
@@ -185,7 +183,8 @@
                 spells[Spells.R].Cast(target);
             }
 
-            if (useW && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
+            if (useW && spells[Spells.W].IsReady()
+                && target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)))
             {
                 spells[Spells.W].Cast();
             }
@@ -421,7 +420,7 @@
         private static void MisayaCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValid)
+            if (target == null)
             {
                 return;
             }
@@ -457,34 +456,30 @@
             }
 
             // Misaya Combo is not possible, classic mode then
-
-            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 var pred = spells[Spells.Q].GetPrediction(target);
-                if (pred.Hitchance >= CustomHitChance)
+                if (pred.Hitchance >= HitChance.VeryHigh)
                 {
-                    spells[Spells.Q].Cast(target);
+                    spells[Spells.Q].Cast(pred.CastPosition);
                 }
             }
 
-            if (useR && spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target)
+            if (useR && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range)
                 && target.HasBuff("dianamoonlight"))
             {
                 spells[Spells.R].Cast(target);
             }
 
-            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+            if (useW && spells[Spells.W].IsReady()
+                && target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)))
             {
                 spells[Spells.W].Cast();
             }
 
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
+            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(400f))
             {
-                var pred = spells[Spells.E].GetPrediction(target);
-                if (pred.Hitchance >= CustomHitChance)
-                {
-                    spells[Spells.E].Cast();
-                }
+                spells[Spells.E].Cast();
             }
 
             if (secondR)
@@ -550,23 +545,6 @@
                     Harass();
                     break;
             }
-
-            var showNotifications = ElDianaMenu._menu.Item("ElDiana.misc.Notifications").GetValue<bool>();
-
-            if (showNotifications && Environment.TickCount - lastNotification > 5000)
-            {
-                foreach (var enemy in
-                    ObjectManager.Get<Obj_AI_Hero>().Where(h => h.IsValidTarget(1000) && GetComboDamage(h) > h.Health))
-                {
-                    ShowNotification(enemy.ChampionName + ": is killable", Color.White, 4000);
-                    lastNotification = Environment.TickCount;
-                }
-            }
-        }
-
-        private static void ShowNotification(string message, Color color, int duration = -1, bool dispose = true)
-        {
-            Notifications.AddNotification(new Notification(message, duration, dispose).SetTextColor(color));
         }
 
         #endregion

@@ -114,7 +114,6 @@
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.R", "Draw R").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.RMisaya", "Draw Misaya Combo Range").SetValue(new Circle()));
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.Text", "Draw Text").SetValue(true));
-            miscMenu.AddItem(new MenuItem("ElDiana.misc.Notifications", "Use Notifications").SetValue(true));
             miscMenu.AddItem(new MenuItem("ezeazeezaze", ""));
 
             var switchComboMenu =
