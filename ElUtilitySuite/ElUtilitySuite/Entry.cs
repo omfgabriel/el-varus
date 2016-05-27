@@ -49,6 +49,16 @@
             }
         }
 
+        public static event EventHandler<UnloadEventArgs> OnUnload;
+        public class UnloadEventArgs : EventArgs
+        {
+            public bool Final;
+
+            public UnloadEventArgs(bool final = false)
+            {
+                Final = final;
+            }
+        }
         #endregion
 
         #region Public Methods and Operators
