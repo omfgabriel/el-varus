@@ -58,6 +58,11 @@
             var igniteMenu = menu.AddSubMenu(new Menu("Ignite", "Ignite"));
             {
                 igniteMenu.AddItem(new MenuItem("Ignite.Activated", "Ignite").SetValue(true));
+                foreach (var x in HeroManager.Enemies)
+                {
+                    igniteMenu.AddItem(new MenuItem("igniteon" + x.ChampionName, "Use on " + x.ChampionName))
+                        .SetValue(true);
+                }
             }
 
             Menu = igniteMenu;
@@ -108,6 +113,11 @@
 
                 if (kSableEnemy != null)
                 {
+                    if (!Menu.Item(string.Format("igniteon{0}", kSableEnemy.ChampionName)).IsActive())
+                    {
+                        return;
+                    }
+
                     this.Player.Spellbook.CastSpell(this.IgniteSpell.Slot, kSableEnemy);
                 }
             }
