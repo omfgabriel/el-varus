@@ -60,6 +60,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Trackers\SpellTracker1.cs" />
+    <Compile Include="Trackers\WardTracker.cs" />
     <Compile Include="Vendor\SFX\BitmapExtensions.cs" />
     <Compile Include="Vendor\SFX\FloatExtensions.cs" />
     <Compile Include="Vendor\SFX\FontExtension.cs" />
@@ -522,6 +524,45 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\jhin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CD_Hud.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CD_HudSelf.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CD_SummonerBarrier.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CD_summonerboost.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CD_summonerdot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CD_summonerexhaust.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CD_summonerflash.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CD_summonerhaste.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CD_summonerheal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CD_summonersmite.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CD_summonerteleport.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\WT_Green.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\WT_Pink.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

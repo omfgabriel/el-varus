@@ -86,7 +86,7 @@ namespace ElUtilitySuite.Trackers
                            ? rootMenu.AddSubMenu(new Menu("Trackers", "Trackers"))
                            : rootMenu.Children.First(predicate);
 
-            var ssMenu = menu.AddSubMenu(new Menu("Last position tracker", "lastpostracker")).SetFontStyle(FontStyle.Regular, SharpDX.Color.Green);
+            var ssMenu = menu.AddSubMenu(new Menu("Last position tracker", "lastpostracker"));
             {
                 ssMenu.AddItem(new MenuItem("LastPosition.CircleThickness", "Circle Thickness").SetValue(new Slider(1, 1, 10)));
                 ssMenu.AddItem(

@@ -489,7 +489,7 @@ namespace ElUtilitySuite.Trackers
                            ? rootMenu.AddSubMenu(new Menu("Trackers", "Trackers"))
                            : rootMenu.Children.First(predicate);
 
-            var drawingMenu = menu.AddSubMenu(new Menu("Ability tracker", "cdtracker"));
+            var drawingMenu = menu.AddSubMenu(new Menu("Spell duration tracker", "cdtracker"));
             {
                 drawingMenu.AddItem(new MenuItem("OffsetTop", "Offset Top").SetValue(new Slider(0)));
                 drawingMenu.AddItem(new MenuItem("OffsetLeft", "Offset Left").SetValue(new Slider(0)));

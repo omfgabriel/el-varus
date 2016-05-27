@@ -109,7 +109,7 @@
                            ? rootMenu.AddSubMenu(new Menu("Trackers", "Trackers"))
                            : rootMenu.Children.First(predicate);
 
-            var enemySidebarMenu = menu.AddSubMenu(new Menu("Enemy healthbars", "healthenemies")).SetFontStyle(FontStyle.Regular, SharpDX.Color.Red);
+            var enemySidebarMenu = menu.AddSubMenu(new Menu("Enemy healthbars", "healthenemies"));
             {
                 enemySidebarMenu.AddItem(new MenuItem("DrawHealth_", "Activated").SetValue(true));
                 enemySidebarMenu.AddItem(new MenuItem("DrawHealth_percent", "Champion health %").SetValue(true));
