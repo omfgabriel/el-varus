@@ -457,7 +457,7 @@
                 KillstealHandler();
 
 
-                // E on Immobile target
+                // E on Immobile targets
                 if (IsActive("Misc.Root") && spells[Spells.E].IsReady() && !RengarR && Ferocity == 5)
                 {
                     var target = HeroManager.Enemies.FirstOrDefault(h => h.IsValidTarget(spells[Spells.E].Range));
