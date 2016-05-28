@@ -166,18 +166,32 @@
         {
             try
             {
-                if (!IsActive("Killsteal.On"))
+                if (!IsActive("Killsteal.On") || RengarR)
                 {
                     return;
                 }
 
                 var target =
                     Enemies.FirstOrDefault(
-                        x => x.IsValidTarget(spells[Spells.W].Range) && x.Health < spells[Spells.W].GetDamage(x));
+                        x => x.IsValidTarget(spells[Spells.E].Range));
 
-                if (target != null)
+                if (target == null)
+                {
+                    return;
+                }
+
+                if (spells[Spells.W].GetDamage(target) > target.Health && target.IsValidTarget(spells[Spells.W].Range))
                 {
                     spells[Spells.W].Cast();
+                }
+
+                if (spells[Spells.E].GetDamage(target) > target.Health && target.IsValidTarget(spells[Spells.E].Range))
+                {
+                    var prediction = spells[Spells.E].GetPrediction(target);
+                    if (prediction.Hitchance >= HitChance.VeryHigh)
+                    {
+                        spells[Spells.E].Cast(prediction.CastPosition);
+                    }
                 }
             }
             catch (Exception e)
@@ -441,6 +455,14 @@
                 SmiteCombo();
                 Heal();
                 KillstealHandler();
+
+
+                // E on Immobile target
+                if (IsActive("Misc.Root") && spells[Spells.E].IsReady() && !RengarR && Ferocity == 5)
+                {
+                    var target = HeroManager.Enemies.FirstOrDefault(h => h.IsValidTarget(spells[Spells.E].Range));
+                    if (target != null) spells[Spells.E].CastIfHitchanceEquals(target, HitChance.Immobile);
+                }
 
                 if (IsActive("Beta.Cast.Q1") && IsListActive("Combo.Prio").SelectedIndex == 2)
                 {
