@@ -143,6 +143,16 @@ namespace ElUtilitySuite.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Aurelionsol {
+            get {
+                object obj = ResourceManager.GetObject("Aurelionsol", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Azir {
             get {
                 object obj = ResourceManager.GetObject("Azir", resourceCulture);

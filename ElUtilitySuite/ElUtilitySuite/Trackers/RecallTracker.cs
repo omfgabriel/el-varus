@@ -210,7 +210,7 @@ namespace ElUtilitySuite.Trackers
                         Color.FromArgb(0, Color.DeepSkyBlue));
 
 
-                    var champInfo = enemyInfo.Player.ChampionName + " (" + (int)enemyInfo.Player.HealthPercent + ")% ";
+                    var champInfo = enemyInfo.Player.ChampionName + " (" + (int)enemyInfo.Player.HealthPercent + ")%";
 
                     this.Text.DrawText(
                         null,
