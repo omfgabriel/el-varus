@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using ElUtilitySuite.Vendor.SFX;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -534,7 +536,7 @@
         {
             get
             {
-                return this.Menu.Item("ZhonyaHPSlider").GetValue<Slider>().Value;
+                return this.Menu.Item("ZhonyaHPSlider-1").GetValue<Slider>().Value;
             }
         }
 
@@ -603,7 +605,7 @@
                 zhonyaMenu.AddSubMenu(zhonyaSpellMenu);
                 zhonyaMenu.AddItem(new MenuItem("ZhonyaDangerous", "Use Zhonya").SetValue(true));
                 zhonyaMenu.AddItem(new MenuItem("ZhonyaHP", "Use Zhonya on low HP").SetValue(true));
-                zhonyaMenu.AddItem(new MenuItem("ZhonyaHPSlider", "HP Percent").SetValue(new Slider(10, 1, 50)));
+                zhonyaMenu.AddItem(new MenuItem("ZhonyaHPSlider-1", "HP Percent").SetValue(new Slider(10, 1, 50)));
                 zhonyaMenu.AddItem(
                     new MenuItem("NoZhonyaEvade", "Don't Zhonya if spell is evade-able (BETA)").SetValue(false));
 
@@ -618,10 +620,12 @@
         public void Load()
         {
             zhonyaItem = new Items.Item(Game.MapId == GameMapId.SummonersRift ? 3157 : 3090);
+            IncomingDamageManager.RemoveDelay = 500;
+            IncomingDamageManager.Skillshots = true;
 
+            Game.OnUpdate += this.OnUpdate;
             GameObject.OnCreate += this.GameObjectOnCreate;
             Obj_AI_Base.OnProcessSpellCast += this.ObjAiBaseOnProcessSpellCast;
-            AttackableUnit.OnDamage += this.ObjAiBaseOnOnDamage;
         }
 
         #endregion
@@ -749,23 +753,45 @@
         }
 
         /// <summary>
-        ///     Called when an Obj_AI_Base takes damage.
+        ///     Fired when the game is updated.
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="AttackableUnitDamageEventArgs" /> instance containing the event data.</param>
-        private void ObjAiBaseOnOnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
+        /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
+        private void OnUpdate(EventArgs args)
         {
-            if (args.TargetNetworkId != Player.NetworkId
-                || !ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId).IsMe || !this.ZhonyaLowHp
-                || !zhonyaItem.IsReady())
+            try
             {
-                return;
-            }
+                if (Player.IsDead || Player.InFountain() || Player.IsRecalling())
+                {
+                    return;
+                }
 
-            if (Player.HealthPercent < this.ZhonyaBelowHp
-                || (Player.Health - args.Damage) / Player.MaxHealth * 100 < this.ZhonyaBelowHp)
+                if (!this.ZhonyaLowHp || !zhonyaItem.IsReady())
+                {
+                    return;
+                }
+
+                var enemies = Player.CountEnemiesInRange(875f);
+                var totalDamage = IncomingDamageManager.GetDamage(Player) * 1.1f;
+                if (totalDamage <= 0)
+                {
+                    return;
+                }
+
+                if (Player.HealthPercent <= this.ZhonyaBelowHp && enemies >= 1)
+                {
+                    if (Player.HealthPercent < this.ZhonyaBelowHp)
+                    {
+                        zhonyaItem.Cast();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("[ELUTILITYSUITE - ZHOYNA] Used for: {0} - health percentage: {1}%", Player.ChampionName, (int)Player.HealthPercent);
+                    }
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+
+            }
+            catch (Exception e)
             {
-                zhonyaItem.Cast();
+                Console.WriteLine(@"An error occurred: '{0}'", e);
             }
         }
 
