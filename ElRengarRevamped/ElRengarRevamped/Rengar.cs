@@ -456,12 +456,24 @@
                 Heal();
                 KillstealHandler();
 
-
                 // E on Immobile targets
-                if (IsActive("Misc.Root") && spells[Spells.E].IsReady() && !RengarR && Ferocity == 5)
+                if (IsActive("Misc.Root") && spells[Spells.E].IsReady())
                 {
+                    if (RengarR)
+                    {
+                        return;
+                    }
+
                     var target = HeroManager.Enemies.FirstOrDefault(h => h.IsValidTarget(spells[Spells.E].Range));
-                    if (target != null) spells[Spells.E].CastIfHitchanceEquals(target, HitChance.Immobile);
+                    if (target != null)
+                    {
+                        if (Ferocity != 5)
+                        {
+                            return;
+                        }
+
+                        spells[Spells.E].CastIfHitchanceEquals(target, HitChance.Immobile);
+                    }
                 }
 
                 if (IsActive("Beta.Cast.Q1") && IsListActive("Combo.Prio").SelectedIndex == 2)
