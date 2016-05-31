@@ -708,6 +708,34 @@
         }
 
         /// <summary>
+        ///     Gets the nearest minions
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static Obj_AI_Minion GetNearest(Vector3 pos)
+        {
+            var minions =
+                ObjectManager.Get<Obj_AI_Minion>()
+                    .Where(minion => minion.IsValid && SmiteObjects.Any(name => minion.Name.StartsWith(name)) &&
+                    !SmiteObjects.Any(name => minion.Name.Contains("Mini"))
+                    && !SmiteObjects.Any(name => minion.Name.Contains("Spawn")));
+
+            var objAiMinions = minions as Obj_AI_Minion[] ?? minions.ToArray();
+            Obj_AI_Minion sMinion = objAiMinions.FirstOrDefault();
+            double? nearest = null;
+            foreach (Obj_AI_Minion minion in objAiMinions)
+            {
+                double distance = Vector3.Distance(pos, minion.Position);
+                if (nearest == null || nearest > distance)
+                {
+                    nearest = distance;
+                    sMinion = minion;
+                }
+            }
+            return sMinion;
+        }
+
+        /// <summary>
         ///     Fired when the game is updated.
         /// </summary>
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
@@ -727,24 +755,25 @@
 
                 this.SmiteKill();
 
-                Minion =
-                     (Obj_AI_Minion)
-                     MinionManager.GetMinions(this.Player.ServerPosition, SmiteRange, MinionTypes.All, MinionTeam.Neutral)
-                         .FirstOrDefault(buff => SmiteObjects.Contains(buff.CharData.BaseSkinName) && !buff.Name.Contains("Mini") 
-                         && !buff.Name.Contains("Spawn"));
+                Minion = GetNearest(ObjectManager.Player.ServerPosition);
+                if (Minion == null)
+                {
+                    return;
+                }
 
-                if (Minion == null || !this.Menu.Item(Minion.CharData.BaseSkinName).IsActive())
+                if (!this.Menu.Item(Minion.CharData.BaseSkinName).IsActive())
                 {
                     return;
                 }
 
                 if (this.SmiteSpell.IsReady())
                 {
-                    if (Minion.IsValidTarget(SmiteRange))
+                    if (Vector3.Distance(ObjectManager.Player.ServerPosition, Minion.ServerPosition) <= SmiteRange)
                     {
-                        if (this.Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite) > Minion.Health)
+                        if (this.Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite) >= Minion.Health
+                            && this.SmiteSpell.CanCast(Minion))
                         {
-                            this.SmiteSpell.Cast(Minion);
+                            this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, Minion);
                         }
                     }
 
