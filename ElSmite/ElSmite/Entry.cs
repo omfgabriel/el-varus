@@ -364,6 +364,34 @@
 
         #region Public Methods and Operators
 
+        /// <summary>
+        ///     Gets the nearest minions
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static Obj_AI_Minion GetNearest(Vector3 pos)
+        {
+            var minions =
+                ObjectManager.Get<Obj_AI_Minion>()
+                    .Where(minion => minion.IsValid && BuffsThatActuallyMakeSenseToSmite.Any(name => minion.Name.StartsWith(name)) && 
+                    !BuffsThatActuallyMakeSenseToSmite.Any(name => minion.Name.Contains("Mini")) 
+                    && !BuffsThatActuallyMakeSenseToSmite.Any(name => minion.Name.Contains("Spawn")));
+
+            var objAiMinions = minions as Obj_AI_Minion[] ?? minions.ToArray();
+            Obj_AI_Minion sMinion = objAiMinions.FirstOrDefault();
+            double? nearest = null;
+            foreach (Obj_AI_Minion minion in objAiMinions)
+            {
+                double distance = Vector3.Distance(pos, minion.Position);
+                if (nearest == null || nearest > distance)
+                {
+                    nearest = distance;
+                    sMinion = minion;
+                }
+            }
+            return sMinion;
+        }
+
         public static void OnLoad(EventArgs args)
         {
             try
@@ -375,7 +403,6 @@
                 if (smiteSlot != null)
                 {
                     SmiteSpell = new Spell(smiteSlot.Slot, 570f, TargetSelector.DamageType.True);
-
                     Drawing.OnDraw += OnDraw;
                     Game.OnUpdate += OnUpdate;
                 }
@@ -388,6 +415,64 @@
             }
         }
 
+        private static void OnUpdate(EventArgs args)
+        {
+            try
+            {
+                if (Player.IsDead)
+                {
+                    return;
+                }
+
+                try
+                {
+                    if (!InitializeMenu.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
+                    {
+                        return;
+                    }
+
+                    Minion = GetNearest(ObjectManager.Player.ServerPosition);
+                    if (Minion == null)
+                    {
+                        return;
+                    }
+
+                    if (InitializeMenu.Menu.Item(Minion.CharData.BaseSkinName).IsActive())
+                    {
+                        if (SmiteSpell.IsReady())
+                        {
+                            if (Vector3.Distance(ObjectManager.Player.ServerPosition, Minion.ServerPosition)
+                                <= SmiteSpell.Range)
+                            {
+                                if (Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite) >= Minion.Health
+                                    && SmiteSpell.CanCast(Minion))
+                                {
+                                    Player.Spellbook.CastSpell(SmiteSpell.Slot, Minion);
+                                }
+                            }
+
+                            if (InitializeMenu.Menu.Item("Smite.Spell").IsActive())
+                            {
+                                ChampionSpellSmite(
+                                    (float)Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite),
+                                    Minion);
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An error occurred: '{0}'", e);
+                }
+                SmiteKill();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred: '{0}'", e);
+            }
+        }
+
+
         #endregion
 
         #region Methods
@@ -398,8 +483,7 @@
             {
                 foreach (var spell in
                     Spells.Where(
-                        x =>
-                        x.ChampionName.Equals(Player.ChampionName, StringComparison.InvariantCultureIgnoreCase)))
+                        x => x.Slot.IsReady() && x.ChampionName.Equals(Player.ChampionName, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     if (Player.GetSpellDamage(mob, spell.Slot, spell.Stage) + damage >= mob.Health)
                     {
@@ -415,56 +499,8 @@
                             }
                             else if (spell.TargetType == SpellDataTargetType.Location)
                             {
-                                Player.Spellbook.CastSpell(spell.Slot, mob.ServerPosition);
+                                Player.Spellbook.CastSpell(spell.Slot, mob);
                             }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred: '{0}'", e);
-            }
-        }
-
-        private static void JungleSmite()
-        {
-
-            try
-            {
-                if (!InitializeMenu.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
-                {
-                    return;
-                }
-
-                Minion =
-                    (Obj_AI_Minion)
-                    MinionManager.GetMinions(Player.ServerPosition, 570f, MinionTypes.All, MinionTeam.Neutral)
-                        .FirstOrDefault(
-                            buff => buff.Name.StartsWith(buff.CharData.BaseSkinName)
-                            && BuffsThatActuallyMakeSenseToSmite.Contains(buff.CharData.BaseSkinName)
-                            && !buff.Name.Contains("Mini") && !buff.Name.Contains("Spawn"));
-
-                if (Minion == null)
-                {
-                    return;
-                }
-
-                if (InitializeMenu.Menu.Item(Minion.CharData.BaseSkinName).IsActive())
-                {
-                    if (SmiteSpell.IsReady())
-                    {
-                        if (Minion.IsValidTarget(570f))
-                        {
-                            if (Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite) >= Minion.Health && SmiteSpell.CanCast(Minion))
-                            {
-                                SmiteSpell.Cast(Minion);
-                            }
-                        }
-
-                        if (InitializeMenu.Menu.Item("Smite.Spell").IsActive())
-                        {
-                            ChampionSpellSmite((float)Player.GetSummonerSpellDamage(Minion, Damage.SummonerSpell.Smite), Minion);
                         }
                     }
                 }
@@ -690,25 +726,7 @@
                 Console.WriteLine("An error occurred: '{0}'", e);
             }          
         }
-
-        private static void OnUpdate(EventArgs args)
-        {
-            try
-            {
-                if (Player.IsDead)
-                {
-                    return;
-                }
-
-                JungleSmite();
-                SmiteKill();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred: '{0}'", e);
-            }
-        }
-
+        
         private static double SmiteDamage()
         {
             try
