@@ -59,8 +59,23 @@
             cMenu.AddItem(
                 new MenuItem("ElDiana.hitChance", "Hitchance Q").SetValue(
                     new StringList(new[] { "Low", "Medium", "High", "Very High" }, 3)));
-            //cMenu.AddItem(new MenuItem("ElDiana.Combo.Leapcombo", "Leap Combo").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
-            cMenu.AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
+
+
+            var switchComboMenu =
+    new MenuItem("ElDiana.Hotkey.ToggleComboMode", "Toggle Combo Mode Hotkey").SetValue(
+        new KeyBind(84, KeyBindType.Press));
+            cMenu.AddItem(switchComboMenu);
+            switchComboMenu.ValueChanged += (sender, eventArgs) =>
+            {
+                if (eventArgs.GetNewValue<KeyBind>().Active)
+                {
+                    Diana.Orbwalker.ActiveMode = Orbwalking.OrbwalkingMode.Combo;
+                }
+                else
+                {
+                    Diana.Orbwalker.ActiveMode = Orbwalking.OrbwalkingMode.None;
+                }
+            };
 
             _menu.AddSubMenu(cMenu);
 
@@ -116,21 +131,7 @@
             miscMenu.AddItem(new MenuItem("ElDiana.Draw.Text", "Draw Text").SetValue(true));
             miscMenu.AddItem(new MenuItem("ezeazeezaze", ""));
 
-            var switchComboMenu =
-                new MenuItem("ElDiana.Hotkey.ToggleComboMode", "Toggle Combo Mode Hotkey").SetValue(
-                    new KeyBind(84, KeyBindType.Press));
-            miscMenu.AddItem(switchComboMenu);
-            switchComboMenu.ValueChanged += (sender, eventArgs) =>
-                {
-                    if (eventArgs.GetNewValue<KeyBind>().Active)
-                    {
-                        Diana.Orbwalker.ActiveMode = Orbwalking.OrbwalkingMode.Combo;
-                    }
-                    else
-                    {
-                        Diana.Orbwalker.ActiveMode = Orbwalking.OrbwalkingMode.None;
-                    }
-                };
+
 
             var dmgAfterE = new MenuItem("ElDiana.DrawComboDamage", "Draw combo damage").SetValue(true);
             var drawFill =
