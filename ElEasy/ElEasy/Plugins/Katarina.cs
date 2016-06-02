@@ -516,7 +516,6 @@ namespace ElEasy.Plugins
             Orbwalker.SetMovement(false);
             Orbwalker.SetAttack(false);
             Utility.DelayAction.Add(1, () => isChanneling = false);
-            Utility.DelayAction.Add(2000, () => Orbwalker.SetMovement(true));
         }
 
         private void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
