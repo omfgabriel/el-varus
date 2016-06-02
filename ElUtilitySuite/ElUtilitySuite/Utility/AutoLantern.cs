@@ -111,6 +111,7 @@
                 {
                     return;
                 }
+
                 if (sender.Name.Equals("ThreshLantern", StringComparison.OrdinalIgnoreCase))
                 {
                     this.ThreshLantern = sender;

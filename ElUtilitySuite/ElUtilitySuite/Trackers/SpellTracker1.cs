@@ -18,7 +18,6 @@
     using Font = SharpDX.Direct3D9.Font;
     using Rectangle = SharpDX.Rectangle;
 
-    [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
     internal class SpellTracker : IPlugin
     {
         #region Constants
