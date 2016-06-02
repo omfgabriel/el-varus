@@ -753,8 +753,6 @@
                     return;
                 }
 
-                this.SmiteKill();
-
                 Minion = GetNearest(ObjectManager.Player.ServerPosition);
                 if (Minion == null)
                 {
@@ -783,6 +781,7 @@
                     }
                 }
 
+                this.SmiteKill();
             }
             catch (Exception e)
             {

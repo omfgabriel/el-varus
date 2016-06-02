@@ -58,7 +58,7 @@
 
         public static Obj_AI_Hero Player => ObjectManager.Player;
 
-        public static bool RengarR => Player.Buffs.Any(x => x.Name.ToLower().Contains("RengarR"));
+        public static bool RengarR => Player.Buffs.Any(x => x.Name.ToLower().Contains("RengarRBuff"));
 
         public static string ScriptVersion => typeof(Rengar).Assembly.GetName().Version.ToString();
 
