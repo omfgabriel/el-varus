@@ -516,6 +516,7 @@ namespace ElEasy.Plugins
             Orbwalker.SetMovement(false);
             Orbwalker.SetAttack(false);
             Utility.DelayAction.Add(1, () => isChanneling = false);
+            Utility.DelayAction.Add(2000, () => Orbwalker.SetMovement(true));
         }
 
         private void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
@@ -849,18 +850,6 @@ namespace ElEasy.Plugins
                     return;
                 }
 
-                if (this.HasRBuff())
-                {
-                    Orbwalker.SetAttack(false);
-                    Orbwalker.SetMovement(false);
-                }
-                else
-                {
-                    Orbwalker.SetAttack(true);
-                    Orbwalker.SetMovement(true);
-                }
-
-
                 switch (Orbwalker.ActiveMode)
                 {
                     case Orbwalking.OrbwalkingMode.Combo:
@@ -893,6 +882,17 @@ namespace ElEasy.Plugins
                 if (this.Menu.Item("ElEasy.Katarina.Wardjump").GetValue<KeyBind>().Active)
                 {
                     this.WardjumpToMouse();
+                }
+
+                if (this.HasRBuff())
+                {
+                    Orbwalker.SetAttack(false);
+                    Orbwalker.SetMovement(false);
+                }
+                else
+                {
+                    Orbwalker.SetAttack(true);
+                    Orbwalker.SetMovement(true);
                 }
             }
             catch (Exception e)
