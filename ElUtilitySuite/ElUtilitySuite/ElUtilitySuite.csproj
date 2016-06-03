@@ -520,10 +520,10 @@
     <None Include="Resources\LP_Teleport.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\taliyah.png" />
+    <None Include="Resources\Taliyah.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\jhin.png" />
+    <None Include="Resources\Jhin.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\CD_Hud.png" />
