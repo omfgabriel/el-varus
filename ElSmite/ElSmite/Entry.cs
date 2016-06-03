@@ -16,7 +16,7 @@
     {
         #region Static Fields
 
-        private static readonly string[] BuffsThatActuallyMakeSenseToSmite =
+        private static readonly string[] SmiteObjects =
             {
                 "SRU_Red", "SRU_Blue", "SRU_Dragon_Water",  "SRU_Dragon_Fire", "SRU_Dragon_Earth", "SRU_Dragon_Air", "SRU_Dragon_Elder",
                 "SRU_Baron", "SRU_Gromp", "SRU_Murkwolf",
@@ -364,34 +364,6 @@
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     Gets the nearest minions
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public static Obj_AI_Minion GetNearest(Vector3 pos)
-        {
-            var minions =
-                ObjectManager.Get<Obj_AI_Minion>()
-                    .Where(minion => minion.IsValid && BuffsThatActuallyMakeSenseToSmite.Any(name => minion.Name.StartsWith(name)) && 
-                    !BuffsThatActuallyMakeSenseToSmite.Any(name => minion.Name.Contains("Mini")) 
-                    && !BuffsThatActuallyMakeSenseToSmite.Any(name => minion.Name.Contains("Spawn")));
-
-            var objAiMinions = minions as Obj_AI_Minion[] ?? minions.ToArray();
-            Obj_AI_Minion sMinion = objAiMinions.FirstOrDefault();
-            double? nearest = null;
-            foreach (Obj_AI_Minion minion in objAiMinions)
-            {
-                double distance = Vector3.Distance(pos, minion.Position);
-                if (nearest == null || nearest > distance)
-                {
-                    nearest = distance;
-                    sMinion = minion;
-                }
-            }
-            return sMinion;
-        }
-
         public static void OnLoad(EventArgs args)
         {
             try
@@ -431,7 +403,14 @@
                         return;
                     }
 
-                    Minion = GetNearest(ObjectManager.Player.ServerPosition);
+                    Minion =
+                   (Obj_AI_Minion)
+                   MinionManager.GetMinions(Player.ServerPosition, 570f, MinionTypes.All, MinionTeam.Neutral)
+                       .FirstOrDefault(
+                           buff => buff.Name.StartsWith(buff.CharData.BaseSkinName)
+                           && SmiteObjects.Contains(buff.CharData.BaseSkinName)
+                           && !buff.Name.Contains("Mini") && !buff.Name.Contains("Spawn"));
+
                     if (Minion == null)
                     {
                         return;
@@ -543,7 +522,7 @@
                                 .Where(
                                     m =>
                                     m.Team == GameObjectTeam.Neutral && m.IsValidTarget()
-                                    && BuffsThatActuallyMakeSenseToSmite.Contains(m.CharData.BaseSkinName));
+                                    && SmiteObjects.Contains(m.CharData.BaseSkinName));
 
                         foreach (var Minion in minions.Where(m => m.IsHPBarRendered))
                         {
