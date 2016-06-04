@@ -568,7 +568,7 @@
                                         new Vector2(hpBarPosition.X + 3 + (float)(barWidth * x), hpBarPosition.Y + 22),
                                         new Vector2(hpBarPosition.X + 3 + (float)(barWidth * x), hpBarPosition.Y + 30),
                                         2f,
-                                        Color.Chartreuse);
+                                        Color.Orange);
                                     Drawing.DrawText(
                                         hpBarPosition.X - 22 + (float)(barWidth * x),
                                         hpBarPosition.Y - 5,
@@ -583,7 +583,7 @@
                                         new Vector2(hpBarPosition.X + 3 + (float)(barWidth * x), hpBarPosition.Y + 20),
                                         new Vector2(hpBarPosition.X + 3 + (float)(barWidth * x), hpBarPosition.Y + 30),
                                         2f,
-                                        Color.Chartreuse);
+                                        Color.Orange);
                                     Drawing.DrawText(
                                         hpBarPosition.X - 22 + (float)(barWidth * x),
                                         hpBarPosition.Y - 5,

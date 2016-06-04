@@ -28,7 +28,10 @@ namespace ElRengarRevamped
                     return;
                 }
 
-                Orbwalker.ForceTarget(target);
+                if (TargetSelector.GetSelectedTarget() != null)
+                {
+                    Orbwalker.ForceTarget(target);
+                }
 
                 #region RengarR
 
@@ -49,13 +52,7 @@ namespace ElRengarRevamped
                         {
                             if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
                             {
-                                var targetE = TargetSelector.GetTarget(
-                                    spells[Spells.E].Range,
-                                    TargetSelector.DamageType.Physical);
-                                if (targetE.IsValidTarget())
-                                {
-                                    spells[Spells.E].Cast(targetE);
-                                }
+                                CastE(target);
                             }
                         }
                         else
@@ -64,13 +61,7 @@ namespace ElRengarRevamped
                             {
                                 if (Player.IsDashing())
                                 {
-                                    var targetE = TargetSelector.GetTarget(
-                                        spells[Spells.E].Range,
-                                        TargetSelector.DamageType.Physical);
-                                    if (targetE.IsValidTarget())
-                                    {
-                                        spells[Spells.E].Cast(targetE);
-                                    }
+                                    CastE(target);
                                 }
                             }
                         }
@@ -96,13 +87,7 @@ namespace ElRengarRevamped
                                 {
                                     if (Orbwalking.CanMove(40))
                                     {
-                                        var targetE = TargetSelector.GetTarget(
-                                            spells[Spells.E].Range,
-                                            TargetSelector.DamageType.Physical);
-                                        if (targetE.IsValidTarget())
-                                        {
-                                            spells[Spells.E].Cast(targetE);
-                                        }
+                                        CastE(target);
                                     }
 
                                     if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
@@ -119,13 +104,7 @@ namespace ElRengarRevamped
                                 {
                                     if (Player.IsDashing())
                                     {
-                                        var targetE = TargetSelector.GetTarget(
-                                            spells[Spells.E].Range,
-                                            TargetSelector.DamageType.Physical);
-                                        if (targetE.IsValidTarget())
-                                        {
-                                            spells[Spells.E].Cast(targetE);
-                                        }
+                                        CastE(target);
                                     }
                                 }
                             }
@@ -241,7 +220,7 @@ namespace ElRengarRevamped
                     HeroManager.Enemies.Where(
                         e =>
                         e.IsValidTarget() && e.Distance(Player) < 450f
-                        || e.Distance(Player) < 450f && e.IsFacing(Player)).ToList();
+                        || e.Distance(Player) < 450f).ToList();
 
                 return new Tuple<int, List<Obj_AI_Hero>>(hits.Count, hits);
             }
