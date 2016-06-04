@@ -174,7 +174,7 @@ namespace ElRengarRevamped
                 }
 
                 var pred = spells[Spells.E].GetPrediction(target);
-                if (pred.Hitchance >= HitChance.Low)
+                if (pred.Hitchance >= HitChance.High)
                 {
                     spells[Spells.E].Cast(pred.CastPosition);
                 }
