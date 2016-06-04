@@ -603,9 +603,9 @@ namespace ElUtilitySuite.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap jhin {
+        internal static System.Drawing.Bitmap Jhin {
             get {
-                object obj = ResourceManager.GetObject("jhin", resourceCulture);
+                object obj = ResourceManager.GetObject("Jhin", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1203,9 +1203,9 @@ namespace ElUtilitySuite.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap taliyah {
+        internal static System.Drawing.Bitmap Taliyah {
             get {
-                object obj = ResourceManager.GetObject("taliyah", resourceCulture);
+                object obj = ResourceManager.GetObject("Taliyah", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

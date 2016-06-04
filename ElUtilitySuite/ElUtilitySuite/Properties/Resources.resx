@@ -508,10 +508,10 @@
   <data name="LP_Teleport" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\LP_Teleport.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="jhin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Jhin" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\jhin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="taliyah" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Taliyah" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\taliyah.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="CD_Hud" type="System.Resources.ResXFileRef, System.Windows.Forms">
