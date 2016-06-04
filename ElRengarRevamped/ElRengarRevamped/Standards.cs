@@ -10,10 +10,6 @@
     {
         #region Static Fields
 
-        private static readonly int[] BlueSmite = { 3706, 1400, 1401, 1402, 1403 };
-
-        private static readonly int[] RedSmite = { 3715, 1415, 1414, 1413, 1412 };
-
         protected static readonly Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
                                                                          {
                                                                              {
@@ -82,23 +78,6 @@
         #region Methods
 
         protected static StringList IsListActive(string menuItem) => MenuInit.Menu.Item(menuItem).GetValue<StringList>();
-
-        protected static void SmiteCombo()
-        {
-            if (BlueSmite.Any(id => Items.HasItem(id)))
-            {
-                Smite = Player.GetSpellSlot("s5_summonersmiteplayerganker");
-                return;
-            }
-
-            if (RedSmite.Any(id => Items.HasItem(id)))
-            {
-                Smite = Player.GetSpellSlot("s5_summonersmiteduel");
-                return;
-            }
-
-            Smite = Player.GetSpellSlot("summonersmite");
-        }
 
         #endregion
     }

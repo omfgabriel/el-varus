@@ -23,8 +23,6 @@
             {
                 comboMenu.SubMenu("Summoner spells")
                     .AddItem(new MenuItem("Combo.Use.Ignite", "Use Ignite").SetValue(true));
-                comboMenu.SubMenu("Summoner spells")
-                    .AddItem(new MenuItem("Combo.Use.Smite", "Use Smite").SetValue(true));
 
                 comboMenu.SubMenu("Combo").AddItem(new MenuItem("Combo.Use.Q", "Use Q").SetValue(true));
                 comboMenu.SubMenu("Combo").AddItem(new MenuItem("Combo.Use.W", "Use W").SetValue(true));
@@ -32,14 +30,15 @@
                 comboMenu.SubMenu("Combo")
                     .AddItem(new MenuItem("Combo.Switch.E", "Switch E prio to Q after E cast").SetValue(true));
                 comboMenu.SubMenu("Combo")
-                    .AddItem(new MenuItem("Combo.Use.E.OutOfRange", "Use E when out of range").SetValue(false));
-                comboMenu.SubMenu("Combo")
                     .AddItem(
                         new MenuItem("Combo.Prio", "Prioritize").SetValue(new StringList(new[] { "E", "W", "Q" }, 2)));
                 comboMenu.SubMenu("Combo")
                     .AddItem(
                         new MenuItem("Combo.Switch", "Switch priority").SetValue(
                             new KeyBind("L".ToCharArray()[0], KeyBindType.Press)));
+
+                comboMenu.SubMenu("Combo").AddItem(new MenuItem("Combo.Use.QQ", "5 ferocity Q reset").SetValue(true));
+
 
                 comboMenu.SubMenu("Harass").AddItem(new MenuItem("Harass.Use.Q", "Use Q").SetValue(true));
                 comboMenu.SubMenu("Harass").AddItem(new MenuItem("Harass.Use.W", "Use W").SetValue(true));
@@ -59,10 +58,7 @@
                 clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("Jungle.Use.Q", "Use Q").SetValue(true));
                 clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("Jungle.Use.W", "Use W").SetValue(true));
                 clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("Jungle.Use.E", "Use E").SetValue(true));
-                clearMenu.SubMenu("Jungleclear")
-                    .AddItem(new MenuItem("Jungle.Movement2", "Movement in jungle off").SetValue(false));
-                clearMenu.SubMenu("Jungleclear")
-                    .AddItem(new MenuItem("Jungle.Save.Ferocity", "Save ferocity").SetValue(false));
+                clearMenu.SubMenu("Jungleclear").AddItem(new MenuItem("Jungle.Save.Ferocity", "Save ferocity").SetValue(false));
             }
 
             var healMenu = Menu.AddSubMenu(new Menu("Heal", "heal"));

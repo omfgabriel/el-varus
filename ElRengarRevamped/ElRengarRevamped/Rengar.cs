@@ -23,10 +23,6 @@
     {
         #region Static Fields
 
-        public static int LastAutoAttack, Lastrengarq;
-
-        public static int LastQ, LastE, LastW, LastSpell;
-
         public static Obj_AI_Base SelectedEnemy;
 
         #endregion
@@ -45,12 +41,13 @@
             {
                 return;
             }
+
             var unit2 =
                 ObjectManager.Get<Obj_AI_Base>()
                     .FirstOrDefault(
                         a =>
-                        (a.IsValid<Obj_AI_Hero>()) && a.IsEnemy && a.Distance(Game.CursorPos) < a.BoundingRadius + 80
-                        && a.IsValidTarget());
+                        (a.IsValid<Obj_AI_Hero>()) && a.IsEnemy && a.Distance(Game.CursorPos) < a.BoundingRadius + 1000 && a.IsValidTarget());
+
             if (unit2 != null)
             {
                 SelectedEnemy = unit2;
@@ -71,6 +68,7 @@
                 Ignite = Player.GetSpellSlot("summonerdot");
                 Game.PrintChat(
                     "[00:01] <font color='#CC0000'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery!!");
+
                 spells[Spells.E].SetSkillshot(0.25f, 70f, 1500f, true, SkillshotType.SkillshotLine);
 
                 MenuInit.Initialize();
@@ -106,12 +104,12 @@
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
                     || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
                 {
-                    if (target.IsValidTarget(spells[Spells.Q].Range))
+                    if (Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
                     {
                         spells[Spells.Q].Cast();
+                        ActiveModes.CastItems(enemy);
                     }
                 }
-                ActiveModes.CastItems(enemy);
             }
             catch (Exception e)
             {
@@ -123,6 +121,11 @@
         {
             try
             {
+                if (!IsActive("Combo.Use.QQ"))
+                {
+                    return;
+                }
+
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !HasPassive && spells[Spells.Q].IsReady()
                     && !(IsListActive("Combo.Prio").SelectedIndex == 0
                          || IsListActive("Combo.Prio").SelectedIndex == 1 && Ferocity == 5))
@@ -144,16 +147,19 @@
         {
             try
             {
-                if (Player.IsRecalling() || Player.InFountain() || Ferocity <= 4 || RengarR)
+                if (RengarR || Player.IsRecalling() || Player.InFountain() || Ferocity != 5)
                 {
                     return;
                 }
 
-                if (IsActive("Heal.AutoHeal")
-                    && (Player.Health / Player.MaxHealth) * 100
-                    <= MenuInit.Menu.Item("Heal.HP").GetValue<Slider>().Value && spells[Spells.W].IsReady())
+                if (Player.CountEnemiesInRange(1000) > 1 && spells[Spells.W].IsReady())
                 {
-                    spells[Spells.W].Cast();
+                    if (IsActive("Heal.AutoHeal")
+                        && (Player.Health / Player.MaxHealth) * 100
+                        <= MenuInit.Menu.Item("Heal.HP").GetValue<Slider>().Value)
+                    {
+                        spells[Spells.W].Cast();
+                    }
                 }
             }
             catch (Exception e)
@@ -166,14 +172,12 @@
         {
             try
             {
-                if (!IsActive("Killsteal.On") || RengarR)
+                if (!IsActive("Killsteal.On") || RengarR || Player.IsRecalling())
                 {
                     return;
                 }
 
-                var target =
-                    Enemies.FirstOrDefault(
-                        x => x.IsValidTarget(spells[Spells.E].Range));
+                var target = Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.E].Range));
 
                 if (target == null)
                 {
@@ -215,6 +219,11 @@
                     return;
                 }
 
+                if (!RengarR)
+                {
+                    ActiveModes.CastItems(target);
+                }
+
                 if (Ferocity == 5)
                 {
                     switch (IsListActive("Combo.Prio").SelectedIndex)
@@ -244,8 +253,26 @@
                             break;
                     }
                 }
-
-                ActiveModes.CastItems(target);
+                else
+                {
+                    if (IsListActive("Combo.Prio").SelectedIndex != 0)
+                    {
+                        if (spells[Spells.E].IsReady())
+                        {
+                            var targetE = TargetSelector.GetTarget(
+                                spells[Spells.E].Range,
+                                TargetSelector.DamageType.Physical);
+                            if (targetE.IsValidTarget(spells[Spells.E].Range))
+                            {
+                                var pred = spells[Spells.E].GetPrediction(targetE);
+                                if (pred.Hitchance >= HitChance.Medium)
+                                {
+                                    spells[Spells.E].Cast(pred.CastPosition);
+                                }
+                            }
+                        }
+                    }
+                }
 
                 switch (IsListActive("Combo.Prio").SelectedIndex)
                 {
@@ -405,18 +432,6 @@
                                 Utility.DelayAction.Add(2000, () => Items.UseItem(3142));
                             }
                             break;
-
-                        case "RengarQ":
-                            LastQ = Environment.TickCount;
-                            break;
-
-                        case "RengarE":
-                            LastE = Environment.TickCount;
-                            break;
-
-                        case "RengarW":
-                            LastW = Environment.TickCount;
-                            break;
                     }
                 }
             }
@@ -452,7 +467,6 @@
                 }
 
                 SwitchCombo();
-                SmiteCombo();
                 Heal();
                 KillstealHandler();
 

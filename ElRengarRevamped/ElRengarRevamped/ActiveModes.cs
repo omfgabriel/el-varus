@@ -105,8 +105,7 @@ namespace ElRengarRevamped
                                         }
                                     }
 
-                                    if (IsActive("Combo.Switch.E") && Environment.TickCount - Rengar.LastE >= 500
-                                        && Utils.GameTimeTickCount - LastSwitch >= 350)
+                                    if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
                                     {
                                         MenuInit.Menu.Item("Combo.Prio")
                                             .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
@@ -147,14 +146,6 @@ namespace ElRengarRevamped
                                 }
                             }
                             break;
-                    }
-
-                    if (!RengarR)
-                    {
-                        if (IsActive("Combo.Use.E.OutOfRange"))
-                        {
-                            CastE(target);
-                        }
                     }
                 }
 
