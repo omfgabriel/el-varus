@@ -235,7 +235,7 @@
         /// <summary>
         /// Occurs when a camp died.
         /// </summary>
-        public static event EventHandler<JungleCamp> CampDied; 
+        public static event EventHandler<JungleCamp> CampDied;
 
         /// <summary>
         ///     Creates the Menu.
@@ -262,10 +262,12 @@
             Font = new Font(
                 Drawing.Direct3DDevice,
                 new FontDescription
-                    {
-                        FaceName = "Tahoma", Height = 13, OutputPrecision = FontPrecision.Default,
-                        Quality = FontQuality.Default
-                    });
+                {
+                    FaceName = "Tahoma",
+                    Height = 13,
+                    OutputPrecision = FontPrecision.Default,
+                    Quality = FontQuality.Default
+                });
 
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += this.GameObject_OnDelete;

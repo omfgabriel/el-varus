@@ -6,8 +6,6 @@
     using System.Reflection;
     using System.Security.Permissions;
 
-    using ElUtilitySuite.Vendor.SFX;
-
     using LeagueSharp;
     using LeagueSharp.Common;
     using LeagueSharp.Data;
@@ -18,45 +16,91 @@
 
     using Color = System.Drawing.Color;
 
-    internal class SpellCountdownTracker //: IPlugin
+    internal class SpellCountdownTracker : IPlugin
     {
         #region Constants
 
+        /// <summary>
+        ///     The box height
+        /// </summary>
         private const int BoxHeight = 105;
 
+        /// <summary>
+        ///     The box spacing
+        /// </summary>
         private const int BoxSpacing = 25;
 
+        /// <summary>
+        ///     The box width
+        /// </summary>
         private const int BoxWidth = 235;
 
+        /// <summary>
+        ///     The color indicator width
+        /// </summary>
         private const int ColorIndicatorWidth = 10;
 
+        /// <summary>
+        ///     The countdown
+        /// </summary>
         private const int Countdown = 10;
 
-        #endregion
-
-        #region Fields
-
-        private readonly int MoveRightSpeed = 300;
-
-        private int StartX { get; set; } = Drawing.Width - BoxWidth;
-
-        private int StartY { get; set; } = Drawing.Height - BoxHeight * 4;
+        /// <summary>
+        ///     The move right speed
+        /// </summary>
+        private const int MoveRightSpeed = 300;
 
         #endregion
 
         #region Properties
 
+        /// <summary>
+        ///     Gets the cards.
+        /// </summary>
+        /// <value>
+        ///     The cards.
+        /// </value>
         private List<Card> Cards { get; } = new List<Card>();
 
+        /// <summary>
+        ///     Gets the countdown font.
+        /// </summary>
+        /// <value>
+        ///     The countdown font.
+        /// </value>
         private Font CountdownFont { get; } = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Arial", 25));
 
+        /// <summary>
+        ///     Gets the icons.
+        /// </summary>
+        /// <value>
+        ///     The icons.
+        /// </value>
+        private Dictionary<string, Texture> Icons { get; } = new Dictionary<string, Texture>();
+
+        /// <summary>
+        ///     Gets or sets the menu.
+        /// </summary>
+        /// <value>
+        ///     The menu.
+        /// </value>
+        private Menu Menu { get; set; }
+
+        /// <summary>
+        ///     Gets the padding.
+        /// </summary>
+        /// <value>
+        ///     The padding.
+        /// </value>
         private Vector2 Padding { get; } = new Vector2(10, 5);
 
+        /// <summary>
+        ///     Gets the spell name font.
+        /// </summary>
+        /// <value>
+        ///     The spell name font.
+        /// </value>
         private Font SpellNameFont { get; } = new Font(Drawing.Direct3DDevice, new System.Drawing.Font("Arial", 15));
-
-        private Dictionary<string, Texture> Icons { get; set; } = new Dictionary<string, Texture>();
-
-        private Sprite Sprite { get; set; } = new Sprite(Drawing.Direct3DDevice);
 
         /// <summary>
         ///     Gets or sets the spells.
@@ -64,8 +108,31 @@
         /// <value>
         ///     The spells.
         /// </value>
-        private List<SpellDatabaseEntry> Spells { get; set; } = new List<SpellDatabaseEntry>();
-            
+        private List<SpellDatabaseEntry> Spells { get; } = new List<SpellDatabaseEntry>();
+
+        /// <summary>
+        ///     Gets the sprite.
+        /// </summary>
+        /// <value>
+        ///     The sprite.
+        /// </value>
+        private Sprite Sprite { get; } = new Sprite(Drawing.Direct3DDevice);
+
+        /// <summary>
+        ///     Gets or sets the start x.
+        /// </summary>
+        /// <value>
+        ///     The start x.
+        /// </value>
+        private int StartX { get; set; } = Drawing.Width - BoxWidth;
+
+        /// <summary>
+        ///     Gets or sets the start y.
+        /// </summary>
+        /// <value>
+        ///     The start y.
+        /// </value>
+        private int StartY { get; set; } = Drawing.Height - BoxHeight * 4;
 
         #endregion
 
@@ -95,8 +162,6 @@
             this.Menu = menu;
         }
 
-        private Menu Menu { get; set; }
-
         /// <summary>
         ///     Loads this instance.
         /// </summary>
@@ -106,86 +171,68 @@
             Game.OnUpdate += this.GameOnUpdate;
             Obj_AI_Base.OnProcessSpellCast += this.ObjAiBaseOnProcessSpellCast;
             Drawing.OnDraw += this.Drawing_OnDraw;
+
             JungleTracker.CampDied += this.JungleTrackerCampDied;
+
             Drawing.OnPreReset += args =>
-                {
-                    this.SpellNameFont.OnLostDevice();
-                    this.CountdownFont.OnLostDevice();
-                    this.Sprite.OnLostDevice();
-                };
+            {
+                this.SpellNameFont.OnLostDevice();
+                this.CountdownFont.OnLostDevice();
+                this.Sprite.OnLostDevice();
+            };
 
             Drawing.OnPostReset += args =>
-                {
-                    this.SpellNameFont.OnResetDevice();
-                    this.CountdownFont.OnResetDevice();
-                    this.Sprite.OnResetDevice();
-                };
-
+            {
+                this.SpellNameFont.OnResetDevice();
+                this.CountdownFont.OnResetDevice();
+                this.Sprite.OnResetDevice();
+            };
 
             try
             {
-                var names =
-                Assembly.GetExecutingAssembly().GetManifestResourceNames().Skip(1).ToList();
-                Console.WriteLine(string.Join(" ", names));
-                Console.WriteLine();
+                var names = Assembly.GetExecutingAssembly().GetManifestResourceNames().Skip(1).ToList();
 
                 foreach (var name in names)
                 {
                     var spellName = name.Split('.')[3];
-                    Console.WriteLine(spellName);
+
                     if (spellName != "Dragon" && spellName != "Baron")
                     {
                         this.Spells.Add(Data.Get<SpellDatabase>().Spells.First(x => x.SpellName.Equals(spellName)));
                     }
-                    this.Icons.Add(
-                    spellName,
-                    Texture.FromStream(
-                        Drawing.Direct3DDevice,
-                        Assembly.GetExecutingAssembly().GetManifestResourceStream(name)));
-                }
 
-               
+                    this.Icons.Add(
+                        spellName,
+                        Texture.FromStream(
+                            Drawing.Direct3DDevice,
+                            Assembly.GetExecutingAssembly().GetManifestResourceStream(name)));
+                }
             }
             catch (Exception e)
             {
-                
                 Console.WriteLine(e);
             }
-            
-        }
-
-        private void JungleTrackerCampDied(object sender, JungleTracker.JungleCamp e)
-        {
-            Game.PrintChat("Camp died!");
-            if (!e.MobNames.Any(x => x.ToLower().Contains("baron") || x.ToLower().Contains("dragon")))
-            {
-                Game.PrintChat("wasnt baron or dragon!");
-                return;
-            }
-
-            var card = new Card
-             {
-                EndTime = e.NextRespawnTime, 
-                StartTime = Game.Time, 
-                EndMessage = "Respawn", 
-                FriendlyName = e.MobNames.Any(x => x.ToLower().Contains("dragon")) ? "Dragon" : "Baron"
-             };
-
-            card.Name = card.FriendlyName;
-            this.Cards.Add(card);
-            Game.PrintChat("added baron or dragon card!");
         }
 
         #endregion
 
         #region Methods
 
+        /// <summary>
+        ///     Draws a box.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="borderwidth">The borderwidth.</param>
+        /// <param name="borderColor">Color of the border.</param>
         private static void DrawBox(
-            Vector2 position, 
-            int width, 
-            int height, 
-            Color color, 
-            int borderwidth, 
+            Vector2 position,
+            int width,
+            int height,
+            Color color,
+            int borderwidth,
             Color borderColor)
         {
             Drawing.DrawLine(position.X, position.Y, position.X + width, position.Y, height, color);
@@ -197,32 +244,36 @@
 
             Drawing.DrawLine(position.X, position.Y, position.X + width, position.Y, borderwidth, borderColor);
             Drawing.DrawLine(
-                position.X, 
-                position.Y + height, 
-                position.X + width, 
-                position.Y + height, 
-                borderwidth, 
+                position.X,
+                position.Y + height,
+                position.X + width,
+                position.Y + height,
+                borderwidth,
                 borderColor);
 
             Drawing.DrawLine(position.X, position.Y + 1, position.X, position.Y + height + 1, borderwidth, borderColor);
             Drawing.DrawLine(
-                position.X + width, 
-                position.Y + 1, 
-                position.X + width, 
-                position.Y + height + 1, 
-                borderwidth, 
+                position.X + width,
+                position.Y + 1,
+                position.X + width,
+                position.Y + height + 1,
+                borderwidth,
                 borderColor);
         }
 
+        /// <summary>
+        ///     Drawing_s the on draw.
+        /// </summary>
+        /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Drawing_OnDraw(EventArgs args)
         {
-            if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed)
+            if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed
+                || !this.Menu.Item("DrawCards").IsActive())
             {
                 return;
             }
 
-            
-
+            var i = 0;
             foreach (var card in this.Cards.Where(x => x.EndTime - Game.Time <= Countdown))
             {
                 // draw spell
@@ -230,7 +281,6 @@
                 var spellReady = remainingTime <= 0;
 
                 var remainingTimePretty = remainingTime > 0 ? remainingTime.ToString("N1") : card.EndMessage;
-                var i = this.Cards.IndexOf(card);
 
                 var indicatorColor = spellReady ? Color.LawnGreen : Color.Yellow;
 
@@ -240,7 +290,7 @@
 
                 if (remainingTime <= -5)
                 {
-                    boxX += (int)((-remainingTime - 5) * this.MoveRightSpeed);
+                    boxX += (int)((-remainingTime - 5) * MoveRightSpeed);
                 }
 
                 var lineStart = new Vector2(boxX, boxY);
@@ -250,15 +300,14 @@
                 // Draw the black rectangle
                 var boxStart = new Vector2(boxX + ColorIndicatorWidth, boxY);
                 DrawBox(boxStart, BoxWidth - ColorIndicatorWidth, BoxHeight, Color.Black, 0, new Color());
-                
 
                 // Draw spell name
                 var spellNameStart = boxStart + this.Padding;
                 this.SpellNameFont.DrawText(
-                    null, 
-                    card.FriendlyName, 
-                    (int)spellNameStart.X, 
-                    (int)spellNameStart.Y, 
+                    null,
+                    card.FriendlyName,
+                    (int)spellNameStart.X,
+                    (int)spellNameStart.Y,
                     new ColorBGRA(255, 255, 255, 255));
 
                 // draw icon
@@ -267,18 +316,16 @@
 
                 var texture = this.Icons[card.Name];
                 this.Sprite.Begin();
-                this.Sprite.Draw(
-                texture, new ColorBGRA(255, 255, 255, 255), null,
-                new Vector3(-1 * iconStart, 0));
+                this.Sprite.Draw(texture, new ColorBGRA(255, 255, 255, 255), null, new Vector3(-1 * iconStart, 0));
                 this.Sprite.End();
 
                 // draw countdown, add [icon size + padding]
                 var countdownStart = iconStart + new Vector2(51 + 22, -7);
                 this.CountdownFont.DrawText(
-                    null, 
-                    remainingTimePretty, 
-                    (int)countdownStart.X, 
-                    (int)countdownStart.Y, 
+                    null,
+                    remainingTimePretty,
+                    (int)countdownStart.X,
+                    (int)countdownStart.Y,
                     new ColorBGRA(255, 255, 255, 255));
 
                 // Draw progress bar :(
@@ -296,44 +343,79 @@
                 // MAGICERINO
                 DrawBox(progressBarStart, progressBarFullSize, 15, Color.Black, 1, Color.LawnGreen);
                 DrawBox(
-                    progressBarStart + new Vector2(3, 3), 
-                    (int)(progressBarActualSize - 6), 
-                    15 - 5, 
-                    Color.LawnGreen, 
-                    0, 
+                    progressBarStart + new Vector2(3, 3),
+                    (int)(progressBarActualSize - 6),
+                    15 - 5,
+                    Color.LawnGreen,
+                    0,
                     new Color());
+
+                i++;
             }
         }
 
+        /// <summary>
+        ///     Fired when the game updates
+        /// </summary>
+        /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void GameOnUpdate(EventArgs args)
         {
             this.Cards.RemoveAll(
                 x =>
                 x.EndTime - Game.Time <= -5
-                && this.StartX + (int)((-(x.EndTime - Game.Time) - 5) * this.MoveRightSpeed)
-                >= Drawing.Width + this.Cards.Count * this.MoveRightSpeed);
+                && this.StartX + (int)((-(x.EndTime - Game.Time) - 5) * MoveRightSpeed)
+                >= Drawing.Width + this.Cards.Count * MoveRightSpeed);
         }
 
+        /// <summary>
+        ///     Fired when a jungl camp died.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The e.</param>
+        private void JungleTrackerCampDied(object sender, JungleTracker.JungleCamp e)
+        {
+            if (!e.MobNames.Any(x => x.ToLower().Contains("baron") || x.ToLower().Contains("dragon")))
+            {
+                return;
+            }
+
+            var card = new Card
+            {
+                EndTime = e.NextRespawnTime,
+                StartTime = Game.Time,
+                EndMessage = "Respawn",
+                FriendlyName = e.MobNames.Any(x => x.ToLower().Contains("dragon")) ? "Dragon" : "Baron"
+            };
+
+            card.Name = card.FriendlyName;
+            this.Cards.Add(card);
+        }
+
+        /// <summary>
+        ///     Fired when a the game processes a spell cast.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
         private void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             var data = Data.Get<SpellDatabase>().GetByName(args.SData.Name);
             if (!sender.IsEnemy
                 || !this.Spells.Any(
-                    x => x.SpellName.Equals(args.SData.Name, StringComparison.InvariantCultureIgnoreCase)) || Cards.Any(x => x.Name == data.SpellName))
+                    x => x.SpellName.Equals(args.SData.Name, StringComparison.InvariantCultureIgnoreCase))
+                || this.Cards.Any(x => x.Name == data.SpellName))
             {
                 return;
             }
 
-            
             this.Cards.Add(
                 new Card
-                    {
-                        StartTime = Game.Time,
-                        EndTime = Game.Time + args.SData.Cooldown,
-                        FriendlyName = $"{data.ChampionName} {data.Slot}",
-                        Name = data.SpellName,
-                        EndMessage = "Ready"
-                    });
+                {
+                    StartTime = Game.Time,
+                    EndTime = Game.Time + sender.Spellbook.GetSpell(args.Slot).Cooldown,
+                    FriendlyName = $"{data.ChampionName} {data.Slot}",
+                    Name = data.SpellName,
+                    EndMessage = "Ready"
+                });
         }
 
         #endregion
@@ -342,15 +424,45 @@
         {
             #region Public Properties
 
+            /// <summary>
+            ///     Gets or sets the end message.
+            /// </summary>
+            /// <value>
+            ///     The end message.
+            /// </value>
+            public string EndMessage { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the end time.
+            /// </summary>
+            /// <value>
+            ///     The end time.
+            /// </value>
             public float EndTime { get; set; }
 
+            /// <summary>
+            ///     Gets or sets the name of the friendly.
+            /// </summary>
+            /// <value>
+            ///     The name of the friendly.
+            /// </value>
             public string FriendlyName { get; set; }
 
+            /// <summary>
+            ///     Gets or sets the name.
+            /// </summary>
+            /// <value>
+            ///     The name.
+            /// </value>
             public string Name { get; set; }
 
+            /// <summary>
+            ///     Gets or sets the start time.
+            /// </summary>
+            /// <value>
+            ///     The start time.
+            /// </value>
             public float StartTime { get; set; }
-
-            public string EndMessage { get; set; }
 
             #endregion
         }
