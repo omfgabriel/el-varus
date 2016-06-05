@@ -508,12 +508,6 @@
   <data name="LP_Teleport" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\LP_Teleport.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Jhin" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\jhin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Taliyah" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\taliyah.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="CD_Hud" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\CD_Hud.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -555,5 +549,11 @@
   </data>
   <data name="Aurelionsol" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Aurelionsol.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Jhin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Jhin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Taliyah" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Taliyah.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

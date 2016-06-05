@@ -27,6 +27,7 @@ namespace ElUtilitySuite.Vendor.SFX
     using System.Drawing.Drawing2D;
     using System.Drawing.Imaging;
     using System.IO;
+    using System.Security.Permissions;
 
     using ElUtilitySuite.Properties;
 
@@ -44,7 +45,9 @@ namespace ElUtilitySuite.Vendor.SFX
         /// <summary>
         ///     The Cache directory
         /// </summary>
-        public static string CacheDir = Path.Combine(BaseDir, "ElUtilitySuite" + " - Cache");
+        /// 
+        public static string CacheDir = Path.Combine(BaseDir, "Cache", "ElUtilitySuite");
+
 
         #endregion
 
