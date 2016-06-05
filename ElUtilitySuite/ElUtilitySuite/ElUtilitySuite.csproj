@@ -574,9 +574,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\CooldownNotifIcons\AbsoluteZero.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\AhriTumble.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\AkaliShadowDance.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\AspectOfTheCougar.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\AzirR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\BardR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\BlindMonkRKick.png" />
@@ -586,13 +583,11 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\CurseoftheSadMummy.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\DariusExecute.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\Destiny.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\DianaTeleport.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\DravenRCast.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\EkkoR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\EnchantedCrystalArrow.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\EvelynnR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\EzrealTrueshotBarrage.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\FerociousHowl.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\FioraR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\FizzMarinerDoom.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\GalioIdolOfDurand.png" />
@@ -607,10 +602,7 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\IllaoiR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\InfernalGuardian.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\InfiniteDuress.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\InsanityPotion.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\JarvanIVCataclysm.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\JaxRelentlessAssault.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\JayceStanceHtG.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\JinxR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\KatarinaR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\KennenShurikenStorm.png" />
@@ -624,7 +616,6 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\MissileBarrage.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\MonkeyKingSpinToWin.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\NamiR.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\NasusR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\NautilusGrandLine.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\NocturneParanoia.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\OlafRagnarok.png" />
@@ -635,17 +626,14 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\RengarR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\RivenFengShuiEngine.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\RumbleCarpetBomb.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\RyzeR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\Sadism.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SejuaniGlacialPrisonStart.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\ShyvanaTransformCast.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SionR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SivirR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SkarnerImpale.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SonaR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SorakaR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SoulShackles.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\StaticField.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SwainMetamorphism.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SyndraR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\TahmKenchNewR.png" />
@@ -661,7 +649,6 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\ViktorChaosStorm.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\ViR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\VladimirHemoplague.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\XenZhaoParry.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\XerathLocusOfPower2.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\YorickReviveAlly.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\ZacR.png" />
