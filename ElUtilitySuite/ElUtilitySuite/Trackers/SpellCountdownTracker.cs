@@ -408,7 +408,7 @@
             this.Cards.Add(
                 new Card
                     {
-                        StartTime = Game.Time, EndTime = Game.Time + args.SData.Cooldown, 
+                        StartTime = Game.Time, EndTime = Game.Time + sender.Spellbook.GetSpell(args.Slot).Cooldown, 
                         FriendlyName = $"{data.ChampionName} {data.Slot}", Name = data.SpellName, EndMessage = "Ready"
                     });
         }
