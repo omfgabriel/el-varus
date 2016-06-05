@@ -24,7 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -34,6 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LeagueSharp">
@@ -41,6 +42,9 @@
     </Reference>
     <Reference Include="LeagueSharp.Common">
       <HintPath>C:\Program Files (x86)\PlaySharp\System\LeagueSharp.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="LeagueSharp.Data">
+      <HintPath>C:\Program Files (x86)\PlaySharp\System\LeagueSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="SharpDX, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -60,6 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Trackers\SpellCountdownTracker.cs" />
     <Compile Include="Trackers\SpellTracker1.cs" />
     <Compile Include="Trackers\WardTracker.cs" />
     <Compile Include="Vendor\SFX\BitmapExtensions.cs" />
@@ -566,6 +571,124 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Aurelionsol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\AatroxR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\AbsoluteZero.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\AhriTumble.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\AkaliShadowDance.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\AspectOfTheCougar.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\AzirR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\BardR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\BlindMonkRKick.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\BraumRWrapper.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\CaitlynAceintheHole.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\Crowstorm.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\CurseoftheSadMummy.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\DariusExecute.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\Destiny.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\DianaTeleport.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\DravenRCast.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\EkkoR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\EliseR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\EnchantedCrystalArrow.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\EvelynnR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\EzrealTrueshotBarrage.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\Feast.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\FerociousHowl.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\FioraR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\FizzMarinerDoom.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\GalioIdolOfDurand.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\GangplankR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\GlacialStorm.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\GnarR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\GragasR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\GravesChargeShot.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\HecarimUlt.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\HeimerdingerR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\Highlander.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\IllaoiR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\InfernalGuardian.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\InfiniteDuress.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\InsanityPotion.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\IreliaTranscendentBlades.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\JarvanIVCataclysm.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\JaxRelentlessAssault.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\JayceStanceHtG.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\JinxR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\JudicatorIntervention.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\KalistaRx.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\KarmaMantra.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\KatarinaR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\KennenShurikenStorm.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\KhazixR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\KindredR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\KogMawLivingArtillery.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\LeonaSolarFlare.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\LissandraR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\LucianR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\LuluR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\LuxMaliceCannon.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\MaokaiDrain3.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\MissFortuneBulletTime.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\MissileBarrage.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\MonkeyKingSpinToWin.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\NamiR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\NasusR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\NautilusGrandLine.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\NocturneParanoia.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\OlafRagnarok.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\PantheonRJump.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\QuinnR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\ReapTheWhirlwind.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\RekSaiR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\RenektonReignOfTheTyrant.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\RengarR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\RiftWalk.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\RivenFengShuiEngine.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\RumbleCarpetBomb.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\RyzeR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\Sadism.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\SejuaniGlacialPrisonStart.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\ShyvanaTransformCast.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\SionR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\SivirR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\SkarnerImpale.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\SonaR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\SorakaR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\SoulShackles.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\StaticField.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\SwainMetamorphism.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\SyndraR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\TahmKenchNewR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\TalonShadowAssault.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\TeemoRCast.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\ThreshRPenta.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\Tremors2.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\TristanaR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\TwitchFullAutomatic.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\UdyrPhoenixStance.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\UFSlash.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\UndyingRage.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\UrgotSwap2.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\VarusR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\VayneInquisition.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\ViktorChaosStorm.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\ViR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\VladimirHemoplague.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\VolibearR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\XenZhaoParry.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\XerathLocusOfPower2.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\YorickReviveAlly.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\ZacR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\ZedR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\ZiggsR.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\Dragon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\CooldownNotifIcons\Baron.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

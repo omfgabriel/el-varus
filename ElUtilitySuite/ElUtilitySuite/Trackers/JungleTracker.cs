@@ -161,7 +161,7 @@
                                               "SRU_Dragon_Water6.3.1", "SRU_Dragon_Elder6.5.1"
                                           },
                                       Utility.Map.MapType.SummonersRift,
-                                      GameObjectTeam.Neutral),
+                                      GameObjectTeam.Neutral, false),
                                   new JungleCamp(
                                       300000,
                                       new Vector3(7139.29f, 10779.34f, 56.38f),
@@ -233,6 +233,11 @@
         #region Public Methods and Operators
 
         /// <summary>
+        /// Occurs when a camp died.
+        /// </summary>
+        public static event EventHandler<JungleCamp> CampDied; 
+
+        /// <summary>
         ///     Creates the Menu.
         /// </summary>
         /// <param name="rootMenu">The root Menu.</param>
@@ -263,7 +268,7 @@
                     });
 
             GameObject.OnCreate += GameObject_OnCreate;
-            GameObject.OnDelete += GameObject_OnDelete;
+            GameObject.OnDelete += this.GameObject_OnDelete;
 
             Drawing.OnEndScene += this.Drawing_OnEndScene;
             Drawing.OnPreReset += args => { Font.OnLostDevice(); };
@@ -312,7 +317,7 @@
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
-        private static void GameObject_OnDelete(GameObject sender, EventArgs args)
+        private void GameObject_OnDelete(GameObject sender, EventArgs args)
         {
             if (sender.Type != GameObjectType.obj_AI_Minion)
             {
@@ -331,13 +336,14 @@
             camp.ObjectsDead.Add(sender.Name);
             camp.ObjectsAlive.Remove(sender.Name);
 
-            if (camp.ObjectsDead.Count != camp.MobNames.Length)
+            if (camp.ObjectsDead.Count != camp.MobNames.Length && camp.MobsAreChildren)
             {
                 return;
             }
 
             camp.Dead = true;
-            camp.NextRespawnTime = Environment.TickCount + camp.RespawnTime - 3000;
+            camp.NextRespawnTime = Game.Time + camp.RespawnTime / 1000f - 3;
+            CampDied?.Invoke(this, camp);
         }
 
         /// <summary>
@@ -351,9 +357,9 @@
                 return;
             }
 
-            foreach (var camp in DeadCamps.Where(x => x.NextRespawnTime - Environment.TickCount > 0))
+            foreach (var camp in DeadCamps.Where(x => x.NextRespawnTime - Game.Time > 0))
             {
-                var timeSpan = TimeSpan.FromMilliseconds(camp.NextRespawnTime - Environment.TickCount);
+                var timeSpan = TimeSpan.FromSeconds(camp.NextRespawnTime - Game.Time);
                 var text = timeSpan.ToString(@"m\:ss");
                 var size = Font.MeasureText(text);
 
@@ -376,29 +382,33 @@
             #region Constructors and Destructors
 
             /// <summary>
-            ///     Initializes a new instance of the <see cref="JungleCamp" /> class.
+            /// Initializes a new instance of the <see cref="JungleCamp" /> class.
             /// </summary>
             /// <param name="respawnTime">The respawn time.</param>
             /// <param name="position">The position.</param>
             /// <param name="mobNames">The mob names.</param>
             /// <param name="mapType">Type of the map.</param>
             /// <param name="team">The team.</param>
+            /// <param name="mobsAreChildren">if set to <c>true</c> the mob names need to be dead to respawn.</param>
             public JungleCamp(
                 int respawnTime,
                 Vector3 position,
                 string[] mobNames,
                 Utility.Map.MapType mapType,
-                GameObjectTeam team)
+                GameObjectTeam team, bool mobsAreChildren = true)
             {
                 this.RespawnTime = respawnTime;
                 this.Position = position;
                 this.MobNames = mobNames;
                 this.MapType = mapType;
                 this.Team = team;
+                this.MobsAreChildren = mobsAreChildren;
 
                 this.ObjectsDead = new List<string>();
                 this.ObjectsAlive = new List<string>();
             }
+
+            public bool MobsAreChildren { get; set; }
 
             #endregion
 
@@ -448,7 +458,7 @@
             /// <value>
             ///     The next respawn time.
             /// </value>
-            public int NextRespawnTime { get; set; }
+            public float NextRespawnTime { get; set; }
 
             /// <summary>
             ///     Gets or sets the objects alive.
