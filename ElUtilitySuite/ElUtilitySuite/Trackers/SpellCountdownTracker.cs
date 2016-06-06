@@ -374,7 +374,7 @@
         }
 
         /// <summary>
-        ///     Fired when a jungl camp died.
+        ///     Fired when a jungle camp died.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The e.</param>

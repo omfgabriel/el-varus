@@ -646,12 +646,13 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\Dragon.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\ShenStandUnited.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\ShenR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\VayneInquisition.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\BlindMonkRKick.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\FerociousHowl.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\JhinRShot.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\KalistaRx.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\ShenStandUnited.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\JudicatorIntervention.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\BardR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\AatroxR.png" />
