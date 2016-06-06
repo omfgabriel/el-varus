@@ -161,7 +161,6 @@
                 menu.AddItem(new MenuItem($"Track.{enemy.CharData.BaseSkinName}", "Track " + enemy.ChampionName))
                     .SetValue(true);
             }
-           
             menu.Item("XPos").ValueChanged += (sender, args) => this.StartX = args.GetNewValue<Slider>().Value;
             menu.Item("YPos").ValueChanged += (sender, args) => this.StartY = args.GetNewValue<Slider>().Value;
 
@@ -201,7 +200,6 @@
                 foreach (var name in names)
                 {
                     var spellName = name.Split('.')[3];
-
                     if (spellName != "Dragon" && spellName != "Baron")
                     {
                         this.Spells.Add(Data.Get<SpellDatabase>().Spells.First(x => x.SpellName.Equals(spellName)));

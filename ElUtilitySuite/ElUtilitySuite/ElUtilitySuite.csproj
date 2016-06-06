@@ -656,6 +656,7 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\JudicatorIntervention.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\BardR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\AatroxR.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\AhriTumble.png" />
     <Content Include="Resources\CooldownNotifIcons\Baron.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
