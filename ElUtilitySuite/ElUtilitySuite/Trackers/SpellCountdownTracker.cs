@@ -417,7 +417,7 @@
                 new Card
                 {
                     StartTime = Game.Time,
-                    EndTime = Game.Time + sender.Spellbook.GetSpell(args.Slot).Cooldown,
+                    EndTime = Game.Time + sender.Spellbook.GetSpell(args.Slot).SData.Cooldown,
                     FriendlyName = $"{data.ChampionName} {data.Slot}",
                     Name = data.SpellName,
                     EndMessage = "Ready"
