@@ -155,14 +155,33 @@
             menu.AddItem(new MenuItem("XPos", "X Position").SetValue(new Slider(this.StartX, 0, Drawing.Width)));
             menu.AddItem(new MenuItem("YPos", "Y Position").SetValue(new Slider(this.StartY, 0, Drawing.Height)));
             menu.AddItem(new MenuItem("DrawCards", "Draw Cards").SetValue(true));
+            menu.AddItem(new MenuItem("AddTestCard", "Draw Test Card").SetValue(false).DontSave());
             menu.AddItem(new MenuItem("empty-line-3000", ""));
+
             foreach (var enemy in HeroManager.Enemies)
             {
                 menu.AddItem(new MenuItem($"Track.{enemy.CharData.BaseSkinName}", "Track " + enemy.ChampionName))
                     .SetValue(true);
             }
+
             menu.Item("XPos").ValueChanged += (sender, args) => this.StartX = args.GetNewValue<Slider>().Value;
             menu.Item("YPos").ValueChanged += (sender, args) => this.StartY = args.GetNewValue<Slider>().Value;
+            menu.Item("AddTestCard").ValueChanged += (sender, args) =>
+                {
+                    args.Process = false;
+
+                    if (this.Cards.Any(x => x.Name.Equals("Test")) || args.GetOldValue<bool>())
+                    {
+                        return;
+                    }
+
+                    this.Cards.Add(
+                        new Card
+                            {
+                                EndMessage = "Hello!", StartTime = Game.Time, EndTime = Game.Time + 10,
+                                FriendlyName = "Test", Name = "Test"
+                            });
+                };
 
             this.Menu = menu;
         }
@@ -193,11 +212,11 @@
                 this.Sprite.OnResetDevice();
             };
 
-            try
-            {
-                var names = Assembly.GetExecutingAssembly().GetManifestResourceNames().Skip(1).ToList();
+            var names = Assembly.GetExecutingAssembly().GetManifestResourceNames().Skip(1).ToList();
 
-                foreach (var name in names)
+            foreach (var name in names)
+            {
+                try
                 {
                     var spellName = name.Split('.')[3];
                     if (spellName != "Dragon" && spellName != "Baron")
@@ -211,10 +230,10 @@
                             Drawing.Direct3DDevice,
                             Assembly.GetExecutingAssembly().GetManifestResourceStream(name)));
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
+                catch (Exception)
+                {
+                    Console.WriteLine($"Failed to find load image for {name}. Please notify jQuery/ChewyMoon!");
+                }
             }
         }
 
@@ -318,10 +337,17 @@
                 var textSize = this.SpellNameFont.MeasureText(null, card.FriendlyName);
                 var iconStart = spellNameStart + new Vector2(0, textSize.Height + 5);
 
-                var texture = this.Icons[card.Name];
-                this.Sprite.Begin();
-                this.Sprite.Draw(texture, new ColorBGRA(255, 255, 255, 255), null, new Vector3(-1 * iconStart, 0));
-                this.Sprite.End();
+                Texture texture;
+                if (this.Icons.TryGetValue(card.Name, out texture))
+                {
+                    this.Sprite.Begin();
+                    this.Sprite.Draw(texture, new ColorBGRA(255, 255, 255, 255), null, new Vector3(-1 * iconStart, 0));
+                    this.Sprite.End();
+                }
+                else
+                {
+                    DrawBox(iconStart, 52, 52, Color.White, 0, new Color());
+                }
 
                 // draw countdown, add [icon size + padding]
                 var countdownStart = iconStart + new Vector2(51 + 22, -7);
