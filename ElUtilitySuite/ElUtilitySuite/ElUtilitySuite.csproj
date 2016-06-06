@@ -607,7 +607,6 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\LissandraR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\LucianR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\LuluR.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\LuxMaliceCannon.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\MissFortuneBulletTime.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\MonkeyKingSpinToWin.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\NamiR.png" />
@@ -626,7 +625,6 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SkarnerImpale.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SonaR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SorakaR.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\SwainMetamorphism.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SyndraR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\TahmKenchNewR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\TalonShadowAssault.png" />

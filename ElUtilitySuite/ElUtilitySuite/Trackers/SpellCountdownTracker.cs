@@ -408,7 +408,7 @@
             if (!sender.IsEnemy
                 || !this.Spells.Any(
                     x => x.SpellName.Equals(args.SData.Name, StringComparison.InvariantCultureIgnoreCase))
-                || this.Cards.Any(x => x.Name == data.SpellName) || !this.Menu.Item($"Track.{sender.CharData.BaseSkinName}").IsActive()) 
+                || this.Cards.Any(x => x.Name == data.SpellName) || !this.Menu.Item($"Track.{sender.CharData.BaseSkinName}").IsActive())
             {
                 return;
             }
@@ -417,7 +417,7 @@
                 new Card
                 {
                     StartTime = Game.Time,
-                    EndTime = Game.Time + sender.Spellbook.GetSpell(args.Slot).SData.Cooldown,
+                    EndTime = Game.Time + sender.Spellbook.GetSpell(args.Slot).Cooldown,
                     FriendlyName = $"{data.ChampionName} {data.Slot}",
                     Name = data.SpellName,
                     EndMessage = "Ready"

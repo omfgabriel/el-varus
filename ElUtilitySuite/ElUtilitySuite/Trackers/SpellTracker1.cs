@@ -520,6 +520,7 @@
                                                      && m.Champ.Equals(
                                                          lHero.ChampionName,
                                                          StringComparison.OrdinalIgnoreCase));
+
                                 var t = (manual != null ? manual.CooldownExpires : spell.CooldownExpires) - Game.Time;
                                 var spellCooldown = manual != null ? manual.Cooldown : spell.Cooldown;
                                 var percent = t > 0 && Math.Abs(spellCooldown) > float.Epsilon
