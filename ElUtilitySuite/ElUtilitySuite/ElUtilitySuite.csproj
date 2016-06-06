@@ -575,8 +575,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\CooldownNotifIcons\AbsoluteZero.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\AzirR.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\BardR.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\BlindMonkRKick.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\BraumRWrapper.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\CaitlynAceintheHole.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\Crowstorm.png" />
@@ -592,12 +590,10 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\FizzMarinerDoom.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\GalioIdolOfDurand.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\GangplankR.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\GlacialStorm.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\GnarR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\GragasR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\GravesChargeShot.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\HecarimUlt.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\HeimerdingerR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\Highlander.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\IllaoiR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\InfernalGuardian.png" />
@@ -613,12 +609,10 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\LuluR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\LuxMaliceCannon.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\MissFortuneBulletTime.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\MissileBarrage.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\MonkeyKingSpinToWin.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\NamiR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\NautilusGrandLine.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\NocturneParanoia.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\OlafRagnarok.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\PantheonRJump.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\ReapTheWhirlwind.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\RekSaiR.png" />
@@ -626,22 +620,17 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\RengarR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\RivenFengShuiEngine.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\RumbleCarpetBomb.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\Sadism.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SejuaniGlacialPrisonStart.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SionR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SivirR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SkarnerImpale.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SonaR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SorakaR.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\SoulShackles.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SwainMetamorphism.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\SyndraR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\TahmKenchNewR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\TalonShadowAssault.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\ThreshRPenta.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\Tremors2.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\TristanaR.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\TwitchFullAutomatic.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\UFSlash.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\UndyingRage.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\UrgotSwap2.png" />

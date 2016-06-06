@@ -155,7 +155,12 @@
             menu.AddItem(new MenuItem("XPos", "X Position").SetValue(new Slider(this.StartX, 0, Drawing.Width)));
             menu.AddItem(new MenuItem("YPos", "Y Position").SetValue(new Slider(this.StartY, 0, Drawing.Height)));
             menu.AddItem(new MenuItem("DrawCards", "Draw Cards").SetValue(true));
-
+            /*foreach (var enemy in HeroManager.Enemies)
+            {
+                menu.AddItem(new MenuItem("Track." + enemy.ChampionName, "Track " + enemy.ChampionName))
+                    .SetValue(true);
+            }*/
+           
             menu.Item("XPos").ValueChanged += (sender, args) => this.StartX = args.GetNewValue<Slider>().Value;
             menu.Item("YPos").ValueChanged += (sender, args) => this.StartY = args.GetNewValue<Slider>().Value;
 
@@ -402,7 +407,7 @@
             if (!sender.IsEnemy
                 || !this.Spells.Any(
                     x => x.SpellName.Equals(args.SData.Name, StringComparison.InvariantCultureIgnoreCase))
-                || this.Cards.Any(x => x.Name == data.SpellName))
+                || this.Cards.Any(x => x.Name == data.SpellName)) // || !this.Menu.Item($"Track.{sender.Name}").IsActive()
             {
                 return;
             }
