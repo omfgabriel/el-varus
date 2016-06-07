@@ -29,7 +29,6 @@
         /// </summary>
         private Obj_AI_Hero rengar;
 
-
         /// <summary>
         ///     Vayne
         /// </summary>
@@ -58,6 +57,14 @@
         #region Delegates
 
         /// <summary>
+        ///     A delegate that returns a <see cref="SpellSlot" />
+        /// </summary>
+        /// <returns>
+        ///     <see cref="SpellSlot" />
+        /// </returns>
+        public delegate SpellSlot GetSlotDelegate();
+
+        /// <summary>
         ///     Gets an anti stealth item.
         /// </summary>
         /// <returns></returns>
@@ -66,15 +73,6 @@
         #endregion
 
         #region Public Properties
-
-        /// <summary>
-        ///     A delegate that returns a <see cref="SpellSlot" />
-        /// </summary>
-        /// <returns>
-        ///     <see cref="SpellSlot" />
-        /// </returns>
-        public delegate SpellSlot GetSlotDelegate();
-
 
         /// <summary>
         ///     Gets or sets the spells.
@@ -154,20 +152,24 @@
                              {
                                  new AntiStealthRevealItem
                                      {
-                                     Slot = () =>
-                                        {
-                                            var slots = ItemData.Vision_Ward.GetItem().Slots;
-                                            return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
-                                        },
+                                         Slot = () =>
+                                             {
+                                                 var slots = ItemData.Vision_Ward.GetItem().Slots;
+                                                 return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
+                                             },
                                          Priority = 0
                                      },
                                  new AntiStealthRevealItem
                                      {
-                                     Slot = () =>
-                                        {
-                                            var slots = ItemData.Greater_Vision_Totem_Trinket.GetItem().Slots;
-                                            return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
-                                        },
+                                         Slot = () =>
+                                             {
+                                                 var slots =
+                                                     ItemData.Greater_Vision_Totem_Trinket.GetItem()
+                                                         .Slots;
+                                                 return slots.Count == 0
+                                                            ? SpellSlot.Unknown
+                                                            : slots[0];
+                                             },
                                          Priority = 1
                                      }
                              };
@@ -175,12 +177,12 @@
             this.Items = this.Items.OrderBy(x => x.Priority).ToList();
 
             this.rengar =
-                    GameObjects.EnemyHeroes.FirstOrDefault(
-                        e => e.ChampionName.Equals("Rengar", StringComparison.OrdinalIgnoreCase));
+                GameObjects.EnemyHeroes.FirstOrDefault(
+                    e => e.ChampionName.Equals("Rengar", StringComparison.OrdinalIgnoreCase));
 
             this.vayne =
-                    GameObjects.EnemyHeroes.FirstOrDefault(
-                        e => e.ChampionName.Equals("Vayne", StringComparison.OrdinalIgnoreCase));
+                GameObjects.EnemyHeroes.FirstOrDefault(
+                    e => e.ChampionName.Equals("Vayne", StringComparison.OrdinalIgnoreCase));
 
             GameObject.OnCreate += this.GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += this.OnProcessSpellCast;
@@ -192,14 +194,35 @@
         #region Methods
 
         /// <summary>
-        ///     Fired when the game is updated.
+        ///     Fired when a game object is created
         /// </summary>
-        /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
-        private void OnUpdate(EventArgs args)
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void GameObject_OnCreate(GameObject sender, EventArgs args)
         {
             try
             {
+                if (!sender.IsEnemy || !this.Menu.Item("AntiStealthActive").IsActive())
+                {
+                    return;
+                }
 
+                if (this.rengar != null)
+                {
+                    if (sender.Name.Contains("Rengar_Base_R_Alert"))
+                    {
+                        if (this.Player.HasBuff("rengarralertsound") && !this.rengar.IsVisible && !this.rengar.IsDead)
+                        {
+                            var item = this.GetBestWardItem();
+                            if (item != null)
+                            {
+                                Utility.DelayAction.Add(
+                                    random.Next(100, 1000),
+                                    () => this.Player.Spellbook.CastSpell(item.Slot, this.Player.Position));
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -227,44 +250,6 @@
         }
 
         /// <summary>
-        ///     Fired when a game object is created
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void GameObject_OnCreate(GameObject sender, EventArgs args)
-        {
-            try
-            {
-                if (!sender.IsEnemy || !this.Menu.Item("AntiStealthActive").IsActive())
-                {
-                    return;
-                }
-
-                if (this.rengar != null)
-                {
-                    if (sender.Name.Contains("Rengar_Base_R_Alert"))
-                    {
-                        if (this.Player.HasBuff("rengarralertsound") && !this.rengar.IsVisible && !this.rengar.IsDead)
-                        {
-                            var item = this.GetBestWardItem();
-                            if (item != null)
-                            {
-                                Utility.DelayAction.Add(
-                                   random.Next(100, 1000),
-                                   () =>
-                                   this.Player.Spellbook.CastSpell(item.Slot, this.Player.Position));
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred: '{0}'", e);
-            }
-        }
-
-        /// <summary>
         ///     Fired when the game processes a spell cast.
         /// </summary>
         /// <param name="sender">The sender.</param>
@@ -284,11 +269,32 @@
                     return;
                 }
 
-                var buff =
+                if (this.vayne != null)
+                {
+                    var buff =
                         this.vayne.Buffs.FirstOrDefault(
-                             b => b.Name.Equals("VayneInquisition", StringComparison.OrdinalIgnoreCase));
+                            b => b.Name.Equals("VayneInquisition", StringComparison.OrdinalIgnoreCase));
 
-                if (buff != null)
+                    if (buff != null)
+                    {
+                        var item = this.GetBestWardItem();
+                        if (item != null)
+                        {
+                            var spellCastPosition = this.Player.Distance(args.End) > 600
+                                                        ? this.Player.Position
+                                                        : args.End;
+
+                            Utility.DelayAction.Add(
+                                random.Next(100, 1000),
+                                () => this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition));
+                        }
+                    }
+                }
+
+                var stealthChampion =
+                    Spells.FirstOrDefault(x => x.SDataName.Equals(args.SData.Name, StringComparison.OrdinalIgnoreCase));
+
+                if (stealthChampion != null)
                 {
                     var item = this.GetBestWardItem();
                     if (item != null)
@@ -300,22 +306,21 @@
                             () => this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition));
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred: '{0}'", e);
+            }
+        }
 
-                var stealthChampion =
-                Spells.FirstOrDefault(x => x.SDataName.Equals(args.SData.Name, StringComparison.OrdinalIgnoreCase));
-
-                if (stealthChampion != null)
-                { 
-                    var item = this.GetBestWardItem();
-                    if (item != null)
-                    {
-                        var spellCastPosition = this.Player.Distance(args.End) > 600 ? this.Player.Position : args.End;
-
-                        Utility.DelayAction.Add(
-                            random.Next(100, 1000),
-                            () => this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition));
-                    }
-                }
+        /// <summary>
+        ///     Fired when the game is updated.
+        /// </summary>
+        /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
+        private void OnUpdate(EventArgs args)
+        {
+            try
+            {
             }
             catch (Exception e)
             {
@@ -375,6 +380,14 @@
             public int Priority { get; set; }
 
             /// <summary>
+            ///     Gets or sets the slot delegate.
+            /// </summary>
+            /// <value>
+            ///     The slot delegate.
+            /// </value>
+            public GetSlotDelegate Slot { get; set; }
+
+            /// <summary>
             ///     Gets or sets the spell.
             /// </summary>
             /// <value>
@@ -387,15 +400,6 @@
                     return new Spell(this.Slot());
                 }
             }
-
-            /// <summary>
-            ///     Gets or sets the slot delegate.
-            /// </summary>
-            /// <value>
-            ///     The slot delegate.
-            /// </value>
-            public GetSlotDelegate Slot { get; set; }
-
 
             #endregion
         }
