@@ -526,6 +526,8 @@
                                 var percent = t > 0 && Math.Abs(spellCooldown) > float.Epsilon
                                                   ? 1f - t / spellCooldown
                                                   : 1f;
+
+
                                 if (t > 0 && t < 100)
                                 {
                                     this._text.DrawTextCentered(
@@ -575,6 +577,7 @@
                                        m => m.Spell.Equals(args.SData.Name, StringComparison.OrdinalIgnoreCase))
                                    : this._manualEnemySpells.FirstOrDefault(
                                        m => m.Spell.Equals(args.SData.Name, StringComparison.OrdinalIgnoreCase));
+
                     if (data != null && data.CooldownExpires - Game.Time < 0.5)
                     {
                         var spell = hero.GetSpell(data.Slot);

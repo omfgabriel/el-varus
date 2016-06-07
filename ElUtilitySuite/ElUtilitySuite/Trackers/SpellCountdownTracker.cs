@@ -48,7 +48,7 @@
         /// <summary>
         ///     The move right speed
         /// </summary>
-        private const int MoveRightSpeed = 300;
+        private const int MoveRightSpeed = 800;
 
         #endregion
 
@@ -167,21 +167,24 @@
             menu.Item("XPos").ValueChanged += (sender, args) => this.StartX = args.GetNewValue<Slider>().Value;
             menu.Item("YPos").ValueChanged += (sender, args) => this.StartY = args.GetNewValue<Slider>().Value;
             menu.Item("AddTestCard").ValueChanged += (sender, args) =>
+            {
+                args.Process = false;
+
+                if (this.Cards.Any(x => x.Name.Equals("Test")) || args.GetOldValue<bool>())
                 {
-                    args.Process = false;
+                    return;
+                }
 
-                    if (this.Cards.Any(x => x.Name.Equals("Test")) || args.GetOldValue<bool>())
+                this.Cards.Add(
+                    new Card
                     {
-                        return;
-                    }
-
-                    this.Cards.Add(
-                        new Card
-                            {
-                                EndMessage = "Hello!", StartTime = Game.Time, EndTime = Game.Time + 10,
-                                FriendlyName = "Test", Name = "Test"
-                            });
-                };
+                        EndMessage = "Hello!",
+                        StartTime = Game.Time,
+                        EndTime = Game.Time + 10,
+                        FriendlyName = "Test",
+                        Name = "Test"
+                    });
+            };
 
             this.Menu = menu;
         }
@@ -192,6 +195,11 @@
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         public void Load()
         {
+            if (Game.MapId == GameMapId.HowlingAbyss)
+            {
+                return;
+            }
+
             Game.OnUpdate += this.GameOnUpdate;
             Obj_AI_Base.OnProcessSpellCast += this.ObjAiBaseOnProcessSpellCast;
             Drawing.OnDraw += this.Drawing_OnDraw;
@@ -437,15 +445,27 @@
                 return;
             }
 
-            this.Cards.Add(
-                new Card
+            var hero = sender as Obj_AI_Hero;
+            var spell = hero?.GetSpell(args.Slot);
+            if (spell != null)
+            {
+                if (Math.Abs(spell.Cooldown) <= 0)
+                {
+                    Console.WriteLine($"Something went wrong with {spell.Name}, please report to jQuery/Chewymoon");
+                    return;
+                }
+
+                Utility.DelayAction.Add(1, () => this.Cards.Add(new Card
                 {
                     StartTime = Game.Time,
-                    EndTime = Game.Time + sender.Spellbook.GetSpell(args.Slot).Cooldown,
+                    EndTime = Game.Time + spell.Cooldown,
                     FriendlyName = $"{data.ChampionName} {data.Slot}",
                     Name = data.SpellName,
                     EndMessage = "Ready"
-                });
+                }));
+
+                Console.WriteLine($"Tracking spell: {args.SData.Name}");
+            }
         }
 
         #endregion

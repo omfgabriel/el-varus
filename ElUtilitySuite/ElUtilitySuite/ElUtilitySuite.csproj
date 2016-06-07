@@ -579,7 +579,6 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\CaitlynAceintheHole.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\Crowstorm.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\CurseoftheSadMummy.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\DariusExecute.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\Destiny.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\DravenRCast.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\EkkoR.png" />
@@ -657,6 +656,12 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\AatroxR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\AhriTumble.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\Baron.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\LuxMaliceCannon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\Sadism.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
