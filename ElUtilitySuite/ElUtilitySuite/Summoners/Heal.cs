@@ -132,7 +132,7 @@
                     var totalDamage = IncomingDamageManager.GetDamage(ally) * 1.1f; //
 
                     if (ally.HealthPercent <= this.Menu.Item("min-health").GetValue<Slider>().Value && 
-                        this.HealSpell.IsInRange(ally) && enemies >= 1)
+                        this.HealSpell.IsInRange(ally) && !ally.IsDead && enemies >= 1)
                     {
                         if ((int)(totalDamage / ally.Health) > this.Menu.Item("min-damage").GetValue<Slider>().Value
                             || ally.HealthPercent < this.Menu.Item("min-health").GetValue<Slider>().Value)
