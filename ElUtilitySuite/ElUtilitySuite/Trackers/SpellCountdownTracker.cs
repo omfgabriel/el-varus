@@ -465,6 +465,7 @@
                 }));
 
                 Console.WriteLine($"Tracking spell: {args.SData.Name}");
+                Console.WriteLine($"Tracking cooldown: {spell.Cooldown}");
             }
         }
 
