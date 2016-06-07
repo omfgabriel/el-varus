@@ -128,7 +128,7 @@
                         return;
                     }
 
-                    var enemies = ally.CountEnemiesInRange(800f);
+                    var enemies = ally.CountEnemiesInRange(750f);
                     var totalDamage = IncomingDamageManager.GetDamage(ally) * 1.1f; //
 
                     if (ally.HealthPercent <= this.Menu.Item("min-health").GetValue<Slider>().Value && 
