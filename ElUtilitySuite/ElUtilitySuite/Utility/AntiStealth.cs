@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using ElUtilitySuite.Vendor.SFX;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -43,7 +45,6 @@
             Spells = new List<AntiStealthSpell>
                          {
                              new AntiStealthSpell { ChampionName = "Akali", SDataName = "akalismokebomb" },
-                             new AntiStealthSpell { ChampionName = "Vayne", SDataName = "vayneinquisition" },
                              new AntiStealthSpell { ChampionName = "Twitch", SDataName = "hideinshadows" },
                              new AntiStealthSpell { ChampionName = "Shaco", SDataName = "deceive" },
                              new AntiStealthSpell { ChampionName = "Monkeyking", SDataName = "monkeykingdecoy" },
@@ -74,10 +75,6 @@
         /// </returns>
         public delegate SpellSlot GetSlotDelegate();
 
-        /// <summary>
-        ///     The Vayne buff stealth end time
-        /// </summary>
-        public float VayneBuffEndTime = 0;
 
         /// <summary>
         ///     Gets or sets the spells.
@@ -177,7 +174,13 @@
 
             this.Items = this.Items.OrderBy(x => x.Priority).ToList();
 
-            this.rengar = HeroManager.Enemies.Find(x => x.ChampionName.ToLower() == "rengar");
+            this.rengar =
+                    GameObjects.EnemyHeroes.FirstOrDefault(
+                        e => e.ChampionName.Equals("Rengar", StringComparison.OrdinalIgnoreCase));
+
+            this.vayne =
+                    GameObjects.EnemyHeroes.FirstOrDefault(
+                        e => e.ChampionName.Equals("Vayne", StringComparison.OrdinalIgnoreCase));
 
             GameObject.OnCreate += this.GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += this.OnProcessSpellCast;
@@ -196,17 +199,7 @@
         {
             try
             {
-                this.vayne = HeroManager.Enemies.Find(x => x.ChampionName.ToLower() == "vayne");
-                if (this.vayne == null)
-                {
-                    return;
-                }
-                    
-                foreach (var hero in HeroManager.Enemies.Where(x => x.ChampionName.ToLower().Contains("vayne") &&
-                    x.Buffs.Any(y => y.Name.ToLower().Contains("vayneinquisition"))))
-                {
-                    this.VayneBuffEndTime = hero.Buffs.First(x => x.Name.ToLower().Contains("vayneinquisition")).EndTime;
-                }
+
             }
             catch (Exception e)
             {
@@ -251,16 +244,8 @@
                 {
                     if (sender.Name.Contains("Rengar_Base_R_Alert"))
                     {
-                        if (this.Player.HasBuff("rengarralertsound") && !this.rengar.IsVisible && !this.rengar.IsDead && 
-                            this.Player.Distance(sender.Position) < 1700)
+                        if (this.Player.HasBuff("rengarralertsound") && !this.rengar.IsVisible && !this.rengar.IsDead)
                         {
-                            var hero = (Obj_AI_Hero)sender;
-
-                            if (hero.IsAlly)
-                            {
-                                return;
-                            }
-
                             var item = this.GetBestWardItem();
                             if (item != null)
                             {
@@ -299,11 +284,23 @@
                     return;
                 }
 
-                if (args.SData.Name.ToLower().Contains("vaynetumble") && Game.Time > this.VayneBuffEndTime)
+                var buff =
+                        this.vayne.Buffs.FirstOrDefault(
+                             b => b.Name.Equals("VayneInquisition", StringComparison.OrdinalIgnoreCase));
+
+                if (buff != null)
                 {
-                    return;
+                    var item = this.GetBestWardItem();
+                    if (item != null)
+                    {
+                        var spellCastPosition = this.Player.Distance(args.End) > 600 ? this.Player.Position : args.End;
+
+                        Utility.DelayAction.Add(
+                            random.Next(100, 1000),
+                            () => this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition));
+                    }
                 }
-                   
+
                 var stealthChampion =
                 Spells.FirstOrDefault(x => x.SDataName.Equals(args.SData.Name, StringComparison.OrdinalIgnoreCase));
 
@@ -313,6 +310,7 @@
                     if (item != null)
                     {
                         var spellCastPosition = this.Player.Distance(args.End) > 600 ? this.Player.Position : args.End;
+
                         Utility.DelayAction.Add(
                             random.Next(100, 1000),
                             () => this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition));
