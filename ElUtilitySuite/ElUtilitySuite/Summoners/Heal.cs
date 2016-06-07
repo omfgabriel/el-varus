@@ -116,29 +116,20 @@
         {
             try
             {
-                if (this.Player.IsDead || !this.HealSpell.IsReady() || this.Player.InFountain() || this.Player.IsRecalling())
-                {
-                    return;
-                }
-
-                if (!this.Menu.Item("Heal.Activated").IsActive() || this.Menu.Item("PauseHealHotkey").GetValue<KeyBind>().Active)
+                if (this.Player.IsDead || !this.HealSpell.IsReady() || this.Player.InFountain() || this.Player.IsRecalling() || !this.Menu.Item("Heal.Activated").IsActive() || this.Menu.Item("PauseHealHotkey").GetValue<KeyBind>().Active)
                 {
                     return;
                 }
 
                 foreach (var ally in HeroManager.Allies)
                 {
-                    if (!this.Menu.Item(string.Format("healon{0}", ally.ChampionName)).IsActive() || ally.IsRecalling() || ally.IsInvulnerable)
+                    if (!this.Menu.Item($"healon{ally.ChampionName}").IsActive() || ally.IsRecalling() || ally.IsInvulnerable)
                     {
                         return;
                     }
 
-                    var enemies = ally.CountEnemiesInRange(600);
-                    var totalDamage = IncomingDamageManager.GetDamage(ally) * 1.1f;
-                    if (totalDamage <= 0)
-                    {
-                        return;
-                    }
+                    var enemies = ally.CountEnemiesInRange(800f);
+                    var totalDamage = IncomingDamageManager.GetDamage(ally) * 1.1f; //
 
                     if (ally.HealthPercent <= this.Menu.Item("min-health").GetValue<Slider>().Value && 
                         this.HealSpell.IsInRange(ally) && enemies >= 1)
