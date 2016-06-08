@@ -132,7 +132,7 @@
         /// <value>
         ///     The start y.
         /// </value>
-        private int StartY { get; set; } = Drawing.Height - BoxHeight * 4;
+        private int StartY { get; set; } = Drawing.Height - BoxHeight * 5;
 
         #endregion
 
@@ -440,7 +440,6 @@
             if (!sender.IsEnemy
                 || !this.Spells.Any(
                     x => x.SpellName.Equals(args.SData.Name, StringComparison.InvariantCultureIgnoreCase))
-                || this.Cards.Any(x => x.Name == data.SpellName) || !this.Menu.Item($"Track.{sender.CharData.BaseSkinName}").IsActive())
             {
                 return;
             }
