@@ -447,9 +447,9 @@
                                      ChampionName = "vladimir", SDataName = "vladimirhemoplague", MissileName = "",
                                      Delay = 250, MissileSpeed = int.MaxValue, CastRange = 875f
                                  },
-                              new ZhonyaSpell
+                               new ZhonyaSpell
                                  {
-                                     ChampionName = "Yasuo", SDataName = "yasuorknockupcombow", MissileName = "",
+                                     ChampionName = "Yasuo", SDataName = "YasuoQ3", MissileName = "",
                                      Delay = 1000, MissileSpeed = int.MaxValue, CastRange = 875f
                                  },
                              new ZhonyaSpell
@@ -592,7 +592,7 @@
                         {
                             zhonyaSpellMenu.AddItem(
                                 new MenuItem(
-                                    string.Format("Zhonya{0}", spell.SDataName),
+                                    $"Zhonya{spell.SDataName}",
                                     string.Format(
                                         "{0} ({1}) - {2}",
                                         char.ToUpper(spell.ChampionName[0]) + spell.ChampionName.Substring(1),
@@ -688,7 +688,7 @@
                 return;
             }
 
-            if (!this.Menu.Item(string.Format("Zhonya{0}", sdata.SDataName)).IsActive()
+            if (!this.Menu.Item($"Zhonya{sdata.SDataName}").IsActive()
                 || !this.Menu.Item("ZhonyaDangerous").IsActive())
             {
                 return;

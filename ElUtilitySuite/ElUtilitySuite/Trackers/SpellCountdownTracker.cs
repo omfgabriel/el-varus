@@ -43,12 +43,12 @@
         /// <summary>
         ///     The countdown
         /// </summary>
-        private const int Countdown = 10;
+        private const int Countdown = 100;
 
         /// <summary>
         ///     The move right speed
         /// </summary>
-        private const int MoveRightSpeed = 800;
+        private const int MoveRightSpeed = 1000;
 
         #endregion
 
@@ -440,7 +440,7 @@
             if (!sender.IsEnemy
                 || !this.Spells.Any(
                     x => x.SpellName.Equals(args.SData.Name, StringComparison.InvariantCultureIgnoreCase))
-                || this.Cards.Any(x => x.Name == data.SpellName && x.EndTime - Game.Time <= -5) || !this.Menu.Item($"Track.{sender.CharData.BaseSkinName}").IsActive())
+                || this.Cards.Any(x => x.Name == data.SpellName) || !this.Menu.Item($"Track.{sender.CharData.BaseSkinName}").IsActive())
             {
                 return;
             }
