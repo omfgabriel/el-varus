@@ -440,6 +440,7 @@
             if (!sender.IsEnemy
                 || !this.Spells.Any(
                     x => x.SpellName.Equals(args.SData.Name, StringComparison.InvariantCultureIgnoreCase))
+                || this.Cards.Any(x => x.Name == data.SpellName && x.EndTime - Game.Time <= -1) || !this.Menu.Item($"Track.{sender.CharData.BaseSkinName}").IsActive())
             {
                 return;
             }
