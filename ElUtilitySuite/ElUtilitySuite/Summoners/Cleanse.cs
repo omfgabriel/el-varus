@@ -544,7 +544,7 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "veigar", Name = "stun", MenuName = "Veigar Stun", Evade = false,
+                                     Champion = "veigar", Name = "Stun", MenuName = "Veigar Stun", Evade = true,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
                                  },
                              new CleanseSpell
@@ -968,7 +968,8 @@ namespace ElUtilitySuite.Summoners
                             this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
                         () =>
                             {
-                                if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable || !this.Menu.Item(string.Format("cleanseon{0}", ally2.ChampionName)).IsActive())
+                                if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable || !this.Menu.Item(
+                                    $"cleanseon{ally2.ChampionName}").IsActive())
                                 {
                                     return;
                                 }
