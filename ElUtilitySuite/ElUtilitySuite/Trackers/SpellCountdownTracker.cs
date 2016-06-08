@@ -43,7 +43,7 @@
         /// <summary>
         ///     The countdown
         /// </summary>
-        private const int Countdown = 100;
+        private const int Countdown = 10;
 
         /// <summary>
         ///     The move right speed
