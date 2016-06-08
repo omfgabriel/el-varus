@@ -130,11 +130,6 @@ namespace ElRengarRevamped
 
                 #region Summoner spells
 
-                if (Youmuu.IsReady() && Youmuu.IsOwned() && target.IsValidTarget(spells[Spells.Q].Range))
-                {
-                    Youmuu.Cast();
-                }
-
                 if (IsActive("Combo.Use.Smite") && !RengarR && Smite != SpellSlot.Unknown
                     && Player.Spellbook.CanUseSpell(Smite) == SpellState.Ready && !target.IsZombie)
                 {
