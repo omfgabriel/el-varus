@@ -69,6 +69,7 @@
             var autoLanternMenu = menu.AddSubMenu(new Menu("Thresh Lantern", "Threshlantern"));
             {
                 autoLanternMenu.AddItem(new MenuItem("ThreshLantern", "Auto click Thresh lantern").SetValue(true));
+                autoLanternMenu.AddItem(new MenuItem("ThreshHawkMode", "Only use key").SetValue(false));
                 autoLanternMenu.AddItem(
                     new MenuItem("ThreshLanternHotkey", "Hotkey").SetValue(new KeyBind('M', KeyBindType.Press)));
                 autoLanternMenu.AddItem(
@@ -144,7 +145,7 @@
             }
             catch (Exception e)
             {
-                Console.WriteLine("An error occurred: '{0}'", e);
+                Console.WriteLine(@"An error occurred: '{0}'", e);
             }
         }
 
@@ -162,8 +163,8 @@
                     return;
                 }
 
-                if (this.Player.HealthPercent < this.ClickBelowHp
-                    || this.Menu.Item("ThreshLanternHotkey").GetValue<KeyBind>().Active)
+                if (this.Menu.Item("ThreshHawkMode").IsActive() ? this.Menu.Item("ThreshLanternHotkey").GetValue<KeyBind>().Active :
+                    this.Menu.Item("ThreshLanternHotkey").GetValue<KeyBind>().Active || this.Player.HealthPercent < this.ClickBelowHp)
                 {
                     if (this.ThreshLantern.Position.Distance(this.Player.Position) <= 500)
                     {
