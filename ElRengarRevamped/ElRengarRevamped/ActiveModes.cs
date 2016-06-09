@@ -40,10 +40,7 @@ namespace ElRengarRevamped
                     if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q")
                         && Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
                     {
-                        if (Orbwalking.CanMove(0))
-                        {
-                            spells[Spells.Q].Cast();
-                        }
+                        spells[Spells.Q].Cast();
                     }
 
                     if (!RengarR)
@@ -85,10 +82,7 @@ namespace ElRengarRevamped
                             {
                                 if (spells[Spells.E].IsReady() && !HasPassive)
                                 {
-                                    if (Orbwalking.CanMove(40))
-                                    {
-                                        CastE(target);
-                                    }
+                                    CastE(target);
 
                                     if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
                                     {
@@ -119,10 +113,7 @@ namespace ElRengarRevamped
                             if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q")
                                 && Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
                             {
-                                if (Orbwalking.CanMove(0))
-                                {
-                                    spells[Spells.Q].Cast();
-                                }
+                                spells[Spells.Q].Cast();
                             }
                             break;
                     }
