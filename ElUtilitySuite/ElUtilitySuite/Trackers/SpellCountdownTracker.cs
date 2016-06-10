@@ -77,6 +77,7 @@
         ///     The icons.
         /// </value>
         private Dictionary<string, Texture> Icons { get; } = new Dictionary<string, Texture>();
+        private Dictionary<string, List<SpellSlot>> ChampionSpells { get; } = new Dictionary<string, List<SpellSlot>>();
 
         /// <summary>
         ///     Gets or sets the menu.
@@ -124,7 +125,7 @@
         /// <value>
         ///     The start x.
         /// </value>
-        private int StartX { get; set; } = Drawing.Width - BoxWidth;
+        private int StartX => this.Menu.Item("XPos").GetValue<Slider>().Value;
 
         /// <summary>
         ///     Gets or sets the start y.
@@ -132,7 +133,7 @@
         /// <value>
         ///     The start y.
         /// </value>
-        private int StartY { get; set; } = Drawing.Height - BoxHeight * 5;
+        private int StartY => this.Menu.Item("YPos").GetValue<Slider>().Value;
 
         #endregion
 
@@ -150,13 +151,13 @@
                 (rootMenu.Children.Any(predicate)
                      ? rootMenu.Children.First(predicate)
                      : rootMenu.AddSubMenu(new Menu("Trackers", "Trackers"))).AddSubMenu(
-                         new Menu("Cooldown Notification", "CDNotif"));
+                         new Menu("Cooldown Notification", "CDNotif2"));
 
-            menu.AddItem(new MenuItem("XPos", "X Position").SetValue(new Slider(this.StartX, 0, Drawing.Width)));
-            menu.AddItem(new MenuItem("YPos", "Y Position").SetValue(new Slider(this.StartY, 0, Drawing.Height)));
+            menu.AddItem(new MenuItem("XPos", "X Position").SetValue(new Slider(Drawing.Width - BoxWidth, 0, Drawing.Width)));
+            menu.AddItem(new MenuItem("YPos", "Y Position").SetValue(new Slider(Drawing.Height - BoxHeight * 4, 0, Drawing.Height)));
             menu.AddItem(new MenuItem("DrawCards", "Draw Cards").SetValue(true));
             menu.AddItem(new MenuItem("AddTestCard", "Draw Test Card").SetValue(false).DontSave());
-            menu.AddItem(new MenuItem("empty-line-3000", ""));
+            menu.AddItem(new MenuItem("empty-line-3000", string.Empty));
 
             foreach (var enemy in HeroManager.Enemies)
             {
@@ -164,8 +165,6 @@
                     .SetValue(true);
             }
 
-            menu.Item("XPos").ValueChanged += (sender, args) => this.StartX = args.GetNewValue<Slider>().Value;
-            menu.Item("YPos").ValueChanged += (sender, args) => this.StartY = args.GetNewValue<Slider>().Value;
             menu.Item("AddTestCard").ValueChanged += (sender, args) =>
             {
                 args.Process = false;
@@ -179,10 +178,10 @@
                     new Card
                     {
                         EndMessage = "Hello!",
-                        StartTime = Game.Time,
                         EndTime = Game.Time + 10,
                         FriendlyName = "Test",
-                        Name = "Test"
+                        Name = "Test",
+                        StartTime = Game.Time
                     });
             };
 
@@ -201,7 +200,6 @@
             }
 
             Game.OnUpdate += this.GameOnUpdate;
-            Obj_AI_Base.OnProcessSpellCast += this.ObjAiBaseOnProcessSpellCast;
             Drawing.OnDraw += this.Drawing_OnDraw;
 
             JungleTracker.CampDied += this.JungleTrackerCampDied;
@@ -221,15 +219,26 @@
             };
 
             var names = Assembly.GetExecutingAssembly().GetManifestResourceNames().Skip(1).ToList();
+            var neededSpells =
+                 Data.Get<SpellDatabase>().Spells.Where(
+                        x =>
+                        HeroManager.Enemies.Any(
+                            y => x.ChampionName.Equals(y.ChampionName, StringComparison.InvariantCultureIgnoreCase))).Select(x => x.SpellName).ToList();
 
             foreach (var name in names)
             {
                 try
                 {
                     var spellName = name.Split('.')[3];
+
                     if (spellName != "Dragon" && spellName != "Baron")
                     {
                         this.Spells.Add(Data.Get<SpellDatabase>().Spells.First(x => x.SpellName.Equals(spellName)));
+
+                        if (!neededSpells.Contains(spellName))
+                        {
+                            continue;
+                        }
                     }
 
                     this.Icons.Add(
@@ -242,6 +251,16 @@
                 {
                     Console.WriteLine($"Failed to find load image for {name}. Please notify jQuery/ChewyMoon!");
                 }
+            }
+
+            foreach (var spell in this.Spells)
+            {
+                if (!this.ChampionSpells.ContainsKey(spell.ChampionName))
+                {
+                    this.ChampionSpells[spell.ChampionName] = new List<SpellSlot>();
+                }
+
+                this.ChampionSpells[spell.ChampionName].Add(spell.Slot);
             }
         }
 
@@ -305,7 +324,115 @@
             }
 
             var i = 0;
-            foreach (var card in this.Cards.Where(x => x.EndTime - Game.Time <= Countdown))
+
+            // TODO clean this shit up LMAO
+            foreach (var enemy in HeroManager.Enemies)
+            {
+                List<SpellSlot> slots;
+                if (!this.ChampionSpells.TryGetValue(enemy.ChampionName, out slots))
+                {
+                    continue;
+                }
+
+                foreach (var spell in slots.Select(x => enemy.GetSpell(x)).Where(x => x.Level > 0 && x.CooldownExpires > 0 && x.CooldownExpires - Game.Time <= Countdown))
+                {
+                    if (spell.CooldownExpires - Game.Time <= -5
+                        && this.StartX + (int)((-(spell.CooldownExpires - Game.Time) - 5) * MoveRightSpeed)
+                        >= Drawing.Width + i * MoveRightSpeed)
+                    {
+                        continue;
+                    }
+
+                    // draw spell
+                    var remainingTime = spell.CooldownExpires - Game.Time;
+                    var spellReady = remainingTime <= 0;
+
+                    var remainingTimePretty = remainingTime > 0 ? remainingTime.ToString("N1") : "Ready";
+
+                    var indicatorColor = spellReady ? Color.LawnGreen : Color.Yellow;
+
+                    // We only need to calculate the y axis since the boxes stack vertically
+                    var boxY = this.StartY - i * BoxSpacing - (i * BoxHeight);
+                    var boxX = this.StartX;
+
+                    if (remainingTime <= -5)
+                    {
+                        boxX += (int)((-remainingTime - 5) * MoveRightSpeed);
+                    }
+
+                    var lineStart = new Vector2(boxX, boxY);
+
+                    DrawBox(lineStart, ColorIndicatorWidth, BoxHeight, indicatorColor, 0, new Color());
+
+                    // Draw the black rectangle
+                    var boxStart = new Vector2(boxX + ColorIndicatorWidth, boxY);
+                    DrawBox(boxStart, BoxWidth - ColorIndicatorWidth, BoxHeight, Color.Black, 0, new Color());
+
+                    // Draw spell name
+                    var spellNameStart = boxStart + this.Padding;
+                    this.SpellNameFont.DrawText(
+                        null,
+                        $"{enemy.ChampionName} {spell.Slot}",
+                        (int)spellNameStart.X,
+                        (int)spellNameStart.Y,
+                        new ColorBGRA(255, 255, 255, 255));
+
+                    // draw icon
+                    var textSize = this.SpellNameFont.MeasureText(null, $"{enemy.ChampionName} {spell.Slot}");
+                    var iconStart = spellNameStart + new Vector2(0, textSize.Height + 5);
+
+                    Texture texture;
+                    if (this.Icons.TryGetValue(spell.SData.Name, out texture))
+                    {
+                        this.Sprite.Begin();
+                        this.Sprite.Draw(texture, new ColorBGRA(255, 255, 255, 255), null, new Vector3(-1 * iconStart, 0));
+                        this.Sprite.End();
+                    }
+                    else
+                    {
+                        DrawBox(iconStart, 52, 52, Color.White, 0, new Color());
+                    }
+
+                    // draw countdown, add [icon size + padding]
+                    var countdownStart = iconStart + new Vector2(51 + 22, -7);
+                    this.CountdownFont.DrawText(
+                        null,
+                        remainingTimePretty,
+                        (int)countdownStart.X,
+                        (int)countdownStart.Y,
+                        new ColorBGRA(255, 255, 255, 255));
+
+                    // Draw progress bar :(
+                    var countdownSize = this.CountdownFont.MeasureText(null, remainingTimePretty);
+                    var progressBarStart = countdownStart + new Vector2(0, countdownSize.Height + 9);
+                    var progressBarFullSize = 125;
+                    var cooldown = spell.Cooldown;
+                    var progressBarActualSize = (cooldown - remainingTime) / cooldown * progressBarFullSize;
+
+                    if (progressBarActualSize > progressBarFullSize)
+                    {
+                        progressBarActualSize = progressBarFullSize;
+                    }
+
+                    // MAGICERINO
+                    DrawBox(progressBarStart, progressBarFullSize, 15, Color.Black, 1, Color.LawnGreen);
+                    DrawBox(
+                        progressBarStart + new Vector2(3, 3),
+                        (int)(progressBarActualSize - 6),
+                        15 - 5,
+                        Color.LawnGreen,
+                        0,
+                        new Color());
+
+                    i++;
+                }
+            }
+
+            foreach (var card in
+                this.Cards.Where(
+                    x =>
+                    x.EndTime - Game.Time <= Countdown)
+                )
             {
                 // draw spell
                 var remainingTime = card.EndTime - Game.Time;
@@ -420,53 +547,13 @@
             var card = new Card
             {
                 EndTime = e.NextRespawnTime,
-                StartTime = Game.Time,
                 EndMessage = "Respawn",
-                FriendlyName = e.MobNames.Any(x => x.ToLower().Contains("dragon")) ? "Dragon" : "Baron"
+                FriendlyName = e.MobNames.Any(x => x.ToLower().Contains("dragon")) ? "Dragon" : "Baron",
+                StartTime = Game.Time
             };
 
             card.Name = card.FriendlyName;
             this.Cards.Add(card);
-        }
-
-        /// <summary>
-        ///     Fired when a the game processes a spell cast.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs" /> instance containing the event data.</param>
-        private void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
-        {
-            var data = Data.Get<SpellDatabase>().GetByName(args.SData.Name);
-            if (!sender.IsEnemy
-                || !this.Spells.Any(
-                    x => x.SpellName.Equals(args.SData.Name, StringComparison.InvariantCultureIgnoreCase))
-                || this.Cards.Any(x => x.Name == data.SpellName) || !this.Menu.Item($"Track.{sender.CharData.BaseSkinName}").IsActive())
-            {
-                return;
-            }
-
-            var hero = sender as Obj_AI_Hero;
-            var spell = hero?.GetSpell(args.Slot);
-            if (spell != null)
-            {
-                if (Math.Abs(spell.Cooldown) <= 0)
-                {
-                    Console.WriteLine($"Something went wrong with {spell.Name}, please report to jQuery/Chewymoon");
-                    return;
-                }
-
-                Utility.DelayAction.Add(1, () => this.Cards.Add(new Card
-                {
-                    StartTime = Game.Time,
-                    EndTime = Game.Time + spell.Cooldown,
-                    FriendlyName = $"{data.ChampionName} {data.Slot}",
-                    Name = data.SpellName,
-                    EndMessage = "Ready"
-                }));
-
-                Console.WriteLine($"Tracking spell: {args.SData.Name}");
-                Console.WriteLine($"Tracking cooldown: {spell.Cooldown}");
-            }
         }
 
         #endregion
