@@ -104,7 +104,7 @@ namespace ElRengarRevamped
                             }
                             break;
                         case 1:
-                            if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady())
+                            if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
                             {
                                 CastW();
                             }

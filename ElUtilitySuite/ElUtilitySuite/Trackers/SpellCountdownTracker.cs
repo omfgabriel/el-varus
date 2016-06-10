@@ -553,6 +553,7 @@
             };
 
             card.Name = card.FriendlyName;
+            Console.WriteLine($"Added card for: {card.FriendlyName} - {card.StartTime} - {card.EndTime}");
             this.Cards.Add(card);
         }
 
