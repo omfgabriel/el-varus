@@ -27,11 +27,9 @@ namespace ElKatarina
     {
         #region Static Fields
 
-        public static Vector2 JumpPos;
-
         private static readonly bool castWardAgain = true;
 
-        private static readonly Obj_AI_Hero player = ObjectManager.Player;
+        private static readonly Obj_AI_Hero Player = ObjectManager.Player;
 
         private static readonly Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
                                                                        {
@@ -47,7 +45,9 @@ namespace ElKatarina
 
         private static SpellSlot igniteSlot;
 
-        private static bool isChanneling;
+        private static bool IsChanneling;
+
+        private static Vector2 JumpPos;
 
         private static long lastECast;
 
@@ -71,7 +71,7 @@ namespace ElKatarina
         {
             if (args.Unit.IsMe)
             {
-                args.Process = !player.HasBuff("KatarinaR");
+                args.Process = !Player.HasBuff("KatarinaR");
             }
         }
 
@@ -232,38 +232,38 @@ namespace ElKatarina
                     .Where(
                         minion =>
                         minion.IsValidTarget() && minion.IsEnemy
-                        && minion.Distance(player.ServerPosition) < spells[Spells.E].Range))
+                        && minion.Distance(Player.ServerPosition) < spells[Spells.E].Range))
             {
                 var qdmg = spells[Spells.Q].GetDamage(minion);
                 var wdmg = spells[Spells.W].GetDamage(minion);
                 var edmg = spells[Spells.E].GetDamage(minion);
-                var markDmg = player.CalcDamage(
+                var markDmg = Player.CalcDamage(
                     minion,
                     Damage.DamageType.Magical,
-                    player.FlatMagicDamageMod * 0.15 + player.Level * 15);
+                    Player.FlatMagicDamageMod * 0.15 + Player.Level * 15);
 
                 //Killable with Q
-                if (minion.Health - qdmg <= 0 && minion.Distance(player.ServerPosition) <= spells[Spells.Q].Range
+                if (minion.Health - qdmg <= 0 && minion.Distance(Player.ServerPosition) <= spells[Spells.Q].Range
                     && spells[Spells.Q].IsReady() && (config.Item("wFarm").GetValue<bool>()))
                 {
                     spells[Spells.Q].CastOnUnit(minion);
                 }
 
-                if (minion.Health - wdmg <= 0 && minion.Distance(player.ServerPosition) <= spells[Spells.W].Range
+                if (minion.Health - wdmg <= 0 && minion.Distance(Player.ServerPosition) <= spells[Spells.W].Range
                     && spells[Spells.W].IsReady() && (config.Item("wFarm").GetValue<bool>()))
                 {
                     spells[Spells.Q].Cast();
                     return;
                 }
 
-                if (minion.Health - edmg <= 0 && minion.Distance(player.ServerPosition) <= spells[Spells.E].Range
+                if (minion.Health - edmg <= 0 && minion.Distance(Player.ServerPosition) <= spells[Spells.E].Range
                     && spells[Spells.E].IsReady() && (config.Item("eFarm").GetValue<bool>()))
                 {
                     CastE(minion);
                     return;
                 }
 
-                if (minion.Health - wdmg - qdmg <= 0 && minion.Distance(player.ServerPosition) <= spells[Spells.W].Range
+                if (minion.Health - wdmg - qdmg <= 0 && minion.Distance(Player.ServerPosition) <= spells[Spells.W].Range
                     && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady()
                     && (config.Item("qFarm").GetValue<bool>()) && (config.Item("wFarm").GetValue<bool>()))
                 {
@@ -273,7 +273,7 @@ namespace ElKatarina
                 }
 
                 if (minion.Health - wdmg - qdmg - markDmg <= 0
-                    && minion.Distance(player.ServerPosition) <= spells[Spells.W].Range && spells[Spells.Q].IsReady()
+                    && minion.Distance(Player.ServerPosition) <= spells[Spells.W].Range && spells[Spells.Q].IsReady()
                     && spells[Spells.W].IsReady() && (config.Item("qFarm").GetValue<bool>())
                     && (config.Item("wFarm").GetValue<bool>()))
                 {
@@ -283,7 +283,7 @@ namespace ElKatarina
                 }
 
                 if (minion.Health - wdmg - qdmg - markDmg - edmg <= 0
-                    && minion.Distance(player.ServerPosition) <= spells[Spells.W].Range && spells[Spells.E].IsReady()
+                    && minion.Distance(Player.ServerPosition) <= spells[Spells.W].Range && spells[Spells.E].IsReady()
                     && spells[Spells.Q].IsReady() && spells[Spells.W].IsReady()
                     && (config.Item("qFarm").GetValue<bool>()) && (config.Item("wFarm").GetValue<bool>())
                     && (config.Item("eFarm").GetValue<bool>()))
@@ -356,9 +356,9 @@ namespace ElKatarina
                 damage += spells[Spells.R].GetDamage(enemy);
             }
 
-            if (igniteSlot == SpellSlot.Unknown || player.Spellbook.CanUseSpell(igniteSlot) != SpellState.Ready)
+            if (igniteSlot == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(igniteSlot) != SpellState.Ready)
             {
-                damage += (float)player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
+                damage += (float)Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
             }
 
             return damage;
@@ -366,7 +366,7 @@ namespace ElKatarina
 
         private static SpellDataInst GetItemSpell(InventorySlot invSlot)
         {
-            return player.Spellbook.Spells.FirstOrDefault(spell => (int)spell.Slot == invSlot.Slot + 4);
+            return Player.Spellbook.Spells.FirstOrDefault(spell => (int)spell.Slot == invSlot.Slot + 4);
         }
 
         private static void Harass()
@@ -410,14 +410,14 @@ namespace ElKatarina
 
         private static bool HasRBuff()
         {
-            return player.HasBuff("KatarinaR") || player.IsChannelingImportantSpell()
-                   || player.HasBuff("KatarinaRSound");
+            return Player.HasBuff("KatarinaR") || Player.IsChannelingImportantSpell()
+                   || Player.HasBuff("KatarinaRSound");
         }
 
         private static void JungleClear()
         {
             var mobs = MinionManager.GetMinions(
-                player.ServerPosition,
+                Player.ServerPosition,
                 spells[Spells.W].Range,
                 MinionTypes.All,
                 MinionTeam.Neutral,
@@ -453,11 +453,11 @@ namespace ElKatarina
         {
             if (config.Item("KillSteal").IsActive())
             {
-                var channeling = player.IsChannelingImportantSpell();
+                /*var channeling = Player.IsChannelingImportantSpell();
                 if (channeling)
                 {
                     return;
-                }
+                }*/
 
                 foreach (var enemy in
                     HeroManager.Enemies.Where(
@@ -494,7 +494,7 @@ namespace ElKatarina
             var useW = config.Item("qFarm").IsActive();
             var useE = config.Item("eFarm").IsActive();
 
-            var minions = MinionManager.GetMinions(player.ServerPosition, spells[Spells.Q].Range);
+            var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
             if (minions.Count <= 0)
             {
                 return;
@@ -507,7 +507,7 @@ namespace ElKatarina
                         .Where(
                             minion =>
                             minion.IsValidTarget() && minion.IsEnemy
-                            && minion.Distance(player.ServerPosition) < spells[Spells.E].Range))
+                            && minion.Distance(Player.ServerPosition) < spells[Spells.E].Range))
                 {
                     spells[Spells.Q].CastOnUnit(minion);
                     return;
@@ -528,12 +528,12 @@ namespace ElKatarina
                     .Where(
                         minion =>
                         minion.IsValidTarget() && minion.IsEnemy
-                        && minion.Distance(player.ServerPosition) < spells[Spells.E].Range))
+                        && minion.Distance(Player.ServerPosition) < spells[Spells.E].Range))
             {
                 var edmg = spells[Spells.E].GetDamage(minion);
 
                 if (useE && minion.Health - edmg <= 0
-                    && minion.Distance(player.ServerPosition) <= spells[Spells.E].Range && spells[Spells.E].IsReady()
+                    && minion.Distance(Player.ServerPosition) <= spells[Spells.E].Range && spells[Spells.E].IsReady()
                     && (config.Item("eFarm").GetValue<bool>()))
                 {
                     CastE(minion);
@@ -672,15 +672,15 @@ namespace ElKatarina
 
         private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!sender.IsMe || args.SData.Name != "KatarinaR" || !player.HasBuff("katarinarsound"))
+            if (!sender.IsMe || args.SData.Name != "KatarinaR" || !Player.HasBuff("katarinarsound"))
             {
                 return;
             }
 
-            isChanneling = true;
+            IsChanneling = true;
             orbwalker.SetMovement(false);
             orbwalker.SetAttack(false);
-            Utility.DelayAction.Add(1, () => isChanneling = false);
+            Utility.DelayAction.Add(1, () => IsChanneling = false);
         }
 
         private static void Obj_AI_Hero_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
@@ -721,7 +721,7 @@ namespace ElKatarina
                 return;
             }
 
-            igniteSlot = player.GetSpellSlot("summonerdot");
+            igniteSlot = Player.GetSpellSlot("summonerdot");
 
             spells[Spells.R].SetCharged("KatarinaR", "KatarinaR", 550, 550, 1.0f);
 
@@ -736,7 +736,7 @@ namespace ElKatarina
 
         private static void OnUpdate(EventArgs args)
         {
-            if (player.IsDead)
+            if (Player.IsDead || Player.IsRecalling())
             {
                 return;
             }
@@ -745,12 +745,11 @@ namespace ElKatarina
             {
                 orbwalker.SetAttack(false);
                 orbwalker.SetMovement(false);
+                return;
             }
-            else
-            {
-                orbwalker.SetAttack(true);
-                orbwalker.SetMovement(true);
-            }
+
+            orbwalker.SetAttack(true);
+            orbwalker.SetMovement(true);
 
             switch (orbwalker.ActiveMode)
             {
@@ -785,7 +784,7 @@ namespace ElKatarina
 
         private static void Orbwalk(Vector3 pos, Obj_AI_Hero target = null)
         {
-            player.IssueOrder(GameObjectOrder.MoveTo, pos);
+            Player.IssueOrder(GameObjectOrder.MoveTo, pos);
         }
 
         private static void UseItems(Obj_AI_Base target)
@@ -796,12 +795,12 @@ namespace ElKatarina
                 var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
                 var hextech = ItemData.Hextech_Gunblade.GetItem();
 
-                if (cutlass.IsReady() && cutlass.IsOwned(player) && cutlass.IsInRange(target))
+                if (cutlass.IsReady() && cutlass.IsOwned(Player) && cutlass.IsInRange(target))
                 {
                     cutlass.Cast(target);
                 }
 
-                if (hextech.IsReady() && hextech.IsOwned(player) && hextech.IsInRange(target))
+                if (hextech.IsReady() && hextech.IsOwned(Player) && hextech.IsInRange(target))
                 {
                     hextech.Cast(target);
                 }
@@ -821,8 +820,8 @@ namespace ElKatarina
                 return;
             }
 
-            var basePos = player.Position.To2D();
-            var newPos = (pos.To2D() - player.Position.To2D());
+            var basePos = Player.Position.To2D();
+            var newPos = (pos.To2D() - Player.Position.To2D());
 
             if (JumpPos == new Vector2())
             {
@@ -830,13 +829,13 @@ namespace ElKatarina
                 {
                     JumpPos = pos.To2D();
                 }
-                else if (maxRange || player.Distance(pos) > 590)
+                else if (maxRange || Player.Distance(pos) > 590)
                 {
                     JumpPos = basePos + (newPos.Normalized() * (590));
                 }
                 else
                 {
-                    JumpPos = basePos + (newPos.Normalized() * (player.Distance(pos)));
+                    JumpPos = basePos + (newPos.Normalized() * (Player.Distance(pos)));
                 }
             }
             if (JumpPos != new Vector2() && reCheckWard)
@@ -857,7 +856,7 @@ namespace ElKatarina
             {
                 Orbwalk(pos);
             }
-            if (!spells[Spells.E].IsReady() || reqinMaxRange && player.Distance(pos) > spells[Spells.E].Range)
+            if (!spells[Spells.E].IsReady() || reqinMaxRange && Player.Distance(pos) > spells[Spells.E].Range)
             {
                 return;
             }
@@ -868,7 +867,7 @@ namespace ElKatarina
                 {
                     var champs = (from champ in ObjectManager.Get<Obj_AI_Hero>()
                                   where
-                                      champ.IsAlly && champ.Distance(player) < spells[Spells.E].Range
+                                      champ.IsAlly && champ.Distance(Player) < spells[Spells.E].Range
                                       && champ.Distance(pos) < 200 && !champ.IsMe
                                   select champ).ToList();
                     if (champs.Count > 0 && spells[Spells.E].IsReady())
@@ -886,7 +885,7 @@ namespace ElKatarina
                 {
                     var minion2 = (from minion in ObjectManager.Get<Obj_AI_Minion>()
                                    where
-                                       minion.IsAlly && minion.Distance(player) < spells[Spells.E].Range
+                                       minion.IsAlly && minion.Distance(Player) < spells[Spells.E].Range
                                        && minion.Distance(pos) < 200 && !minion.Name.ToLower().Contains("ward")
                                    select minion).ToList();
                     if (minion2.Count > 0)
@@ -926,7 +925,7 @@ namespace ElKatarina
                     return;
                 }
 
-                player.Spellbook.CastSpell(ward.SpellSlot, JumpPos.To3D());
+                Player.Spellbook.CastSpell(ward.SpellSlot, JumpPos.To3D());
                 lastWardPos = JumpPos.To3D();
             }
         }
