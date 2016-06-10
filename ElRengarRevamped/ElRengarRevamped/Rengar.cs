@@ -285,7 +285,7 @@
                         break;
 
                     case 2:
-                        if (IsActive("Beta.Cast.Q") && RengarR)
+                        if (IsActive("Beta.Cast.Q1") && RengarR)
                         {
                             spells[Spells.Q].Cast();
                         }

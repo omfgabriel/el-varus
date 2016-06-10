@@ -121,12 +121,6 @@ namespace ElRengarRevamped
 
                 #region Summoner spells
 
-                if (IsActive("Combo.Use.Smite") && !RengarR && Smite != SpellSlot.Unknown
-                    && Player.Spellbook.CanUseSpell(Smite) == SpellState.Ready && !target.IsZombie)
-                {
-                    Player.Spellbook.CastSpell(Smite, target);
-                }
-
                 if (IsActive("Combo.Use.Ignite") && target.IsValidTarget(600f) && IgniteDamage(target) >= target.Health)
                 {
                     Player.Spellbook.CastSpell(Ignite, target);
