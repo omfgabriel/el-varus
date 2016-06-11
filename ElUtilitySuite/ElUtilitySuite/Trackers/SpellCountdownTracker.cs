@@ -156,6 +156,7 @@
             menu.AddItem(new MenuItem("XPos", "X Position").SetValue(new Slider(Drawing.Width - BoxWidth, 0, Drawing.Width)));
             menu.AddItem(new MenuItem("YPos", "Y Position").SetValue(new Slider(Drawing.Height - BoxHeight * 4, 0, Drawing.Height)));
             menu.AddItem(new MenuItem("DrawCards", "Draw Cards").SetValue(true));
+            menu.AddItem(new MenuItem("DrawTeleport", "Draw Teleports").SetValue(true));
             menu.AddItem(new MenuItem("AddTestCard", "Draw Test Card").SetValue(false).DontSave());
             menu.AddItem(new MenuItem("empty-line-3000", string.Empty));
 
@@ -177,7 +178,7 @@
                 this.Cards.Add(
                     new Card
                     {
-                        EndMessage = "Hello!",
+                        EndMessage = "Ready",
                         EndTime = Game.Time + 10,
                         FriendlyName = "Test",
                         Name = "Test",
@@ -203,6 +204,8 @@
             Drawing.OnDraw += this.Drawing_OnDraw;
 
             JungleTracker.CampDied += this.JungleTrackerCampDied;
+            Obj_AI_Base.OnTeleport += this.OnTeleport;
+
 
             Drawing.OnPreReset += args =>
             {
@@ -230,8 +233,7 @@
                 try
                 {
                     var spellName = name.Split('.')[3];
-
-                    if (spellName != "Dragon" && spellName != "Baron")
+                    if (spellName != "Dragon" && spellName != "Baron" && spellName != "Teleport")
                     {
                         this.Spells.Add(Data.Get<SpellDatabase>().Spells.First(x => x.SpellName.Equals(spellName)));
 
@@ -267,6 +269,55 @@
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnTeleport(Obj_AI_Base sender, GameObjectTeleportEventArgs args)
+        {
+            try
+            {
+               if (sender.IsAlly || !this.Menu.Item("DrawTeleport").IsActive())
+                {
+                    return;
+                }
+                
+                var hero =  sender as Obj_AI_Hero;
+                if (hero != null)
+                {
+                    var packet = Packet.S2C.Teleport.Decoded(sender, args);
+                    if (packet.Type == Packet.S2C.Teleport.Type.Teleport && 
+                        (packet.Status == Packet.S2C.Teleport.Status.Finish || packet.Status == Packet.S2C.Teleport.Status.Abort))
+                    {
+                        var time = Game.Time;
+                        Utility.DelayAction.Add(
+                            250,
+                            delegate
+                            {
+                                var cd = packet.Status == Packet.S2C.Teleport.Status.Finish ? 300 : 200;
+                                var card = new Card
+                                {
+                                    EndTime = time + cd,
+                                    EndMessage = "Ready",
+                                    FriendlyName = $"{hero.ChampionName} Teleport",
+                                    StartTime = Game.Time
+                                };
+
+                                card.Name = "Teleport";
+                                this.Cards.Add(card);
+
+                                Console.WriteLine($"[ElUtilitySuite] Added card for TP: {card.FriendlyName} - {card.StartTime} - {card.EndTime}");
+                            });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(@"An error occurred: '{0}'", e);
+            }
+        }
 
         /// <summary>
         ///     Draws a box.
@@ -328,13 +379,14 @@
             // TODO clean this shit up LMAO
             foreach (var enemy in HeroManager.Enemies)
             {
+
                 List<SpellSlot> slots;
                 if (!this.ChampionSpells.TryGetValue(enemy.ChampionName, out slots))
                 {
                     continue;
                 }
-
-                foreach (var spell in slots.Select(x => enemy.GetSpell(x)).Where(x => x.Level > 0 && x.CooldownExpires > 0 && x.CooldownExpires - Game.Time <= Countdown))
+                foreach (var spell in slots.Select(x => enemy.GetSpell(x)).Where(x => x.Level > 0 && x.CooldownExpires > 0 
+                && x.CooldownExpires - Game.Time <= Countdown))
                 {
                     if (spell.CooldownExpires - Game.Time <= -5
                         && this.StartX + (int)((-(spell.CooldownExpires - Game.Time) - 5) * MoveRightSpeed)
@@ -406,8 +458,8 @@
                     var countdownSize = this.CountdownFont.MeasureText(null, remainingTimePretty);
                     var progressBarStart = countdownStart + new Vector2(0, countdownSize.Height + 9);
                     var progressBarFullSize = 125;
-                    var cooldown = spell.Cooldown;
-                    var progressBarActualSize = (cooldown - remainingTime) / cooldown * progressBarFullSize;
+                    var percent = remainingTime > 0 && Math.Abs(spell.Cooldown) > float.Epsilon ? 1f - remainingTime / spell.Cooldown : 1f;
+                    var progressBarActualSize = percent * progressBarFullSize;
 
                     if (progressBarActualSize > progressBarFullSize)
                     {
@@ -428,11 +480,7 @@
                 }
             }
 
-            foreach (var card in
-                this.Cards.Where(
-                    x =>
-                    x.EndTime - Game.Time <= Countdown)
-                )
+            foreach (var card in this.Cards.Where(x => x.EndTime - Game.Time <= Countdown))
             {
                 // draw spell
                 var remainingTime = card.EndTime - Game.Time;
@@ -553,7 +601,7 @@
             };
 
             card.Name = card.FriendlyName;
-            Console.WriteLine($"Added card for: {card.FriendlyName} - {card.StartTime} - {card.EndTime}");
+            Console.WriteLine($"[ElUtilitySuite] Added card for: {card.FriendlyName} - {card.StartTime} - {card.EndTime}");
             this.Cards.Add(card);
         }
 
