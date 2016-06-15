@@ -783,26 +783,28 @@ namespace ElUtilitySuite.Summoners
 
                 this.Menu.AddSubMenu(spellsMenu);
 
-                /*var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
+                var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
                 {
                     humanizerDelay.AddItem(
-                        new MenuItem("CleanseMinDelay", "Minimum Delay (MS)").SetValue(new Slider(500, 0, 1000)));
+                        new MenuItem("CleanseMinDelay1", "Minimum Delay (MS)").SetValue(new Slider(0, 0, 1000)));
                     humanizerDelay.AddItem(
-                        new MenuItem("CleanseMaxDelay", "Maximum Delay (MS)").SetValue(new Slider(800, 0, 1500)));
+                        new MenuItem("CleanseMaxDelay1", "Maximum Delay (MS)").SetValue(new Slider(0, 0, 1500)));
 
-                    humanizerDelay.Item("CleanseMaxDelay").ValueChanged +=
+                    humanizerDelay.Item("CleanseMaxDelay1").ValueChanged +=
                         delegate(object sender, OnValueChangeEventArgs args)
                             {
                                 if (args.GetNewValue<Slider>().Value
-                                    < this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value)
+                                    < this.Menu.Item("CleanseMinDelay1").GetValue<Slider>().Value)
                                 {
                                     args.Process = false;
                                 }
                             };
                 }
 
-                this.Menu.AddSubMenu(humanizerDelay);*/
+                this.Menu.AddSubMenu(humanizerDelay);
 
+                this.Menu.AddItem(new MenuItem("CleanseActivatedHumanize", "Use humanizer")
+                    .SetValue(false)).SetTooltip("This can cause QSS to cast late! (Keep this disabled)", Color.Pink);
                 this.Menu.AddItem(new MenuItem("CleanseActivated", "Use Cleanse").SetValue(true));
                 this.Menu.AddItem(new MenuItem("seperator211", ""));
                 foreach (var x in HeroManager.Allies)
@@ -864,15 +866,6 @@ namespace ElUtilitySuite.Summoners
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void GameOnUpdate(EventArgs args)
         {
-            var target = TargetSelector.GetTarget(1600f, TargetSelector.DamageType.Magical);
-            if (target == null)
-            {
-                return;
-            }
-
-            Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Where(b => b.Caster.NetworkId == target.NetworkId).Select(b => b.DisplayName)));
-
-
             if (Player.IsDead || Player.IsInvulnerable || Player.HasBuffOfType(BuffType.SpellImmunity)
                 || Player.HasBuffOfType(BuffType.Invulnerability))
             {
@@ -884,7 +877,7 @@ namespace ElUtilitySuite.Summoners
                 return;
             }
 
-            foreach (var ally in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly && x.IsValidTarget(800f, false)))
+            foreach (var ally in HeroManager.Allies.Where(x => x.IsValidTarget(800f, false)))
             {
                 var ally1 = ally;
                 foreach (var spell in Spells.Where(x => ally1.HasBuff(x.Name)))
@@ -913,13 +906,15 @@ namespace ElUtilitySuite.Summoners
                         continue;
                     }
 
-                    /*+ Random.Next(
-                            this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value,
-                            this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value)*/
+                    var isHumanized = this.Menu.Item("CleanseActivatedHumanize").IsActive()
+                        ? Random.Next(
+                            this.Menu.Item("CleanseMinDelay1").GetValue<Slider>().Value,
+                            this.Menu.Item("CleanseMaxDelay1").GetValue<Slider>().Value)
+                        : 0;
 
                     var ally2 = ally;
                     Utility.DelayAction.Add(
-                        spell.CleanseTimer,
+                        spell.CleanseTimer + isHumanized,
                         () =>
                             {
                                 if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable || !this.Menu.Item(
