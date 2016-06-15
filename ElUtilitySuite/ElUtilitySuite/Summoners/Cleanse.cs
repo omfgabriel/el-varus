@@ -805,7 +805,7 @@ namespace ElUtilitySuite.Summoners
 
                 this.Menu.AddItem(new MenuItem("CleanseActivated", "Use Cleanse").SetValue(true));
                 this.Menu.AddItem(new MenuItem("seperator211", ""));
-                foreach (var x in HeroManager.AllHeroes)
+                foreach (var x in HeroManager.Allies)
                 { 
                     this.Menu.AddItem(new MenuItem($"cleanseon{x.ChampionName}", "Use for " + x.ChampionName))
                         .SetValue(true);
