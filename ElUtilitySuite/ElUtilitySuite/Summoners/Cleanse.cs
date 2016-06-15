@@ -457,7 +457,7 @@ namespace ElUtilitySuite.Summoners
                              new CleanseSpell
                                  {
                                      Champion = "heimerdinger", Name = "stun", MenuName = "Heimerdinger Stun",
-                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 25,
                                      Slot = SpellSlot.W
                                  },
                              new CleanseSpell
@@ -473,8 +473,8 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "elise", Name = "buffelisecocoon", MenuName = "Elise E", Evade = false,
-                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
+                                     Champion = "Elise", Name = "buffelisecocoon", MenuName = "Elise E", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 25, Slot = SpellSlot.E
                                  },
                              new CleanseSpell
                                  {
