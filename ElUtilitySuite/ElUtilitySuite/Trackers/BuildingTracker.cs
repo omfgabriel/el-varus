@@ -102,7 +102,7 @@
                             .Where(x => x != null && x.IsValid && !x.IsDead & x.HealthPercent <= 75))
                     {
                         var turretPosition = Drawing.WorldToMinimap(turret.Position);
-                        var healthPercent = string.Format("{0}%", (int)turret.HealthPercent);
+                        var healthPercent = $"{(int)turret.HealthPercent}%";
 
                         Font.DrawText(
                             null,
@@ -122,7 +122,7 @@
                             .Where(x => x.IsValid && !x.IsDead && x.Health > 1 && x.HealthPercent <= 75))
                     {
                         var turretPosition = Drawing.WorldToMinimap(inhibitor.Position);
-                        var healthPercent = string.Format("{0}%", (int)inhibitor.HealthPercent);
+                        var healthPercent = $"{(int)inhibitor.HealthPercent}%";
 
                         Font.DrawText(
                             null,

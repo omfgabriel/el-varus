@@ -16,13 +16,7 @@
         /// <value>
         ///     The identifier.
         /// </value>
-        public override ItemId Id
-        {
-            get
-            {
-                return ItemId.Talisman_of_Ascension;
-            }
-        }
+        public override ItemId Id => ItemId.Talisman_of_Ascension;
 
         /// <summary>
         ///     Gets or sets the name of the item.
@@ -30,13 +24,7 @@
         /// <value>
         ///     The name of the item.
         /// </value>
-        public override string Name
-        {
-            get
-            {
-                return "Talisman of Ascension";
-            }
-        }
+        public override string Name => "Talisman of Ascension";
 
         #endregion
 

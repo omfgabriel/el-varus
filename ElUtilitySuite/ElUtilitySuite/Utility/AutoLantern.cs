@@ -28,13 +28,7 @@
         /// <value>
         ///     The lantern below hp menu value.
         /// </value>
-        private int ClickBelowHp
-        {
-            get
-            {
-                return this.Menu.Item("ThreshLanternHPSlider").GetValue<Slider>().Value;
-            }
-        }
+        private int ClickBelowHp => this.Menu.Item("ThreshLanternHPSlider").GetValue<Slider>().Value;
 
         /// <summary>
         ///     Gets the player.
@@ -42,13 +36,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        private Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private Obj_AI_Hero Player => ObjectManager.Player;
 
         #endregion
 

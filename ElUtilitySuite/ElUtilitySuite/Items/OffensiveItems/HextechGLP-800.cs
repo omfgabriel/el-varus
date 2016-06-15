@@ -15,13 +15,7 @@
         /// <value>
         ///     The identifier.
         /// </value>
-        public override ItemId Id
-        {
-            get
-            {
-                return (ItemId)3030;
-            }
-        }
+        public override ItemId Id => (ItemId)3030;
 
         /// <summary>
         ///     Gets or sets the name of the item.
@@ -29,13 +23,7 @@
         /// <value>
         ///     The name of the item.
         /// </value>
-        public override string Name
-        {
-            get
-            {
-                return "Hextech GLP 800";
-            }
-        }
+        public override string Name => "Hextech GLP 800";
 
         #endregion
 

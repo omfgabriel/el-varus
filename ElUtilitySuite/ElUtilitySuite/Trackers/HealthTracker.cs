@@ -51,49 +51,22 @@
         /// <summary>
         ///     Gets the spacing between HUD elements
         /// </summary>
-        private int HudSpacing
-        {
-            get
-            {
-                return this.Menu.Item("HealthTracker.Spacing").GetValue<Slider>().Value;
-            }
-        }
+        private int HudSpacing => this.Menu.Item("HealthTracker.Spacing").GetValue<Slider>().Value;
 
         /// <summary>
         ///     Gets the right offset of the HUD elements
         /// </summary>
-        private int HudOffsetRight
-        {
-            get
-            {
-                return this.Menu.Item("HealthTracker.OffsetRight").GetValue<Slider>().Value;
-            }
-        }
+        private int HudOffsetRight => this.Menu.Item("HealthTracker.OffsetRight").GetValue<Slider>().Value;
 
         /// <summary>
         ///     Gets the top offset between the HUD elements
         /// </summary>
-        private int HudOffsetTop
-        {
-            get
-            {
-                return this.Menu.Item("HealthTracker.OffsetTop").GetValue<Slider>().Value;
-            }
-        }
+        private int HudOffsetTop => this.Menu.Item("HealthTracker.OffsetTop").GetValue<Slider>().Value;
 
         /// <summary>
         ///     Gets the right offset between text and healthbar
         /// </summary>
-        private int HudOffsetText
-        {
-            get
-            {
-                return this.Menu.Item("HealthTracker.OffsetText").GetValue<Slider>().Value;
-            }
-        }
-
-
-        
+        private int HudOffsetText => this.Menu.Item("HealthTracker.OffsetText").GetValue<Slider>().Value;
 
         #region Public Methods and Operators
 

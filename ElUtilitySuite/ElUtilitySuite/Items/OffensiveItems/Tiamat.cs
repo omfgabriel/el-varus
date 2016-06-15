@@ -15,13 +15,7 @@
         /// <value>
         ///     The identifier.
         /// </value>
-        public override ItemId Id
-        {
-            get
-            {
-                return ItemId.Tiamat_Melee_Only;
-            }
-        }
+        public override ItemId Id => ItemId.Tiamat_Melee_Only;
 
         /// <summary>
         ///     Gets or sets the name of the item.
@@ -29,13 +23,7 @@
         /// <value>
         ///     The name of the item.
         /// </value>
-        public override string Name
-        {
-            get
-            {
-                return "Tiamat";
-            }
-        }
+        public override string Name => "Tiamat";
 
         #endregion
 

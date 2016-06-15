@@ -15,13 +15,7 @@
         /// <value>
         ///     The identifier.
         /// </value>
-        public override ItemId Id
-        {
-            get
-            {
-                return ItemId.Frost_Queens_Claim;
-            }
-        }
+        public override ItemId Id => ItemId.Frost_Queens_Claim;
 
         /// <summary>
         ///     Gets or sets the name of the item.
@@ -29,13 +23,7 @@
         /// <value>
         ///     The name of the item.
         /// </value>
-        public override string Name
-        {
-            get
-            {
-                return "Frost Queen's Claim";
-            }
-        }
+        public override string Name => "Frost Queen's Claim";
 
         #endregion
 

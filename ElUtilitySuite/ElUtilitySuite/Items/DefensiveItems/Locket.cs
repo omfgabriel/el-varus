@@ -32,13 +32,7 @@
         /// <value>
         ///     The identifier.
         /// </value>
-        public override ItemId Id
-        {
-            get
-            {
-                return ItemId.Locket_of_the_Iron_Solari;
-            }
-        }
+        public override ItemId Id => ItemId.Locket_of_the_Iron_Solari;
 
         /// <summary>
         ///     Gets or sets the name of the item.
@@ -46,13 +40,7 @@
         /// <value>
         ///     The name of the item.
         /// </value>
-        public override string Name
-        {
-            get
-            {
-                return "Locket of the Iron Solari";
-            }
-        }
+        public override string Name => "Locket of the Iron Solari";
 
         #endregion
 

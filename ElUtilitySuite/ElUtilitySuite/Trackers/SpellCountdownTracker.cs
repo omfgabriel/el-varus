@@ -206,7 +206,6 @@
             JungleTracker.CampDied += this.JungleTrackerCampDied;
             Obj_AI_Base.OnTeleport += this.OnTeleport;
 
-
             Drawing.OnPreReset += args =>
             {
                 this.SpellNameFont.OnLostDevice();
@@ -458,10 +457,10 @@
                     var countdownSize = this.CountdownFont.MeasureText(null, remainingTimePretty);
                     var progressBarStart = countdownStart + new Vector2(0, countdownSize.Height + 9);
                     var progressBarFullSize = 125;
-                    var percent = remainingTime > 0 && Math.Abs(spell.Cooldown) > float.Epsilon ? 1f - remainingTime / spell.Cooldown : 1f;
-                    var progressBarActualSize = percent * progressBarFullSize;
+                    var cooldown = spell.Cooldown;
+                    var progressBarActualSize = (cooldown - remainingTime) / cooldown * progressBarFullSize;
 
-                    if (progressBarActualSize > progressBarFullSize)
+                    if (progressBarActualSize > progressBarFullSize) // broken
                     {
                         progressBarActualSize = progressBarFullSize;
                     }

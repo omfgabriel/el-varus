@@ -15,13 +15,7 @@
         /// <value>
         ///     The identifier.
         /// </value>
-        public override ItemId Id
-        {
-            get
-            {
-                return ItemId.Youmuus_Ghostblade;
-            }
-        }
+        public override ItemId Id => ItemId.Youmuus_Ghostblade;
 
         /// <summary>
         ///     Gets or sets the name of the item.
@@ -29,13 +23,7 @@
         /// <value>
         ///     The name of the item.
         /// </value>
-        public override string Name
-        {
-            get
-            {
-                return "Youmuu";
-            }
-        }
+        public override string Name => "Youmuu";
 
         #endregion
 

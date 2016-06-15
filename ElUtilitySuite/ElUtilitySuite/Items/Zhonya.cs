@@ -518,13 +518,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        private static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private static Obj_AI_Hero Player => ObjectManager.Player;
 
         /// <summary>
         ///     Gets the zhonya below hp menu value.
@@ -532,13 +526,7 @@
         /// <value>
         ///     The zhonya below hp menu value.
         /// </value>
-        private int ZhonyaBelowHp
-        {
-            get
-            {
-                return this.Menu.Item("ZhonyaHPSlider-1").GetValue<Slider>().Value;
-            }
-        }
+        private int ZhonyaBelowHp => this.Menu.Item("ZhonyaHPSlider-1").GetValue<Slider>().Value;
 
         /// <summary>
         ///     Gets a value indicating whether to zhonya at low hp.
@@ -546,13 +534,7 @@
         /// <value>
         ///     <c>true</c> if zhonya at low hp; otherwise, <c>false</c>.
         /// </value>
-        private bool ZhonyaLowHp
-        {
-            get
-            {
-                return this.Menu.Item("ZhonyaHP").IsActive();
-            }
-        }
+        private bool ZhonyaLowHp => this.Menu.Item("ZhonyaHP").IsActive();
 
         #endregion
 
@@ -816,7 +798,7 @@
                 return;
             }
 
-            if (!this.Menu.Item(string.Format("Zhonya{0}", spellData.SDataName)).IsActive()
+            if (!this.Menu.Item($"Zhonya{spellData.SDataName}").IsActive()
                 || !this.Menu.Item("ZhonyaDangerous").IsActive())
             {
                 return;

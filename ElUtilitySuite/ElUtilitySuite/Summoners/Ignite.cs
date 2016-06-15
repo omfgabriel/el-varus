@@ -23,13 +23,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        private Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private Obj_AI_Hero Player => ObjectManager.Player;
 
         /// <summary>
         ///     Gets or sets the slot.
@@ -100,7 +94,7 @@
         {
             try
             {
-                if (!Menu.Item("Ignite.Activated").GetValue<bool>())
+                if (!Menu.Item("Ignite.Activated").IsActive())
                 {
                     return;
                 }
@@ -113,7 +107,7 @@
 
                 if (kSableEnemy != null)
                 {
-                    if (!Menu.Item(string.Format("igniteon{0}", kSableEnemy.ChampionName)).IsActive())
+                    if (!Menu.Item($"igniteon{kSableEnemy.ChampionName}").IsActive())
                     {
                         return;
                     }

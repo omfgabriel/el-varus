@@ -32,13 +32,7 @@
         /// <value>
         ///     The identifier.
         /// </value>
-        public override ItemId Id
-        {
-            get
-            {
-                return ItemId.Face_of_the_Mountain;
-            }
-        }
+        public override ItemId Id => ItemId.Face_of_the_Mountain;
 
         /// <summary>
         ///     Gets or sets the name of the item.
@@ -46,13 +40,7 @@
         /// <value>
         ///     The name of the item.
         /// </value>
-        public override string Name
-        {
-            get
-            {
-                return "Face of the Mountain";
-            }
-        }
+        public override string Name => "Face of the Mountain";
 
         #endregion
 

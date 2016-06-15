@@ -13,13 +13,7 @@
         /// <value>
         ///     The identifier.
         /// </value>
-        public override ItemId Id
-        {
-            get
-            {
-                return ItemId.Randuins_Omen;
-            }
-        }
+        public override ItemId Id => ItemId.Randuins_Omen;
 
         /// <summary>
         ///     Gets or sets the name of the item.
@@ -27,13 +21,7 @@
         /// <value>
         ///     The name of the item.
         /// </value>
-        public override string Name
-        {
-            get
-            {
-                return "Randuin's Omen";
-            }
-        }
+        public override string Name => "Randuin's Omen";
 
         #endregion
 

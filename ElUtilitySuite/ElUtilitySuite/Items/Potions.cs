@@ -35,13 +35,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        private Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private Obj_AI_Hero Player => ObjectManager.Player;
 
         /// <summary>
         ///     Gets or sets the items.
@@ -57,13 +51,7 @@
         /// <value>
         ///     The player hp hp menu value.
         /// </value>
-        private int PlayerHp
-        {
-            get
-            {
-                return this.Menu.Item("Potions.Player.Health").GetValue<Slider>().Value;
-            }
-        }
+        private int PlayerHp => this.Menu.Item("Potions.Player.Health").GetValue<Slider>().Value;
 
         #endregion
 

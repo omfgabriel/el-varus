@@ -34,13 +34,7 @@
         /// <value>
         ///     The identifier.
         /// </value>
-        public override ItemId Id
-        {
-            get
-            {
-                return (ItemId)3040;
-            }
-        }
+        public override ItemId Id => (ItemId)3040;
 
         /// <summary>
         ///     Gets or sets the name of the item.
@@ -48,13 +42,7 @@
         /// <value>
         ///     The name of the item.
         /// </value>
-        public override string Name
-        {
-            get
-            {
-                return "Seraph's embrace";
-            }
-        }
+        public override string Name => "Seraph's embrace";
 
         #endregion
 

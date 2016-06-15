@@ -728,13 +728,7 @@ namespace ElUtilitySuite.Summoners
         /// <value>
         ///     The player.
         /// </value>
-        private static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private static Obj_AI_Hero Player => ObjectManager.Player;
 
         /// <summary>
         ///     Gets or sets the random.
@@ -984,13 +978,7 @@ namespace ElUtilitySuite.Summoners
             /// <value>
             ///     The spell.
             /// </value>
-            public Spell Spell
-            {
-                get
-                {
-                    return new Spell(this.Slot(), this.Range);
-                }
-            }
+            public Spell Spell => new Spell(this.Slot(), this.Range);
 
             /// <summary>
             ///     Gets or sets what the spell works on.

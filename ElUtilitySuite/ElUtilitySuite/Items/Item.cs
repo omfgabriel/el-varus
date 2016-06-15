@@ -18,13 +18,7 @@ namespace ElUtilitySuite.Items
         /// <value>
         ///     <c>true</c> if combo mode is active; otherwise, <c>false</c>.
         /// </value>
-        public bool ComboModeActive
-        {
-            get
-            {
-                return Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active || Orbwalking.Orbwalker.Instances.Any(x => x.ActiveMode == Orbwalking.OrbwalkingMode.Combo);
-            }
-        }
+        public bool ComboModeActive => Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active || Orbwalking.Orbwalker.Instances.Any(x => x.ActiveMode == Orbwalking.OrbwalkingMode.Combo);
 
         /// <summary>
         ///     Gets or sets the identifier.
@@ -32,13 +26,7 @@ namespace ElUtilitySuite.Items
         /// <value>
         ///     The identifier.
         /// </value>
-        public virtual ItemId Id
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public virtual ItemId Id => 0;
 
         /// <summary>
         ///     Gets or sets the menu.
@@ -54,13 +42,7 @@ namespace ElUtilitySuite.Items
         /// <value>
         ///     The name of the item.
         /// </value>
-        public virtual string Name
-        {
-            get
-            {
-                return "Unknown Item";
-            }
-        }
+        public virtual string Name => "Unknown Item";
 
         /// <summary>
         ///     Gets the player.
@@ -68,13 +50,7 @@ namespace ElUtilitySuite.Items
         /// <value>
         ///     The player.
         /// </value>
-        public Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        public Obj_AI_Hero Player => ObjectManager.Player;
 
         #endregion
 

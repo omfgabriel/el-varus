@@ -41,13 +41,7 @@
         /// <value>
         ///     The script version
         /// </value>
-        public static string ScriptVersion
-        {
-            get
-            {
-                return typeof(Entry).Assembly.GetName().Version.ToString();
-            }
-        }
+        public static string ScriptVersion => typeof(Entry).Assembly.GetName().Version.ToString();
 
         public static event EventHandler<UnloadEventArgs> OnUnload;
         public class UnloadEventArgs : EventArgs
@@ -114,7 +108,7 @@
                 menu.AddItem(new MenuItem("seperator1", ""));
                 menu.AddItem(new MenuItem("usecombo", "Combo (Active)").SetValue(new KeyBind(32, KeyBindType.Press)));
                 menu.AddItem(new MenuItem("seperator", ""));
-                menu.AddItem(new MenuItem("Versionnumber", string.Format("Version: {0}", ScriptVersion)));
+                menu.AddItem(new MenuItem("Versionnumber", $"Version: {ScriptVersion}"));
                 menu.AddItem(new MenuItem("by.jQuery", "jQuery / ChewyMoon"));
                 menu.AddToMainMenu();
 

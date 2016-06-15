@@ -322,13 +322,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        private Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private Obj_AI_Hero Player => ObjectManager.Player;
 
         /// <summary>
         ///     Gets a value indicating whether the combo mode is active.
@@ -336,13 +330,7 @@
         /// <value>
         ///     <c>true</c> if combo mode is active; otherwise, <c>false</c>.
         /// </value>
-        public bool ComboModeActive
-        {
-            get
-            {
-                return Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active || Orbwalking.Orbwalker.Instances.Any(x => x.ActiveMode == Orbwalking.OrbwalkingMode.Combo);
-            }
-        }
+        public bool ComboModeActive => Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active || Orbwalking.Orbwalker.Instances.Any(x => x.ActiveMode == Orbwalking.OrbwalkingMode.Combo);
 
         #endregion
 

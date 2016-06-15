@@ -15,13 +15,7 @@
         /// <value>
         ///     The identifier.
         /// </value>
-        public override ItemId Id
-        {
-            get
-            {
-                return ItemId.Blade_of_the_Ruined_King;
-            }
-        }
+        public override ItemId Id => ItemId.Blade_of_the_Ruined_King;
 
         /// <summary>
         ///     Gets or sets the name of the item.
@@ -29,13 +23,7 @@
         /// <value>
         ///     The name of the item.
         /// </value>
-        public override string Name
-        {
-            get
-            {
-                return "Blade of the Ruined King";
-            }
-        }
+        public override string Name => "Blade of the Ruined King";
 
         #endregion
 

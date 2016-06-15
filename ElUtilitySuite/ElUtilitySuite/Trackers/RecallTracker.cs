@@ -23,13 +23,6 @@ namespace ElUtilitySuite.Trackers
 
     internal class RecallTracker : IPlugin
     {
-        #region Static Fields
-
-
-
-
-        #endregion
-
         #region Fields
 
         public List<EnemyInfo> EnemyInfo = new List<EnemyInfo>();
@@ -128,41 +121,22 @@ namespace ElUtilitySuite.Trackers
         /// <summary>
         ///     
         /// </summary>
-        private int BarY
-        {
-            get
-            {
-                return (int)(Drawing.Height - 150f - this.Menu.Item("RecallTracker.OffsetBottom").GetValue<Slider>().Value);
-            }
-        }
+        private int BarY => (int)(Drawing.Height - 150f - this.Menu.Item("RecallTracker.OffsetBottom").GetValue<Slider>().Value);
 
         /// <summary>
         ///     
         /// </summary>
-        private int BarX
-        {
-            get
-            {
-                return (int)(Drawing.Width * 0.425f);
-            }
-        }
+        private int BarX => (int)(Drawing.Width * 0.425f);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private int BarWidth => (int)(Drawing.Width - 2 * this.BarX);
 
-        private int BarWidth
-        {
-            get
-            {
-                return (int)(Drawing.Width - 2 * this.BarX);
-            }
-        }
-
-        private float Scale
-        {
-            get
-            {
-                return (float)this.BarWidth / 8000;
-            }
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        private float Scale => (float)this.BarWidth / 8000;
 
         private void Drawing_OnDraw(EventArgs args)
         {

@@ -36,13 +36,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        private Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private Obj_AI_Hero Player => ObjectManager.Player;
 
         /// <summary>
         ///     Gets a value indicating whether the combo mode is active.
@@ -132,7 +126,7 @@
 
             foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy && x.IsValidTarget(1500f)))
             {
-                if (this.Menu.Item(string.Format("snowballon{0}", enemy.ChampionName)).IsActive())
+                if (this.Menu.Item($"snowballon{enemy.ChampionName}").IsActive())
                 {
                     this.MarkSpell.CastIfHitchanceEquals(enemy, HitChance.High);
                 }
