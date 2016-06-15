@@ -775,7 +775,7 @@ namespace ElUtilitySuite.Summoners
                     {
                         spellsMenu.AddItem(
                             new MenuItem(
-                                spell.MenuName != null ? spell.MenuName.Replace(" ", string.Empty) : spell.Name,
+                                spell.MenuName?.Replace(" ", string.Empty) ?? spell.Name,
                                 string.IsNullOrEmpty(spell.MenuName) ? spell.Name : spell.MenuName).SetValue(
                                     spell.Cleanse));
                     }
@@ -783,7 +783,7 @@ namespace ElUtilitySuite.Summoners
 
                 this.Menu.AddSubMenu(spellsMenu);
 
-                var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
+                /*var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
                 {
                     humanizerDelay.AddItem(
                         new MenuItem("CleanseMinDelay", "Minimum Delay (MS)").SetValue(new Slider(500, 0, 1000)));
@@ -801,13 +801,13 @@ namespace ElUtilitySuite.Summoners
                             };
                 }
 
-                this.Menu.AddSubMenu(humanizerDelay);
+                this.Menu.AddSubMenu(humanizerDelay);*/
 
                 this.Menu.AddItem(new MenuItem("CleanseActivated", "Use Cleanse").SetValue(true));
                 this.Menu.AddItem(new MenuItem("seperator211", ""));
-                foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
+                foreach (var x in HeroManager.AllHeroes)
                 { 
-                    this.Menu.AddItem(new MenuItem("cleanseon" + x.ChampionName, "Use for " + x.ChampionName))
+                    this.Menu.AddItem(new MenuItem($"cleanseon{x.ChampionName}", "Use for " + x.ChampionName))
                         .SetValue(true);
                 }
             }
