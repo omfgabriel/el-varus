@@ -108,6 +108,11 @@
                                      ChampionName = "braum", SDataName = "braumq", MissileName = "braumqmissile",
                                      Delay = 250, MissileSpeed = 1200, CastRange = 1100f
                                  },
+                              new ZhonyaSpell
+                                 {
+                                    ChampionName = "Brand", SDataName = "BrandR", MissileName = "", Delay = 450,
+                                    MissileSpeed = 1250, CastRange =  750f
+                                 },
                              new ZhonyaSpell
                                  {
                                      ChampionName = "braum", SDataName = "braumqmissle", MissileName = "", Delay = 250,
