@@ -483,7 +483,7 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "irelia", Name = "Stun", MenuName = "Irelia Stun", Evade = false,
+                                     Champion = "Irelia", Name = "Stun", MenuName = "Irelia Stun", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.E
                                  },
                              new CleanseSpell
@@ -864,6 +864,15 @@ namespace ElUtilitySuite.Summoners
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void GameOnUpdate(EventArgs args)
         {
+            var target = TargetSelector.GetTarget(1600f, TargetSelector.DamageType.Magical);
+            if (target == null)
+            {
+                return;
+            }
+
+            Console.WriteLine("Buffs: {0}", string.Join(" | ", Player.Buffs.Where(b => b.Caster.NetworkId == target.NetworkId).Select(b => b.DisplayName)));
+
+
             if (Player.IsDead || Player.IsInvulnerable || Player.HasBuffOfType(BuffType.SpellImmunity)
                 || Player.HasBuffOfType(BuffType.Invulnerability))
             {
@@ -904,12 +913,13 @@ namespace ElUtilitySuite.Summoners
                         continue;
                     }
 
+                    /*+ Random.Next(
+                            this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value,
+                            this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value)*/
+
                     var ally2 = ally;
                     Utility.DelayAction.Add(
-                        spell.CleanseTimer
-                        + Random.Next(
-                            this.Menu.Item("CleanseMinDelay").GetValue<Slider>().Value,
-                            this.Menu.Item("CleanseMaxDelay").GetValue<Slider>().Value),
+                        spell.CleanseTimer,
                         () =>
                             {
                                 if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable || !this.Menu.Item(
@@ -1121,3 +1131,4 @@ namespace ElUtilitySuite.Summoners
         }
     }
 }
+ 
