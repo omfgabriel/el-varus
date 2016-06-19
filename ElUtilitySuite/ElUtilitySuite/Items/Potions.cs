@@ -138,11 +138,7 @@
                     }
 
                     var item = this.Items.Select(x => x.Item).FirstOrDefault(x => x.IsReady() && x.IsOwned());
-
-                    if (item != null)
-                    {
-                        item.Cast();
-                    }
+                    item?.Cast();
                 }
             }
             catch (Exception e)
@@ -182,13 +178,7 @@
             /// <value>
             ///     The item.
             /// </value>
-            public Items.Item Item
-            {
-                get
-                {
-                    return this.GetItem();
-                }
-            }
+            public Items.Item Item => this.GetItem();
 
             #endregion
         }
