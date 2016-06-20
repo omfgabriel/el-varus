@@ -95,11 +95,6 @@
                                  },
                              new ZhonyaSpell
                                  {
-                                     ChampionName = "syndra", SDataName = "syndraq", MissileName = "syndraq", Delay = 250,
-                                     MissileSpeed = 1750, CastRange = 800f
-                                 },
-                             new ZhonyaSpell
-                                 {
                                      ChampionName = "braum", SDataName = "braumq", MissileName = "braumqmissile",
                                      Delay = 250, MissileSpeed = 1200, CastRange = 1100f
                                  },

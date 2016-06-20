@@ -94,8 +94,6 @@
 
             try
             {
-                Console.WriteLine("Injected ElTristana AMK");
-                Notifications.AddNotification(String.Format("ElTristana by jQuery v{0}", ScriptVersion), 8000);
                 Game.PrintChat(
                     "[00:00] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
 
@@ -107,6 +105,7 @@
                 AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
                 Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
                 Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
+                Orbwalking.AfterAttack += OrbwalkingAfterAttack;
             }
             catch (Exception e)
             {
@@ -118,6 +117,25 @@
 
         #region Methods
 
+
+        private static void OrbwalkingAfterAttack(AttackableUnit unit, AttackableUnit target)
+        {
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
+                || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+            {
+                if (!(target is Obj_AI_Hero))
+                {
+                    return;
+                }
+
+                var targetQ = (Obj_AI_Hero)target;
+                if (targetQ.IsValidTarget() && IsActive("ElTristana.Combo.Q"))
+                {
+                    spells[Spells.Q].Cast();
+                }
+            }
+        }
+
         private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
             try
@@ -126,6 +144,7 @@
                 {
                     return;
                 }
+
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
                     || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
                 {
@@ -228,7 +247,6 @@
                 }
             }
 
-
             if (spells[Spells.E].IsReady() && IsActive("ElTristana.Combo.E")
                 && Player.ManaPercent > MenuInit.Menu.Item("ElTristana.Combo.E.Mana").GetValue<Slider>().Value)
             {
@@ -258,7 +276,7 @@
             {
                 if (spells[Spells.R].GetDamage(target) > target.Health)
                 {
-                    spells[Spells.R].CastOnUnit(target);
+                    spells[Spells.R].Cast(target);
                 }
             }
 
@@ -268,7 +286,7 @@
                     + spells[Spells.E].GetDamage(target) * ((0.3 * target.GetBuffCount("TristanaECharge") + 1))
                     > target.Health)
                 {
-                    spells[Spells.R].CastOnUnit(target);
+                    spells[Spells.R].Cast(target);
                 }
             }
 
@@ -529,6 +547,17 @@
                 return;
             }
 
+            if (IsActive("ElTristana.Combo.Focus.E"))
+            {
+                var passiveTarget = HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget() && x.HasBuff("TristanaECharge") 
+                || x.HasBuff("tristanaechargesound") && Orbwalker.InAutoAttackRange(x));
+
+                if (passiveTarget != null)
+                {
+                    Orbwalker.ForceTarget(passiveTarget);
+                }
+            }
+
             try
             {
                 switch (Orbwalker.ActiveMode)
@@ -588,16 +617,17 @@
             try
             {
                 foreach (
-                    var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(spells[Spells.R].Range) && !x.IsDead && !x.IsZombie).OrderBy(x => x.Health))
+                    var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(spells[Spells.R].Range) 
+                    && !x.IsDead && !x.IsZombie && spells[Spells.R].GetDamage(x) > x.Health))
                 {
-                    if (enemy.IsValidTarget(spells[Spells.R].Range) && spells[Spells.R].GetDamage(enemy) > enemy.Health)
+                    if (enemy.IsValidTarget(spells[Spells.R].Range))
                     {
                         if (!IsActive("ElTristana.Killsteal.R"))
                         {
                             return;
                         }
 
-                        spells[Spells.R].CastOnUnit(enemy);
+                        spells[Spells.R].Cast(enemy);
                     }
                 }
             }
