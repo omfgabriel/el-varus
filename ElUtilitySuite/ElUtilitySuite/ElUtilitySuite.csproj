@@ -633,7 +633,7 @@
     <EmbeddedResource Include="Resources\CooldownNotifIcons\VarusR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\ViktorChaosStorm.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\ViR.png" />
-    <EmbeddedResource Include="Resources\CooldownNotifIcons\VladimirHemoplague.png" />
+    <EmbeddedResource Include="Resources\CooldownNotifIcons\VladimirR.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\XerathLocusOfPower2.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\YorickReviveAlly.png" />
     <EmbeddedResource Include="Resources\CooldownNotifIcons\ZacR.png" />
