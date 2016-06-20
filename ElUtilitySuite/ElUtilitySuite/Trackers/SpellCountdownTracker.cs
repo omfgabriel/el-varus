@@ -378,7 +378,6 @@
             // TODO clean this shit up LMAO
             foreach (var enemy in HeroManager.Enemies)
             {
-
                 List<SpellSlot> slots;
                 if (!this.ChampionSpells.TryGetValue(enemy.ChampionName, out slots))
                 {
