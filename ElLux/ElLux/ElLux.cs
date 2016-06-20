@@ -44,33 +44,15 @@
 
         #region Public Properties
 
-        public static bool EState
-        {
-            get
-            {
-                return spells[Spells.E].Instance.Name == "LuxLightStrikeKugel";
-            }
-        }
+        public static bool EState => spells[Spells.E].Instance.Name == "LuxLightStrikeKugel";
 
-        public static string ScriptVersion
-        {
-            get
-            {
-                return typeof(Lux).Assembly.GetName().Version.ToString();
-            }
-        }
+        public static string ScriptVersion => typeof(Lux).Assembly.GetName().Version.ToString();
 
         #endregion
 
         #region Properties
 
-        private static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private static Obj_AI_Hero Player => ObjectManager.Player;
 
         private static GameObject Troy { get; set; }
 
@@ -89,7 +71,6 @@
             spells[Spells.E].SetSkillshot(0.25f, 275f, 1300f, false, SkillshotType.SkillshotCircle);
             spells[Spells.R].SetSkillshot(1000f, 190f, int.MaxValue, false, SkillshotType.SkillshotCircle);
 
-            Notifications.AddNotification(string.Format("ElLux by jQuery v{0}", ScriptVersion), 10000);
             Game.PrintChat(
                 "[00:00] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for optimal results! xo jQuery");
 
@@ -175,7 +156,7 @@
                         prediction.UnitPosition.To2D() //Credits to ScienceArk
                     });
 
-            if (prediction.Hitchance >= HitChance.High)
+            if (prediction.Hitchance >= HitChance.VeryHigh)
             {
                 spells[Spells.Q].Cast(prediction.CastPosition);
             }
@@ -276,16 +257,16 @@
             {
                 if (IsActive("ElLux.KS.R"))
                 {
-                    foreach (var target in ObjectManager.Get<Obj_AI_Hero>())
+                    foreach (var target in HeroManager.Enemies)
                     {
-                        if (target.IsEnemy && target.IsValidTarget() && Player.Distance(target) < spells[Spells.R].Range)
+                        if (target.IsValidTarget() && target.IsValidTarget(spells[Spells.R].Range))
                         {
                             if (spells[Spells.R].GetDamage(target) > target.Health)
                             {
                                 var prediction = spells[Spells.R].GetPrediction(target);
                                 if (prediction.Hitchance >= HitChance.High)
                                 {
-                                    spells[Spells.R].Cast(target.Position);
+                                    spells[Spells.R].Cast(prediction.CastPosition);
                                 }
                             }
                         }
@@ -654,22 +635,6 @@
                 SemiQ();
             }
         }
-
-        private static int Passive(Obj_AI_Base target)
-        {
-            if (target.HasBuff("luxilluminatingfraulein"))
-            {
-                var passiveDamage = Player.CalcDamage(
-                    target,
-                    Damage.DamageType.Magical,
-                    10 + (8 * Player.Level) + 0.2 * Player.FlatMagicDamageMod);
-
-                return (int)passiveDamage;
-            }
-
-            return 0;
-        }
-
         #endregion
     }
 }
