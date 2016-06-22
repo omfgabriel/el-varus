@@ -456,11 +456,7 @@
                     var countdownSize = this.CountdownFont.MeasureText(null, remainingTimePretty);
                     var progressBarStart = countdownStart + new Vector2(0, countdownSize.Height + 9);
                     var progressBarFullSize = 125;
-                    var cooldown = spell.Cooldown;
                     var progressBarActualSize = (Countdown - remainingTime) / Countdown * progressBarFullSize;
-
-                    //Console.Clear();
-                   // Console.WriteLine("Cooldown: {0} | RT: {1} | Size: {2}", cooldown, cooldown - remainingTime, progressBarActualSize);
 
                     if (progressBarActualSize > progressBarFullSize) // broken
                     {
