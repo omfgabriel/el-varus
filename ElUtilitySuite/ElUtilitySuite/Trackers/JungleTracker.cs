@@ -101,7 +101,7 @@
                                   new JungleCamp(
                                       300000,
                                       new Vector3(4993.14f, 10491.92f, -71.24f),
-                                      new[] { "SRU_RiftHerald" },
+                                      new[] { "SRU_RiftHerald17.1.1" },
                                       Utility.Map.MapType.SummonersRift,
                                       GameObjectTeam.Neutral),
                                   new JungleCamp(

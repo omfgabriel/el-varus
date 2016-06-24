@@ -3,6 +3,8 @@
     using System;
     using System.Linq;
 
+    using ElUtilitySuite.Vendor.SFX;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -59,13 +61,12 @@
                            ? rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"))
                            : rootMenu.Children.First(predicate);
 
-            var barrierMenu = menu.AddSubMenu(new Menu("Barrier", "Barrier"));
+                var barrierMenu = menu.AddSubMenu(new Menu("Barrier", "Barrier"));
             {
                 barrierMenu.AddItem(new MenuItem("Barrier.Activated", "Barrier activated").SetValue(true));
-                barrierMenu.AddItem(new MenuItem("Barrier.HP", "Barrier percentage").SetValue(new Slider(20, 1)));
-                barrierMenu.AddItem(
-                    new MenuItem("Barrier.Damage", "Barrier on damage dealt %").SetValue(new Slider(20, 1)));
-            }
+                barrierMenu.AddItem(new MenuItem("barrier.min-health", "Health percentage").SetValue(new Slider(20, 1)));
+                barrierMenu.AddItem(new MenuItem("barrier.min-damage", "Heal on % incoming damage").SetValue(new Slider(20, 1)));
+                }
 
             this.Menu = barrierMenu;
         }
@@ -81,44 +82,48 @@
             {
                 return;
             }
-
+            IncomingDamageManager.RemoveDelay = 500;
+            IncomingDamageManager.Skillshots = true;
             this.BarrierSpell = new Spell(barrierSlot, 550);
-
-            AttackableUnit.OnDamage += this.AttackableUnit_OnDamage;
+            Game.OnUpdate += this.OnUpdate;
         }
 
         #endregion
 
         #region Methods
 
-        private void AttackableUnit_OnDamage(AttackableUnit sender, AttackableUnitDamageEventArgs args)
+        /// <summary>
+        ///     Fired when the game is updated.
+        /// </summary>
+        /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
+        private void OnUpdate(EventArgs args)
         {
-            if (!this.Menu.Item("Barrier.Activated").IsActive())
+            try
             {
-                return;
+                if (this.Player.IsDead || !this.BarrierSpell.IsReady() || this.Player.InFountain() || this.Player.IsRecalling() || !this.Menu.Item("Barrier.Activated").IsActive())
+                {
+                    return;
+                }
+
+                var enemies = this.Player.CountEnemiesInRange(750f);
+                var totalDamage = IncomingDamageManager.GetDamage(this.Player) * 1.1f; 
+
+                if (this.Player.HealthPercent <= this.Menu.Item("barrier.min-health").GetValue<Slider>().Value &&
+                    this.BarrierSpell.IsInRange(this.Player) && enemies >= 1)
+                {
+                    if ((int)(totalDamage / this.Player.Health) > this.Menu.Item("barrier.min-damage").GetValue<Slider>().Value
+                        || this.Player.HealthPercent < this.Menu.Item("barrier.min-health").GetValue<Slider>().Value)
+                    {
+                        this.Player.Spellbook.CastSpell(this.BarrierSpell.Slot);
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("[ELUTILITYSUITE - BARRIER] Used for: {0} - health percentage: {1}%", this.Player.ChampionName, (int)this.Player.HealthPercent);
+                    }
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
             }
-
-            var source = ObjectManager.GetUnitByNetworkId<GameObject>(args.SourceNetworkId);
-            var obj = ObjectManager.GetUnitByNetworkId<GameObject>(args.TargetNetworkId);
-
-            if (obj.Type != GameObjectType.obj_AI_Hero || source.Type != GameObjectType.obj_AI_Hero)
+            catch (Exception e)
             {
-                return;
-            }
-
-            var hero = (Obj_AI_Hero)obj;
-
-            if (!hero.IsMe)
-            {
-                return;
-            }
-
-            if (((int)(args.Damage / this.Player.MaxHealth * 100)
-                 > this.Menu.Item("Barrier.Damage").GetValue<Slider>().Value
-                 || this.Player.HealthPercent < this.Menu.Item("Barrier.HP").GetValue<Slider>().Value)
-                && this.Player.CountEnemiesInRange(1000) >= 1)
-            {
-                this.BarrierSpell.Cast();
+                Console.WriteLine(@"An error occurred: '{0}'", e);
             }
         }
 
