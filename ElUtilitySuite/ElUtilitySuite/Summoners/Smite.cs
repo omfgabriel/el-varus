@@ -1,12 +1,9 @@
 ﻿namespace ElUtilitySuite.Summoners
 {
     using System;
-    using System.Collections.Generic;
     using System.Drawing;
     using System.Globalization;
     using System.Linq;
-
-    using ElUtilitySuite.Vendor.SFX;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -31,37 +28,18 @@
 
         public static Obj_AI_Minion Minion;
 
-        #endregion
-
-        #region Fields
-
-        /// <summary>
-        /// </summary>
-        private string[] minionNames = new string[0];
-
-        /// <summary>
-        /// </summary>
-        private Obj_AI_Minion targetedMinion;
+        private static readonly string[] SmiteObjects =
+            {
+                "SRU_Red", "SRU_Blue", "SRU_Dragon_Water", "SRU_Dragon_Fire",
+                "SRU_Dragon_Earth", "SRU_Dragon_Air", "SRU_Dragon_Elder",
+                "SRU_Baron", "SRU_Gromp", "SRU_Murkwolf", "SRU_Razorbeak",
+                "SRU_RiftHerald", "SRU_Krug", "TT_Spiderboss", "TT_NGolem",
+                "TT_NWolf", "TT_NWraith"
+            };
 
         #endregion
 
         #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the spells.
-        /// </summary>
-        /// <value>
-        ///     The spells.
-        /// </value>
-        public static List<Smite> Spells { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the name.
-        /// </summary>
-        /// <value>
-        ///     The name.
-        /// </value>
-        public string ChampionName { get; set; }
 
         /// <summary>
         ///     Gets a value indicating whether the combo mode is active.
@@ -81,6 +59,14 @@
         ///     The Smitespell
         /// </value>
         public Spell SmiteSpell { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the slot.
+        /// </summary>
+        /// <value>
+        ///     The stage.
+        /// </value>
+        public int Stage { get; set; }
 
         #endregion
 
@@ -121,8 +107,6 @@
 
             var smiteMenu = menu.AddSubMenu(new Menu("Smite", "Smite"));
             {
-                smiteMenu.AddItem(new MenuItem("SmiteBig", "Smite big mobs").SetValue(true));
-
                 smiteMenu.AddItem(
                     new MenuItem("ElSmite.Activated", "Smite Activated").SetValue(
                         new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle, true)));
@@ -130,6 +114,45 @@
                 smiteMenu.AddItem(new MenuItem("Smite.Ammo", "Save 1 smite charge").SetValue(true))
                     .SetTooltip("Will not smite a champion when there is only 1 smite charge!")
                     .SetFontStyle(FontStyle.Regular, Color.Green);
+
+                if (Game.MapId == GameMapId.SummonersRift)
+                {
+                    smiteMenu.SubMenu("Big Mobs")
+                        .SubMenu("Dragons")
+                        .AddItem(new MenuItem("SRU_Dragon_Air", "Air Dragon").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs")
+                        .SubMenu("Dragons")
+                        .AddItem(new MenuItem("SRU_Dragon_Earth", "Earth Dragon").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs")
+                        .SubMenu("Dragons")
+                        .AddItem(new MenuItem("SRU_Dragon_Fire", "Fire Dragon").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs")
+                        .SubMenu("Dragons")
+                        .AddItem(new MenuItem("SRU_Dragon_Water", "Water Dragon").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs")
+                        .SubMenu("Dragons")
+                        .AddItem(new MenuItem("SRU_Dragon_Elder", "Elder Dragon").SetValue(true));
+
+                    smiteMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_Baron", "Baron").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_Red", "Red buff").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_Blue", "Blue buff").SetValue(true));
+                    smiteMenu.SubMenu("Big Mobs").AddItem(new MenuItem("SRU_RiftHerald", "Rift Herald").SetValue(true));
+
+                    smiteMenu.SubMenu("Small Mobs").AddItem(new MenuItem("SRU_Gromp", "Gromp").SetValue(false));
+                    smiteMenu.SubMenu("Small Mobs").AddItem(new MenuItem("Sru_Crab", "Crab").SetValue(false));
+                    smiteMenu.SubMenu("Small Mobs").AddItem(new MenuItem("SRU_Murkwolf", "Wolves").SetValue(false));
+                    smiteMenu.SubMenu("Small Mobs").AddItem(new MenuItem("SRU_Krug", "Krug").SetValue(false));
+                    smiteMenu.SubMenu("Small Mobs")
+                        .AddItem(new MenuItem("SRU_Razorbeak", "Chicken camp").SetValue(false));
+                }
+
+                if (Game.MapId == GameMapId.TwistedTreeline)
+                {
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_Spiderboss", "Vilemaw Enabled").SetValue(true));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_NGolem", "Golem Enabled").SetValue(true));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_NWolf", "Wolf Enabled").SetValue(true));
+                    smiteMenu.SubMenu("Mobs").AddItem(new MenuItem("TT_NWraith", "Wraith Enabled").SetValue(true));
+                }
 
                 //Champion Smite
                 smiteMenu.SubMenu("Champion smite")
@@ -158,14 +181,6 @@
                 if (smiteSlot != null)
                 {
                     this.SmiteSpell = new Spell(smiteSlot.Slot, SmiteRange, TargetSelector.DamageType.True);
-
-                    this.minionNames = new[]
-                                           {
-                                               "SRU_Baron12.1.1", "SRU_Blue1.1.1", "SRU_Red4.1.1", "SRU_Blue7.1.1",
-                                               "SRU_Red10.1.1", "SRU_Dragon_Elder6.5.1", "SRU_Dragon_Air6.1.1",
-                                               "SRU_Dragon_Fire6.2.1", "SRU_Dragon_Water6.3.1", "SRU_Dragon_Elder6.5.1",
-                                               "SRU_Dragon_Earth6.4.1", "SRU_RiftHerald17.1.1", "TT_Spiderboss8.1.1"
-                                           };
 
                     Drawing.OnDraw += this.OnDraw;
                     Game.OnUpdate += this.OnUpdate;
@@ -203,7 +218,7 @@
                         Drawing.DrawText(
                             playerPos.X - 70,
                             playerPos.Y + 40,
-                            System.Drawing.Color.GreenYellow,
+                            System.Drawing.Color.GhostWhite,
                             "Smite active");
                     }
 
@@ -216,7 +231,10 @@
                     {
                         var minions =
                             ObjectManager.Get<Obj_AI_Minion>()
-                                .Where(m => m.Team == GameObjectTeam.Neutral && m.IsValidTarget());
+                                .Where(
+                                    m =>
+                                    m.Team == GameObjectTeam.Neutral && m.IsValidTarget()
+                                    && SmiteObjects.Contains(m.CharData.BaseSkinName));
 
                         foreach (var minion in minions.Where(m => m.IsHPBarRendered))
                         {
@@ -403,37 +421,31 @@
         {
             try
             {
-                if (this.SmiteSpell == null || !this.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active
-                    || this.Player.IsDead)
+                if (this.Player.IsDead || this.SmiteSpell == null || !this.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
                 {
                     return;
                 }
 
-                if (this.SmiteSpell != null && this.Menu.Item("SmiteBig").IsActive())
+                foreach (var minion in
+                    ObjectManager.Get<Obj_AI_Minion>()
+                        .Where(
+                            o =>
+                            Vector3.Distance(ObjectManager.Player.Position, o.ServerPosition) <= 950f
+                            && o.Team == GameObjectTeam.Neutral && !o.CharData.BaseSkinName.ToLower().Contains("barrel")
+                            && !o.CharData.BaseSkinName.ToLower().Contains("mini")
+                            && !o.CharData.BaseSkinName.ToLower().Contains("respawn") && this.Menu.Item(o.CharData.BaseSkinName).IsActive()))
                 {
-                    if (this.targetedMinion == null)
-                    {
-                        this.targetedMinion = ObjectManager.Player.ServerPosition.GetMinionFastByNames(
-                            SmiteRange,
-                            this.minionNames);
-                    }
-
                     if (this.SmiteSpell.IsReady())
                     {
-                        if (this.targetedMinion.IsValidTarget(SmiteRange))
+                        if (minion.IsValidTarget(SmiteRange))
                         {
-                            if (ObjectManager.Player.GetSummonerSpellDamage(
-                                this.targetedMinion,
-                                Damage.SummonerSpell.Smite) > this.targetedMinion.Health)
+                            if (this.Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) > minion.Health)
                             {
-                                this.SmiteSpell.Cast(this.targetedMinion);
+                                this.SmiteSpell.Cast(minion);
                             }
                         }
-                        else
-                        {
-                            this.targetedMinion = null;
-                        }
                     }
+
                     return;
                 }
 
