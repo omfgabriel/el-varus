@@ -44,7 +44,8 @@
             new WardStruct( 60 * 10, 212, "TeemoMushroom", "BantamTrap", WardType.Trap),
             new WardStruct( 60 * 1, 212, "ShacoBox", "JackInTheBox", WardType.Trap),
             new WardStruct( 60 * 2, 212, "Nidalee_Spear", "Bushwhack", WardType.Trap),
-            new WardStruct( 60 * 10, 212, "Noxious_Trap", "BantamTrap", WardType.Trap)
+            new WardStruct( 60 * 10, 212, "Noxious_Trap", "BantamTrap", WardType.Trap),
+            new WardStruct( 120 * 1, 130, "jhintrap", "JhinE", WardType.Trap)
         };
 
         private Texture _greenWardTexture;
@@ -734,3 +735,4 @@
         }
     }
 }
+ 
