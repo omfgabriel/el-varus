@@ -425,7 +425,7 @@
                         && !o.CharData.BaseSkinName.ToLower().Contains("mini")
                         && !o.CharData.BaseSkinName.ToLower().Contains("respawn")
                         && SmiteObjects.Any(x => x.Equals(o.CharData.BaseSkinName)) && o.IsValidTarget(SmiteRange)
-                        && this.Player.GetSummonerSpellDamage(o, Damage.SummonerSpell.Smite) > o.Health);
+                        && this.Menu.Item(o.CharData.BaseSkinName).IsActive() && this.Player.GetSummonerSpellDamage(o, Damage.SummonerSpell.Smite) > o.Health);
 
             if (minion != null)
             {

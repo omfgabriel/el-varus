@@ -96,10 +96,13 @@ namespace ElUtilitySuite.Trackers
             this.Text = new Font(
                 Drawing.Direct3DDevice,
                 new FontDescription
-                    {
-                        FaceName = "Calibri", Height = this.Menu.Item("RecallTracker.FontSize").GetValue<Slider>().Value, Width = 6, OutputPrecision = FontPrecision.Default,
-                        Quality = FontQuality.Default
-                    });
+                {
+                    FaceName = "Calibri",
+                    Height = this.Menu.Item("RecallTracker.FontSize").GetValue<Slider>().Value,
+                    Width = 6,
+                    OutputPrecision = FontPrecision.Default,
+                    Quality = FontQuality.Default
+                });
 
             Obj_AI_Base.OnTeleport += this.Obj_AI_Base_OnTeleport;
             Drawing.OnDraw += this.Drawing_OnDraw;
@@ -490,4 +493,3 @@ namespace ElUtilitySuite.Trackers
         #endregion
     }
 }
- 
