@@ -742,7 +742,7 @@
                     return;
                 }
 
-                if (!this.ZhonyaLowHp || !zhonyaItem.IsReady())
+                if (!this.ZhonyaLowHp || !zhonyaItem.IsReady() || Player.HasBuff("ChronoShift"))
                 {
                     return;
                 }
@@ -759,12 +759,8 @@
                     if (Player.HealthPercent < this.ZhonyaBelowHp)
                     {
                         zhonyaItem.Cast();
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("[ELUTILITYSUITE - ZHOYNA] Used for: {0} - health percentage: {1}%", Player.ChampionName, (int)Player.HealthPercent);
                     }
-                    Console.ForegroundColor = ConsoleColor.White;
                 }
-
             }
             catch (Exception e)
             {
@@ -794,7 +790,7 @@
             }
 
             if (!this.Menu.Item($"Zhonya{spellData.SDataName}").IsActive()
-                || !this.Menu.Item("ZhonyaDangerous").IsActive())
+                || !this.Menu.Item("ZhonyaDangerous").IsActive() || Player.HasBuff("ChronoShift"))
             {
                 return;
             }
