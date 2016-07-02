@@ -105,13 +105,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        private Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private Obj_AI_Hero Player => ObjectManager.Player;
 
         #endregion
 
@@ -186,7 +180,6 @@
 
             GameObject.OnCreate += this.GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += this.OnProcessSpellCast;
-            Game.OnUpdate += this.OnUpdate;
         }
 
         #endregion
@@ -209,7 +202,7 @@
 
                 if (this.rengar != null)
                 {
-                    if (sender.Name.Contains("Rengar_Base_R_Alert"))
+                    if (sender.Name.ToLower().Contains("Rengar_Base_R_Alert"))
                     {
                         if (this.Player.HasBuff("rengarralertsound") && !this.rengar.IsVisible && !this.rengar.IsDead)
                         {
@@ -269,25 +262,22 @@
                     return;
                 }
 
-                if (this.vayne != null)
+                var buff =
+                    this.vayne?.Buffs.FirstOrDefault(
+                        b => b.Name.Equals("VayneInquisition", StringComparison.OrdinalIgnoreCase));
+
+                if (buff != null)
                 {
-                    var buff =
-                        this.vayne.Buffs.FirstOrDefault(
-                            b => b.Name.Equals("VayneInquisition", StringComparison.OrdinalIgnoreCase));
-
-                    if (buff != null)
+                    var item = this.GetBestWardItem();
+                    if (item != null)
                     {
-                        var item = this.GetBestWardItem();
-                        if (item != null)
-                        {
-                            var spellCastPosition = this.Player.Distance(args.End) > 600
-                                                        ? this.Player.Position
-                                                        : args.End;
+                        var spellCastPosition = this.Player.Distance(args.End) > 600
+                                                    ? this.Player.Position
+                                                    : args.End;
 
-                            Utility.DelayAction.Add(
-                                random.Next(100, 1000),
-                                () => this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition));
-                        }
+                        Utility.DelayAction.Add(
+                            random.Next(100, 1000),
+                            () => this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition));
                     }
                 }
 
@@ -306,21 +296,6 @@
                             () => this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition));
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred: '{0}'", e);
-            }
-        }
-
-        /// <summary>
-        ///     Fired when the game is updated.
-        /// </summary>
-        /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
-        private void OnUpdate(EventArgs args)
-        {
-            try
-            {
             }
             catch (Exception e)
             {

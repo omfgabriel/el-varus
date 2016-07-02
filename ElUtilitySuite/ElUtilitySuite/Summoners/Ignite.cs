@@ -54,7 +54,7 @@
                 igniteMenu.AddItem(new MenuItem("Ignite.Activated", "Ignite").SetValue(true));
                 foreach (var x in HeroManager.Enemies)
                 {
-                    igniteMenu.AddItem(new MenuItem("igniteon" + x.ChampionName, "Use on " + x.ChampionName))
+                    igniteMenu.AddItem(new MenuItem($"igniteon{x.ChampionName}", "Use on " + x.ChampionName))
                         .SetValue(true);
                 }
             }

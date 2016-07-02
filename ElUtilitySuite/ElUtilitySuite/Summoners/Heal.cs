@@ -67,9 +67,9 @@
                 healMenu.AddItem(new MenuItem("min-health", "Health percentage").SetValue(new Slider(20, 1)));
                 healMenu.AddItem(new MenuItem("min-damage", "Heal on % incoming damage").SetValue(new Slider(20, 1)));
                 healMenu.AddItem(new MenuItem("seperator21", ""));
-                foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsAlly))
+                foreach (var x in HeroManager.Allies)
                 {
-                    healMenu.AddItem(new MenuItem("healon" + x.ChampionName, "Use for " + x.ChampionName))
+                    healMenu.AddItem(new MenuItem($"healon{x.ChampionName}", "Use for " + x.ChampionName))
                         .SetValue(true);
                 }
             }
@@ -123,7 +123,7 @@
                     }
 
                     var enemies = ally.CountEnemiesInRange(750f);
-                    var totalDamage = IncomingDamageManager.GetDamage(ally) * 1.1f; //
+                    var totalDamage = IncomingDamageManager.GetDamage(ally) * 1.1f;
 
                     if (ally.HealthPercent <= this.Menu.Item("min-health").GetValue<Slider>().Value && 
                         this.HealSpell.IsInRange(ally) && !ally.IsDead && enemies >= 1)
@@ -132,10 +132,7 @@
                             || ally.HealthPercent < this.Menu.Item("min-health").GetValue<Slider>().Value)
                         {
                             this.Player.Spellbook.CastSpell(this.HealSpell.Slot);
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("[ELUTILITYSUITE - HEAL] Used for: {0} - health percentage: {1}%", ally.ChampionName, (int)ally.HealthPercent);
                         }
-                        Console.ForegroundColor = ConsoleColor.White;
                     }
                 }
 

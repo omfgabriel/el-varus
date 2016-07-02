@@ -77,9 +77,9 @@
             {
                 snowballMenu.AddItem(new MenuItem("Snowball.Activated", "Snowball activated").SetValue(true));
                 snowballMenu.AddItem(new MenuItem("SnowballHotkey", "Throw snowball").SetValue(new KeyBind('Z', KeyBindType.Press)));
-                foreach (var x in ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsEnemy))
+                foreach (var x in HeroManager.Enemies)
                 {
-                    snowballMenu.AddItem(new MenuItem("snowballon" + x.ChampionName, "Use for " + x.ChampionName))
+                    snowballMenu.AddItem(new MenuItem($"snowballon{x.ChampionName}", "Use for " + x.ChampionName))
                         .SetValue(true);
                 }
             }
