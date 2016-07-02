@@ -42,13 +42,7 @@
 
         #region Properties
 
-        private static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private static Obj_AI_Hero Player => ObjectManager.Player;
 
         #endregion
 
@@ -119,7 +113,7 @@
 
         private static void OnCombo()
         {
-            var target = TargetSelector.GetTarget(1500, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (target == null)
             {
                 return;
@@ -133,10 +127,9 @@
 
             if (CheckMenu("ElVladimir.Combo.E") && spells[Spells.E].IsReady() && target.IsValidTarget(800))
             {
-                Orbwalking.Orbwalk(target ?? null, Game.CursorPos);
                 if (Player.Distance(target) > 300 && Player.Distance(target) < spells[Spells.E].Range)
                 {
-                    spells[Spells.E].StartCharging();
+                    spells[Spells.E].StartCharging(Game.CursorPos);
                 }
             }
 
@@ -192,7 +185,7 @@
             {
                 if (Player.Distance(target) < 800)
                 {
-                    spells[Spells.E].StartCharging();
+                    spells[Spells.E].StartCharging(Game.CursorPos);
                 }
             }
         }
