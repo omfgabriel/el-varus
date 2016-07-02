@@ -38,13 +38,7 @@
 
         #region Properties
 
-        private static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private static Obj_AI_Hero Player => ObjectManager.Player;
 
         #endregion
 
@@ -123,37 +117,50 @@
         private static void Combo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (!target.IsValidTarget())
+            if (target == null)
             {
                 return;
             }
 
             if (ElNamiMenu.Menu.Item("ElNamiReborn.Combo.Q").IsActive() && spells[Spells.Q].IsReady())
             {
-                spells[Spells.Q].CastIfHitchanceEquals(target, HitChance.VeryHigh);
+                var pred = spells[Spells.Q].GetPrediction(target);
+                if (pred.Hitchance >= HitChance.VeryHigh)
+                {
+                    spells[Spells.Q].Cast(pred.CastPosition);
+                }
             }
 
             if (ElNamiMenu.Menu.Item("ElNamiReborn.Combo.E").IsActive() && spells[Spells.E].IsReady())
             {
-                if (Player.GetAlliesInRange(spells[Spells.E].Range).Any())
+                if (Player.GetEnemiesInRange(spells[Spells.E].Range).Any())
                 {
-                    var closestToTarget =
-                        Player.GetAlliesInRange(spells[Spells.E].Range)
+                    var closestEnemy =
+                        Player.GetEnemiesInRange(spells[Spells.E].Range)
                             .OrderByDescending(h => (h.PhysicalDamageDealtPlayer + h.MagicDamageDealtPlayer))
-                            .First();
+                            .FirstOrDefault();
 
-                    if (
-                        !ElNamiMenu.Menu.Item("ElNamiReborn.Settings.E1" + closestToTarget.CharData.BaseSkinName)
-                             .IsActive())
+                    if (closestEnemy == null)
                     {
                         return;
                     }
 
-                    Utility.DelayAction.Add(100, () => spells[Spells.E].Cast(closestToTarget));
+                    if (closestEnemy.HasBuffOfType(BuffType.Stun))
+                    {
+                        return;
+                    }
+
+                    spells[Spells.E].Cast(closestEnemy);
                 }
-                else
+
+                if (Player.GetAlliesInRange(spells[Spells.E].Range).Any() && Player.GetEnemiesInRange(800f).Count >= 1)
                 {
-                    Utility.DelayAction.Add(100, () => spells[Spells.E].Cast(Player));
+                    var closestToTarget =
+                        Player.GetAlliesInRange(spells[Spells.E].Range)
+                            .OrderByDescending(h => (h.PhysicalDamageDealtPlayer + h.MagicDamageDealtPlayer))
+                            .FirstOrDefault();
+
+                    spells[Spells.E].Cast(closestToTarget);
                 }
             }
 
@@ -171,7 +178,10 @@
                     if (pred.AoeTargetsHitCount
                         >= ElNamiMenu.Menu.Item("ElNamiReborn.Combo.R.Count").GetValue<Slider>().Value)
                     {
-                        spells[Spells.R].Cast(pred.CastPosition);
+                        if (pred.Hitchance >= HitChance.VeryHigh)
+                        {
+                            spells[Spells.R].Cast(pred.CastPosition);
+                        }
                     }
                 }
             }
@@ -186,7 +196,7 @@
         private static void Harass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (!target.IsValidTarget())
+            if (target == null)
             {
                 return;
             }
@@ -273,13 +283,17 @@
 
         private static void PlayerHealing()
         {
-            if (Player.IsRecalling() || Player.InFountain() || !ElNamiMenu.Menu.Item("ElNamiReborn.Heal.Activate").IsActive())
+            if (Player.IsRecalling() || Player.InFountain()
+                || !ElNamiMenu.Menu.Item("ElNamiReborn.Heal.Activate").IsActive())
             {
                 return;
             }
 
-            if ((Player.Health / Player.MaxHealth) * 100 <= ElNamiMenu.Menu.Item("ElNamiReborn.Heal.Player.HP").GetValue<Slider>().Value && spells[Spells.W].IsReady()
-                && ObjectManager.Player.ManaPercent >= ElNamiMenu.Menu.Item("ElNamiReborn.Heal.Mana").GetValue<Slider>().Value)
+            if ((Player.Health / Player.MaxHealth) * 100
+                <= ElNamiMenu.Menu.Item("ElNamiReborn.Heal.Player.HP").GetValue<Slider>().Value
+                && spells[Spells.W].IsReady()
+                && ObjectManager.Player.ManaPercent
+                >= ElNamiMenu.Menu.Item("ElNamiReborn.Heal.Mana").GetValue<Slider>().Value)
             {
                 spells[Spells.W].Cast();
             }
