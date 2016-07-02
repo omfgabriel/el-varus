@@ -34,7 +34,7 @@
                                                              {
                                                                  { Spells.Q, new Spell(SpellSlot.Q, 1175f) },
                                                                  { Spells.W, new Spell(SpellSlot.W, 1075f) },
-                                                                 { Spells.E, new Spell(SpellSlot.E, 1000f) }, //1100
+                                                                 { Spells.E, new Spell(SpellSlot.E, 1075f) },
                                                                  { Spells.R, new Spell(SpellSlot.R, 3340f) }
                                                              };
 
@@ -150,36 +150,21 @@
 
             var prediction = spells[Spells.Q].GetPrediction(target);
             var collision = spells[Spells.Q].GetCollision(
-                Player.Position.To2D(),
-                new List<Vector2>
-                    {
-                        prediction.UnitPosition.To2D() //Credits to ScienceArk
-                    });
+                Player.ServerPosition.To2D(),
+                new List<Vector2> { prediction.CastPosition.To2D() });
 
-            if (prediction.Hitchance >= HitChance.VeryHigh)
+            if (collision.Count == 1 || (collision.Count == 1 && collision.ElementAt(0).IsChampion())
+                || collision.Count <= 1
+                || (collision.Count == 2 && (collision.ElementAt(0).IsChampion() || collision.ElementAt(1).IsChampion())))
             {
                 spells[Spells.Q].Cast(prediction.CastPosition);
             }
-
-            if (collision.Count == 1)
+            else
             {
-                spells[Spells.Q].Cast(prediction.CastPosition);
-            }
-
-            if (collision.Count == 2)
-            {
-                if (collision[0].IsChampion() || collision[1].IsChampion())
+                if (prediction.Hitchance >= HitChance.VeryHigh)
                 {
                     spells[Spells.Q].Cast(prediction.CastPosition);
                 }
-            }
-            else if (collision.Count == 1 && collision[0].IsChampion())
-            {
-                spells[Spells.Q].Cast(prediction.CastPosition);
-            }
-            else if (collision.Count <= 1)
-            {
-                spells[Spells.Q].Cast(prediction.CastPosition);
             }
         }
 
@@ -217,65 +202,6 @@
                 {
                     spells[Spells.R].Cast(target.Position);
                 }
-            }
-        }
-
-        private static void SemiQ()
-        {
-            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValidTarget())
-            {
-                return;
-            }
-
-            CastQ(target);
-        }
-
-        private static void SemiR()
-        {
-            var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValidTarget())
-            {
-                return;
-            }
-
-            if (!spells[Spells.R].IsReady() || !target.IsValidTarget(spells[Spells.R].Range))
-            {
-                return;
-            }
-
-            var prediction = spells[Spells.R].GetPrediction(target);
-            if (prediction.Hitchance >= HitChance.High)
-            {
-                spells[Spells.R].Cast(target.Position);
-            }
-        }
-
-        private static void KillstealHandler()
-        {
-            try
-            {
-                if (IsActive("ElLux.KS.R"))
-                {
-                    foreach (var target in HeroManager.Enemies)
-                    {
-                        if (target.IsValidTarget() && target.IsValidTarget(spells[Spells.R].Range))
-                        {
-                            if (spells[Spells.R].GetDamage(target) > target.Health)
-                            {
-                                var prediction = spells[Spells.R].GetPrediction(target);
-                                if (prediction.Hitchance >= HitChance.High)
-                                {
-                                    spells[Spells.R].Cast(prediction.CastPosition);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred: '{0}'", e);
             }
         }
 
@@ -329,6 +255,31 @@
             return ElLuxMenu.Menu.Item(menuItem).GetValue<bool>();
         }
 
+        private static void KillstealHandler()
+        {
+            try
+            {
+                if (IsActive("ElLux.KS.R"))
+                {
+                    foreach (var target in HeroManager.Enemies.Where(t => t.IsValidTarget(spells[Spells.R].Range)))
+                    {
+                        if (spells[Spells.R].GetDamage(target) > target.Health)
+                        {
+                            var prediction = spells[Spells.R].GetPrediction(target);
+                            if (prediction.Hitchance >= HitChance.High)
+                            {
+                                spells[Spells.R].Cast(prediction.CastPosition);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred: '{0}'", e);
+            }
+        }
+
         private static void Obj_AI_Base_OnCreate(GameObject obj, EventArgs args)
         {
             if (obj.Name == "Lux_Base_E_mis.troy")
@@ -348,7 +299,7 @@
         private static void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValidTarget())
+            if (target == null)
             {
                 return;
             }
@@ -361,15 +312,15 @@
                 }
             }
 
+            if (IsActive("ElLux.Combo.Q"))
+            {
+                CastQ(target);
+            }
+
             if (!EState && Troy != null && Troy.Position.CountEnemiesInRange(spells[Spells.E].Width) >= 1)
             {
                 spells[Spells.E].Cast();
                 Player.IssueOrder(GameObjectOrder.AttackUnit, target);
-            }
-
-            if (IsActive("ElLux.Combo.Q"))
-            {
-                CastQ(target);
             }
 
             if (IsActive("ElLux.Combo.R"))
@@ -439,7 +390,6 @@
                     CastE(target);
                 }
             }
-
 
             if (!EState && Troy != null && Troy.Position.CountEnemiesInRange(spells[Spells.E].Width) >= 1)
             {
@@ -635,6 +585,38 @@
                 SemiQ();
             }
         }
+
+        private static void SemiQ()
+        {
+            var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
+            if (target == null)
+            {
+                return;
+            }
+
+            CastQ(target);
+        }
+
+        private static void SemiR()
+        {
+            var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
+            if (target == null || !target.IsValidTarget())
+            {
+                return;
+            }
+
+            if (!spells[Spells.R].IsReady() || !target.IsValidTarget(spells[Spells.R].Range))
+            {
+                return;
+            }
+
+            var prediction = spells[Spells.R].GetPrediction(target);
+            if (prediction.Hitchance >= HitChance.High)
+            {
+                spells[Spells.R].Cast(target.Position);
+            }
+        }
+
         #endregion
     }
 }
