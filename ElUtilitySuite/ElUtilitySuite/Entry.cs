@@ -1,6 +1,7 @@
 ﻿namespace ElUtilitySuite
 {
     using System;
+    using System.Drawing;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
@@ -10,6 +11,8 @@
 
     using LeagueSharp;
     using LeagueSharp.Common;
+
+    using Color = SharpDX.Color;
 
     internal class Entry
     {
@@ -89,7 +92,7 @@
                         .Where(x => typeof(IPlugin).IsAssignableFrom(x) && !x.IsInterface)
                         .Select(x => GetActivator<IPlugin>(x.GetConstructors().First())(null));
 
-                var menu = new Menu("ElUtilitySuite", "ElUtilitySuite", true);
+                var menu = new Menu("ElUtilitySuite", "ElUtilitySuite", true).SetFontStyle(FontStyle.Bold, Color.GreenYellow);
 
                 foreach (var plugin in plugins)
                 {
