@@ -35,7 +35,7 @@
                 "SRU_Dragon_Earth", "SRU_Dragon_Air", "SRU_Dragon_Elder",
                 "SRU_Baron", "SRU_Gromp", "SRU_Murkwolf", "SRU_Razorbeak",
                 "SRU_RiftHerald", "SRU_Krug", "TT_Spiderboss", "TT_NGolem",
-                "TT_NWolf", "TT_NWraith"
+                "TT_NWolf", "TT_NWraith", "Sru_Crab"
             };
 
         #endregion
@@ -451,6 +451,87 @@
 
         #region Methods
 
+
+        /// <summary>
+        ///     Fired when the game is updated.
+        /// </summary>
+        /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
+        private void OnUpdate(EventArgs args)
+        {
+            try
+            {
+                if (this.Player.IsDead || this.SmiteSpell == null
+                    || !this.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
+                {
+                    return;
+                }
+
+                foreach (var minion in
+                    MinionManager.GetMinions(950f, MinionTypes.All, MinionTeam.Neutral)
+                        .Where(
+                            m =>
+                            m.IsValidTarget(SmiteRange) && m.Name.StartsWith(m.CharData.BaseSkinName)
+                            && SmiteObjects.Contains(m.CharData.BaseSkinName) &&
+                            !m.Name.Contains("Mini") && this.Menu.Item(m.CharData.BaseSkinName).IsActive()))
+                {
+                    if (this.SmiteSpell.IsReady())
+                    {
+                        if (minion.Distance(this.Player.ServerPosition) <= 570f + minion.BoundingRadius + this.Player.BoundingRadius)
+                        {
+                            if (this.Menu.Item("Smite.Spell").IsActive())
+                            {
+                                this.ChampionSpellSmite(
+                                    (float)this.Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite),
+                                    minion);
+                            }
+
+                            if (this.Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) > minion.Health)
+                            {
+                                this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, minion);
+                                Console.WriteLine($"Smite: {minion.CharData.BaseSkinName} - {minion.Health}");
+                            }
+                        }
+                    }
+                }
+
+                if (this.Menu.Item("Smite.Ammo").IsActive() && this.Player.GetSpell(this.SmiteSpell.Slot).Ammo == 1)
+                {
+                    return;
+                }
+
+                if (this.Menu.Item("ElSmite.KS.Combo").IsActive()
+                    && this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() == "s5_summonersmiteduel"
+                    && this.ComboModeActive)
+                {
+                    var smiteComboEnemy =
+                        HeroManager.Enemies.FirstOrDefault(hero => !hero.IsZombie && hero.IsValidTarget(500f));
+                    if (smiteComboEnemy != null)
+                    {
+                        this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, smiteComboEnemy);
+                    }
+                }
+
+                if (this.Menu.Item("ElSmite.KS.Activated").IsActive() && this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() == "s5_summonersmiteplayerganker")
+                {
+                    var kSableEnemy =
+                        HeroManager.Enemies.FirstOrDefault(
+                            hero =>
+                            !hero.IsZombie && hero.IsValidTarget(SmiteRange)
+                            && this.SmiteSpell.GetDamage(hero) >= hero.Health);
+
+                    if (kSableEnemy != null)
+                    {
+                        this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, kSableEnemy);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"An error occurred: {e}");
+            }
+        }
+
+
         private void ChampionSpellSmite(float damage, Obj_AI_Base mob)
         {
             try
@@ -706,90 +787,6 @@
                     if (drawSmite.Active && this.Player.Spellbook.CanUseSpell(smiteSpell.Slot) != SpellState.Ready)
                     {
                         Render.Circle.DrawCircle(this.Player.Position, SmiteRange, System.Drawing.Color.Red);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"An error occurred: {e}");
-            }
-        }
-
-        /// <summary>
-        ///     Fired when the game is updated.
-        /// </summary>
-        /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
-        private void OnUpdate(EventArgs args)
-        {
-            try
-            {
-                if (this.Player.IsDead || this.SmiteSpell == null
-                    || !this.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
-                {
-                    return;
-                }
-
-                foreach (var minion in
-                    MinionManager.GetMinions(950f, MinionTypes.All, MinionTeam.Neutral)
-                        .Where(
-                            buff =>
-                            buff.IsValidTarget(SmiteRange) && buff.Name.StartsWith(buff.CharData.BaseSkinName)
-                            && SmiteObjects.Contains(buff.CharData.BaseSkinName) && !buff.Name.Contains("Mini")
-                            && this.Menu.Item(buff.CharData.BaseSkinName).IsActive()))
-                {
-                    if (this.SmiteSpell.IsReady())
-                    {
-                        if (minion.Distance(this.Player.ServerPosition)
-                            <= 570f + minion.BoundingRadius + this.Player.BoundingRadius)
-                        {
-                            if (this.Menu.Item("Smite.Spell").IsActive())
-                            {
-                                this.ChampionSpellSmite(
-                                    (float)this.Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite),
-                                    minion);
-                            }
-
-                            if (this.Player.GetSummonerSpellDamage(minion, Damage.SummonerSpell.Smite) > minion.Health)
-                            {
-                                this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, minion);
-                            }
-                        }
-                    }
-                }
-
-                if (this.Menu.Item("Smite.Ammo").IsActive() && this.Player.GetSpell(this.SmiteSpell.Slot).Ammo == 1)
-                {
-                    return;
-                }
-
-                if (this.Menu.Item("ElSmite.KS.Combo").IsActive()
-                    && this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() == "s5_summonersmiteduel"
-                    && this.ComboModeActive)
-                {
-                    var smiteComboEnemy =
-                        HeroManager.Enemies.FirstOrDefault(hero => !hero.IsZombie && hero.IsValidTarget(500f));
-                    if (smiteComboEnemy != null)
-                    {
-                        this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, smiteComboEnemy);
-                    }
-                }
-
-                if (this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() != "s5_summonersmiteplayerganker")
-                {
-                    return;
-                }
-
-                if (this.Menu.Item("ElSmite.KS.Activated").IsActive())
-                {
-                    var kSableEnemy =
-                        HeroManager.Enemies.FirstOrDefault(
-                            hero =>
-                            !hero.IsZombie && hero.IsValidTarget(SmiteRange)
-                            && this.SmiteSpell.GetDamage(hero) >= hero.Health);
-
-                    if (kSableEnemy != null)
-                    {
-                        this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, kSableEnemy);
                     }
                 }
             }

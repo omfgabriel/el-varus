@@ -460,7 +460,12 @@
                              new ZhonyaSpell
                                  {
                                      ChampionName = "veigar", SDataName = "veigardarkmatter", MissileName = "",
-                                     Delay = 1200, MissileSpeed = int.MaxValue, CastRange = 900f
+                                     Delay = 1000, MissileSpeed = int.MaxValue, CastRange = 900f
+                                 },
+                             new ZhonyaSpell
+                                 {
+                                     ChampionName = "veigar", SDataName = "VeigarPrimordialBurst", MissileName = "",
+                                     Delay = 1400, MissileSpeed = int.MaxValue, CastRange = 650f
                                  },
                              new ZhonyaSpell
                                  {
