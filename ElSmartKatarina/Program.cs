@@ -453,12 +453,6 @@ namespace ElKatarina
         {
             if (config.Item("KillSteal").IsActive())
             {
-                /*var channeling = Player.IsChannelingImportantSpell();
-                if (channeling)
-                {
-                    return;
-                }*/
-
                 foreach (var enemy in
                     HeroManager.Enemies.Where(
                         x => x.IsValidTarget(spells[Spells.E].Range + spells[Spells.Q].Range) && !x.IsZombie)
