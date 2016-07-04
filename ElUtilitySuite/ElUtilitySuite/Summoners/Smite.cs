@@ -44,6 +44,7 @@
                                 { "Air Dragon", "SRU_Dragon_Air" },
                                 { "Elder Dragon", "SRU_Dragon_Elder" },
                                 { "Red Brambleback", "SRU_Red" },
+                                { "Rift Herald", "SRU_RiftHerald" },
                                 // should be off by default
                                 // pls mobo fix
                                 { "Crimson Raptor", "SRU_Razorbeak" },
