@@ -234,6 +234,12 @@
                 return;
             }
 
+
+            if (spells[Spells.Q].IsReady() && IsActive("ElTristana.Combo.Q"))
+            {
+                QLogic();
+            }
+
             if (IsActive("ElTristana.Combo.Focus.E"))
             {
                 var passiveTarget = HeroManager.Enemies.Find(x => x.HasBuff("TristanaECharge") && x.IsValidTarget(spells[Spells.E].Range));
@@ -289,9 +295,12 @@
                     spells[Spells.R].Cast(target);
                 }
             }
+        }
 
-            if (spells[Spells.Q].IsReady() && IsActive("ElTristana.Combo.Q")
-                && target.IsValidTarget(spells[Spells.E].Range))
+        private static void QLogic()
+        {
+            var qRange = Player.AttackRange + Player.BoundingRadius + 60 + 25 * spells[Spells.Q].Level;
+            if (HeroManager.Enemies.Any(e => e.Distance(Player) < qRange + e.BoundingRadius))
             {
                 spells[Spells.Q].Cast();
             }
@@ -614,26 +623,13 @@
 
         private static void DoKillsteal()
         {
-            try
-            {
-                foreach (
-                    var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(spells[Spells.R].Range) 
-                    && !x.IsDead && !x.IsZombie && spells[Spells.R].GetDamage(x) > x.Health))
-                {
-                    if (enemy.IsValidTarget(spells[Spells.R].Range))
-                    {
-                        if (!IsActive("ElTristana.Killsteal.R"))
-                        {
-                            return;
-                        }
+            var enemy =
+                HeroManager.Enemies
+                     .FirstOrDefault(e => e.IsValidTarget(spells[Spells.R].Range) && spells[Spells.R].IsKillable(e));
 
-                        spells[Spells.R].Cast(enemy);
-                    }
-                }
-            }
-            catch (Exception exception)
+            if (enemy != null)
             {
-                Console.WriteLine(exception);
+                spells[Spells.R].Cast(enemy);
             }
         }
 
