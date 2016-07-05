@@ -36,7 +36,7 @@
 
         public static int LastSwitch;
 
-        public static Orbwalking.Orbwalker Orbwalker;
+        public static SFXTargetSelector.Orbwalking.Orbwalker Orbwalker;
 
         protected static SpellSlot Ignite;
 

@@ -8,6 +8,9 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using TargetSelector = SFXTargetSelector.TargetSelector;
+    using Orbwalking = SFXTargetSelector.Orbwalking;
+
     public enum Spells
     {
         Q,
@@ -21,12 +24,6 @@
 
     internal class Rengar : Standards
     {
-        #region Static Fields
-
-        public static Obj_AI_Base SelectedEnemy;
-
-        #endregion
-
         #region Properties
 
         private static IEnumerable<Obj_AI_Hero> Enemies => HeroManager.Enemies;
@@ -35,25 +32,7 @@
 
         #region Public Methods and Operators
 
-        public static void OnClick(WndEventArgs args)
-        {
-            if (args.Msg != (uint)WindowsMessages.WM_LBUTTONDOWN)
-            {
-                return;
-            }
-
-            var unit2 =
-                ObjectManager.Get<Obj_AI_Base>()
-                    .FirstOrDefault(
-                        a =>
-                        (a.IsValid<Obj_AI_Hero>()) && a.IsEnemy && a.Distance(Game.CursorPos) < a.BoundingRadius + 1000 && a.IsValidTarget());
-
-            if (unit2 != null)
-            {
-                SelectedEnemy = unit2;
-            }
-        }
-
+    
         public static void OnLoad(EventArgs args)
         {
             if (Player.ChampionName != "Rengar")
@@ -79,7 +58,6 @@
                 Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
                 Orbwalking.AfterAttack += AfterAttack;
                 Orbwalking.BeforeAttack += BeforeAttack;
-                Game.OnWndProc += OnClick;
             }
             catch (Exception e)
             {
@@ -130,10 +108,18 @@
                     && !(IsListActive("Combo.Prio").SelectedIndex == 0
                          || IsListActive("Combo.Prio").SelectedIndex == 1 && Ferocity == 5))
                 {
-                    if (Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
+
+                    var targets = TargetSelector.GetTargets(
+                                Orbwalking.GetRealAutoAttackRange(null) * 1.25f, DamageType.Physical);
+                    if (targets != null)
                     {
-                        args.Process = false;
-                        spells[Spells.Q].Cast();
+                        var target = targets.FirstOrDefault(Orbwalking.InAutoAttackRange);
+                        if (target != null)
+                        {
+                            Orbwalker.ForceTarget(target);
+                            args.Process = false;
+                            spells[Spells.Q].Cast();
+                        }
                     }
                 }
             }
@@ -172,14 +158,18 @@
         {
             try
             {
-                if (!IsActive("Killsteal.On") || RengarR || Player.IsRecalling())
+                if (!IsActive("Killsteal.On") || Player.IsRecalling())
                 {
                     return;
                 }
 
                 var target = Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.E].Range));
-
                 if (target == null)
+                {
+                    return;
+                }
+
+                if (RengarR)
                 {
                     return;
                 }
@@ -213,7 +203,7 @@
                     return;
                 }
 
-                var target = TargetSelector.GetTarget(1500f, TargetSelector.DamageType.Physical);
+                var target = TargetSelector.GetTarget(1500f, DamageType.Physical);
                 if (!target.IsValidTarget())
                 {
                     return;
@@ -233,7 +223,7 @@
                             {
                                 var targetE = TargetSelector.GetTarget(
                                     spells[Spells.E].Range,
-                                    TargetSelector.DamageType.Physical);
+                                    DamageType.Physical);
                                 if (targetE.IsValidTarget())
                                 {
                                     var pred = spells[Spells.E].GetPrediction(targetE);
@@ -261,7 +251,7 @@
                         {
                             var targetE = TargetSelector.GetTarget(
                                 spells[Spells.E].Range,
-                                TargetSelector.DamageType.Physical);
+                                DamageType.Physical);
                             if (targetE.IsValidTarget(spells[Spells.E].Range))
                             {
                                 var pred = spells[Spells.E].GetPrediction(targetE);
@@ -312,15 +302,6 @@
 
                 var drawsearchrangeQ = MenuInit.Menu.Item("Beta.Search.QCastRange").GetValue<Circle>();
                 var searchrangeQCastRange = MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value;
-
-                if (SelectedEnemy.IsValidTarget() && SelectedEnemy.IsVisible && !SelectedEnemy.IsDead)
-                {
-                    Drawing.DrawText(
-                        Drawing.WorldToScreen(SelectedEnemy.Position).X - 40,
-                        Drawing.WorldToScreen(SelectedEnemy.Position).Y + 10,
-                        Color.White,
-                        "Selected Target");
-                }
 
                 if (IsActive("Misc.Drawings.Off"))
                 {

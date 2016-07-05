@@ -1,6 +1,8 @@
 ﻿namespace ElRengarRevamped
 {
     using LeagueSharp.Common;
+    using TargetSelector = SFXTargetSelector.TargetSelector;
+    using Orbwalking = SFXTargetSelector.Orbwalking;
 
     // ReSharper disable once ClassNeverInstantiated.Global
     public class MenuInit

@@ -7,6 +7,9 @@ namespace ElRengarRevamped
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using TargetSelector = SFXTargetSelector.TargetSelector;
+    using Orbwalking = SFXTargetSelector.Orbwalking;
+
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -19,119 +22,105 @@ namespace ElRengarRevamped
         /// </summary>
         public static void Combo()
         {
-            try
+            /*var target = SFXTargetSelector.TargetSelector.Selected.Target
+                             ?? TargetSelector.GetTarget(spells[Spells.E].Range, DamageType.Physical);
+            if (target.IsValidTarget() == false)
             {
-                var target = TargetSelector.GetSelectedTarget()
-                             ?? TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
-                if (target.IsValidTarget() == false)
+                return;
+            }*/
+
+            var forced = Orbwalker.ForcedTarget();
+            if (forced != null && forced.IsValidTarget() && forced is Obj_AI_Hero &&
+                    Orbwalking.InAutoAttackRange(forced))
+            {
+                return;
+            }
+
+            var target = TargetSelector.GetTarget(spells[Spells.E].Range);
+            if (target == null)
+            {
+                return;
+            }
+
+             if (SFXTargetSelector.TargetSelector.Selected.Target != null)
+            {
+                Orbwalker.ForceTarget(target);
+            }
+
+            #region RengarR
+
+            if (Ferocity <= 4)
+            {
+                if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q")
+                    && Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
                 {
-                    return;
+                    spells[Spells.Q].Cast();
                 }
 
-                if (TargetSelector.GetSelectedTarget() != null)
+                if (!RengarR)
                 {
-                    Orbwalker.ForceTarget(target);
-                }
-
-                #region RengarR
-
-                if (Ferocity <= 4)
-                {
-                    if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q")
-                        && Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
+                    if (!HasPassive)
                     {
-                        spells[Spells.Q].Cast();
-                    }
-
-                    if (!RengarR)
-                    {
-                        if (!HasPassive)
+                        if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
                         {
-                            if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
+                            CastE(target);
+                        }
+                    }
+                }
+
+                CastItems(target);
+
+                if (spells[Spells.W].IsReady() && IsActive("Combo.Use.W"))
+                {
+                    CastW();
+                    CastItems(target);
+                }
+            }
+
+            if (Ferocity == 5)
+            {
+                switch (IsListActive("Combo.Prio").SelectedIndex)
+                {
+                    case 0:
+                        if (!RengarR)
+                        {
+                            if (spells[Spells.E].IsReady() && !HasPassive)
                             {
                                 CastE(target);
+
+                                if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
+                                {
+                                    MenuInit.Menu.Item("Combo.Prio")
+                                        .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
+                                    LastSwitch = Utils.GameTimeTickCount;
+                                }
                             }
                         }
-                        else
+                        break;
+                    case 1:
+                        if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
                         {
-                            if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
-                            {
-                                if (Player.IsDashing())
-                                {
-                                    CastE(target);
-                                }
-                            }
+                            CastW();
                         }
-                    }
-
-                    CastItems(target);
-
-                    if (spells[Spells.W].IsReady() && IsActive("Combo.Use.W"))
-                    {
-                        CastW();
-                        CastItems(target);
-                    }
+                        break;
+                    case 2:
+                        if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q")
+                            && Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
+                        {
+                            spells[Spells.Q].Cast();
+                        }
+                        break;
                 }
-
-                if (Ferocity == 5)
-                {
-                    switch (IsListActive("Combo.Prio").SelectedIndex)
-                    {
-                        case 0:
-                            if (!RengarR)
-                            {
-                                if (spells[Spells.E].IsReady() && !HasPassive)
-                                {
-                                    CastE(target);
-
-                                    if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
-                                    {
-                                        MenuInit.Menu.Item("Combo.Prio")
-                                            .SetValue(new StringList(new[] { "E", "W", "Q" }, 2));
-                                        LastSwitch = Utils.GameTimeTickCount;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
-                                {
-                                    if (Player.IsDashing())
-                                    {
-                                        CastE(target);
-                                    }
-                                }
-                            }
-                            break;
-                        case 1:
-                            if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
-                            {
-                                CastW();
-                            }
-                            break;
-                        case 2:
-                            if (spells[Spells.Q].IsReady() && IsActive("Combo.Use.Q")
-                                && Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
-                            {
-                                spells[Spells.Q].Cast();
-                            }
-                            break;
-                    }
-                }
-
-                #region Summoner spells
-
-                if (IsActive("Combo.Use.Ignite") && target.IsValidTarget(600f) && IgniteDamage(target) >= target.Health)
-                {
-                    Player.Spellbook.CastSpell(Ignite, target);
-                }
-
-                #endregion
             }
-            catch (Exception e)
+
+            #region Summoner spells
+
+            if (IsActive("Combo.Use.Ignite") && target.IsValidTarget(600f) && IgniteDamage(target) >= target.Health)
             {
-                Console.WriteLine(e);
+                Player.Spellbook.CastSpell(Ignite, target);
             }
+
+            #endregion
         }
 
         #endregion
@@ -219,9 +208,11 @@ namespace ElRengarRevamped
         public static void Harass()
         {
             // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
-            var target = TargetSelector.GetSelectedTarget() != null
-                             ? TargetSelector.GetSelectedTarget()
-                             : TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
+            var target = SFXTargetSelector.TargetSelector.Selected.Target != null
+                             ? SFXTargetSelector.TargetSelector.Selected.Target
+                             : TargetSelector.GetTarget(spells[Spells.Q].Range, DamageType.Physical);
+
+            
 
             if (target.IsValidTarget() == false)
             {
