@@ -549,6 +549,12 @@ namespace ElUtilitySuite.Summoners
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
                                      Slot = SpellSlot.Q
                                  },
+                              new CleanseSpell
+                                 {
+                                     Champion = "Ryze", Name = "RyzeW", MenuName = "Ryze (W)",
+                                     Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.W
+                                 },
                              new CleanseSpell
                                  {
                                      Champion = "tahmkench", Name = "tahmkenchwhasdevouredtarget", MenuName = "Tahm stun",
