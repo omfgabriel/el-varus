@@ -86,27 +86,27 @@
                              new ZhonyaSpell
                                  {
                                      ChampionName = "zed", SDataName = "zedr", MissileName = "", Delay = 900,
-                                     MissileSpeed = int.MaxValue, CastRange = 850f
+                                     MissileSpeed = 1000, CastRange = 625f
+                                 },
+                              new ZhonyaSpell
+                                 {
+                                     ChampionName = "Kennen", SDataName = "KennenShurikenStorm", MissileName = "", Delay = 250,
+                                     MissileSpeed = 1000, CastRange = 550f
                                  },
                              new ZhonyaSpell
                                  {
-                                     ChampionName = "syndra", SDataName = "syndrar", MissileName = "", Delay = 450,
+                                     ChampionName = "syndra", SDataName = "syndrar", MissileName = "", Delay = 250,
                                      MissileSpeed = 1250, CastRange = 675f
                                  },
                              new ZhonyaSpell
                                  {
                                      ChampionName = "braum", SDataName = "braumq", MissileName = "braumqmissile",
-                                     Delay = 250, MissileSpeed = 1200, CastRange = 1100f
+                                     Delay = 250, MissileSpeed = 1700, CastRange = 1050f
                                  },
                               new ZhonyaSpell
                                  {
-                                    ChampionName = "Brand", SDataName = "BrandR", MissileName = "", Delay = 450,
+                                    ChampionName = "Brand", SDataName = "BrandR", MissileName = "BrandRMissile", Delay = 450,
                                     MissileSpeed = 1250, CastRange =  750f
-                                 },
-                             new ZhonyaSpell
-                                 {
-                                     ChampionName = "braum", SDataName = "braumqmissle", MissileName = "", Delay = 250,
-                                     MissileSpeed = 1200, CastRange = 1100f
                                  },
                              new ZhonyaSpell
                                  {
@@ -167,7 +167,7 @@
                                  },
                              new ZhonyaSpell
                                  {
-                                     ChampionName = "gnar", SDataName = "gnarult", MissileName = "", Delay = 250,
+                                     ChampionName = "gnar", SDataName = "GnarR", MissileName = "", Delay = 250,
                                      MissileSpeed = int.MaxValue, CastRange = 600f
                                  },
                              new ZhonyaSpell
@@ -210,11 +210,6 @@
                                      ChampionName = "jayce", SDataName = "jayceshockblast",
                                      MissileName = "jayceshockblastmis", Delay = 250, MissileSpeed = 2350,
                                      CastRange = 1570f
-                                 },
-                             new ZhonyaSpell
-                                 {
-                                     ChampionName = "karma", SDataName = "karmaq", MissileName = "karmaqmissile",
-                                     Delay = 250, MissileSpeed = 1800, CastRange = 1050f
                                  },
                              new ZhonyaSpell
                                  {
@@ -267,7 +262,7 @@
                              new ZhonyaSpell
                                  {
                                      ChampionName = "malphite", SDataName = "ufslash", MissileName = "ufslash",
-                                     Delay = 250, MissileSpeed = 2200, CastRange = 1000f
+                                     Delay = 250, MissileSpeed = 1500, CastRange = 1000f
                                  },
                              new ZhonyaSpell
                                  {
