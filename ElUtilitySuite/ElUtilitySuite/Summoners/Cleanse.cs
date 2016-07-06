@@ -418,6 +418,12 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "kennen", Name = "KennenShurikenStorm", MenuName = "Kennen (R)", Evade = false,
+                                     DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
+                                     Slot = SpellSlot.R
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "braum", Name = "braumstundebuff", MenuName = "Braum Passive",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0,
                                      Slot = SpellSlot.Unknown
