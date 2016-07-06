@@ -13,6 +13,12 @@
 
     internal class AntiStealth : IPlugin
     {
+        #region Constants
+
+        private const float Delay = 2f;
+
+        #endregion
+
         #region Static Fields
 
         /// <summary>
@@ -23,6 +29,8 @@
         #endregion
 
         #region Fields
+
+        private float lastReveal;
 
         /// <summary>
         ///     Rengar
@@ -257,7 +265,7 @@
                     return;
                 }
 
-                if (this.Player.Distance(sender.Position) > 800)
+                if (this.Player.Distance(sender.Position) > 1000f || this.lastReveal + Delay > Game.Time)
                 {
                     return;
                 }
@@ -271,13 +279,8 @@
                     var item = this.GetBestWardItem();
                     if (item != null)
                     {
-                        var spellCastPosition = this.Player.Distance(args.End) > 600
-                                                    ? this.Player.Position
-                                                    : args.End;
-
-                        Utility.DelayAction.Add(
-                            random.Next(100, 1000),
-                            () => this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition));
+                        this.Player.Spellbook.CastSpell(item.Slot, ObjectManager.Player.Position.Extend(args.End, 600f));
+                        this.lastReveal = Game.Time;
                     }
                 }
 
