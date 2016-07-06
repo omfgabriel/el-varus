@@ -205,6 +205,7 @@
 
             JungleTracker.CampDied += this.JungleTrackerCampDied;
             Obj_AI_Base.OnTeleport += this.OnTeleport;
+            Obj_AI_Base.OnBuffRemove += this.OnBuffRemove;
 
             Drawing.OnPreReset += args =>
             {
@@ -232,7 +233,7 @@
                 try
                 {
                     var spellName = name.Split('.')[3];
-                    if (spellName != "Dragon" && spellName != "Baron" && spellName != "Teleport")
+                    if (spellName != "Dragon" && spellName != "Baron" && spellName != "Teleport"  && spellName != "Rebirthready" && spellName != "Zacrebirthready")
                     {
                         this.Spells.Add(Data.Get<SpellDatabase>().Spells.First(x => x.SpellName.Equals(spellName)));
 
@@ -268,6 +269,44 @@
         #endregion
 
         #region Methods
+
+        /// <summary>
+        ///     
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnBuffRemove(Obj_AI_Base sender, Obj_AI_BaseBuffRemoveEventArgs args)
+        {
+            if (sender.IsEnemy)
+            {
+                if (args.Buff.Name.Equals("rebirthready", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var card = new Card
+                    {
+                        EndTime = Game.Time + 240,
+                        EndMessage = "Passive up!",
+                        FriendlyName = "Rebirth",
+                        StartTime = Game.Time
+                    };
+                    card.Name = "Rebirthready";
+                    this.Cards.Add(card);
+                }
+
+                if (args.Buff.Name.Equals("zacrebirthready", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var card = new Card
+                    {
+                        EndTime = Game.Time + 300,
+                        EndMessage = "Passive up!",
+                        FriendlyName = "Cell Division",
+                        StartTime = Game.Time
+                    };
+
+                    card.Name = "Zacrebirthready";
+                    this.Cards.Add(card);
+                }
+            }
+        }
 
         /// <summary>
         /// 
@@ -306,8 +345,6 @@
 
                                 card.Name = "Teleport";
                                 this.Cards.Add(card);
-
-                                Console.WriteLine($"[ElUtilitySuite] Added card for TP: {card.FriendlyName} - {card.StartTime} - {card.EndTime}");
                             });
                     }
                 }
@@ -598,7 +635,6 @@
             };
 
             card.Name = card.FriendlyName;
-            Console.WriteLine($"[ElUtilitySuite] Added card for: {card.FriendlyName} - {card.StartTime} - {card.EndTime}");
             this.Cards.Add(card);
         }
 
