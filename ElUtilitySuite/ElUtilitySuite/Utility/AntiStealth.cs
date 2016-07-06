@@ -19,15 +19,6 @@
 
         #endregion
 
-        #region Static Fields
-
-        /// <summary>
-        ///     The random
-        /// </summary>
-        private static Random random;
-
-        #endregion
-
         #region Fields
 
         private float lastReveal;
@@ -137,7 +128,6 @@
             }
 
             this.Menu = protectMenu;
-            random = new Random(Environment.TickCount);
         }
 
         /// <summary>
@@ -217,9 +207,7 @@
                             var item = this.GetBestWardItem();
                             if (item != null)
                             {
-                                Utility.DelayAction.Add(
-                                    random.Next(100, 1000),
-                                    () => this.Player.Spellbook.CastSpell(item.Slot, this.Player.Position));
+                                this.Player.Spellbook.CastSpell(item.Slot, this.Player.Position);
                             }
                         }
                     }
@@ -293,10 +281,7 @@
                     if (item != null)
                     {
                         var spellCastPosition = this.Player.Distance(args.End) > 600 ? this.Player.Position : args.End;
-
-                        Utility.DelayAction.Add(
-                            random.Next(100, 1000),
-                            () => this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition));
+                        this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition);
                     }
                 }
             }
