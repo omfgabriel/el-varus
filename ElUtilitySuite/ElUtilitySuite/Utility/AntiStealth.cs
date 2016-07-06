@@ -43,7 +43,7 @@
             Spells = new List<AntiStealthSpell>
                          {
                              new AntiStealthSpell { ChampionName = "Akali", SDataName = "akalismokebomb" },
-                             new AntiStealthSpell { ChampionName = "Twitch", SDataName = "hideinshadows" },
+                             new AntiStealthSpell { ChampionName = "Twitch", SDataName = "twitchhideinshadows" },
                              new AntiStealthSpell { ChampionName = "Shaco", SDataName = "deceive" },
                              new AntiStealthSpell { ChampionName = "Monkeyking", SDataName = "monkeykingdecoy" },
                              new AntiStealthSpell { ChampionName = "Khazix", SDataName = "khazixrlong" },
