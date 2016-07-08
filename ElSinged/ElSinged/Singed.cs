@@ -227,7 +227,7 @@ namespace ElSinged
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    TurnOffQ();
+                    //TurnOffQ();
                     Combo();
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
