@@ -156,6 +156,12 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
+                                     Champion = "Jhin", Name = "JhinWMissile",
+                                     MenuName = "Jhin (W)", Evade = false, DoT = true, EvadeTimer = 0,
+                                     Cleanse = false, CleanseTimer = 0, Slot = SpellSlot.W, Interval = .8
+                                 },
+                             new CleanseSpell
+                                 {
                                      Champion = "Soraka", Name = "SorakaESnare", MenuName = "Soraka (E)",
                                      Evade = false, DoT = true, EvadeTimer = 0, Cleanse = false, CleanseTimer = 0,
                                      Slot = SpellSlot.E, Interval = 1.0

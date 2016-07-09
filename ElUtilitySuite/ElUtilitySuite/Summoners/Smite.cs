@@ -727,7 +727,7 @@
                 foreach (var mob in MinionManager.GetMinions(950f, MinionTypes.All, MinionTeam.Neutral)
                     .Where(m => !m.Name.Contains("Mini") && !m.Name.Contains("Respawn")))
                 {
-                    if (mob.Distance(this.Player, false) - (this.Player.BoundingRadius + mob.BoundingRadius)
+                    if (mob.Distance(this.Player, false) - (this.Player.BoundingRadius)
                         > 500)
                     {
                         continue;
