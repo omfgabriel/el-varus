@@ -142,10 +142,10 @@
                 Q = new Spell(SpellSlot.Q, 550f);
                 W = new Spell(SpellSlot.W, Orbwalking.GetRealAutoAttackRange(Player));
                 E = new Spell(SpellSlot.E, 400f);
-                R = new Spell(SpellSlot.R, 1275f);
+                R = new Spell(SpellSlot.R, 1300f);
 
                 E.SetSkillshot(0.25f, 330, float.MaxValue, false, SkillshotType.SkillshotCircle);
-                R.SetSkillshot(0.25f, 0.25f, 1350, false, SkillshotType.SkillshotLine);
+                R.SetSkillshot(0.25f, 120f, 1350, false, SkillshotType.SkillshotLine);
 
                 GenerateMenu();
 
@@ -488,6 +488,7 @@
                         Q.Cast(target);
                         return;
                     }
+
                     RLogicKill();
                 }
 
@@ -520,7 +521,7 @@
                                     Q.Cast(target);
                                     return;
                                 }
-                                
+
                                 RCastLogic(target);
                             }
                         }
@@ -948,14 +949,20 @@
         {
             try
             {
-                var predictionEnemy = R.GetPrediction(target).CastPosition;
+                var prediction = R.GetPrediction(target, false, -1, new[] { CollisionableObjects.YasuoWall });
+                if (prediction.Hitchance < HitChance.VeryHigh)
                 {
-                    if (!ShieldCheck(target) || IsActive("ElFizz.Combo.Overkill.R") && Player.GetSpellDamage(target, SpellSlot.R) > target.Health + 75)
+                    return;
+                }
+
+                if (prediction.Hitchance >= HitChance.VeryHigh)
+                {
+                    if (!ShieldCheck(target) || IsActive("ElFizz.Combo.Overkill.R") && Player.GetSpellDamage(target, SpellSlot.R) > target.Health + target.PhysicalShield)
                     {
                         return;
                     }
-                    R.Cast(predictionEnemy);
-                    return;
+
+                    R.Cast(prediction.CastPosition);
                 }
             }
             catch (Exception exception)
@@ -1067,3 +1074,4 @@
         #endregion
     }
 }
+ 
