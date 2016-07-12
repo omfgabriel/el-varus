@@ -183,9 +183,22 @@
 
             if (IsActive("ElLux.Combo.R.AOE"))
             {
-                spells[Spells.R].CastIfWillHit(
-                    target,
-                    ElLuxMenu.Menu.Item("ElLux.Combo.R.Count").GetValue<Slider>().Value);
+                const float LuxRDistance = 3340;
+                const float LuxRWidth = 70;
+                var minREnemies = ElLuxMenu.Menu.Item("ElLux.Combo.R.Count").GetValue<Slider>().Value;
+                foreach (var enemy in HeroManager.Enemies)
+                {
+                    var startPos = enemy.ServerPosition;
+                    var endPos = Player.ServerPosition.Extend(
+                        startPos,
+                        Player.Distance(enemy) + LuxRDistance);
+
+                    var rectangle = new Geometry.Polygon.Rectangle(startPos, endPos, LuxRWidth);
+                    if (HeroManager.Enemies.Count(x => rectangle.IsInside(x)) >= minREnemies)
+                    {
+                        spells[Spells.R].Cast(enemy);
+                    }
+                }
             }
 
             if (IsActive("ElLux.Combo.R.Rooted"))
@@ -195,7 +208,7 @@
                     var prediction = spells[Spells.Q].GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.High)
                     {
-                        spells[Spells.R].Cast(target.Position);
+                        spells[Spells.R].Cast(prediction.CastPosition);
                     }
                 }
             }
@@ -205,7 +218,7 @@
                 var prediction = spells[Spells.R].GetPrediction(target);
                 if (prediction.Hitchance >= HitChance.High)
                 {
-                    spells[Spells.R].Cast(target.Position);
+                    spells[Spells.R].Cast(prediction.CastPosition);
                 }
             }
         }
