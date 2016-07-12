@@ -45,25 +45,13 @@
 
         #region Public Properties
 
-        public static String ScriptVersion
-        {
-            get
-            {
-                return typeof(Tristana).Assembly.GetName().Version.ToString();
-            }
-        }
+        public static String ScriptVersion => typeof(Tristana).Assembly.GetName().Version.ToString();
 
         #endregion
 
         #region Properties
 
-        private static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private static Obj_AI_Hero Player => ObjectManager.Player;
 
         /// <summary>
         ///     Gets or sets the random.
@@ -184,7 +172,7 @@
         {
             if (IsActive("ElTristana.Antigapcloser"))
             {
-                if (spells[Spells.R].IsReady()) //gapcloser.Sender.IsValidTarget(250f) && 
+                if (spells[Spells.R].IsReady())
                 {
                     spells[Spells.R].Cast(gapcloser.Sender);
                 }
@@ -264,13 +252,11 @@
                         if (getEnemies != null && getEnemies.GetValue<bool>())
                         {
                             spells[Spells.E].Cast(hero);
-                            Orbwalker.ForceTarget(hero);
                         }
 
                         if (getEnemies != null && !getEnemies.GetValue<bool>() && Player.CountEnemiesInRange(1500) == 1)
                         {
                             spells[Spells.E].Cast(hero);
-                            Orbwalker.ForceTarget(hero);
                         }
                     }
                 }
