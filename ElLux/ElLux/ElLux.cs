@@ -148,10 +148,18 @@
                 return;
             }
 
-            var prediction = spells[Spells.Q].GetPrediction(target);
+            var prediction = spells[Spells.Q].GetPrediction(target, false, -1, new[] { CollisionableObjects.YasuoWall });
+            if (prediction.Hitchance < HitChance.VeryHigh)
+            {
+                return;
+            }
+
             var collision = spells[Spells.Q].GetCollision(
                 Player.ServerPosition.To2D(),
-                new List<Vector2> { prediction.CastPosition.To2D() });
+                new List<Vector2>
+                    {
+                        prediction.CastPosition.To2D()
+                    });
 
             if (collision.Count == 1 || (collision.Count == 1 && collision.ElementAt(0).IsChampion())
                 || collision.Count <= 1
@@ -159,12 +167,9 @@
             {
                 spells[Spells.Q].Cast(prediction.CastPosition);
             }
-            else
+            else if (prediction.Hitchance >= HitChance.VeryHigh)
             {
-                if (prediction.Hitchance >= HitChance.VeryHigh)
-                {
-                    spells[Spells.Q].Cast(prediction.CastPosition);
-                }
+                spells[Spells.Q].Cast(prediction.CastPosition);
             }
         }
 
