@@ -57,6 +57,11 @@
                     igniteMenu.AddItem(new MenuItem($"igniteon{x.ChampionName}", "Use on " + x.ChampionName))
                         .SetValue(true);
                 }
+
+                igniteMenu.SubMenu("Do not use ignite when").AddItem(new MenuItem("Block.Q", "Q is ready").SetValue(false));
+                igniteMenu.SubMenu("Do not use ignite when").AddItem(new MenuItem("Block.W", "W is ready").SetValue(false));
+                igniteMenu.SubMenu("Do not use ignite when").AddItem(new MenuItem("Block.E", "E is ready").SetValue(false));
+                igniteMenu.SubMenu("Do not use ignite when").AddItem(new MenuItem("Block.R", "R is ready").SetValue(false));
             }
 
             Menu = igniteMenu;
@@ -95,6 +100,26 @@
             try
             {
                 if (!Menu.Item("Ignite.Activated").IsActive())
+                {
+                    return;
+                }
+
+                if (Menu.Item("Block.Q").IsActive() && this.Player.Spellbook.GetSpell(SpellSlot.Q).State == SpellState.Ready)
+                {
+                    return;
+                }
+
+                if (Menu.Item("Block.W").IsActive() && this.Player.Spellbook.GetSpell(SpellSlot.W).State == SpellState.Ready)
+                {
+                    return;
+                }
+
+                if (Menu.Item("Block.E").IsActive() && this.Player.Spellbook.GetSpell(SpellSlot.E).State == SpellState.Ready)
+                {
+                    return;
+                }
+
+                if (Menu.Item("Block.R").IsActive() && this.Player.Spellbook.GetSpell(SpellSlot.R).State == SpellState.Ready)
                 {
                     return;
                 }

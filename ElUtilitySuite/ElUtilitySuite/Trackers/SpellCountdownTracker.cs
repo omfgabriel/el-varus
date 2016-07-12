@@ -284,7 +284,7 @@
                     var card = new Card
                     {
                         EndTime = Game.Time + 240,
-                        EndMessage = "Passive up!",
+                        EndMessage = "Ready",
                         FriendlyName = "Rebirth",
                         StartTime = Game.Time
                     };
@@ -297,7 +297,7 @@
                     var card = new Card
                     {
                         EndTime = Game.Time + 300,
-                        EndMessage = "Passive up!",
+                        EndMessage = "Ready",
                         FriendlyName = "Cell Division",
                         StartTime = Game.Time
                     };
