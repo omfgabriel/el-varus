@@ -90,7 +90,7 @@
         {
             try
             {
-                if (!this.Menu.Item("DrawHealth").GetValue<bool>())
+                if (!this.Menu.Item("DrawHealth").GetValue<bool>() || Drawing.Direct3DDevice.IsDisposed || Font.IsDisposed)
                 {
                     return;
                 }

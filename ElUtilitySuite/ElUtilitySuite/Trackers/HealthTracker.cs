@@ -124,7 +124,7 @@
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Drawing_OnEndScene(EventArgs args)
         {
-            if (!this.Menu.Item("DrawHealth_").GetValue<bool>())
+            if (!this.Menu.Item("DrawHealth_").GetValue<bool>() || Drawing.Direct3DDevice.IsDisposed || Font.IsDisposed)
             {
                 return;
             }

@@ -529,7 +529,7 @@ namespace ElUtilitySuite.Trackers
         {
             try
             {
-                if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed)
+                if (Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed || Font.IsDisposed)
                 {
                     return;
                 }

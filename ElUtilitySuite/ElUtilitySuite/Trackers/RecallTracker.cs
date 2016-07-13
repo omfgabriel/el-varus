@@ -143,7 +143,7 @@ namespace ElUtilitySuite.Trackers
 
         private void Drawing_OnDraw(EventArgs args)
         {
-            if (!this.Menu.Item("showRecalls").GetValue<bool>() || Drawing.Direct3DDevice == null)
+            if (!this.Menu.Item("showRecalls").GetValue<bool>() || Drawing.Direct3DDevice == null || Drawing.Direct3DDevice.IsDisposed)
             {
                 return;
             }

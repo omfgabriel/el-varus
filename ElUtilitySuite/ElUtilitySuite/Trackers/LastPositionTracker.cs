@@ -131,8 +131,19 @@ namespace ElUtilitySuite.Trackers
             Drawing.OnEndScene += this.OnDrawingEndScene;
             Obj_AI_Base.OnTeleport += this.OnObjAiBaseTeleport;
 
-            Drawing.OnPreReset += args => { this.text.OnLostDevice(); };
-            Drawing.OnPostReset += args => { this.text.OnResetDevice(); };
+            Drawing.OnPreReset += args =>
+                {
+                    this.text.OnLostDevice();
+                    this.line.OnLostDevice();
+                    this.sprite.OnLostDevice();
+                };
+
+            Drawing.OnPostReset += args =>
+                {
+                    this.text.OnResetDevice();
+                    this.line.OnResetDevice();
+                    this.sprite.OnResetDevice();
+                };
 
             this.sprite = MDrawing.GetSprite();
             this.text = MDrawing.GetFont(this.Menu.Item("LastPosition.FontSize").GetValue<Slider>().Value);

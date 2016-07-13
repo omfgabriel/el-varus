@@ -147,6 +147,20 @@
             Drawing.OnEndScene += this.OnDrawingEndScene;
             Game.OnWndProc += this.OnGameWndProc;
             AttackableUnit.OnEnterVisiblityClient += this.OnAttackableUnitEnterVisiblityClient;
+
+            Drawing.OnPreReset += args =>
+                {
+                    this._line.OnLostDevice();
+                    this._sprite.OnLostDevice();
+                    this._text.OnLostDevice();
+                };
+
+            Drawing.OnPostReset += args =>
+                {
+                    this._line.OnResetDevice();
+                    this._sprite.OnResetDevice();
+                    this._text.OnResetDevice();
+                };
         }
 
         #endregion

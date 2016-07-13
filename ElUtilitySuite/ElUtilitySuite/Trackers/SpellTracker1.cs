@@ -366,6 +366,21 @@
                 this._text = MDrawing.GetFont(this.Menu.Item("cooldown-tracker-FontSize").GetValue<Slider>().Value);
 
                 Drawing.OnEndScene += this.OnDrawingEndScene;
+
+                Drawing.OnPreReset += args =>
+                    {
+                        this._line.OnLostDevice();
+                        this._sprite.OnLostDevice();
+                        this._text.OnLostDevice();
+                    };
+
+                Drawing.OnPostReset += args =>
+                    {
+                        this._line.OnResetDevice();
+                        this._sprite.OnResetDevice();
+                        this._text.OnResetDevice();
+                    };
+
                 Obj_AI_Base.OnProcessSpellCast += this.OnObjAiBaseProcessSpellCast;
                 Obj_AI_Base.OnTeleport += this.OnObjAiBaseTeleport;
             }

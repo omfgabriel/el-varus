@@ -354,7 +354,7 @@
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Drawing_OnEndScene(EventArgs args)
         {
-            if (!this.Menu.Item("DrawTimers").IsActive())
+            if (!this.Menu.Item("DrawTimers").IsActive() || Drawing.Direct3DDevice.IsDisposed || Font.IsDisposed)
             {
                 return;
             }
