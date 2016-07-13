@@ -276,7 +276,7 @@
             {
                 if (spells[Spells.R].GetDamage(target)
                     + spells[Spells.E].GetDamage(target) * ((0.3 * target.GetBuffCount("TristanaECharge") + 1))
-                    > target.Health)
+                    > target.Health + target.PhysicalShield + 75)
                 {
                     spells[Spells.R].Cast(target);
                 }
