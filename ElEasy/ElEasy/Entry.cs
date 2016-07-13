@@ -27,13 +27,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        public static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        public static Obj_AI_Hero Player => ObjectManager.Player;
 
         /// <summary>
         ///     Gets script version
@@ -41,13 +35,7 @@
         /// <value>
         ///     The script version
         /// </value>
-        public static string ScriptVersion
-        {
-            get
-            {
-                return typeof(Entry).Assembly.GetName().Version.ToString();
-            }
-        }
+        public static string ScriptVersion => typeof(Entry).Assembly.GetName().Version.ToString();
 
         #endregion
 
@@ -94,7 +82,7 @@
                     }
                 }
 
-                menu.AddItem(new MenuItem("Versionnumber", string.Format("Version: {0}", ScriptVersion)));
+                menu.AddItem(new MenuItem("Versionnumber", $"Version: {ScriptVersion}"));
                 menu.AddItem(new MenuItem("by.jQuery", "Created by jQuery"));
                 menu.AddToMainMenu();
 
