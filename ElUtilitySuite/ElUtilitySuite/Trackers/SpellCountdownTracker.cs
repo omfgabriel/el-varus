@@ -420,6 +420,12 @@
                 {
                     continue;
                 }
+
+                if (!this.Menu.Item($"Track.{enemy.ChampionName}").IsActive())
+                {
+                    continue;
+                }
+
                 foreach (var spell in slots.Select(x => enemy.GetSpell(x)).Where(x => x.Level > 0 && x.CooldownExpires > 0 
                 && x.CooldownExpires - Game.Time <= Countdown))
                 {
