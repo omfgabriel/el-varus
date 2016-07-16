@@ -57,13 +57,11 @@
     <Compile Include="DrawDamage.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="IPlugin.cs" />
-    <Compile Include="Plugins\Cassiopeia.cs" />
     <Compile Include="Plugins\Darius.cs" />
     <Compile Include="Plugins\Katarina.cs" />
     <Compile Include="Plugins\Leona.cs" />
     <Compile Include="Plugins\Malphite.cs" />
     <Compile Include="Plugins\Nasus.cs" />
-    <Compile Include="Plugins\Ryze.cs" />
     <Compile Include="Plugins\Sona.cs" />
     <Compile Include="Plugins\Taric.cs" />
     <Compile Include="Program.cs" />

@@ -188,7 +188,6 @@
         /// </summary>
         public void Load()
         {
-            Console.WriteLine("Loaded Darius");
             ignite = this.Player.GetSpellSlot("summonerdot");
             spells[Spells.E].SetSkillshot(0.30f, 80, int.MaxValue, false, SkillshotType.SkillshotCone);
 
@@ -200,11 +199,6 @@
         #endregion
 
         #region Methods
-
-        private static void Initialize()
-        {
-            var miscMenu = new Menu("Misc", "Misc");
-        }
 
         private float GetComboDamage(Obj_AI_Base enemy)
         {
@@ -340,7 +334,7 @@
             if (useR && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range))
             {
                 foreach (var hero in
-                    ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(spells[Spells.R].Range)))
+                    HeroManager.Enemies.Where(hero => hero.IsValidTarget(spells[Spells.R].Range)))
                 {
                     if (this.Player.GetSpellDamage(target, SpellSlot.R) > hero.Health)
                     {
