@@ -64,6 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Summoners\Cleanse2.cs" />
     <Compile Include="Trackers\SpellCountdownTracker.cs" />
     <Compile Include="Trackers\SpellTracker1.cs" />
     <Compile Include="Trackers\WardTracker.cs" />
