@@ -11,7 +11,6 @@
 
     public class Cleanse2
     {
-        // : IPlugin
         #region Properties
 
         /// <summary>
@@ -72,6 +71,7 @@
         /// <param name="rootMenu">The root menu.</param>
         public void CreateMenu(Menu rootMenu)
         {
+            this.CreateItems();
             this.BuffsToCleanse = this.Items.SelectMany(x => x.WorksOn);
 
             var predicate = new Func<Menu, bool>(x => x.Name == "SummonersMenu");
@@ -102,6 +102,21 @@
         ///     Loads this instance.
         /// </summary>
         public void Load()
+        {
+            this.Random = new Random(Environment.TickCount);
+            HeroManager.Enemies.ForEach(x => this.BuffIndexesHandled[x.NetworkId] = new List<int>());
+
+            Game.OnUpdate += this.OnUpdate;
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        ///     Creates the items.
+        /// </summary>
+        private void CreateItems()
         {
             this.Items = new List<CleanseItem>
                              {
@@ -189,16 +204,7 @@
                                          WorksOnAllies = true, Priority = 1
                                      }
                              };
-
-            this.Random = new Random(Environment.TickCount);
-            HeroManager.Enemies.ForEach(x => this.BuffIndexesHandled[x.NetworkId] = new List<int>());
-
-            Game.OnUpdate += this.OnUpdate;
         }
-
-        #endregion
-
-        #region Methods
 
         /// <summary>
         ///     Gets the best cleanse item.
@@ -267,6 +273,8 @@
         }
 
         #endregion
+
+        // : IPlugin
     }
 
     /// <summary>
