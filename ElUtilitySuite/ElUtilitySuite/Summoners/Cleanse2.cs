@@ -72,7 +72,7 @@
         public void CreateMenu(Menu rootMenu)
         {
             this.CreateItems();
-            this.BuffsToCleanse = this.Items.SelectMany(x => x.WorksOn);
+            this.BuffsToCleanse = this.Items.SelectMany(x => x.WorksOn).Distinct();
 
             var predicate = new Func<Menu, bool>(x => x.Name == "SummonersMenu");
             var menu = rootMenu.Children.Any(predicate)
