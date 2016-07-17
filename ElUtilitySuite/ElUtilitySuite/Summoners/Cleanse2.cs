@@ -104,7 +104,7 @@
         public void Load()
         {
             this.Random = new Random(Environment.TickCount);
-            HeroManager.Enemies.ForEach(x => this.BuffIndexesHandled[x.NetworkId] = new List<int>());
+            HeroManager.Enemies.ForEach(x => this.BuffIndexesHandled.Add(x.NetworkId, new List<int>()));
 
             Game.OnUpdate += this.OnUpdate;
         }
@@ -259,8 +259,12 @@
                                 this.Random.Next(
                                     this.Menu.Item("MinHumanizerDelay").GetValue<Slider>().Value, 
                                     this.Menu.Item("MaxHumanizerDelay").GetValue<Slider>().Value), 
-                                (buff.StartTime - buff.EndTime) * 1000), 
-                            () => cleanseItem.Cast(ally));
+                                (buff.StartTime - buff.EndTime) * 1000),
+                            () =>
+                                {
+                                    cleanseItem.Cast(ally);
+                                    this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
+                                });
                     }
                     else
                     {
