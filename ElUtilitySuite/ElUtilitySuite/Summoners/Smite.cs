@@ -718,8 +718,7 @@
         {
             try
             {
-                if (this.Player.IsDead || this.SmiteSpell == null
-                    || !this.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
+                if (this.Player.IsDead || this.SmiteSpell == null || !this.Menu.Item("ElSmite.Activated").GetValue<KeyBind>().Active)
                 {
                     return;
                 }
@@ -750,35 +749,33 @@
                     }
                 }
 
-                if (this.Menu.Item("Smite.Ammo").IsActive() && this.Player.GetSpell(this.SmiteSpell.Slot).Ammo == 1)
+                if (!this.Menu.Item("Smite.Ammo").IsActive() || this.Menu.Item("Smite.Ammo").IsActive() && this.Player.GetSpell(this.SmiteSpell.Slot).Ammo > 1)
                 {
-                    return;
-                }
-
-                if (this.Menu.Item("ElSmite.KS.Combo").IsActive()
-                    && this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() == "s5_summonersmiteduel"
-                    && this.ComboModeActive)
-                {
-                    var smiteComboEnemy =
-                        HeroManager.Enemies.FirstOrDefault(hero => !hero.IsZombie && hero.IsValidTarget(500f));
-                    if (smiteComboEnemy != null)
+                    if (this.Menu.Item("ElSmite.KS.Combo").IsActive()
+                        && this.Player.GetSpell(this.SmiteSpell.Slot).Name.Equals("s5_summonersmiteduel", StringComparison.InvariantCultureIgnoreCase)
+                        && this.ComboModeActive)
                     {
-                        this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, smiteComboEnemy);
+                        var smiteComboEnemy =
+                            HeroManager.Enemies.FirstOrDefault(hero => hero.IsValidTarget(SmiteRange));
+
+                        if (smiteComboEnemy != null)
+                        {
+                            this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, smiteComboEnemy);
+                        }
                     }
-                }
 
-                if (this.Menu.Item("ElSmite.KS.Activated").IsActive()
-                    && this.Player.GetSpell(this.SmiteSpell.Slot).Name.ToLower() == "s5_summonersmiteplayerganker")
-                {
-                    var kSableEnemy =
-                        HeroManager.Enemies.FirstOrDefault(
-                            hero =>
-                            !hero.IsZombie && hero.IsValidTarget(SmiteRange)
-                            && this.SmiteSpell.GetDamage(hero) >= hero.Health);
-
-                    if (kSableEnemy != null)
+                    if (this.Menu.Item("ElSmite.KS.Activated").IsActive()
+                        && this.Player.GetSpell(this.SmiteSpell.Slot).Name.Equals("s5_summonersmiteplayerganker", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, kSableEnemy);
+                        var kSableEnemy =
+                            HeroManager.Enemies.FirstOrDefault(
+                                hero => hero.IsValidTarget(SmiteRange)
+                                && this.SmiteSpell.GetDamage(hero) >= hero.Health);
+
+                        if (kSableEnemy != null)
+                        {
+                            this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, kSableEnemy);
+                        }
                     }
                 }
             }
