@@ -51,6 +51,7 @@
                          };
         }
 
+       
         #endregion
 
         #region Delegates
@@ -170,11 +171,11 @@
 
             this.rengar =
                 GameObjects.EnemyHeroes.FirstOrDefault(
-                    e => e.ChampionName.Equals("Rengar", StringComparison.OrdinalIgnoreCase));
+                    e => e.ChampionName.Equals("Rengar", StringComparison.InvariantCultureIgnoreCase));
 
             this.vayne =
                 GameObjects.EnemyHeroes.FirstOrDefault(
-                    e => e.ChampionName.Equals("Vayne", StringComparison.OrdinalIgnoreCase));
+                    e => e.ChampionName.Equals("Vayne", StringComparison.InvariantCultureIgnoreCase));
 
             GameObject.OnCreate += this.GameObject_OnCreate;
             Obj_AI_Base.OnProcessSpellCast += this.OnProcessSpellCast;
@@ -258,22 +259,8 @@
                     return;
                 }
 
-                var buff =
-                    this.vayne?.Buffs.FirstOrDefault(
-                        b => b.Name.Equals("VayneInquisition", StringComparison.OrdinalIgnoreCase));
-
-                if (buff != null)
-                {
-                    var item = this.GetBestWardItem();
-                    if (item != null)
-                    {
-                        this.Player.Spellbook.CastSpell(item.Slot, ObjectManager.Player.Position.Extend(args.End, 600f));
-                        this.lastReveal = Game.Time;
-                    }
-                }
-
                 var stealthChampion =
-                    Spells.FirstOrDefault(x => x.SDataName.Equals(args.SData.Name, StringComparison.OrdinalIgnoreCase));
+                    Spells.FirstOrDefault(x => x.SDataName.Equals(args.SData.Name, StringComparison.InvariantCultureIgnoreCase));
 
                 if (stealthChampion != null)
                 {
@@ -282,6 +269,21 @@
                     {
                         var spellCastPosition = this.Player.Distance(args.End) > 600 ? this.Player.Position : args.End;
                         this.Player.Spellbook.CastSpell(item.Slot, spellCastPosition);
+                    }
+                }
+
+
+                var buff =
+                    this.vayne?.Buffs.FirstOrDefault(
+                        b => b.Name.Equals("VayneInquisition", StringComparison.InvariantCultureIgnoreCase));
+
+                if (buff != null)
+                {
+                    var item = this.GetBestWardItem();
+                    if (item != null)
+                    {
+                        this.Player.Spellbook.CastSpell(item.Slot, this.Player.Position.Extend(args.End, 600f));
+                        this.lastReveal = Game.Time;
                     }
                 }
             }

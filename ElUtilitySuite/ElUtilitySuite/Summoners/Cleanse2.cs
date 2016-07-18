@@ -9,7 +9,7 @@
 
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
-    public class Cleanse2 //: IPlugin
+    public class Cleanse2
     {
         #region Properties
 
@@ -104,7 +104,7 @@
         public void Load()
         {
             this.Random = new Random(Environment.TickCount);
-            HeroManager.Allies.ForEach(x => this.BuffIndexesHandled.Add(x.NetworkId, new List<int>()));
+            HeroManager.Enemies.ForEach(x => this.BuffIndexesHandled.Add(x.NetworkId, new List<int>()));
 
             Game.OnUpdate += this.OnUpdate;
         }
@@ -269,13 +269,16 @@
                     else
                     {
                         cleanseItem.Cast(ally);
-                        this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
                     }
+
+                    return;
                 }
             }
         }
 
         #endregion
+
+        // : IPlugin
     }
 
     /// <summary>
