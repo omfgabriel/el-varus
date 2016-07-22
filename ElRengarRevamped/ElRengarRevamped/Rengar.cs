@@ -9,7 +9,6 @@
     using LeagueSharp.Common;
 
     using TargetSelector = SFXTargetSelector.TargetSelector;
-    using Orbwalking = SFXTargetSelector.Orbwalking;
 
     public enum Spells
     {

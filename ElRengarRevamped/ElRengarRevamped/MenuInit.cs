@@ -2,7 +2,6 @@
 {
     using LeagueSharp.Common;
     using TargetSelector = SFXTargetSelector.TargetSelector;
-    using Orbwalking = SFXTargetSelector.Orbwalking;
 
     // ReSharper disable once ClassNeverInstantiated.Global
     public class MenuInit
@@ -18,7 +17,10 @@
         public static void Initialize()
         {
             Menu = new Menu("ElRengar", "ElRengar", true);
-            Standards.Orbwalker = new Orbwalking.Orbwalker(OrbwalkingMenu());
+            var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
+            Standards.Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+            Menu.AddSubMenu(orbwalkerMenu);
+
             TargetSelector.AddToMenu(TargetSelectorMenu());
 
             var comboMenu = Menu.AddSubMenu(new Menu("Modes", "Modes"));
@@ -121,11 +123,6 @@
         #endregion
 
         #region Methods
-
-        private static Menu OrbwalkingMenu()
-        {
-            return Menu.AddSubMenu(new Menu("jQuery Orbwalker", "Orbwalker"));
-        }
 
         private static Menu TargetSelectorMenu()
         {

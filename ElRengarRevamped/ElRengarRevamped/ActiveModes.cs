@@ -8,7 +8,6 @@ namespace ElRengarRevamped
     using LeagueSharp.Common;
 
     using TargetSelector = SFXTargetSelector.TargetSelector;
-    using Orbwalking = SFXTargetSelector.Orbwalking;
 
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
@@ -28,13 +27,6 @@ namespace ElRengarRevamped
             {
                 return;
             }*/
-
-            var forced = Orbwalker.ForcedTarget();
-            if (forced != null && forced.IsValidTarget() && forced is Obj_AI_Hero &&
-                    Orbwalking.InAutoAttackRange(forced))
-            {
-                return;
-            }
 
             var target = TargetSelector.GetTarget(spells[Spells.E].Range);
             if (target == null)
