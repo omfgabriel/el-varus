@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Linq;
 
     using LeagueSharp;
@@ -10,8 +9,9 @@
 
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
-    public class Cleanse2 //: IPlugin
+    public class Cleanse2
     {
+        // : IPlugin
         #region Properties
 
         /// <summary>
@@ -127,81 +127,81 @@
                                              () =>
                                              Player.GetSpellSlot("summonerboost") == SpellSlot.Unknown
                                                  ? SpellSlot.Unknown
-                                                 : Player.GetSpellSlot("summonerboost"),
+                                                 : Player.GetSpellSlot("summonerboost"), 
                                          WorksOn =
                                              new[]
                                                  {
-                                                     BuffType.Blind, BuffType.Charm, BuffType.Flee, BuffType.Slow,
-                                                     BuffType.Polymorph, BuffType.Silence, BuffType.Snare, BuffType.Stun,
+                                                     BuffType.Blind, BuffType.Charm, BuffType.Flee, BuffType.Slow, 
+                                                     BuffType.Polymorph, BuffType.Silence, BuffType.Snare, BuffType.Stun, 
                                                      BuffType.Taunt, BuffType.Damage
-                                                 },
+                                                 }, 
                                          Priority = 2
-                                     },
+                                     }, 
                                  new CleanseItem
                                      {
                                          Slot = () =>
                                              {
                                                  var slots = ItemData.Quicksilver_Sash.GetItem().Slots;
                                                  return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
-                                             },
+                                             }, 
                                          WorksOn =
                                              new[]
                                                  {
-                                                     BuffType.Blind, BuffType.Charm, BuffType.Flee,
-                                                     BuffType.Slow, BuffType.Polymorph, BuffType.Silence,
-                                                     BuffType.Snare, BuffType.Stun, BuffType.Taunt,
+                                                     BuffType.Blind, BuffType.Charm, BuffType.Flee, 
+                                                     BuffType.Slow, BuffType.Polymorph, BuffType.Silence, 
+                                                     BuffType.Snare, BuffType.Stun, BuffType.Taunt, 
                                                      BuffType.Damage, BuffType.CombatEnchancer
-                                                 },
+                                                 }, 
                                          Priority = 0
-                                     },
+                                     }, 
                                  new CleanseItem
                                      {
                                          Slot = () =>
                                              {
                                                  var slots = ItemData.Dervish_Blade.GetItem().Slots;
                                                  return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
-                                             },
+                                             }, 
                                          WorksOn =
                                              new[]
                                                  {
-                                                     BuffType.Blind, BuffType.Charm, BuffType.Flee,
-                                                     BuffType.Slow, BuffType.Polymorph, BuffType.Silence,
-                                                     BuffType.Snare, BuffType.Stun, BuffType.Taunt,
+                                                     BuffType.Blind, BuffType.Charm, BuffType.Flee, 
+                                                     BuffType.Slow, BuffType.Polymorph, BuffType.Silence, 
+                                                     BuffType.Snare, BuffType.Stun, BuffType.Taunt, 
                                                      BuffType.Damage, BuffType.CombatEnchancer
-                                                 },
+                                                 }, 
                                          Priority = 0
-                                     },
+                                     }, 
                                  new CleanseItem
                                      {
                                          Slot = () =>
                                              {
                                                  var slots = ItemData.Mercurial_Scimitar.GetItem().Slots;
                                                  return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
-                                             },
+                                             }, 
                                          WorksOn =
                                              new[]
                                                  {
-                                                     BuffType.Blind, BuffType.Charm, BuffType.Flee,
-                                                     BuffType.Slow, BuffType.Polymorph, BuffType.Silence,
-                                                     BuffType.Snare, BuffType.Stun, BuffType.Taunt,
+                                                     BuffType.Blind, BuffType.Charm, BuffType.Flee, 
+                                                     BuffType.Slow, BuffType.Polymorph, BuffType.Silence, 
+                                                     BuffType.Snare, BuffType.Stun, BuffType.Taunt, 
                                                      BuffType.Damage, BuffType.CombatEnchancer
-                                                 },
+                                                 }, 
                                          Priority = 0
-                                     },
+                                     }, 
                                  new CleanseItem
                                      {
                                          Slot = () =>
                                              {
                                                  var slots = ItemData.Mikaels_Crucible.GetItem().Slots;
                                                  return slots.Count == 0 ? SpellSlot.Unknown : slots[0];
-                                             },
+                                             }, 
                                          WorksOn =
                                              new[]
                                                  {
-                                                     BuffType.Stun, BuffType.Snare, BuffType.Taunt,
-                                                     BuffType.Silence, BuffType.Slow, BuffType.CombatEnchancer,
+                                                     BuffType.Stun, BuffType.Snare, BuffType.Taunt, 
+                                                     BuffType.Silence, BuffType.Slow, BuffType.CombatEnchancer, 
                                                      BuffType.Fear
-                                                 },
+                                                 }, 
                                          WorksOnAllies = true, Priority = 1
                                      }
                              };
@@ -234,7 +234,12 @@
 
             foreach (var ally in HeroManager.Allies)
             {
-                foreach (var buff in ally.Buffs.Where(x => this.BuffsToCleanse.Contains(x.Type)))
+                foreach (
+                    var buff in
+                        ally.Buffs.Where(
+                            x =>
+                            this.BuffsToCleanse.Contains(x.Type) && x.Caster.Type == GameObjectType.obj_AI_Hero
+                            && x.Caster.IsEnemy))
                 {
                     if (!this.Menu.Item($"Cleanse{buff.Type}").IsActive()
                         || this.Menu.Item("MinDuration").GetValue<Slider>().Value / 1000f
@@ -258,14 +263,14 @@
                             (int)
                             Math.Min(
                                 this.Random.Next(
-                                    this.Menu.Item("MinHumanizerDelay").GetValue<Slider>().Value,
-                                    this.Menu.Item("MaxHumanizerDelay").GetValue<Slider>().Value),
-                                (buff.StartTime - buff.EndTime) * 1000),
+                                    this.Menu.Item("MinHumanizerDelay").GetValue<Slider>().Value, 
+                                    this.Menu.Item("MaxHumanizerDelay").GetValue<Slider>().Value), 
+                                (buff.StartTime - buff.EndTime) * 1000), 
                             () =>
-                            {
-                                cleanseItem.Cast(ally);
-                                this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
-                            });
+                                {
+                                    cleanseItem.Cast(ally);
+                                    this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
+                                });
                     }
                     else
                     {
