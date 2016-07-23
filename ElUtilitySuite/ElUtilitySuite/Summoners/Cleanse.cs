@@ -924,28 +924,31 @@ namespace ElUtilitySuite.Summoners
                         continue;
                     }
 
-                    var isHumanized = this.Menu.Item("CleanseActivatedHumanize").IsActive()
-                        ? Random.Next(
-                            this.Menu.Item("CleanseMinDelay1").GetValue<Slider>().Value,
-                            this.Menu.Item("CleanseMaxDelay1").GetValue<Slider>().Value)
-                        : 0;
-
                     var ally2 = ally;
-                    Utility.DelayAction.Add(
-                        spell.CleanseTimer + isHumanized,
-                        () =>
+
+                    if (this.Menu.Item("CleanseActivatedHumanize").IsActive())
+                    {
+                        Utility.DelayAction.Add(
+                            spell.CleanseTimer + Random.Next(this.Menu.Item("CleanseMinDelay1").GetValue<Slider>().Value, this.Menu.Item("CleanseMaxDelay1").GetValue<Slider>().Value), 
+                            () =>
                             {
-                                if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable || !this.Menu.Item(
-                                    $"cleanseon{ally2.ChampionName}").IsActive())
+                                if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable || !this.Menu.Item($"cleanseon{ally2.ChampionName}").IsActive())
                                 {
                                     return;
                                 }
 
-                                if (item.Slot != SpellSlot.Unknown)
-                                {
-                                    Player.Spellbook.CastSpell(item.Slot, ally2);
-                                }
+                                item.Cast(ally2);
                             });
+                    }
+                    else
+                    {
+                        if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable || !this.Menu.Item($"cleanseon{ally2.ChampionName}").IsActive())
+                        {
+                            return;
+                        }
+
+                        item.Cast(ally2);
+                    }
                 }
             }
         }
