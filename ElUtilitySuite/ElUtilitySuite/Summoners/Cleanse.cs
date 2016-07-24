@@ -918,7 +918,6 @@ namespace ElUtilitySuite.Summoners
                     }
 
                     var item = GetBestCleanseItem(ally, buff);
-
                     if (item == null)
                     {
                         continue;
@@ -926,28 +925,14 @@ namespace ElUtilitySuite.Summoners
 
                     var ally2 = ally;
 
-                    if (this.Menu.Item("CleanseActivatedHumanize").IsActive())
+                    if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable || !this.Menu.Item($"cleanseon{ally2.ChampionName}").IsActive())
                     {
-                        Utility.DelayAction.Add(
-                            spell.CleanseTimer + Random.Next(this.Menu.Item("CleanseMinDelay1").GetValue<Slider>().Value, this.Menu.Item("CleanseMaxDelay1").GetValue<Slider>().Value), 
-                            () =>
-                            {
-                                if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable || !this.Menu.Item($"cleanseon{ally2.ChampionName}").IsActive())
-                                {
-                                    return;
-                                }
-
-                                item.Cast(ally2);
-                            });
+                        return;
                     }
-                    else
-                    {
-                        if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable || !this.Menu.Item($"cleanseon{ally2.ChampionName}").IsActive())
-                        {
-                            return;
-                        }
 
-                        item.Cast(ally2);
+                    if (item.Slot != SpellSlot.Unknown)
+                    {
+                        Utility.DelayAction.Add(spell.CleanseTimer, () => { Player.Spellbook.CastSpell(item.Slot, ally2); });
                     }
                 }
             }
