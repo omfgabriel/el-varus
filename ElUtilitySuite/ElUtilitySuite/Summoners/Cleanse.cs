@@ -353,7 +353,7 @@ namespace ElUtilitySuite.Summoners
                                  },
                              new CleanseSpell
                                  {
-                                     Champion = "Skarner", Name = "Suppression", MenuName = "Skarner (R)",
+                                     Champion = "Skarner", Name = "Skarnerimpale", MenuName = "Skarner (R)",
                                      Evade = false, DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 500,
                                      Slot = SpellSlot.R
                                  },
