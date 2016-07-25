@@ -223,6 +223,7 @@
                                 var targetE = TargetSelector.GetTarget(
                                     spells[Spells.E].Range,
                                     DamageType.Physical);
+
                                 if (targetE.IsValidTarget())
                                 {
                                     var pred = spells[Spells.E].GetPrediction(targetE);

@@ -208,7 +208,7 @@
                     var prediction = spells[Spells.Q].GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.High)
                     {
-                        spells[Spells.R].Cast(prediction.CastPosition);
+                        spells[Spells.R].Cast(target.Position);
                     }
                 }
             }
@@ -218,7 +218,7 @@
                 var prediction = spells[Spells.R].GetPrediction(target);
                 if (prediction.Hitchance >= HitChance.High)
                 {
-                    spells[Spells.R].Cast(prediction.CastPosition);
+                    spells[Spells.R].Cast(target.Position);
                 }
             }
         }
