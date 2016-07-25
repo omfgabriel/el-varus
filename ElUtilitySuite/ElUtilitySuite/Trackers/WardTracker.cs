@@ -297,7 +297,6 @@
                             if (ward.Object == null || !ward.Object.IsValid
                                 || (ward.Object != null && ward.Object.IsValid && !ward.Object.IsVisible))
                             {
-                                Console.WriteLine("pink 2");
                                 Render.Circle.DrawCircle(ward.Position, circleRadius, color, circleThickness);
                             }
                         }
