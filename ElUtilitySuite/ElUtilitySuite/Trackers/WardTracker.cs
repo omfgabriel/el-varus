@@ -37,7 +37,7 @@
             new WardStruct( 60 * 1, 1100, "BlueTrinket", "TrinketOrbLvl3", WardType.Green),
             new WardStruct( 60 * 2, 1100, "YellowTrinketUpgrade", "TrinketTotemLvl2", WardType.Green),
             new WardStruct( 60 * 3, 1100, "SightWard", "ItemGhostWard", WardType.Green),
-            new WardStruct( 60 * 3, 1100, "SightWard", "SightWard", WardType.Green),
+            new WardStruct( 75 * 2, 1100, "SightWard", "SightWard", WardType.Green),
             new WardStruct( 60 * 3, 1100, "MissileWard", "MissileWard", WardType.Green),
             new WardStruct( int.MaxValue, 1100, "VisionWard", "VisionWard", WardType.Pink),
             new WardStruct( 60 * 4, 212, "CaitlynTrap", "CaitlynYordleTrap", WardType.Trap),
@@ -234,6 +234,7 @@
                 {
                     return;
                 }
+
                 var hero = sender as Obj_AI_Hero;
                 if (hero != null)
                 {
@@ -278,6 +279,7 @@
                 var permaShow = this.Menu.Item("wardtracker.PermaShow").GetValue<bool>();
 
                 this._sprite.Begin(SpriteFlags.AlphaBlend);
+
                 foreach (var ward in this._wardObjects)
                 {
                     var color =
@@ -286,16 +288,20 @@
                             + (ward.Data.Type == WardType.Green
                                    ? "Green"
                                    : (ward.Data.Type == WardType.Pink ? "Pink" : "Trap")) + "Color").GetValue<Color>();
+
                     if (ward.Position.IsOnScreen())
                     {
                         if (greenCircle || ward.Data.Type != WardType.Green)
                         {
+                            // checking later
                             if (ward.Object == null || !ward.Object.IsValid
                                 || (ward.Object != null && ward.Object.IsValid && !ward.Object.IsVisible))
                             {
+                                Console.WriteLine("pink 2");
                                 Render.Circle.DrawCircle(ward.Position, circleRadius, color, circleThickness);
                             }
                         }
+
                         if (ward.Data.Type == WardType.Green)
                         {
                             this._text.DrawTextCentered(
@@ -399,22 +405,27 @@
                     var wardObject = sender as Obj_AI_Base;
                     if (wardObject != null && wardObject.IsValid && !wardObject.IsAlly)
                     {
-                        foreach (var ward in this._wardStructs)
+                        var wardStructs = this._wardStructs;
+                        if (wardStructs != null)
                         {
-                            if (wardObject.CharData.BaseSkinName.Equals(
-                                ward.ObjectBaseSkinName,
-                                StringComparison.OrdinalIgnoreCase))
+                            foreach (var ward in wardStructs)
                             {
-                                this._wardObjects.RemoveAll(
-                                    w =>
-                                    w.Position.Distance(wardObject.Position) < 300 && ((int)Game.Time - w.StartT < 0.5));
-                                var wObj = new WardObject(
-                                    ward,
-                                    new Vector3(wardObject.Position.X, wardObject.Position.Y, wardObject.Position.Z),
-                                    (int)(Game.Time - (int)(wardObject.MaxMana - wardObject.Mana)),
-                                    wardObject);
-                                this.CheckDuplicateWards(wObj);
-                                this._wardObjects.Add(wObj);
+                                if (wardObject.CharData.BaseSkinName.Equals(
+                                    ward.ObjectBaseSkinName,
+                                    StringComparison.OrdinalIgnoreCase))
+                                {
+                                    this._wardObjects.RemoveAll(
+                                        w =>
+                                        w.Position.Distance(wardObject.Position) < 300 && ((int)Game.Time - w.StartT < 0.5));
+                                    var wObj = new WardObject(
+                                        ward,
+                                        new Vector3(wardObject.Position.X, wardObject.Position.Y, wardObject.Position.Z),
+                                        (int)(Game.Time - (int)(wardObject.MaxMana - wardObject.Mana)),
+                                        wardObject);
+
+                                    this.CheckDuplicateWards(wObj);
+                                    this._wardObjects.Add(wObj);
+                                }
                             }
                         }
                     }
@@ -431,7 +442,7 @@
             try
             {
                 var ward = sender as Obj_AI_Base;
-                if (ward != null && sender.Name.IndexOf("Ward", StringComparison.OrdinalIgnoreCase) != -1)
+                if (ward != null && sender.Name.IndexOf("Ward", StringComparison.InvariantCultureIgnoreCase) != -1)
                 {
                     this._wardObjects.RemoveAll(w => w.Object != null && w.Object.NetworkId == sender.NetworkId);
                     this._wardObjects.RemoveAll(

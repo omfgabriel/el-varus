@@ -407,10 +407,8 @@
                 }
 
                 //Champion Smite
-                smiteMenu.SubMenu("Champion smite")
-                    .AddItem(new MenuItem("ElSmite.KS.Activated", "Use smite to killsteal").SetValue(true));
-                smiteMenu.SubMenu("Champion smite")
-                    .AddItem(new MenuItem("ElSmite.KS.Combo", "Use smite in combo").SetValue(true));
+                smiteMenu.SubMenu("Champion smite").AddItem(new MenuItem("ElSmite.Combo.Mode", "Smite:"))
+                        .SetValue(new StringList(new[] { "Killsteal", "Combo", "Never" }, 1));
 
                 //Drawings
                 smiteMenu.SubMenu("Drawings")
@@ -751,30 +749,28 @@
 
                 if (!this.Menu.Item("Smite.Ammo").IsActive() || this.Menu.Item("Smite.Ammo").IsActive() && this.Player.GetSpell(this.SmiteSpell.Slot).Ammo > 1)
                 {
-                    if (this.Menu.Item("ElSmite.KS.Combo").IsActive()
-                        && this.Player.GetSpell(this.SmiteSpell.Slot).Name.Equals("s5_summonersmiteduel", StringComparison.InvariantCultureIgnoreCase)
-                        && this.ComboModeActive)
+                    if (this.Menu.Item("ElSmite.Combo.Mode").GetValue<StringList>().SelectedIndex == 0
+                        && this.Player.GetSpell(this.SmiteSpell.Slot)
+                               .Name.Equals("s5_summonersmiteduel", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        var smiteComboEnemy =
-                            HeroManager.Enemies.FirstOrDefault(hero => hero.IsValidTarget(SmiteRange));
-
-                        if (smiteComboEnemy != null)
-                        {
-                            this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, smiteComboEnemy);
-                        }
-                    }
-
-                    if (this.Menu.Item("ElSmite.KS.Activated").IsActive()
-                        && this.Player.GetSpell(this.SmiteSpell.Slot).Name.Equals("s5_summonersmiteplayerganker", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        var kSableEnemy =
-                            HeroManager.Enemies.FirstOrDefault(
-                                hero => hero.IsValidTarget(SmiteRange)
-                                && this.SmiteSpell.GetDamage(hero) >= hero.Health);
+                        var kSableEnemy = HeroManager.Enemies.FirstOrDefault(hero => hero.IsValidTarget(SmiteRange) && this.SmiteSpell.GetDamage(hero) >= hero.Health);
 
                         if (kSableEnemy != null)
                         {
                             this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, kSableEnemy);
+                        }
+                    }
+
+                    if (this.Menu.Item("ElSmite.Combo.Mode").GetValue<StringList>().SelectedIndex == 1
+                        && this.Player.GetSpell(this.SmiteSpell.Slot).Name.Equals("s5_summonersmiteplayerganker", StringComparison.InvariantCultureIgnoreCase) || this.Player.GetSpell(this.SmiteSpell.Slot).Name.Equals("s5_summonersmiteduel", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (this.ComboModeActive)
+                        {
+                            var smiteComboEnemy = HeroManager.Enemies.FirstOrDefault(hero => hero.IsValidTarget(SmiteRange));
+                            if (smiteComboEnemy != null)
+                            {
+                                this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, smiteComboEnemy);
+                            }
                         }
                     }
                 }

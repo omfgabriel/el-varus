@@ -170,11 +170,11 @@
             this.Items = this.Items.OrderBy(x => x.Priority).ToList();
 
             this.rengar =
-                GameObjects.EnemyHeroes.FirstOrDefault(
+               HeroManager.Enemies.FirstOrDefault(
                     e => e.ChampionName.Equals("Rengar", StringComparison.InvariantCultureIgnoreCase));
 
             this.vayne =
-                GameObjects.EnemyHeroes.FirstOrDefault(
+                HeroManager.Enemies.FirstOrDefault(
                     e => e.ChampionName.Equals("Vayne", StringComparison.InvariantCultureIgnoreCase));
 
             GameObject.OnCreate += this.GameObject_OnCreate;
@@ -277,6 +277,7 @@
                     this.vayne?.Buffs.FirstOrDefault(
                         b => b.Name.Equals("VayneInquisition", StringComparison.InvariantCultureIgnoreCase));
 
+
                 if (buff != null)
                 {
                     var item = this.GetBestWardItem();
@@ -286,6 +287,7 @@
                         this.lastReveal = Game.Time;
                     }
                 }
+
             }
             catch (Exception e)
             {
