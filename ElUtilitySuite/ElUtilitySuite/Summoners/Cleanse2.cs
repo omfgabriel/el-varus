@@ -2,16 +2,17 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Linq;
 
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using Color = SharpDX.Color;
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
-    public class Cleanse2 
+    public class Cleanse2 : IPlugin
     {
-        // : IPlugin
         #region Properties
 
         /// <summary>
@@ -67,6 +68,87 @@
         #region Public Methods and Operators
 
         /// <summary>
+        ///     Gets or sets the spells.
+        /// </summary>
+        /// <value>
+        ///     The spells.
+        /// </value>
+        public static List<CleanseIgnore> Spells { get; set; }
+
+        /// <summary>
+        ///     Long hair dont care
+        /// </summary>
+        public static readonly List<string> TrueStandard = new List<string> { "Stun", "Charm", "Flee", "Fear", "Taunt", "Polymorph" };
+
+        /// <summary>
+        ///     Credits to Exory
+        /// </summary>
+        public static readonly List<string> InvalidSnareCasters = new List<string> { "Leona", "Zyra", "Lissandra" };
+        public static readonly List<string> InvalidStunCasters = new List<string> { "Amumu", "LeeSin", "Alistar", "Hecarim", "Blitzcrank" };
+
+        /// <summary>
+        ///     Initializes the <see cref="Cleanse" /> class.
+        /// </summary>
+        static Cleanse2()
+        {
+
+            Spells = new List<CleanseIgnore>
+                         {
+                            new CleanseIgnore { Champion = "Ashe", Spellname = "frostarrow" },
+                            new CleanseIgnore { Champion = "Ashe", Spellname = "ashepassiveslow" },
+                            new CleanseIgnore { Champion = "Vi", Spellname = "vir" },
+                            new CleanseIgnore { Champion = "Yasuo", Spellname = "yasuorknockupcombo" },
+                            new CleanseIgnore { Champion = "Yasuo", Spellname = "yasuorknockupcombotar" },
+                            new CleanseIgnore { Champion = "Zyra", Spellname = "zyrabramblezoneknockup" },
+                            new CleanseIgnore { Champion = "Velkoz", Spellname = "velkozresearchstack" },
+                            new CleanseIgnore { Champion = "Darius", Spellname = "dariusaxebrabcone" },
+                            new CleanseIgnore { Champion = "Fizz", Spellname = "fizzmoveback" },
+                            new CleanseIgnore { Champion = "Blitzcrank", Spellname = "rocketgrab2" },
+                            new CleanseIgnore { Champion = "Alistar", Spellname = "pulverize" },
+                            new CleanseIgnore { Champion = "Azir", Spellname = "azirqslow" },
+                            new CleanseIgnore { Champion = "Rammus", Spellname = "powerballslow" },
+                            new CleanseIgnore { Champion = "Rammus", Spellname = "powerballstun" },
+                            new CleanseIgnore { Champion = "MonkeyKing", Spellname = "monkeykingspinknockup" },
+                            new CleanseIgnore { Champion = "Alistar", Spellname = "headbutttarget" },
+                            new CleanseIgnore { Champion = "Hecarim", Spellname = "hecarimrampstuncheck" },
+                            new CleanseIgnore { Champion = "Hecarim", Spellname = "hecarimrampattackknockback" },
+                            new CleanseIgnore { Spellname = "frozenheartaura" },
+                            new CleanseIgnore { Spellname = "frozenheartauracosmetic" },
+                            new CleanseIgnore { Spellname = "itemsunfirecapeaura" },
+                            new CleanseIgnore { Spellname = "blessingofthelizardelderslow" },
+                            new CleanseIgnore { Spellname = "dragonburning" },
+                            new CleanseIgnore { Spellname = "chilled" }
+                         };
+        }
+
+        /// <summary>
+        ///     Represents a spell that cleanse can be used on.
+        /// </summary>
+        public class CleanseIgnore
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets the champion.
+            /// </summary>
+            /// <value>
+            ///     The champion.
+            /// </value>
+            public string Champion { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the spellname.
+            /// </summary>
+            /// <value>
+            ///     The spellname.
+            /// </value>
+            public string Spellname { get; set; }
+
+            #endregion
+        }
+
+
+        /// <summary>
         ///     Creates the menu.
         /// </summary>
         /// <param name="rootMenu">The root menu.</param>
@@ -80,23 +162,31 @@
                            ? rootMenu.Children.First(predicate)
                            : rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"));
 
-            this.Menu = menu.AddSubMenu(new Menu("Cleanse RELOADED", "BuffTypeStyleCleanser"));
-
-            var humanizerMenu = this.Menu.AddSubMenu(new Menu("Humanizer Settings", "HumanizerSettings"));
-            humanizerMenu.AddItem(
-                new MenuItem("MinHumanizerDelay", "Min Humanizer Delay (MS)").SetValue(new Slider(100, 0, 500)));
-            humanizerMenu.AddItem(
-                new MenuItem("MaxHumanizerDelay", "Max Humanizer Delay (MS)").SetValue(new Slider(150, 0, 500)));
-            humanizerMenu.AddItem(new MenuItem("HumanizerEnabled", "Enabled").SetValue(false));
-
-            var buffTypeMenu = this.Menu.AddSubMenu(new Menu("Buff Types", "BuffTypeSettings"));
-            foreach (var buffType in this.BuffsToCleanse.Select(x => x.ToString()))
+            this.Menu = new Menu("Cleanse RELOADED", "BuffTypeStyleCleanser").SetFontStyle(FontStyle.Bold, Color.Red);
             {
-                buffTypeMenu.AddItem(new MenuItem($"Cleanse{buffType}", buffType).SetValue(true));
+                var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
+                {
+                    humanizerDelay.AddItem(
+                        new MenuItem("MinHumanizerDelay", "Min Humanizer Delay (MS)").SetValue(new Slider(100, 0, 500)));
+                    humanizerDelay.AddItem(
+                        new MenuItem("MaxHumanizerDelay", "Max Humanizer Delay (MS)").SetValue(new Slider(150, 0, 500)));
+                    humanizerDelay.AddItem(new MenuItem("HumanizerEnabled", "Enabled").SetValue(false));
+                }
+
+                this.Menu.AddSubMenu(humanizerDelay);
+
+                var buffTypeMenu = this.Menu.AddSubMenu(new Menu("Buff Types", "BuffTypeSettings"));
+                foreach (var buffType in this.BuffsToCleanse.Select(x => x.ToString()))
+                {
+                    buffTypeMenu.AddItem(new MenuItem($"3Cleanse{buffType}", buffType).SetValue(TrueStandard.Contains($"{buffType}")));
+                }
             }
 
-            this.Menu.AddItem(new MenuItem("MinDuration", "Minimum Duration (MS)").SetValue(new Slider(500, 0, 25000)));
-            this.Menu.AddItem(new MenuItem("CleanseEnabled", "Enabled").SetValue(true));
+            this.Menu.AddItem(new MenuItem("MinDuration", "Minimum Duration (MS)").SetValue(new Slider(500, 0, 25000)))
+                .SetTooltip("The minimum duration of the spell to get cleansed");
+            this.Menu.AddItem(new MenuItem("CleanseEnabled", "Enabled").SetValue(true)); 
+
+             rootMenu.AddSubMenu(this.Menu);
         }
 
         /// <summary>
@@ -150,7 +240,7 @@
                                                      BuffType.Blind, BuffType.Charm, BuffType.Flee,
                                                      BuffType.Slow, BuffType.Polymorph, BuffType.Silence,
                                                      BuffType.Snare, BuffType.Stun, BuffType.Taunt,
-                                                     BuffType.Damage, BuffType.CombatEnchancer
+                                                     BuffType.Damage
                                                  },
                                          Priority = 0
                                      },
@@ -167,7 +257,7 @@
                                                      BuffType.Blind, BuffType.Charm, BuffType.Flee,
                                                      BuffType.Slow, BuffType.Polymorph, BuffType.Silence,
                                                      BuffType.Snare, BuffType.Stun, BuffType.Taunt,
-                                                     BuffType.Damage, BuffType.CombatEnchancer
+                                                     BuffType.Damage
                                                  },
                                          Priority = 0
                                      },
@@ -184,7 +274,7 @@
                                                      BuffType.Blind, BuffType.Charm, BuffType.Flee,
                                                      BuffType.Slow, BuffType.Polymorph, BuffType.Silence,
                                                      BuffType.Snare, BuffType.Stun, BuffType.Taunt,
-                                                     BuffType.Damage, BuffType.CombatEnchancer
+                                                     BuffType.Damage
                                                  },
                                          Priority = 0
                                      },
@@ -199,7 +289,7 @@
                                              new[]
                                                  {
                                                      BuffType.Stun, BuffType.Snare, BuffType.Taunt,
-                                                     BuffType.Silence, BuffType.Slow, BuffType.CombatEnchancer,
+                                                     BuffType.Silence, BuffType.Slow,
                                                      BuffType.Fear
                                                  },
                                          WorksOnAllies = true, Priority = 1
@@ -238,6 +328,7 @@
             return null;
         }
 
+
         private void OnUpdate(EventArgs args)
         {
             if (!this.Menu.Item("CleanseEnabled").IsActive())
@@ -251,12 +342,16 @@
                     var buff in
                         ally.Buffs.Where(
                             x =>
-                            this.BuffsToCleanse.Contains(x.Type) && x.Caster.Type == GameObjectType.obj_AI_Hero
-                            && x.Caster.IsEnemy))
+                            this.BuffsToCleanse.Contains(x.Type) && x.Caster.Type == GameObjectType.obj_AI_Hero && x.Caster.IsEnemy))
                 {
-                    if (!this.Menu.Item($"Cleanse{buff.Type}").IsActive()
+                    if (!this.Menu.Item($"3Cleanse{buff.Type}").IsActive()
                         || this.Menu.Item("MinDuration").GetValue<Slider>().Value / 1000f
-                        > buff.EndTime - buff.StartTime || this.BuffIndexesHandled[ally.NetworkId].Contains(buff.Index))
+                        > buff.EndTime - buff.StartTime || this.BuffIndexesHandled[ally.NetworkId].Contains(buff.Index) || Spells.Any(b => buff.Name.Equals(b.Spellname, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        continue;
+                    }
+
+                    if (buff.Type == BuffType.Snare && InvalidSnareCasters.Contains(((Obj_AI_Hero)buff.Caster).ChampionName, StringComparer.InvariantCultureIgnoreCase) || buff.Type == BuffType.Stun && InvalidStunCasters.Contains(((Obj_AI_Hero)buff.Caster).ChampionName, StringComparer.InvariantCultureIgnoreCase))
                     {
                         continue;
                     }
@@ -288,11 +383,9 @@
                     }
                     else
                     {
-                        Console.WriteLine($"Tried to cleanse: {ally.ChampionName}");
                         cleanseItem.Cast(ally);
                         this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
-                        Console.WriteLine($"Removed: {buff.Index}");
-                        Console.WriteLine($"Stuff: {this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index)}");
+                        Console.WriteLine($"Tried to cleanse: {ally.ChampionName}");
                     }
                 }
             }

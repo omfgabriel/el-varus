@@ -11,7 +11,7 @@ namespace ElUtilitySuite.Summoners
     using Color = SharpDX.Color;
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
-    internal class Cleanse : IPlugin
+    internal class Cleanse //: IPlugin
     {
         #region Constructors and Destructors
 
