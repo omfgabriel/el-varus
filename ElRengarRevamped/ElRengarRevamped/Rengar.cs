@@ -228,7 +228,7 @@
                                     var pred = spells[Spells.E].GetPrediction(targetE);
                                     if (pred.Hitchance >= HitChance.High)
                                     {
-                                        spells[Spells.E].Cast(pred.CastPosition);
+                                        Utility.DelayAction.Add(300, () => spells[Spells.E].Cast(pred.CastPosition));
                                     }
                                 }
                             }
@@ -256,7 +256,7 @@
                                 var pred = spells[Spells.E].GetPrediction(targetE);
                                 if (pred.Hitchance >= HitChance.Medium)
                                 {
-                                    spells[Spells.E].Cast(pred.CastPosition);
+                                    Utility.DelayAction.Add(300, () => spells[Spells.E].Cast(pred.CastPosition));
                                 }
                             }
                         }
@@ -269,7 +269,7 @@
                         if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
                         {
                             var pred = spells[Spells.E].GetPrediction(target);
-                            spells[Spells.E].Cast(pred.CastPosition);
+                            Utility.DelayAction.Add(300, () => spells[Spells.E].Cast(pred.CastPosition));
                         }
                         break;
 

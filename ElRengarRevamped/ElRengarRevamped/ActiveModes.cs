@@ -21,20 +21,13 @@ namespace ElRengarRevamped
         /// </summary>
         public static void Combo()
         {
-            /*var target = SFXTargetSelector.TargetSelector.Selected.Target
-                             ?? TargetSelector.GetTarget(spells[Spells.E].Range, DamageType.Physical);
-            if (target.IsValidTarget() == false)
-            {
-                return;
-            }*/
-
             var target = TargetSelector.GetTarget(spells[Spells.E].Range);
             if (target == null)
             {
                 return;
             }
 
-             if (SFXTargetSelector.TargetSelector.Selected.Target != null)
+             if (TargetSelector.Selected.Target != null)
             {
                 Orbwalker.ForceTarget(target);
             }
@@ -135,6 +128,13 @@ namespace ElRengarRevamped
                 }
 
                 var pred = spells[Spells.E].GetPrediction(target);
+
+                if (Player.IsDashing())
+                {
+                    Utility.DelayAction.Add(300, () => spells[Spells.E].Cast(pred.CastPosition));
+                    return;
+                }
+
                 if (pred.Hitchance >= HitChance.High)
                 {
                     spells[Spells.E].Cast(pred.CastPosition);
