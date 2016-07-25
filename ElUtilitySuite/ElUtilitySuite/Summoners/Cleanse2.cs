@@ -184,6 +184,11 @@
 
             this.Menu.AddItem(new MenuItem("MinDuration", "Minimum Duration (MS)").SetValue(new Slider(500, 0, 25000)))
                 .SetTooltip("The minimum duration of the spell to get cleansed");
+
+
+            this.Menu.AddItem(new MenuItem("CleanseEnabled.Health", "Cleanse on health").SetValue(false));
+            this.Menu.AddItem(new MenuItem("Cleanse.HealthPercent", "Cleanse when HP <=").SetValue(new Slider(75, 0, 100)));
+            
             this.Menu.AddItem(new MenuItem("CleanseEnabled", "Enabled").SetValue(true)); 
 
              rootMenu.AddSubMenu(this.Menu);
@@ -377,15 +382,36 @@
                                 (buff.StartTime - buff.EndTime) * 1000),
                             () =>
                             {
-                                cleanseItem.Cast(ally);
-                                this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
+                                if (this.Menu.Item("CleanseEnabled.Health").IsActive())
+                                {
+                                    if (this.Menu.Item("Cleanse.HealthPercent").GetValue<Slider>().Value <= ObjectManager.Player.HealthPercent)
+                                    {
+                                        cleanseItem.Cast(ally);
+                                        this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
+                                    }
+                                }
+                                else
+                                {
+                                    cleanseItem.Cast(ally);
+                                    this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
+                                }
                             });
                     }
                     else
                     {
-                        cleanseItem.Cast(ally);
-                        this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
-                        Console.WriteLine($"Tried to cleanse: {ally.ChampionName}");
+                        if (this.Menu.Item("CleanseEnabled.Health").IsActive())
+                        {
+                            if (this.Menu.Item("Cleanse.HealthPercent").GetValue<Slider>().Value <= ObjectManager.Player.HealthPercent)
+                            {
+                                cleanseItem.Cast(ally);
+                                this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
+                            }
+                        }
+                        else
+                        {
+                            cleanseItem.Cast(ally);
+                            this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
+                        }
                     }
                 }
             }
