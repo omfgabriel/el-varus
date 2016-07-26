@@ -11,7 +11,7 @@ namespace ElUtilitySuite.Summoners
     using Color = SharpDX.Color;
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
-    internal class Cleanse //: IPlugin
+    internal class Cleanse : IPlugin
     {
         #region Constructors and Destructors
 
@@ -780,59 +780,50 @@ namespace ElUtilitySuite.Summoners
         /// <param name="rootMenu">The root menu.</param>
         public void CreateMenu(Menu rootMenu)
         {
-            var predicate = new Func<Menu, bool>(x => x.Name == "SummonersMenu");
+            var predicate = new Func<Menu, bool>(x => x.Name == "BuffTypeStyleCleanser");
             var menu = !rootMenu.Children.Any(predicate)
                            ? rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"))
                            : rootMenu.Children.First(predicate);
 
-            this.Menu = new Menu("Cleanse/QSS", "CleanseV3").SetFontStyle(FontStyle.Bold, Color.White);
+
+            var cleanseOldMenu = menu.AddSubMenu(new Menu("Cleanse OLD", "CleanseOLD")).SetFontStyle(FontStyle.Bold, Color.White);
             {
-                var spellsMenu = new Menu("Spells", "CleanseV3Spells");
+                foreach (var spell in Spells)
                 {
-                    foreach (var spell in Spells)
+                    cleanseOldMenu.SubMenu("Spells").AddItem(
+                        new MenuItem(
+                            spell.MenuName?.Replace(" ", string.Empty) ?? spell.Name,
+                            string.IsNullOrEmpty(spell.MenuName) ? spell.Name : spell.MenuName).SetValue(
+                                spell.Cleanse));
+                }
+
+                cleanseOldMenu.SubMenu("Humanizer Delay").AddItem(
+                           new MenuItem("CleanseMinDelay1", "Minimum Delay (MS)").SetValue(new Slider(0, 0, 1000)));
+                cleanseOldMenu.SubMenu("Humanizer Delay").AddItem(
+                    new MenuItem("CleanseMaxDelay1", "Maximum Delay (MS)").SetValue(new Slider(0, 0, 1500)));
+
+                cleanseOldMenu.SubMenu("Humanizer Delay").Item("CleanseMaxDelay1").ValueChanged +=
+                    delegate (object sender, OnValueChangeEventArgs args)
                     {
-                        spellsMenu.AddItem(
-                            new MenuItem(
-                                spell.MenuName?.Replace(" ", string.Empty) ?? spell.Name,
-                                string.IsNullOrEmpty(spell.MenuName) ? spell.Name : spell.MenuName).SetValue(
-                                    spell.Cleanse));
-                    }
-                }
+                        if (args.GetNewValue<Slider>().Value
+                            < menu.Item("CleanseMinDelay1").GetValue<Slider>().Value)
+                        {
+                            args.Process = false;
+                        }
+                    };
 
-                this.Menu.AddSubMenu(spellsMenu);
-
-                var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
-                {
-                    humanizerDelay.AddItem(
-                        new MenuItem("CleanseMinDelay1", "Minimum Delay (MS)").SetValue(new Slider(0, 0, 1000)));
-                    humanizerDelay.AddItem(
-                        new MenuItem("CleanseMaxDelay1", "Maximum Delay (MS)").SetValue(new Slider(0, 0, 1500)));
-
-                    humanizerDelay.Item("CleanseMaxDelay1").ValueChanged +=
-                        delegate(object sender, OnValueChangeEventArgs args)
-                            {
-                                if (args.GetNewValue<Slider>().Value
-                                    < this.Menu.Item("CleanseMinDelay1").GetValue<Slider>().Value)
-                                {
-                                    args.Process = false;
-                                }
-                            };
-                }
-
-                this.Menu.AddSubMenu(humanizerDelay);
-
-                this.Menu.AddItem(new MenuItem("CleanseActivatedHumanize", "Use humanizer")
-                    .SetValue(false)).SetTooltip("This can cause QSS to cast late! (Keep this disabled)", Color.Pink);
-                this.Menu.AddItem(new MenuItem("CleanseActivated", "Use Cleanse").SetValue(true));
-                this.Menu.AddItem(new MenuItem("seperator211", ""));
+                cleanseOldMenu.AddItem(new MenuItem("CleanseActivatedHumanize", "Use humanizer")
+                   .SetValue(false)).SetTooltip("This can cause QSS to cast late! (Keep this disabled)", Color.Pink);
+                cleanseOldMenu.AddItem(new MenuItem("CleanseActivated", "Use Cleanse").SetValue(true));
+                cleanseOldMenu.AddItem(new MenuItem("seperator211", ""));
                 foreach (var x in HeroManager.Allies)
-                { 
-                    this.Menu.AddItem(new MenuItem($"cleanseon{x.ChampionName}", "Use for " + x.ChampionName))
+                {
+                    cleanseOldMenu.AddItem(new MenuItem($"cleanseon{x.ChampionName}", "Use for " + x.ChampionName))
                         .SetValue(true);
                 }
             }
 
-            rootMenu.AddSubMenu(this.Menu);
+            this.Menu = cleanseOldMenu;
         }
 
         /// <summary>
@@ -884,13 +875,14 @@ namespace ElUtilitySuite.Summoners
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void GameOnUpdate(EventArgs args)
         {
-            if (Player.IsDead || Player.IsInvulnerable || Player.HasBuffOfType(BuffType.SpellImmunity)
-                || Player.HasBuffOfType(BuffType.Invulnerability))
+            // this was just fun to do hehe xd
+            if (Menu.GetValueGlobally("ElUtilitySuite", "ElUtilitySuite", "Cleanse.Version", "BuffTypeStyleCleanser").GetValue<StringList>().SelectedIndex == 1)
             {
                 return;
             }
 
-            if (!this.Menu.Item("CleanseActivated").IsActive())
+            if (Player.IsDead || Player.IsInvulnerable || Player.HasBuffOfType(BuffType.SpellImmunity)
+                || Player.HasBuffOfType(BuffType.Invulnerability) || !this.Menu.Item("CleanseActivated").IsActive())
             {
                 return;
             }

@@ -162,36 +162,37 @@
                            ? rootMenu.Children.First(predicate)
                            : rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"));
 
+
             this.Menu = new Menu("Cleanse RELOADED", "BuffTypeStyleCleanser").SetFontStyle(FontStyle.Bold, Color.Red);
             {
-                var humanizerDelay = new Menu("Humanizer Delay", "CleanseHumanizer");
-                {
-                    humanizerDelay.AddItem(
-                        new MenuItem("MinHumanizerDelay", "Min Humanizer Delay (MS)").SetValue(new Slider(100, 0, 500)));
-                    humanizerDelay.AddItem(
-                        new MenuItem("MaxHumanizerDelay", "Max Humanizer Delay (MS)").SetValue(new Slider(150, 0, 500)));
-                    humanizerDelay.AddItem(new MenuItem("HumanizerEnabled", "Enabled").SetValue(false));
-                }
+                var newCleanseMenu = this.Menu.SubMenu("Cleanse NEW").SetFontStyle(FontStyle.Bold, Color.Green);
 
-                this.Menu.AddSubMenu(humanizerDelay);
+                newCleanseMenu.SubMenu("Humanizer Delay").AddItem(
+                          new MenuItem("MinHumanizerDelay", "Min Humanizer Delay (MS)").SetValue(new Slider(100, 0, 500)));
+                newCleanseMenu.SubMenu("Humanizer Delay").AddItem(
+                    new MenuItem("MaxHumanizerDelay", "Max Humanizer Delay (MS)").SetValue(new Slider(150, 0, 500)));
+                newCleanseMenu.SubMenu("Humanizer Delay").AddItem(new MenuItem("HumanizerEnabled", "Enabled").SetValue(false));
 
-                var buffTypeMenu = this.Menu.AddSubMenu(new Menu("Buff Types", "BuffTypeSettings"));
+
                 foreach (var buffType in this.BuffsToCleanse.Select(x => x.ToString()))
                 {
-                    buffTypeMenu.AddItem(new MenuItem($"3Cleanse{buffType}", buffType).SetValue(TrueStandard.Contains($"{buffType}")));
+                    newCleanseMenu.SubMenu("Buff Types").AddItem(new MenuItem($"3Cleanse{buffType}", buffType).SetValue(TrueStandard.Contains($"{buffType}")));
                 }
-            }
 
-            this.Menu.AddItem(new MenuItem("MinDuration", "Minimum Duration (MS)").SetValue(new Slider(500, 0, 25000)))
+                newCleanseMenu.AddItem(new MenuItem("MinDuration", "Minimum Duration (MS)").SetValue(new Slider(500, 0, 25000)))
                 .SetTooltip("The minimum duration of the spell to get cleansed");
 
 
-            this.Menu.AddItem(new MenuItem("CleanseEnabled.Health", "Cleanse on health").SetValue(false));
-            this.Menu.AddItem(new MenuItem("Cleanse.HealthPercent", "Cleanse when HP <=").SetValue(new Slider(75, 0, 100)));
-            
-            this.Menu.AddItem(new MenuItem("CleanseEnabled", "Enabled").SetValue(true)); 
+                newCleanseMenu.AddItem(new MenuItem("CleanseEnabled.Health", "Cleanse on health").SetValue(false));
+                newCleanseMenu.AddItem(new MenuItem("Cleanse.HealthPercent", "Cleanse when HP <=").SetValue(new Slider(75, 0, 100)));
 
-             rootMenu.AddSubMenu(this.Menu);
+                newCleanseMenu.AddItem(new MenuItem("CleanseEnabled", "Enabled").SetValue(true));
+
+                this.Menu.AddItem(new MenuItem("Cleanse.Version", "Cleanse preference:"))
+                    .SetValue(new StringList(new[] { "Old", "New", }, 1));
+            }
+
+            rootMenu.AddSubMenu(this.Menu);
         }
 
         /// <summary>
@@ -201,7 +202,6 @@
         {
             this.Random = new Random(Environment.TickCount);
             HeroManager.Allies.ForEach(x => this.BuffIndexesHandled.Add(x.NetworkId, new List<int>()));
-
             Game.OnUpdate += this.OnUpdate;
         }
 
@@ -336,7 +336,7 @@
 
         private void OnUpdate(EventArgs args)
         {
-            if (!this.Menu.Item("CleanseEnabled").IsActive())
+            if (this.Menu.Item("Cleanse.Version").GetValue<StringList>().SelectedIndex == 0 || !this.Menu.Item("CleanseEnabled").IsActive())
             {
                 return;
             }
