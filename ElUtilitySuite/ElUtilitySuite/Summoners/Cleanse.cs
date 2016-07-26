@@ -875,8 +875,7 @@ namespace ElUtilitySuite.Summoners
         /// <param name="args">The <see cref="System.EventArgs" /> instance containing the event data.</param>
         private void GameOnUpdate(EventArgs args)
         {
-            // this was just fun to do hehe xd
-            if (Menu.GetValueGlobally("ElUtilitySuite", "ElUtilitySuite", "Cleanse.Version", "BuffTypeStyleCleanser").GetValue<StringList>().SelectedIndex == 1)
+            if (Cleanse2.CleansingVersion == 1)
             {
                 return;
             }
@@ -887,14 +886,13 @@ namespace ElUtilitySuite.Summoners
                 return;
             }
 
-            foreach (var ally in HeroManager.Allies.Where(x => x.IsValidTarget(800f, false)))
+            foreach (var ally in HeroManager.Allies)
             {
-                var ally1 = ally;
-                foreach (var spell in Spells.Where(x => ally1.HasBuff(x.Name)))
+                foreach (var spell in Spells.Where(x => ally.HasBuff(x.Name)))
                 {
                     if (
                         !this.Menu.Item(spell.MenuName?.Replace(" ", string.Empty) ?? spell.Name)
-                             .IsActive())
+                             .IsActive() || !this.Menu.Item($"cleanseon{ally.ChampionName}").IsActive())
                     {
                         continue;
                     }
@@ -915,17 +913,7 @@ namespace ElUtilitySuite.Summoners
                         continue;
                     }
 
-                    var ally2 = ally;
-
-                    if (!ally2.HasBuff(buff.Name) || ally2.IsInvulnerable || !this.Menu.Item($"cleanseon{ally2.ChampionName}").IsActive())
-                    {
-                        return;
-                    }
-
-                    if (item.Slot != SpellSlot.Unknown)
-                    {
-                        Utility.DelayAction.Add(spell.CleanseTimer, () => { Player.Spellbook.CastSpell(item.Slot, ally2); });
-                    }
+                    Player.Spellbook.CastSpell(item.Slot, ally);
                 }
             }
         }

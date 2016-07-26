@@ -53,7 +53,7 @@
         /// <value>
         ///     The menu.
         /// </value>
-        private Menu Menu { get; set; }
+        private static Menu Menu { get; set; }
 
         /// <summary>
         ///     Gets or sets the random.
@@ -85,6 +85,14 @@
         /// </summary>
         public static readonly List<string> InvalidSnareCasters = new List<string> { "Leona", "Zyra", "Lissandra" };
         public static readonly List<string> InvalidStunCasters = new List<string> { "Amumu", "LeeSin", "Alistar", "Hecarim", "Blitzcrank" };
+
+        /// <summary>
+        ///     Gets a value indicating the cleanse version
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if Cleanse.Version is active; otherwise, <c>false</c>.
+        /// </value>
+         public static int CleansingVersion => Menu.Item("Cleanse.Version").GetValue<StringList>().SelectedIndex;
 
         /// <summary>
         ///     Initializes the <see cref="Cleanse" /> class.
@@ -163,9 +171,11 @@
                            : rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"));
 
 
-            this.Menu = new Menu("Cleanse RELOADED", "BuffTypeStyleCleanser").SetFontStyle(FontStyle.Bold, Color.Red);
+            Menu = new Menu("Cleanse RELOADED", "BuffTypeStyleCleanser").SetFontStyle(FontStyle.Bold, Color.Red);
             {
-                var newCleanseMenu = this.Menu.SubMenu("Cleanse NEW").SetFontStyle(FontStyle.Bold, Color.Green);
+
+
+                var newCleanseMenu = Menu.SubMenu("Cleanse NEW").SetFontStyle(FontStyle.Bold, Color.Green);
 
                 newCleanseMenu.SubMenu("Humanizer Delay").AddItem(
                           new MenuItem("MinHumanizerDelay", "Min Humanizer Delay (MS)").SetValue(new Slider(100, 0, 500)));
@@ -187,12 +197,23 @@
                 newCleanseMenu.AddItem(new MenuItem("Cleanse.HealthPercent", "Cleanse when HP <=").SetValue(new Slider(75, 0, 100)));
 
                 newCleanseMenu.AddItem(new MenuItem("CleanseEnabled", "Enabled").SetValue(true));
+                newCleanseMenu.AddItem(new MenuItem("sep-112-cleanse", "Settings:"))
+                    .SetFontStyle(FontStyle.Bold, Color.GreenYellow)
+                    .SetTooltip("Counts for QSS and Mikaels usage");
 
-                this.Menu.AddItem(new MenuItem("Cleanse.Version", "Cleanse preference:"))
+
+                foreach (var allies in HeroManager.Allies)
+                {
+                    newCleanseMenu.AddItem(new MenuItem($"3cleanseon{allies.ChampionName}", "Use for " + allies.ChampionName))
+                        .SetValue(true);
+                }
+
+
+                Menu.AddItem(new MenuItem("Cleanse.Version", "Cleanse preference:"))
                     .SetValue(new StringList(new[] { "Old", "New", }, 1));
             }
 
-            rootMenu.AddSubMenu(this.Menu);
+            rootMenu.AddSubMenu(Menu);
         }
 
         /// <summary>
@@ -333,10 +354,9 @@
             return null;
         }
 
-
         private void OnUpdate(EventArgs args)
         {
-            if (this.Menu.Item("Cleanse.Version").GetValue<StringList>().SelectedIndex == 0 || !this.Menu.Item("CleanseEnabled").IsActive())
+            if (CleansingVersion == 0 || !Menu.Item("CleanseEnabled").IsActive())
             {
                 return;
             }
@@ -349,9 +369,9 @@
                             x =>
                             this.BuffsToCleanse.Contains(x.Type) && x.Caster.Type == GameObjectType.obj_AI_Hero && x.Caster.IsEnemy))
                 {
-                    if (!this.Menu.Item($"3Cleanse{buff.Type}").IsActive()
-                        || this.Menu.Item("MinDuration").GetValue<Slider>().Value / 1000f
-                        > buff.EndTime - buff.StartTime || this.BuffIndexesHandled[ally.NetworkId].Contains(buff.Index) || Spells.Any(b => buff.Name.Equals(b.Spellname, StringComparison.InvariantCultureIgnoreCase)))
+                    if (!Menu.Item($"3Cleanse{buff.Type}").IsActive()
+                        || Menu.Item("MinDuration").GetValue<Slider>().Value / 1000f
+                        > buff.EndTime - buff.StartTime || this.BuffIndexesHandled[ally.NetworkId].Contains(buff.Index) || Spells.Any(b => buff.Name.Equals(b.Spellname, StringComparison.InvariantCultureIgnoreCase) || !Menu.Item($"3cleanseon{ally.ChampionName}").IsActive()))
                     {
                         continue;
                     }
@@ -371,20 +391,20 @@
 
                     this.BuffIndexesHandled[ally.NetworkId].Add(buff.Index);
 
-                    if (this.Menu.Item("HumanizerEnabled").IsActive())
+                    if (Menu.Item("HumanizerEnabled").IsActive())
                     {
                         Utility.DelayAction.Add(
                             (int)
                             Math.Min(
                                 this.Random.Next(
-                                    this.Menu.Item("MinHumanizerDelay").GetValue<Slider>().Value,
-                                    this.Menu.Item("MaxHumanizerDelay").GetValue<Slider>().Value),
+                                    Menu.Item("MinHumanizerDelay").GetValue<Slider>().Value,
+                                    Menu.Item("MaxHumanizerDelay").GetValue<Slider>().Value),
                                 (buff.StartTime - buff.EndTime) * 1000),
                             () =>
                             {
-                                if (this.Menu.Item("CleanseEnabled.Health").IsActive())
+                                if (Menu.Item("CleanseEnabled.Health").IsActive())
                                 {
-                                    if (this.Menu.Item("Cleanse.HealthPercent").GetValue<Slider>().Value <= ObjectManager.Player.HealthPercent)
+                                    if (Menu.Item("Cleanse.HealthPercent").GetValue<Slider>().Value <= ObjectManager.Player.HealthPercent)
                                     {
                                         cleanseItem.Cast(ally);
                                         this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
@@ -399,9 +419,9 @@
                     }
                     else
                     {
-                        if (this.Menu.Item("CleanseEnabled.Health").IsActive())
+                        if (Menu.Item("CleanseEnabled.Health").IsActive())
                         {
-                            if (this.Menu.Item("Cleanse.HealthPercent").GetValue<Slider>().Value <= ObjectManager.Player.HealthPercent)
+                            if (Menu.Item("Cleanse.HealthPercent").GetValue<Slider>().Value <= ObjectManager.Player.HealthPercent)
                             {
                                 cleanseItem.Cast(ally);
                                 this.BuffIndexesHandled[ally.NetworkId].Remove(buff.Index);
