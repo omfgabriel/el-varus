@@ -171,7 +171,7 @@
                            : rootMenu.AddSubMenu(new Menu("Summoners", "SummonersMenu"));
 
 
-            Menu = new Menu("Cleanse RELOADED", "BuffTypeStyleCleanser").SetFontStyle(FontStyle.Bold, Color.Red);
+            Menu = new Menu("Cleanse/QSS", "BuffTypeStyleCleanser").SetFontStyle(FontStyle.Bold, Color.Red);
             {
 
 
