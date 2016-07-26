@@ -457,10 +457,10 @@
                                      ChampionName = "veigar", SDataName = "veigardarkmatter", MissileName = "",
                                      Delay = 1000, MissileSpeed = int.MaxValue, CastRange = 900f
                                  },
-                             new ZhonyaSpell
+                            new ZhonyaSpell
                                  {
-                                     ChampionName = "veigar", SDataName = "VeigarPrimordialBurst", MissileName = "VeigarPrimordialBurst",
-                                     Delay = 250, MissileSpeed = 1400, CastRange = 650f
+                                     ChampionName = "veigar", SDataName = "veigarr", MissileName = "veigarprimordialburst",
+                                     Delay = 1000, MissileSpeed = int.MaxValue, CastRange = 900f
                                  },
                              new ZhonyaSpell
                                  {
@@ -565,16 +565,13 @@
                         var firstOrDefault =
                             objAiHero.Spellbook.Spells.FirstOrDefault(x => x.SData.Name.ToLower() == spell.SDataName);
 
+  
                         if (firstOrDefault != null)
                         {
                             zhonyaSpellMenu.AddItem(
                                 new MenuItem(
                                     $"Zhonya{spell.SDataName}",
-                                    string.Format(
-                                        "{0} ({1}) - {2}",
-                                        char.ToUpper(spell.ChampionName[0]) + spell.ChampionName.Substring(1),
-                                        firstOrDefault.Slot,
-                                        spell.SDataName)).SetValue(true));
+                                    $"{char.ToUpper(spell.ChampionName[0]) + spell.ChampionName.Substring(1)} ({firstOrDefault.Slot}) - {spell.SDataName}").SetValue(true));
                         }
                     }
                 }
