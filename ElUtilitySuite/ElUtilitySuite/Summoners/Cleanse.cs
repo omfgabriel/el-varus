@@ -94,7 +94,7 @@ namespace ElUtilitySuite.Summoners
                                  {
                                      Champion = "Teemo", Name = "blind", MenuName = "Teemo (Q)", Evade = false,
                                      DoT = false, EvadeTimer = 0, Cleanse = true, CleanseTimer = 0, Slot = SpellSlot.Q,
-                                     Interval = 1.0
+                                     Interval = 1.0, BuffType = BuffType.Blind
                                  },
                              new CleanseSpell
                                  {
