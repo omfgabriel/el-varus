@@ -175,7 +175,6 @@
                 || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
             {
                 Orbwalking.Orbwalk(target ?? null, Game.CursorPos);
-                Console.WriteLine("Force walk after jump!");
                 if (Ferocity == 5)
                 {
                     switch (IsListActive("Combo.Prio").SelectedIndex)
