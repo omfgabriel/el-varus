@@ -126,6 +126,8 @@
             var protectMenu = menu.AddSubMenu(new Menu("Anti-Stealth", "AntiStealth"));
             {
                 protectMenu.AddItem(new MenuItem("AntiStealthActive", "Place Pink Ward on Unit Stealth").SetValue(true));
+                /*protectMenu.AddItem(new MenuItem("Antistealth.Mode", "Mode: "))
+                    .SetValue(new StringList(new[] { "Always", "Combo", }, 0));*/
             }
 
             this.Menu = protectMenu;

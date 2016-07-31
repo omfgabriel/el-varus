@@ -266,7 +266,7 @@
                                                      BuffType.Blind, BuffType.Charm, BuffType.Flee,
                                                      BuffType.Slow, BuffType.Polymorph, BuffType.Silence,
                                                      BuffType.Snare, BuffType.Stun, BuffType.Taunt,
-                                                     BuffType.Damage
+                                                     BuffType.Damage, BuffType.Suppression
                                                  },
                                          Priority = 0
                                      },
@@ -283,7 +283,7 @@
                                                      BuffType.Blind, BuffType.Charm, BuffType.Flee,
                                                      BuffType.Slow, BuffType.Polymorph, BuffType.Silence,
                                                      BuffType.Snare, BuffType.Stun, BuffType.Taunt,
-                                                     BuffType.Damage
+                                                     BuffType.Damage, BuffType.Suppression
                                                  },
                                          Priority = 0
                                      },
@@ -300,7 +300,7 @@
                                                      BuffType.Blind, BuffType.Charm, BuffType.Flee,
                                                      BuffType.Slow, BuffType.Polymorph, BuffType.Silence,
                                                      BuffType.Snare, BuffType.Stun, BuffType.Taunt,
-                                                     BuffType.Damage
+                                                     BuffType.Damage, BuffType.Suppression
                                                  },
                                          Priority = 0
                                      },
@@ -316,7 +316,7 @@
                                                  {
                                                      BuffType.Stun, BuffType.Snare, BuffType.Taunt,
                                                      BuffType.Silence, BuffType.Slow,
-                                                     BuffType.Fear
+                                                     BuffType.Fear, BuffType.Suppression
                                                  },
                                          WorksOnAllies = true, Priority = 1
                                      }
