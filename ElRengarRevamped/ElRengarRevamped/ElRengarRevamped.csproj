@@ -60,35 +60,10 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rengar.cs" />
-    <Compile Include="SFXTargetSelector\Aggro.cs" />
-    <Compile Include="SFXTargetSelector\Compatibility.cs" />
-    <Compile Include="SFXTargetSelector\Drawings.cs" />
-    <Compile Include="SFXTargetSelector\Enumerations\Mode.cs" />
-    <Compile Include="SFXTargetSelector\Enumerations\Priority.cs" />
-    <Compile Include="SFXTargetSelector\EventArgs\ModesOnChange.cs" />
-    <Compile Include="SFXTargetSelector\Extensions.cs" />
-    <Compile Include="SFXTargetSelector\Focus.cs" />
-    <Compile Include="SFXTargetSelector\Helpers\SimpleCache.cs" />
-    <Compile Include="SFXTargetSelector\Helpers\Utils.cs" />
-    <Compile Include="SFXTargetSelector\Humanizer.cs" />
-    <Compile Include="SFXTargetSelector\Modes.cs" />
-    <Compile Include="SFXTargetSelector\Orbwalking.cs" />
-    <Compile Include="SFXTargetSelector\Others\GameObjects.cs" />
-    <Compile Include="SFXTargetSelector\Others\Invulnerable.cs" />
-    <Compile Include="SFXTargetSelector\Others\MinionManager.cs" />
-    <Compile Include="SFXTargetSelector\Priorities.cs" />
-    <Compile Include="SFXTargetSelector\Properties\Annotations.cs" />
-    <Compile Include="SFXTargetSelector\Selected.cs" />
-    <Compile Include="SFXTargetSelector\Targets.cs" />
-    <Compile Include="SFXTargetSelector\TargetSelector.cs" />
-    <Compile Include="SFXTargetSelector\Weights.cs" />
     <Compile Include="Standards.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="SFXTargetSelector\SFXTargetSelector.csproj" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

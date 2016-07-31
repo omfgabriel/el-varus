@@ -7,8 +7,6 @@ namespace ElRengarRevamped
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    using TargetSelector = SFXTargetSelector.TargetSelector;
-
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -21,13 +19,14 @@ namespace ElRengarRevamped
         /// </summary>
         public static void Combo()
         {
-            var target = TargetSelector.GetTarget(spells[Spells.E].Range);
-            if (target == null)
+            var target = TargetSelector.GetSelectedTarget()
+                             ?? TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Physical);
+            if (target.IsValidTarget() == false)
             {
                 return;
             }
 
-             if (TargetSelector.Selected.Target != null)
+            if (TargetSelector.GetSelectedTarget() != null)
             {
                 Orbwalker.ForceTarget(target);
             }
@@ -51,6 +50,16 @@ namespace ElRengarRevamped
                             CastE(target);
                         }
                     }
+                    else
+                    {
+                        if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
+                        {
+                            if (Player.IsDashing())
+                            {
+                                CastE(target);
+                            }
+                        }
+                    }
                 }
 
                 CastItems(target);
@@ -58,7 +67,6 @@ namespace ElRengarRevamped
                 if (spells[Spells.W].IsReady() && IsActive("Combo.Use.W"))
                 {
                     CastW();
-                    CastItems(target);
                 }
             }
 
@@ -73,6 +81,7 @@ namespace ElRengarRevamped
                             {
                                 CastE(target);
 
+                                // switch combo mode
                                 if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
                                 {
                                     MenuInit.Menu.Item("Combo.Prio")
@@ -81,9 +90,19 @@ namespace ElRengarRevamped
                                 }
                             }
                         }
+                        else
+                        {
+                            if (spells[Spells.E].IsReady() && IsActive("Combo.Use.E"))
+                            {
+                                if (Player.IsDashing())
+                                {
+                                    CastE(target);
+                                }
+                            }
+                        }
                         break;
                     case 1:
-                        if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady() && target.IsValidTarget(spells[Spells.W].Range))
+                        if (IsActive("Combo.Use.W") && spells[Spells.W].IsReady())
                         {
                             CastW();
                         }
@@ -99,6 +118,11 @@ namespace ElRengarRevamped
             }
 
             #region Summoner spells
+
+            if (Youmuu.IsReady() && Youmuu.IsOwned() && target.IsValidTarget(spells[Spells.Q].Range))
+            {
+                Youmuu.Cast();
+            }
 
             if (IsActive("Combo.Use.Ignite") && target.IsValidTarget(600f) && IgniteDamage(target) >= target.Health)
             {
@@ -120,29 +144,15 @@ namespace ElRengarRevamped
         /// <param name="target"></param>
         private static void CastE(Obj_AI_Base target)
         {
-            try
+            if (!spells[Spells.E].IsReady() || !target.IsValidTarget(spells[Spells.E].Range))
             {
-                if (!spells[Spells.E].IsReady() || !target.IsValidTarget(spells[Spells.E].Range))
-                {
-                    return;
-                }
-
-                var pred = spells[Spells.E].GetPrediction(target);
-
-                if (Player.IsDashing())
-                {
-                    Utility.DelayAction.Add(300, () => spells[Spells.E].Cast(pred.CastPosition));
-                    return;
-                }
-
-                if (pred.Hitchance >= HitChance.High)
-                {
-                    spells[Spells.E].Cast(pred.CastPosition);
-                }
+                return;
             }
-            catch (Exception e)
+
+            var pred = spells[Spells.E].GetPrediction(target);
+            if (pred.Hitchance >= HitChance.High)
             {
-                Console.WriteLine(e);
+                spells[Spells.E].Cast(pred.CastPosition);
             }
         }
 
@@ -151,21 +161,14 @@ namespace ElRengarRevamped
         /// </summary>
         private static void CastW()
         {
-            try
+            if (!spells[Spells.W].IsReady())
             {
-                if (!spells[Spells.W].IsReady())
-                {
-                    return;
-                }
-
-                if (GetWHits().Item1 > 0)
-                {
-                    spells[Spells.W].Cast();
-                }
+                return;
             }
-            catch (Exception e)
+
+            if (GetWHits().Item1 > 0)
             {
-                Console.WriteLine(e);
+                spells[Spells.W].Cast();
             }
         }
 
@@ -200,11 +203,9 @@ namespace ElRengarRevamped
         public static void Harass()
         {
             // ReSharper disable once ConvertConditionalTernaryToNullCoalescing
-            var target = SFXTargetSelector.TargetSelector.Selected.Target != null
-                             ? SFXTargetSelector.TargetSelector.Selected.Target
-                             : TargetSelector.GetTarget(spells[Spells.Q].Range, DamageType.Physical);
-
-            
+            var target = TargetSelector.GetSelectedTarget() != null
+                             ? TargetSelector.GetSelectedTarget()
+                             : TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
 
             if (target.IsValidTarget() == false)
             {
@@ -338,56 +339,49 @@ namespace ElRengarRevamped
         /// </summary>
         public static void Laneclear()
         {
-            try
+            var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.W].Range).FirstOrDefault();
+            if (minion == null)
             {
-                var minion = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.W].Range).FirstOrDefault();
-                if (minion == null)
-                {
-                    return;
-                }
-
-                if (Player.Spellbook.IsAutoAttacking || Player.IsWindingUp)
-                {
-                    return;
-                }
-
-                if (Ferocity == 5 && IsActive("Clear.Save.Ferocity"))
-                {
-                    if (minion.IsValidTarget(spells[Spells.W].Range))
-                    {
-                        LaneItems(minion);
-                    }
-                    return;
-                }
-
-                if (IsActive("Clear.Use.Q") && spells[Spells.Q].IsReady()
-                    && minion.IsValidTarget(spells[Spells.Q].Range))
-                {
-                    spells[Spells.Q].Cast();
-                }
-
-                LaneItems(minion);
-
-                if (IsActive("Clear.Use.W") && spells[Spells.W].IsReady()
-                    && minion.IsValidTarget(spells[Spells.W].Range))
-                {
-                    spells[Spells.W].Cast();
-                }
-
-                if (IsActive("Clear.Use.E") && spells[Spells.E].IsReady()
-                    && minion.IsValidTarget(spells[Spells.E].Range))
-                {
-                    if (Ferocity == 5)
-                    {
-                        return;
-                    }
-
-                    spells[Spells.E].Cast(minion.Position);
-                }
+                return;
             }
-            catch (Exception e)
+
+            if (Player.Spellbook.IsAutoAttacking || Player.IsWindingUp)
             {
-                Console.WriteLine(e);
+                return;
+            }
+
+            if (Ferocity == 5 && IsActive("Clear.Save.Ferocity"))
+            {
+                if (minion.IsValidTarget(spells[Spells.W].Range))
+                {
+                    LaneItems(minion);
+                }
+                return;
+            }
+
+            if (IsActive("Clear.Use.Q") && spells[Spells.Q].IsReady()
+                && minion.IsValidTarget(spells[Spells.Q].Range))
+            {
+                spells[Spells.Q].Cast();
+            }
+
+            LaneItems(minion);
+
+            if (IsActive("Clear.Use.W") && spells[Spells.W].IsReady()
+                && minion.IsValidTarget(spells[Spells.W].Range))
+            {
+                spells[Spells.W].Cast();
+            }
+
+            if (IsActive("Clear.Use.E") && spells[Spells.E].IsReady()
+                && minion.IsValidTarget(spells[Spells.E].Range))
+            {
+                if (Ferocity == 5)
+                {
+                    return;
+                }
+
+                spells[Spells.E].Cast(minion.Position);
             }
         }
 

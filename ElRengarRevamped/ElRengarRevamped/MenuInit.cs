@@ -1,7 +1,6 @@
 ﻿namespace ElRengarRevamped
 {
     using LeagueSharp.Common;
-    using TargetSelector = SFXTargetSelector.TargetSelector;
 
     // ReSharper disable once ClassNeverInstantiated.Global
     public class MenuInit
@@ -114,7 +113,7 @@
             }
 
             Menu.AddItem(new MenuItem("sep1", ""));
-            Menu.AddItem(new MenuItem("sep2", string.Format("Version: {0}", Standards.ScriptVersion)));
+            Menu.AddItem(new MenuItem("sep2", $"Version: {Standards.ScriptVersion}"));
             Menu.AddItem(new MenuItem("sep3", "Made By jQuery"));
 
             Menu.AddToMainMenu();

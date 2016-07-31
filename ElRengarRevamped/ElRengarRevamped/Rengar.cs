@@ -8,8 +8,6 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    using TargetSelector = SFXTargetSelector.TargetSelector;
-
     public enum Spells
     {
         Q,
@@ -34,13 +32,13 @@
     
         public static void OnLoad(EventArgs args)
         {
-            if (Player.ChampionName != "Rengar")
-            {
-                return;
-            }
-
             try
             {
+                if (Player.ChampionName != "Rengar")
+                {
+                    return;
+                }
+
                 Youmuu = new Items.Item(3142, 0f);
 
                 Ignite = Player.GetSpellSlot("summonerdot");
@@ -70,109 +68,75 @@
 
         private static void AfterAttack(AttackableUnit unit, AttackableUnit target)
         {
-            try
+            var enemy = target as Obj_AI_Base;
+            if (!unit.IsMe || enemy == null || !(target is Obj_AI_Hero))
             {
-                var enemy = target as Obj_AI_Base;
-                if (!unit.IsMe || enemy == null || !(target is Obj_AI_Hero))
-                {
-                    return;
-                }
-
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
-                    || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
-                {
-                    if (Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
-                    {
-                        spells[Spells.Q].Cast();
-                        ActiveModes.CastItems(enemy);
-                    }
-                }
+                return;
             }
-            catch (Exception e)
+
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
+                || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
             {
-                Console.WriteLine(e);
+                if (Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
+                {
+                    spells[Spells.Q].Cast();
+                    ActiveModes.CastItems(enemy);
+                }
             }
         }
 
         private static void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            try
+            if (!IsActive("Combo.Use.QQ"))
             {
-                if (!IsActive("Combo.Use.QQ"))
-                {
-                    return;
-                }
-
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !HasPassive && spells[Spells.Q].IsReady()
-                    && !(IsListActive("Combo.Prio").SelectedIndex == 0
-                         || IsListActive("Combo.Prio").SelectedIndex == 1 && Ferocity == 5))
-                {
-
-                    var targets = TargetSelector.GetTargets(
-                                Orbwalking.GetRealAutoAttackRange(null) * 1.25f, DamageType.Physical);
-                    if (targets != null)
-                    {
-                        var target = targets.FirstOrDefault(Orbwalking.InAutoAttackRange);
-                        if (target != null)
-                        {
-                            Orbwalker.ForceTarget(target);
-                            args.Process = false;
-                            spells[Spells.Q].Cast();
-                        }
-                    }
-                }
+                return;
             }
-            catch (Exception e)
+
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && !HasPassive && spells[Spells.Q].IsReady()
+                && !(IsListActive("Combo.Prio").SelectedIndex == 0
+                     || IsListActive("Combo.Prio").SelectedIndex == 1 && Ferocity == 5))
             {
-                Console.WriteLine(e);
+                if (Player.CountEnemiesInRange(Player.AttackRange + Player.BoundingRadius + 100) != 0)
+                {
+                    args.Process = false;
+                    spells[Spells.Q].Cast();
+                }
             }
         }
 
         private static void Heal()
         {
-            try
+            if (RengarR || Player.IsRecalling() || Player.InFountain() || Ferocity != 5)
             {
-                if (RengarR || Player.IsRecalling() || Player.InFountain() || Ferocity != 5)
-                {
-                    return;
-                }
-
-                if (Player.CountEnemiesInRange(1000) > 1 && spells[Spells.W].IsReady())
-                {
-                    if (IsActive("Heal.AutoHeal")
-                        && (Player.Health / Player.MaxHealth) * 100
-                        <= MenuInit.Menu.Item("Heal.HP").GetValue<Slider>().Value)
-                    {
-                        spells[Spells.W].Cast();
-                    }
-                }
+                return;
             }
-            catch (Exception e)
+
+            if (Player.CountEnemiesInRange(1000) > 1 && spells[Spells.W].IsReady())
             {
-                Console.WriteLine(e);
+                if (IsActive("Heal.AutoHeal")
+                    && (Player.Health / Player.MaxHealth) * 100
+                    <= MenuInit.Menu.Item("Heal.HP").GetValue<Slider>().Value)
+                {
+                    spells[Spells.W].Cast();
+                }
             }
         }
 
         private static void KillstealHandler()
         {
-            try
+            if (!IsActive("Killsteal.On") || Player.IsRecalling())
             {
-                if (!IsActive("Killsteal.On") || Player.IsRecalling())
-                {
-                    return;
-                }
+                return;
+            }
 
-                var target = Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.E].Range));
-                if (target == null)
-                {
-                    return;
-                }
+            var target = Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.E].Range));
+            if (target == null)
+            {
+                return;
+            }
 
-                if (RengarR)
-                {
-                    return;
-                }
-
+            if (!RengarR)
+            {
                 if (spells[Spells.W].GetDamage(target) > target.Health && target.IsValidTarget(spells[Spells.W].Range))
                 {
                     spells[Spells.W].Cast();
@@ -187,32 +151,31 @@
                     }
                 }
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
         }
 
         private static void OnDash(Obj_AI_Base sender, Dash.DashItem args)
         {
-            try
+            if (!sender.IsMe)
             {
-                if (!sender.IsMe || Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
-                {
-                    return;
-                }
+                return;
+            }
 
-                var target = TargetSelector.GetTarget(1500f, DamageType.Physical);
-                if (!target.IsValidTarget())
-                {
-                    return;
-                }
+            var target = TargetSelector.GetTarget(1500f, TargetSelector.DamageType.Physical);
+            if (!target.IsValidTarget())
+            {
+                return;
+            }
 
-                if (!RengarR)
-                {
-                    ActiveModes.CastItems(target);
-                }
+            if (!RengarR)
+            {
+                ActiveModes.CastItems(target);
+            }
 
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
+                || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+            {
+                Orbwalking.Orbwalk(target ?? null, Game.CursorPos);
+                Console.WriteLine("Force walk after jump!");
                 if (Ferocity == 5)
                 {
                     switch (IsListActive("Combo.Prio").SelectedIndex)
@@ -222,14 +185,14 @@
                             {
                                 var targetE = TargetSelector.GetTarget(
                                     spells[Spells.E].Range,
-                                    DamageType.Physical);
+                                    TargetSelector.DamageType.Physical);
 
                                 if (targetE.IsValidTarget())
                                 {
                                     var pred = spells[Spells.E].GetPrediction(targetE);
                                     if (pred.Hitchance >= HitChance.High)
                                     {
-                                        Utility.DelayAction.Add(300, () => spells[Spells.E].Cast(pred.CastPosition));
+                                        Utility.DelayAction.Add(300, () => spells[Spells.E].Cast(target));
                                     }
                                 }
                             }
@@ -251,13 +214,13 @@
                         {
                             var targetE = TargetSelector.GetTarget(
                                 spells[Spells.E].Range,
-                                DamageType.Physical);
+                                TargetSelector.DamageType.Physical);
                             if (targetE.IsValidTarget(spells[Spells.E].Range))
                             {
                                 var pred = spells[Spells.E].GetPrediction(targetE);
-                                if (pred.Hitchance >= HitChance.Medium)
+                                if (pred.Hitchance >= HitChance.VeryHigh)
                                 {
-                                    Utility.DelayAction.Add(300, () => spells[Spells.E].Cast(pred.CastPosition));
+                                    Utility.DelayAction.Add(300, () => spells[Spells.E].Cast(target));
                                 }
                             }
                         }
@@ -282,10 +245,6 @@
                         break;
                 }
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
         }
 
         private static void OnDraw(EventArgs args)
@@ -295,11 +254,8 @@
                 var drawW = MenuInit.Menu.Item("Misc.Drawings.W").GetValue<Circle>();
                 var drawE = MenuInit.Menu.Item("Misc.Drawings.E").GetValue<Circle>();
                 var drawExclamation = MenuInit.Menu.Item("Misc.Drawings.Exclamation").GetValue<Circle>();
-                //Exclamation mark
-
                 var drawSearchRange = MenuInit.Menu.Item("Beta.Search.Range").GetValue<Circle>();
                 var searchrange = MenuInit.Menu.Item("Beta.searchrange").GetValue<Slider>().Value;
-
                 var drawsearchrangeQ = MenuInit.Menu.Item("Beta.Search.QCastRange").GetValue<Circle>();
                 var searchrangeQCastRange = MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value;
 
@@ -383,11 +339,6 @@
         {
             try
             {
-                if (Player.IsDead)
-                {
-                    return;
-                }
-
                 if (IsActive("Misc.Drawings.Minimap") && spells[Spells.R].Level > 0)
                 {
                     Utility.DrawCircle(ObjectManager.Player.Position, spells[Spells.R].Range, Color.White, 1, 23, true);
@@ -401,110 +352,92 @@
 
         private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            try
+            if (!sender.IsMe)
             {
-                if (sender.IsMe)
-                {
-                    switch (args.SData.Name.ToLower())
-                    {
-                        case "RengarR":
-                            if (Items.HasItem(3142) && Items.CanUseItem(3142))
-                            {
-                                Utility.DelayAction.Add(2000, () => Items.UseItem(3142));
-                            }
-                            break;
-                    }
-                }
+                return;
             }
-            catch (Exception e)
+
+            if (args.SData.Name.Equals("rengarr", StringComparison.InvariantCultureIgnoreCase))
             {
-                Console.WriteLine(e);
+                if (Items.HasItem(3142) && Items.CanUseItem(3142))
+                {
+                    Utility.DelayAction.Add(2000, () => Items.UseItem(3142));
+                }
             }
         }
 
         private static void OnUpdate(EventArgs args)
         {
-            try
+            if (Player.IsDead)
             {
-                if (Player.IsDead)
+                return;
+            }
+
+            switch (Orbwalker.ActiveMode)
+            {
+                case Orbwalking.OrbwalkingMode.Combo:
+                    ActiveModes.Combo();
+                    break;
+
+                case Orbwalking.OrbwalkingMode.LaneClear:
+                    ActiveModes.Laneclear();
+                    ActiveModes.Jungleclear();
+                    break;
+
+                case Orbwalking.OrbwalkingMode.Mixed:
+                    ActiveModes.Harass();
+                    break;
+            }
+
+            SwitchCombo();
+            Heal();
+            KillstealHandler();
+
+            // E on Immobile targets
+            if (IsActive("Misc.Root") && spells[Spells.E].IsReady())
+            {
+                if (!RengarR)
+                {
+                    var target = HeroManager.Enemies.FirstOrDefault(h => h.IsValidTarget(spells[Spells.E].Range));
+                    if (target != null)
+                    {
+                        if (Ferocity == 5)
+                        {
+                            spells[Spells.E].CastIfHitchanceEquals(target, HitChance.Immobile);
+                        }
+                    }
+                }
+            }
+
+            if (IsActive("Beta.Cast.Q1") && IsListActive("Combo.Prio").SelectedIndex == 2)
+            {
+                if (Ferocity != 5)
                 {
                     return;
                 }
 
-                switch (Orbwalker.ActiveMode)
+                var searchrange = MenuInit.Menu.Item("Beta.searchrange").GetValue<Slider>().Value;
+                var target = HeroManager.Enemies.FirstOrDefault(h => h.IsValidTarget(searchrange, false));
+                if (!target.IsValidTarget())
                 {
-                    case Orbwalking.OrbwalkingMode.Combo:
-                        ActiveModes.Combo();
-                        break;
-
-                    case Orbwalking.OrbwalkingMode.LaneClear:
-                        ActiveModes.Laneclear();
-                        ActiveModes.Jungleclear();
-                        break;
-
-                    case Orbwalking.OrbwalkingMode.Mixed:
-                        ActiveModes.Harass();
-                        break;
+                    return;
                 }
 
-                SwitchCombo();
-                Heal();
-                KillstealHandler();
-
-                // E on Immobile targets
-                if (IsActive("Misc.Root") && spells[Spells.E].IsReady())
+                // Check if Rengar is in ultimate
+                if (RengarR)
                 {
-                    if (RengarR)
+                    // Check if the player distance <= than the set search range
+                    if (Player.Distance(target) <= MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value)
                     {
-                        return;
-                    }
-
-                    var target = HeroManager.Enemies.FirstOrDefault(h => h.IsValidTarget(spells[Spells.E].Range));
-                    if (target != null)
-                    {
-                        if (Ferocity != 5)
-                        {
-                            return;
-                        }
-
-                        spells[Spells.E].CastIfHitchanceEquals(target, HitChance.Immobile);
+                        // Cast Q with the set delay
+                        Utility.DelayAction.Add(
+                            MenuInit.Menu.Item("Beta.Cast.Q1.Delay").GetValue<Slider>().Value,
+                            () => spells[Spells.Q].Cast());
                     }
                 }
-
-                if (IsActive("Beta.Cast.Q1") && IsListActive("Combo.Prio").SelectedIndex == 2)
-                {
-                    if (Ferocity != 5)
-                    {
-                        return;
-                    }
-
-                    var searchrange = MenuInit.Menu.Item("Beta.searchrange").GetValue<Slider>().Value;
-                    var target = HeroManager.Enemies.FirstOrDefault(h => h.IsValidTarget(searchrange, false));
-                    if (!target.IsValidTarget())
-                    {
-                        return;
-                    }
-
-                    // Check if Rengar is in ultimate
-                    if (RengarR)
-                    {
-                        // Check if the player distance <= than the set search range
-                        if (Player.Distance(target) <= MenuInit.Menu.Item("Beta.searchrange.Q").GetValue<Slider>().Value)
-                        {
-                            // Cast Q with the set delay
-                            Utility.DelayAction.Add(
-                                MenuInit.Menu.Item("Beta.Cast.Q1.Delay").GetValue<Slider>().Value,
-                                () => spells[Spells.Q].Cast());
-                        }
-                    }
-                }
-
-                spells[Spells.R].Range = 1000 + spells[Spells.R].Level * 1000;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+
+            spells[Spells.R].Range = 1000 + spells[Spells.R].Level * 1000;
         }
 
         private static void SwitchCombo()
