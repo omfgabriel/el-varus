@@ -55,6 +55,7 @@
                 Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
                 Orbwalking.AfterAttack += AfterAttack;
                 Orbwalking.BeforeAttack += BeforeAttack;
+                //Obj_AI_Base.OnPlayAnimation += OnPlayAnimation;
             }
             catch (Exception e)
             {
@@ -65,6 +66,15 @@
         #endregion
 
         #region Methods
+
+        public static void OnPlayAnimation(Obj_AI_Base sender, GameObjectPlayAnimationEventArgs args)
+        {
+            if (sender.IsMe && args.Animation == "Spell5")
+            {
+                Console.WriteLine(args.Animation);
+            }
+        }
+
 
         private static void AfterAttack(AttackableUnit unit, AttackableUnit target)
         {

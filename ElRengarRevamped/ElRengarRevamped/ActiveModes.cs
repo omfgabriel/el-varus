@@ -10,7 +10,7 @@ namespace ElRengarRevamped
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class ActiveModes : Standards
+    internal class ActiveModes : Standards
     {
         #region Public Methods and Operators
 
