@@ -647,7 +647,7 @@ namespace ElUtilitySuite.Summoners
                                                 BuffType.Blind, BuffType.Charm, BuffType.Flee, BuffType.Slow,
                                                 BuffType.Polymorph, BuffType.Silence, BuffType.Snare,
                                                 BuffType.Stun, BuffType.Taunt, BuffType.Damage,
-                                                BuffType.CombatEnchancer
+                                                BuffType.CombatEnchancer, BuffType.Suppression
                                             },
                                     Priority = 0
                                 },
@@ -664,7 +664,7 @@ namespace ElUtilitySuite.Summoners
                                                 BuffType.Blind, BuffType.Charm, BuffType.Flee, BuffType.Slow,
                                                 BuffType.Polymorph, BuffType.Silence, BuffType.Snare,
                                                 BuffType.Stun, BuffType.Taunt, BuffType.Damage,
-                                                BuffType.CombatEnchancer
+                                                BuffType.CombatEnchancer, BuffType.Suppression
                                             },
                                     Priority = 0
                                 },
@@ -681,7 +681,7 @@ namespace ElUtilitySuite.Summoners
                                                 BuffType.Blind, BuffType.Charm, BuffType.Flee, BuffType.Slow,
                                                 BuffType.Polymorph, BuffType.Silence, BuffType.Snare,
                                                 BuffType.Stun, BuffType.Taunt, BuffType.Damage,
-                                                BuffType.CombatEnchancer
+                                                BuffType.CombatEnchancer, BuffType.Suppression
                                             },
                                     Priority = 0
                                 },
@@ -696,7 +696,7 @@ namespace ElUtilitySuite.Summoners
                                         new[]
                                             {
                                                 BuffType.Stun, BuffType.Snare, BuffType.Taunt, BuffType.Silence,
-                                                BuffType.Slow, BuffType.CombatEnchancer
+                                                BuffType.Slow, BuffType.CombatEnchancer, BuffType.Suppression
                                             },
                                     WorksOnAllies = true,
                                     Priority = 1
