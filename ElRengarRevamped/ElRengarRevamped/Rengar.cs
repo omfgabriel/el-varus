@@ -19,7 +19,7 @@
         R
     }
 
-    internal class Rengar : Standards
+   public class Rengar : Standards
     {
         #region Properties
 
