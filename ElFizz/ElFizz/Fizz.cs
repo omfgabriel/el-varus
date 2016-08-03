@@ -78,13 +78,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        private static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private static Obj_AI_Hero Player => ObjectManager.Player;
 
         /// <summary>
         ///     Gets or sets the Q spell
@@ -516,12 +510,6 @@
 
                             if (R.IsReady())
                             {
-                                if (Qkillable(target))
-                                {
-                                    Q.Cast(target);
-                                    return;
-                                }
-
                                 RCastLogic(target);
                             }
                         }
@@ -530,11 +518,11 @@
                     case 1:
                         if (R.IsReady())
                         {
-                            if (Qkillable(target))
+                            /*if (Qkillable(target))
                             {
                                 Q.Cast(target);
                                 return;
-                            }
+                            }*/
 
                             RCastLogic(target);
                         }
