@@ -262,13 +262,7 @@
         /// <value>
         ///     The SR map
         /// </value>
-        public static bool IsSummonersRift
-        {
-            get
-            {
-                return Game.MapId == GameMapId.SummonersRift;
-            }
-        }
+        public static bool IsSummonersRift => Game.MapId == GameMapId.SummonersRift;
 
         /// <summary>
         ///     Gets Twisted Treeline map
@@ -276,13 +270,7 @@
         /// <value>
         ///     The TT map
         /// </value>
-        public static bool IsTwistedTreeline
-        {
-            get
-            {
-                return Game.MapId == GameMapId.TwistedTreeline;
-            }
-        }
+        public static bool IsTwistedTreeline => Game.MapId == GameMapId.TwistedTreeline;
 
         /// <summary>
         ///     Gets the player.
@@ -290,13 +278,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        public static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        public static Obj_AI_Hero Player => ObjectManager.Player;
 
         /// <summary>
         ///     Gets the script Version
@@ -304,13 +286,7 @@
         /// <value>
         ///     The Script Version
         /// </value>
-        public static string ScriptVersion
-        {
-            get
-            {
-                return typeof(Entry).Assembly.GetName().Version.ToString();
-            }
-        }
+        public static string ScriptVersion => typeof(Entry).Assembly.GetName().Version.ToString();
 
         /// <summary>
         ///     Gets or sets the slot.
@@ -374,6 +350,7 @@
 
                 if (smiteSlot != null)
                 {
+                    Game.PrintChat("[00:00] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for a better and faster smite!");
                     SmiteSpell = new Spell(smiteSlot.Slot, 570f, TargetSelector.DamageType.True);
                     Drawing.OnDraw += OnDraw;
                     Game.OnUpdate += OnUpdate;
