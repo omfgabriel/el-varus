@@ -350,7 +350,7 @@
 
                 if (smiteSlot != null)
                 {
-                    Game.PrintChat("[00:00] <font color='#f9eb0b'>HEEEEEEY!</font> Use ElUtilitySuite for a better and faster smite!");
+                    Game.PrintChat("[00:00] <font color='#f9eb0b'>ElSmite:</font> Use ElUtilitySuite for a better and faster smite!");
                     SmiteSpell = new Spell(smiteSlot.Slot, 570f, TargetSelector.DamageType.True);
                     Drawing.OnDraw += OnDraw;
                     Game.OnUpdate += OnUpdate;
