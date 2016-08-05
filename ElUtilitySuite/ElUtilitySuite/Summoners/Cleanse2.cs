@@ -78,7 +78,7 @@
         /// <summary>
         ///     Long hair dont care
         /// </summary>
-        public static readonly List<string> TrueStandard = new List<string> { "Stun", "Charm", "Flee", "Fear", "Taunt", "Polymorph" };
+        public static readonly List<string> TrueStandard = new List<string> { "Stun", "Charm", "Flee", "Fear", "Taunt", "Polymorph", "Suppression" };
 
         /// <summary>
         ///     Credits to Exory
@@ -173,8 +173,6 @@
 
             Menu = new Menu("Cleanse/QSS", "BuffTypeStyleCleanser").SetFontStyle(FontStyle.Bold, Color.Red);
             {
-
-
                 var newCleanseMenu = Menu.SubMenu("Cleanse NEW").SetFontStyle(FontStyle.Bold, Color.Green);
 
                 newCleanseMenu.SubMenu("Humanizer Delay").AddItem(
@@ -207,7 +205,6 @@
                     newCleanseMenu.AddItem(new MenuItem($"3cleanseon{allies.ChampionName}", "Use for " + allies.ChampionName))
                         .SetValue(true);
                 }
-
 
                 Menu.AddItem(new MenuItem("Cleanse.Version", "Cleanse preference:"))
                     .SetValue(new StringList(new[] { "Old", "New", }, 1));
