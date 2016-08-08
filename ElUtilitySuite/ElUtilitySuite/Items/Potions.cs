@@ -117,7 +117,7 @@
             return
                 this.Items.Any(
                     potion => this.Player.Buffs.Any(
-                        b => b.Name.Equals(potion.BuffName, StringComparison.OrdinalIgnoreCase)));
+                        b => b.Name.Equals(potion.BuffName, StringComparison.InvariantCultureIgnoreCase)));
         }
 
         private void OnUpdate(EventArgs args)
@@ -125,7 +125,7 @@
             try
             {
                 if (!this.Menu.Item("Potions.Activated").IsActive() || this.Player.IsDead || this.Player.InFountain() || this.Player.Buffs.Any(
-                        b => b.Name.ToLower().Contains("Recall") || b.Name.ToLower().Contains("Teleport")))
+                        b => b.Name.ToLower().Contains("recall") || b.Name.ToLower().Contains("teleport")))
                 {
                     return;
                 }
