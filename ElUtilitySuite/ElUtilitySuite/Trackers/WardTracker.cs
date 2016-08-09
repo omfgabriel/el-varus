@@ -402,29 +402,25 @@
                 else
                 {
                     var wardObject = sender as Obj_AI_Base;
-                    if (wardObject != null && wardObject.IsValid && !wardObject.IsAlly)
+                    if(wardObject != null && wardObject.IsValid && !wardObject.IsAlly)
                     {
-                        var wardStructs = this._wardStructs;
-                        if (wardStructs != null)
+                        foreach (var ward in _wardStructs)
                         {
-                            foreach (var ward in wardStructs)
+                            if (wardObject.CharData.BaseSkinName.Equals(
+                                ward.ObjectBaseSkinName, StringComparison.OrdinalIgnoreCase))
                             {
-                                if (wardObject.CharData.BaseSkinName.Equals(
-                                    ward.ObjectBaseSkinName,
-                                    StringComparison.OrdinalIgnoreCase))
-                                {
-                                    this._wardObjects.RemoveAll(
-                                        w =>
-                                        w.Position.Distance(wardObject.Position) < 300 && ((int)Game.Time - w.StartT < 0.5));
-                                    var wObj = new WardObject(
-                                        ward,
-                                        new Vector3(wardObject.Position.X, wardObject.Position.Y, wardObject.Position.Z),
-                                        (int)(Game.Time - (int)(wardObject.MaxMana - wardObject.Mana)),
-                                        wardObject);
+                                _wardObjects.RemoveAll(
+                                    w =>
+                                        w.Position.Distance(wardObject.Position) < 300 &&
+                                        ((int)Game.Time - w.StartT < 0.5));
 
-                                    this.CheckDuplicateWards(wObj);
-                                    this._wardObjects.Add(wObj);
-                                }
+                                var wObj = new WardObject(
+                                    ward,
+                                    new Vector3(wardObject.Position.X, wardObject.Position.Y, wardObject.Position.Z),
+                                    (int)(Game.Time - (int)(wardObject.MaxMana - wardObject.Mana)), wardObject);
+
+                                CheckDuplicateWards(wObj);
+                                _wardObjects.Add(wObj);
                             }
                         }
                     }
