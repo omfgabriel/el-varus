@@ -429,8 +429,8 @@
                 foreach (var spell in slots.Select(x => enemy.GetSpell(x)).Where(x => x.Level > 0 && x.CooldownExpires > 0 
                 && x.CooldownExpires - Game.Time <= Countdown))
                 {
-                    if (spell.CooldownExpires - Game.Time <= -5
-                        && this.StartX + (int)((-(spell.CooldownExpires - Game.Time) - 5) * MoveRightSpeed)
+                    if (spell.CooldownExpires - Game.Time <= -3
+                        && this.StartX + (int)((-(spell.CooldownExpires - Game.Time) - 3) * MoveRightSpeed)
                         >= Drawing.Width + i * MoveRightSpeed)
                     {
                         continue;
@@ -448,9 +448,9 @@
                     var boxY = this.StartY - i * BoxSpacing - (i * BoxHeight);
                     var boxX = this.StartX;
 
-                    if (remainingTime <= -5)
+                    if (remainingTime <= -3)
                     {
-                        boxX += (int)((-remainingTime - 5) * MoveRightSpeed);
+                        boxX += (int)((-remainingTime - 3) * MoveRightSpeed);
                     }
 
                     var lineStart = new Vector2(boxX, boxY);
@@ -534,9 +534,9 @@
                 var boxY = this.StartY - i * BoxSpacing - (i * BoxHeight);
                 var boxX = this.StartX;
 
-                if (remainingTime <= -5)
+                if (remainingTime <= -3)
                 {
-                    boxX += (int)((-remainingTime - 5) * MoveRightSpeed);
+                    boxX += (int)((-remainingTime - 3) * MoveRightSpeed);
                 }
 
                 var lineStart = new Vector2(boxX, boxY);
@@ -615,8 +615,8 @@
         {
             this.Cards.RemoveAll(
                 x =>
-                x.EndTime - Game.Time <= -5
-                && this.StartX + (int)((-(x.EndTime - Game.Time) - 5) * MoveRightSpeed)
+                x.EndTime - Game.Time <= -3
+                && this.StartX + (int)((-(x.EndTime - Game.Time) - 3) * MoveRightSpeed)
                 >= Drawing.Width + this.Cards.Count * MoveRightSpeed);
         }
 
