@@ -130,6 +130,7 @@ namespace ElEasy.Plugins
                             new MenuItem("ElEasy.Katarina.Combo.R.Force.Count", "Force R when in range:").SetValue(
                                 new Slider(3, 0, 5)));
                     comboMenu.AddItem(new MenuItem("ElEasy.Katarina.Combo.Ignite", "Use Ignite").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("ElEasy.Katarina.R.Cancel", "Block movement").SetValue(true));
                 }
 
                 this.Menu.AddSubMenu(comboMenu);
@@ -257,9 +258,9 @@ namespace ElEasy.Plugins
         {
             try
             {
-                Console.WriteLine("Loaded Katarina");
                 Ignite = this.Player.GetSpellSlot("summonerdot");
                 spells[Spells.R].SetCharged("KatarinaR", "KatarinaR", 550, 550, 1.0f);
+                spells[Spells.Q].SetTargetted(400, 1400);
 
                 Game.OnUpdate += this.OnUpdate;
                 Drawing.OnDraw += this.OnDraw;
@@ -287,11 +288,6 @@ namespace ElEasy.Plugins
 
             spells[Spells.E].CastOnUnit(obj);
             wcasttime = Environment.TickCount;
-        }
-
-        private static bool KatarinaQ(Obj_AI_Base target)
-        {
-            return target.Buffs.Any(x => x.Name.Contains("katarinaqmark"));
         }
 
         private void CastE(Obj_AI_Base unit)
@@ -528,7 +524,7 @@ namespace ElEasy.Plugins
 
         private void Obj_AI_Hero_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
         {
-            if (sender.IsMe && Utils.GameTimeTickCount < rStart  && args.Order == GameObjectOrder.MoveTo)
+            if (sender.IsMe && this.HasRBuff() && Utils.GameTimeTickCount <= rStart && this.Menu.Item("ElEasy.Katarina.R.Cancel").IsActive())
             {
                 args.Process = false;
             }
