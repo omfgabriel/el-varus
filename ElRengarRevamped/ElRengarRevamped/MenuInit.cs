@@ -27,6 +27,7 @@
                 comboMenu.SubMenu("Summoner spells")
                     .AddItem(new MenuItem("Combo.Use.Ignite", "Use Ignite").SetValue(true));
 
+                comboMenu.SubMenu("Combo").AddItem(new MenuItem("Combo.Use.items", "Use Items").SetValue(true));
                 comboMenu.SubMenu("Combo").AddItem(new MenuItem("Combo.Use.Q", "Use Q").SetValue(true));
                 comboMenu.SubMenu("Combo").AddItem(new MenuItem("Combo.Use.W", "Use W").SetValue(true));
                 comboMenu.SubMenu("Combo").AddItem(new MenuItem("Combo.Use.E", "Use E").SetValue(true));

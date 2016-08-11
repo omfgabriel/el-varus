@@ -62,7 +62,7 @@ namespace ElRengarRevamped
                     }
                 }
 
-                CastItems(target);
+                //CastItems(target);
 
                 if (spells[Spells.W].IsReady() && IsActive("Combo.Use.W"))
                 {
@@ -246,7 +246,7 @@ namespace ElRengarRevamped
                     return;
                 }
 
-                CastItems(target);
+                //CastItems(target);
 
                 if (!HasPassive && IsActive("Harass.Use.E") && spells[Spells.E].IsReady())
                 {
