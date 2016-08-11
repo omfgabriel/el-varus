@@ -62,8 +62,6 @@ namespace ElRengarRevamped
                     }
                 }
 
-                //CastItems(target);
-
                 if (spells[Spells.W].IsReady() && IsActive("Combo.Use.W"))
                 {
                     CastW();
