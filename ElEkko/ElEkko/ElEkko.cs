@@ -58,13 +58,7 @@
 
         public static bool IsJumpPossible { get; set; }
 
-        public static string ScriptVersion
-        {
-            get
-            {
-                return typeof(ElEkko).Assembly.GetName().Version.ToString();
-            }
-        }
+        public static string ScriptVersion => typeof(ElEkko).Assembly.GetName().Version.ToString();
 
         public static GameObject Troy { get; set; }
 
@@ -72,13 +66,7 @@
 
         #region Properties
 
-        private static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private static Obj_AI_Hero Player => ObjectManager.Player;
 
         #endregion
 
