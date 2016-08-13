@@ -47,9 +47,8 @@
         {
             return this.Menu.Item("UseBotrkCombo").IsActive() && this.ComboModeActive
                    && (HeroManager.Enemies.Any(
-                       x =>
-                       x.HealthPercent < this.Menu.Item("BotrkEnemyHp").GetValue<Slider>().Value
-                       && x.Distance(this.Player) < 550)
+                       x => (x.Distance(this.Player) < 550) &&
+                       x.HealthPercent < this.Menu.Item("BotrkEnemyHp").GetValue<Slider>().Value)
                        || this.Player.HealthPercent < this.Menu.Item("BotrkMyHp").GetValue<Slider>().Value);
         }
 
