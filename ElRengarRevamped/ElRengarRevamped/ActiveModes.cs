@@ -150,7 +150,7 @@ namespace ElRengarRevamped
             var pred = spells[Spells.E].GetPrediction(target);
             if (pred.Hitchance >= HitChance.High)
             {
-                spells[Spells.E].Cast(pred.CastPosition);
+                spells[Spells.E].Cast(target);
             }
         }
 
@@ -323,7 +323,7 @@ namespace ElRengarRevamped
                         return;
                     }
 
-                    spells[Spells.E].Cast(minion.Position);
+                    spells[Spells.E].Cast(minion);
                 }
             }
             catch (Exception e)
@@ -389,7 +389,7 @@ namespace ElRengarRevamped
         /// <value>
         ///     Youmuus Ghostblade
         /// </value>
-        private static new Items.Item Youmuu => ItemData.Youmuus_Ghostblade.GetItem();
+        public static new Items.Item Youmuu => ItemData.Youmuus_Ghostblade.GetItem();
 
         /// <summary>
         ///     Gets Ravenous Hydra

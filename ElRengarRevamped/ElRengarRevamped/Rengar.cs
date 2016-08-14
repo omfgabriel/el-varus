@@ -3,14 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
     using LeagueSharp;
     using LeagueSharp.Common;
-
     using SharpDX;
 
     using Color = System.Drawing.Color;
-
     public enum Spells
     {
         Q,
@@ -37,12 +34,10 @@
         {
             try
             {
-                if (Player.ChampionName != "Rengar")
+                if (!Player.IsChampion("Rengar"))
                 {
                     return;
                 }
-
-                Youmuu = new Items.Item(3142, 0f);
 
                 Ignite = Player.GetSpellSlot("summonerdot");
                 Game.PrintChat(
@@ -121,12 +116,12 @@
 
         private static void Heal()
         {
-            if (RengarR || Player.IsRecalling() || Player.InFountain() || Ferocity != 5)
+            if (RengarR || Ferocity != 5 || Player.InFountain() || Player.Buffs.Any(b => b.Name.ToLower().Contains("recall") || b.Name.ToLower().Contains("teleport")))
             {
                 return;
             }
 
-            if (Player.CountEnemiesInRange(1000) > 1 && spells[Spells.W].IsReady())
+            if (Player.CountEnemiesInRange(1000) >= 1 && spells[Spells.W].IsReady())
             {
                 if (IsActive("Heal.AutoHeal")
                     && (Player.Health / Player.MaxHealth) * 100
@@ -371,9 +366,9 @@
 
             if (args.SData.Name.Equals("rengarr", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (Items.HasItem(3142) && Items.CanUseItem(3142))
+                if (ActiveModes.Youmuu.IsOwned() && ActiveModes.Youmuu.IsReady())
                 {
-                    Utility.DelayAction.Add(2000, () => Items.UseItem(3142));
+                    Utility.DelayAction.Add(2500, () => ActiveModes.Youmuu.Cast());
                 }
             }
         }

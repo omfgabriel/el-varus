@@ -40,10 +40,6 @@
 
         protected static SpellSlot Ignite;
 
-        protected static SpellSlot Smite;
-
-        protected static Items.Item Youmuu;
-
         #endregion
 
         #region Public Properties
@@ -64,11 +60,9 @@
 
         public static float IgniteDamage(Obj_AI_Hero target)
         {
-            if (Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
-            {
-                return 0f;
-            }
-            return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+            return Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready
+                       ? 0f
+                       : (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
         public static bool IsActive(string menuItem) => MenuInit.Menu.Item(menuItem).IsActive();
@@ -77,7 +71,7 @@
 
         #region Methods
 
-        protected static StringList IsListActive(string menuItem) => MenuInit.Menu.Item(menuItem).GetValue<StringList>();
+        public static StringList IsListActive(string menuItem) => MenuInit.Menu.Item(menuItem).GetValue<StringList>();
 
         #endregion
     }
