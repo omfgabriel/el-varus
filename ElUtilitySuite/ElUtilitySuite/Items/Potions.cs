@@ -122,28 +122,21 @@
 
         private void OnUpdate(EventArgs args)
         {
-            try
-            {
-                if (!this.Menu.Item("Potions.Activated").IsActive() || this.Player.IsDead || this.Player.InFountain() || this.Player.Buffs.Any(
+            if (!this.Menu.Item("Potions.Activated").IsActive() || this.Player.IsDead || this.Player.InFountain() || this.Player.Buffs.Any(
                         b => b.Name.ToLower().Contains("recall") || b.Name.ToLower().Contains("teleport")))
+            {
+                return;
+            }
+
+            if (this.Player.HealthPercent <= this.PlayerHp)
+            {
+                if (this.IsBuffActive())
                 {
                     return;
                 }
 
-                if (this.Player.HealthPercent < this.PlayerHp)
-                {
-                    if (this.IsBuffActive())
-                    {
-                        return;
-                    }
-
-                    var item = this.Items.Select(x => x.Item).FirstOrDefault(x => x.IsReady() && x.IsOwned());
-                    item?.Cast();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("An error occurred: '{0}'", e);
+                var item = this.Items.Select(x => x.Item).FirstOrDefault(x => x.IsReady() && x.IsOwned());
+                item?.Cast();
             }
         }
 

@@ -480,7 +480,6 @@
                     if (Qkillable(target))
                     {
                         Q.Cast(target);
-                        return;
                     }
 
                     RLogicKill();
@@ -518,12 +517,6 @@
                     case 1:
                         if (R.IsReady())
                         {
-                            /*if (Qkillable(target))
-                            {
-                                Q.Cast(target);
-                                return;
-                            }*/
-
                             RCastLogic(target);
                         }
 
