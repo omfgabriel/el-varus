@@ -1,5 +1,6 @@
 ﻿namespace ElUtilitySuite.Items.OffensiveItems
 {
+    using System;
     using System.Linq;
 
     using LeagueSharp;
@@ -35,8 +36,8 @@
         /// <returns></returns>
         public override bool ShouldUseItem()
         {
-            return this.Menu.Item("Tiamatcombo").IsActive() && this.ComboModeActive
-                   && HeroManager.Enemies.Any(x => x.IsValidTarget(385) && !x.IsDead && !x.IsZombie && !ObjectManager.Player.IsChampion("RekSai") || !ObjectManager.Player.IsChampion("Riven"));
+            return (!ObjectManager.Player.IsChampion("RekSai") || !ObjectManager.Player.IsChampion("Riven") && this.Menu.Item("Tiamatcombo").IsActive() && this.ComboModeActive
+                   && HeroManager.Enemies.Any(x => x.IsValidTarget(385) && !x.IsDead && !x.IsZombie));
 
         }
 
