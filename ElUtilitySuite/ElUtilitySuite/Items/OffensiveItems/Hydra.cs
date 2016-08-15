@@ -36,7 +36,7 @@
         public override bool ShouldUseItem()
         {
             return (!ObjectManager.Player.IsChampion("RekSai") || !ObjectManager.Player.IsChampion("Riven") && this.Menu.Item("Hydracombo").IsActive() && this.ComboModeActive
-                   && HeroManager.Enemies.Any(x => x.IsValidTarget(385) && !x.IsDead && !x.IsZombie);
+                   && HeroManager.Enemies.Any(x => x.IsValidTarget(385) && !x.IsDead && !x.IsZombie));
         }
 
         #endregion
