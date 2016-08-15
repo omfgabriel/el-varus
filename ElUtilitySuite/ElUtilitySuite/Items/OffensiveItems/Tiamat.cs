@@ -36,7 +36,7 @@
         public override bool ShouldUseItem()
         {
             return this.Menu.Item("Tiamatcombo").IsActive() && this.ComboModeActive
-                   && HeroManager.Enemies.Any(x => x.Distance(this.Player) < 385 && !x.IsDead && !x.IsZombie && !ObjectManager.Player.IsChampion("RekSai") || !ObjectManager.Player.IsChampion("Riven"));
+                   && HeroManager.Enemies.Any(x => x.IsValidTarget(385) && !x.IsDead && !x.IsZombie && !ObjectManager.Player.IsChampion("RekSai") || !ObjectManager.Player.IsChampion("Riven"));
 
         }
 
