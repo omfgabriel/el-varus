@@ -36,8 +36,8 @@
         /// <returns></returns>
         public override bool ShouldUseItem()
         {
-            return (!ObjectManager.Player.IsChampion("RekSai") || !ObjectManager.Player.IsChampion("Riven") && this.Menu.Item("Tiamatcombo").IsActive() && this.ComboModeActive
-                   && HeroManager.Enemies.Any(x => x.IsValidTarget(385) && !x.IsDead && !x.IsZombie));
+            return (!ObjectManager.Player.IsChampion("RekSai") || !ObjectManager.Player.IsChampion("Riven")) && this.Menu.Item("Tiamatcombo").IsActive() && this.ComboModeActive
+                   && HeroManager.Enemies.Any(x => x.IsValidTarget(385) && !x.IsDead && !x.IsZombie);
 
         }
 
