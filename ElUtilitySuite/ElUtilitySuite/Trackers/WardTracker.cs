@@ -437,7 +437,7 @@
             try
             {
                 var ward = sender as Obj_AI_Base;
-                if (ward != null && sender.Name.IndexOf("Ward", StringComparison.InvariantCultureIgnoreCase) != -1)
+                if (ward != null && sender.Name.ToLower().Contains("ward"))
                 {
                     this._wardObjects.RemoveAll(w => w.Object != null && w.Object.NetworkId == sender.NetworkId);
                     this._wardObjects.RemoveAll(
@@ -632,7 +632,7 @@
                 int startT,
                 Obj_AI_Base wardObject = null,
                 bool isFromMissile = false,
-                Vector3 startPosition = default(Vector3))
+                Vector3 startPosition = default(Vector3), Obj_AI_Base spellCaster = null)
             {
                 try
                 {
@@ -650,6 +650,7 @@
                             pos = startPosition;
                         }
                     }
+
                     this.IsFromMissile = isFromMissile;
                     this.Data = data;
                     this.Position = this.RealPosition(pos);
@@ -662,6 +663,15 @@
                                              ? startPosition
                                              : this.RealPosition(startPosition);
                     this.Object = wardObject;
+                    if (data.ObjectBaseSkinName.ToLower().Contains("yellowtrinket"))
+                    {
+                        var caster = spellCaster as Obj_AI_Hero;
+                        this.OverrideDuration = data.Duration +
+                                           (int)Math.Ceiling(caster != null && caster.IsValid
+                                               ? caster.Level
+                                               : Math.Min(18,
+                                                   GameObjects.EnemyHeroes.Select(e => e.Level).Average() + 1) * 3.5f);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -677,11 +687,10 @@
 
             public int EndTime
             {
-                get
-                {
-                    return this.StartT + this.Data.Duration;
-                }
+                get { return StartT + (OverrideDuration > 0 ? OverrideDuration : Data.Duration); }
             }
+
+            private int OverrideDuration { get; set; }
 
             public bool IsFromMissile { get; private set; }
 
