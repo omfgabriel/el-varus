@@ -34,7 +34,7 @@
         private readonly List<WardStruct> _wardStructs = new List<WardStruct>
         {
             new WardStruct( 60 * 1, 1100, "YellowTrinket", "TrinketTotemLvl1", WardType.Green),
-            new WardStruct( 60 * 1, 1100, "BlueTrinket", "TrinketOrbLvl3", WardType.Green),
+            new WardStruct( int.MaxValue, 1100, "BlueTrinket", "TrinketOrbLvl3", WardType.Green),
             new WardStruct( 60 * 2, 1100, "YellowTrinketUpgrade", "TrinketTotemLvl2", WardType.Green),
             new WardStruct( 60 * 3, 1100, "SightWard", "ItemGhostWard", WardType.Green),
             new WardStruct( 75 * 2, 1100, "SightWard", "SightWard", WardType.Green),
@@ -301,7 +301,7 @@
                             }
                         }
 
-                        if (ward.Data.Type == WardType.Green)
+                        if (ward.Data.Type == WardType.Green && !ward.Data.Duration.Equals(int.MaxValue))
                         {
                             this._text.DrawTextCentered(
                                 string.Format(
@@ -380,18 +380,12 @@
                                                 && ((int)Game.Time - w.StartT < 2)))
                                         {
                                             var wObj = new WardObject(
-                                                GetWardStructForInvisible(sPos, ePos),
-                                                new Vector3(
-                                                    ePos.X,
-                                                    ePos.Y,
-                                                    NavMesh.GetHeightForPosition(ePos.X, ePos.Y)),
-                                                (int)Game.Time,
-                                                null,
-                                                true,
-                                                new Vector3(
-                                                    sPos.X,
-                                                    sPos.Y,
-                                                    NavMesh.GetHeightForPosition(sPos.X, sPos.Y)));
+                                            GetWardStructForInvisible(sPos, ePos),
+                                            new Vector3(ePos.X, ePos.Y, NavMesh.GetHeightForPosition(ePos.X, ePos.Y)),
+                                            (int)Game.Time, null, true,
+                                            new Vector3(sPos.X, sPos.Y, NavMesh.GetHeightForPosition(sPos.X, sPos.Y)),
+                                            missile.SpellCaster);
+
                                             CheckDuplicateWards(wObj);
                                             _wardObjects.Add(wObj);
                                         }
@@ -470,7 +464,7 @@
 
                 this._wardObjects.RemoveAll(
                     w =>
-                    (w.EndTime <= Game.Time && w.Data.Duration != int.MaxValue)
+                    (w.Data.Duration != int.MaxValue && w.EndTime <= Game.Time)
                     || (w.Object != null && !w.Object.IsValid));
                 foreach (var hw in this._heroNoWards.ToArray())
                 {
