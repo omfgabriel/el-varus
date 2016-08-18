@@ -16,10 +16,10 @@
 
         private static readonly Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
                                                                        {
-                                                                           { Spells.Q, new Spell(SpellSlot.Q, 420) },
-                                                                           { Spells.W, new Spell(SpellSlot.W, 145) },
-                                                                           { Spells.E, new Spell(SpellSlot.E, 540) },
-                                                                           { Spells.R, new Spell(SpellSlot.R, 460) }
+                                                                           { Spells.Q, new Spell(SpellSlot.Q, 420 + ObjectManager.Player.BoundingRadius) },
+                                                                           { Spells.W, new Spell(SpellSlot.W, 145 + ObjectManager.Player.BoundingRadius) },
+                                                                           { Spells.E, new Spell(SpellSlot.E, 540 + ObjectManager.Player.BoundingRadius) },
+                                                                           { Spells.R, new Spell(SpellSlot.R, 460 + ObjectManager.Player.BoundingRadius) }
                                                                        };
 
         private static SpellSlot ignite;
@@ -301,7 +301,7 @@
         private void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValid)
+            if (!target.IsValidTarget())
             {
                 return;
             }
@@ -312,14 +312,12 @@
             var useR = this.Menu.Item("ElEasy.Darius.Combo.R").IsActive();
             var useI = this.Menu.Item("ElEasy.Darius.Combo.Ignite").IsActive();
 
-            if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target)
-                && !target.HasBuff("BlackShield") || !target.HasBuff("SivirShield") || !target.HasBuff("BansheesVeil")
-                || !target.HasBuff("ShroudofDarkness"))
+            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
                 spells[Spells.E].Cast(target);
             }
 
-            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 spells[Spells.Q].Cast();
             }
