@@ -93,7 +93,7 @@ namespace ElUtilitySuite.Trackers
                     new MenuItem("LastPosition.TimeFormat", "Time Format").SetValue(new StringList(new[] { "mm:ss", "ss" })));
                 ssMenu.AddItem(new MenuItem("LastPosition.FontSize", "Font Size").SetValue(new Slider(13, 3, 30)));
                 ssMenu.AddItem(new MenuItem("LastPosition.SSTimerOffset", "SS Timer Offset").SetValue(new Slider(5, 0, 20)));
-
+                ssMenu.AddItem(
                 ssMenu.AddItem(new MenuItem("LastPosition.SSTimer", "SS Timer").SetValue(false));
                 ssMenu.AddItem(new MenuItem("LastPosition.SSCircle", "SS Circle").SetValue(false));
                 ssMenu.AddItem(new MenuItem("LastPosition.Minimap", "Minimap").SetValue(true));
@@ -154,7 +154,7 @@ namespace ElUtilitySuite.Trackers
 
         #region Methods
 
-        private void DrawCircleMinimap(Vector3 center, float radius, Color color, int thickness = 5, int quality = 30)
+        private void DrawCircleMinimap(Vector3 center, float radius, System.Drawing.Color color, int thickness = 5, int quality = 30)
         {
             var sharpColor = new ColorBGRA(color.R, color.G, color.B, 255);
             var pointList = new List<Vector3>();
@@ -196,7 +196,7 @@ namespace ElUtilitySuite.Trackers
                 var minimap = this.Menu.Item("LastPosition.Minimap").IsActive();
                 var ssCircle = this.Menu.Item("LastPosition.SSCircle").IsActive();
                 var circleThickness = this.Menu.Item("LastPosition.CircleThickness").GetValue<Slider>().Value;
-                //var circleColor = this.Menu.Item("LastPosition.CircleColor").IsActive();
+                var circleColor = this.Menu.Item("LastPosition.CircleColor").GetValue<Circle>();
                 var totalSeconds = this.Menu.Item("LastPosition.TimeFormat").GetValue<StringList>().SelectedIndex == 1;
                 var timerOffset = this.Menu.Item("LastPosition.SSTimerOffset").GetValue<Slider>().Value;
                 var timer = this.Menu.Item("LastPosition.SSTimer").IsActive();
@@ -236,13 +236,13 @@ namespace ElUtilitySuite.Trackers
                                     Render.Circle.DrawCircle(
                                         pos,
                                         radius,
-                                        System.Drawing.Color.White,
+                                        circleColor.Color,
                                         circleThickness,
                                         true);
                                 }
                                 if (minimap)
                                 {
-                                    this.DrawCircleMinimap(pos, radius, Color.White, circleThickness);
+                                    this.DrawCircleMinimap(pos, radius, circleColor.Color, circleThickness);
                                 }
                             }
                         }

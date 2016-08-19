@@ -46,17 +46,15 @@
         /// </value>
         private static Font Font { get; set; }
 
-        #endregion
-
-        /// <summary>
-        ///     Gets the spacing between HUD elements
-        /// </summary>
-        private int HudSpacing => this.Menu.Item("HealthTracker.Spacing").GetValue<Slider>().Value;
-
         /// <summary>
         ///     Gets the right offset of the HUD elements
         /// </summary>
         private int HudOffsetRight => this.Menu.Item("HealthTracker.OffsetRight").GetValue<Slider>().Value;
+
+        /// <summary>
+        ///     Gets the right offset between text and healthbar
+        /// </summary>
+        private int HudOffsetText => this.Menu.Item("HealthTracker.OffsetText").GetValue<Slider>().Value;
 
         /// <summary>
         ///     Gets the top offset between the HUD elements
@@ -64,9 +62,11 @@
         private int HudOffsetTop => this.Menu.Item("HealthTracker.OffsetTop").GetValue<Slider>().Value;
 
         /// <summary>
-        ///     Gets the right offset between text and healthbar
+        ///     Gets the spacing between HUD elements
         /// </summary>
-        private int HudOffsetText => this.Menu.Item("HealthTracker.OffsetText").GetValue<Slider>().Value;
+        private int HudSpacing => this.Menu.Item("HealthTracker.Spacing").GetValue<Slider>().Value;
+
+        #endregion
 
         #region Public Methods and Operators
 
@@ -82,18 +82,24 @@
                            ? rootMenu.AddSubMenu(new Menu("Trackers", "Trackers"))
                            : rootMenu.Children.First(predicate);
 
-            var enemySidebarMenu = menu.AddSubMenu(new Menu("Enemy healthbars", "healthenemies"));
+            var enemySidebarMenu =
+                menu.AddSubMenu(new Menu("Health tracker", "healthenemies"))
+                    .SetFontStyle(FontStyle.Regular, SharpDX.Color.Chartreuse);
             {
                 enemySidebarMenu.AddItem(new MenuItem("DrawHealth_", "Activated").SetValue(true));
                 enemySidebarMenu.AddItem(new MenuItem("DrawHealth_percent", "Champion health %").SetValue(true));
-                enemySidebarMenu.AddItem(new MenuItem("HealthTracker.OffsetText", "Offset Text").SetValue(new Slider(30, 0, 100)));
-                enemySidebarMenu.AddItem(new MenuItem("HealthTracker.OffsetTop", "Offset Top").SetValue(new Slider(75, 0, 1500)));
-                enemySidebarMenu.AddItem(new MenuItem("HealthTracker.OffsetRight", "Offset Right").SetValue(new Slider(170, 0, 1500)));
-                enemySidebarMenu.AddItem( new MenuItem("HealthTracker.Spacing", "Spacing").SetValue(new Slider(10, 0, 30)));
+                enemySidebarMenu.AddItem(
+                    new MenuItem("HealthTracker.OffsetText", "Offset Text").SetValue(new Slider(30, 0, 100)));
+                enemySidebarMenu.AddItem(
+                    new MenuItem("HealthTracker.OffsetTop", "Offset Top").SetValue(new Slider(75, 0, 1500)));
+                enemySidebarMenu.AddItem(
+                    new MenuItem("HealthTracker.OffsetRight", "Offset Right").SetValue(new Slider(170, 0, 1500)));
+                enemySidebarMenu.AddItem(
+                    new MenuItem("HealthTracker.Spacing", "Spacing").SetValue(new Slider(10, 0, 30)));
                 enemySidebarMenu.AddItem(new MenuItem("FontSize", "Font size").SetValue(new Slider(15, 13, 30)));
 
                 enemySidebarMenu.AddItem(new MenuItem("Health.Version", "Display options: "))
-                  .SetValue(new StringList(new[] { "Compact", "Clean", }, 0));
+                    .SetValue(new StringList(new[] { "Compact", "Clean", }, 0));
             }
 
             this.Menu = menu;
@@ -142,28 +148,32 @@
                     champion = champion.Remove(7) + "...";
                 }
 
-
                 var championInfo = this.Menu.Item("DrawHealth_percent").IsActive()
-                    ? $"{champion} ({(int)hero.HealthPercent}%)"
+                                       ? $"{champion} ({(int)hero.HealthPercent}%)"
                                        : champion;
 
                 if (this.Menu.Item("Health.Version").GetValue<StringList>().SelectedIndex == 1)
                 {
-                    const int height = 25;
-
+                    const int Height = 25;
                     // Draws the rectangle
                     this.DrawRect(
                         Drawing.Width - this.HudOffsetRight,
                         this.HudOffsetTop + i,
                         200,
-                        height,
+                        Height,
                         1,
                         Color.FromArgb(175, 51, 55, 51));
 
-                    this.DrawRect(Drawing.Width - this.HudOffsetRight + 2, this.HudOffsetTop + i - (-2), hero.HealthPercent <= 0 ? 100 : (int)(hero.HealthPercent) * 2 - 4, height - 4, 1, hero.HealthPercent < 30 && hero.HealthPercent > 0
-                                ? Color.FromArgb(255, 230, 169, 14)
-                                : hero.HealthPercent <= 0
-                                      ? Color.FromArgb(255, 206, 20, 30)
+                        this.DrawRect(
+                            Drawing.Width - this.HudOffsetRight + 2,
+                            this.HudOffsetTop + i - (-2),
+                            hero.HealthPercent <= 0 ? 100 : (int)(hero.HealthPercent) * 2 - 4,
+                            Height - 4,
+                            1,
+                            hero.HealthPercent < 30 && hero.HealthPercent > 0
+                                ? Color.FromArgb(255, 250, 0, 23)
+                                : hero.HealthPercent < 50
+                                      ? Color.FromArgb(255, 230, 169, 14)
                                       : Color.FromArgb(255, 2, 157, 10));
 
                     // Draws the championnames
@@ -172,10 +182,12 @@
                         $"{champion} ({(int)hero.HealthPercent}%)",
                         (int)
                         ((Drawing.Width - this.HudOffsetRight
-                          - Font.MeasureText(null, $"{champion} ({(int)hero.HealthPercent}%)", FontDrawFlags.Center).Width) + 151),
+                          - Font.MeasureText(null, $"{champion} ({(int)hero.HealthPercent}%)", FontDrawFlags.Left).Width)
+                         + 140),
                         (int)
                         (this.HudOffsetTop + i + 13
-                         - Font.MeasureText(null, $"{champion} ({(int)hero.HealthPercent}%)", FontDrawFlags.Center).Height / 2f),
+                         - Font.MeasureText(null, $"{champion} ({(int)hero.HealthPercent}%)", FontDrawFlags.Left).Height
+                         / 2f),
                         new ColorBGRA(255, 255, 255, 175));
                 }
                 else
@@ -185,8 +197,11 @@
                         null,
                         championInfo,
                         (int)
-                        ((Drawing.Width - this.HudOffsetRight - this.HudOffsetText - Font.MeasureText(null, championInfo, FontDrawFlags.Left).Width)),
-                        (int)(this.HudOffsetTop + i + 4 - Font.MeasureText(null, championInfo, FontDrawFlags.Left).Height / 2f),
+                        ((Drawing.Width - this.HudOffsetRight - this.HudOffsetText
+                          - Font.MeasureText(null, championInfo, FontDrawFlags.Left).Width)),
+                        (int)
+                        (this.HudOffsetTop + i + 4
+                         - Font.MeasureText(null, championInfo, FontDrawFlags.Left).Height / 2f),
                         hero.HealthPercent > 0 ? new ColorBGRA(255, 255, 255, 255) : new ColorBGRA(244, 8, 8, 255));
 
                     // Draws the rectangle
@@ -205,10 +220,15 @@
                         hero.HealthPercent <= 0 ? 100 : (int)(hero.HealthPercent),
                         this.BarHeight,
                         1,
-                        hero.HealthPercent < 30 && hero.HealthPercent > 0 ? Color.FromArgb(255, 230, 169, 14) : hero.HealthPercent <= 0 ? Color.FromArgb(255, 206, 20, 30) : Color.FromArgb(255, 29, 201, 38));
+                        hero.HealthPercent < 30 && hero.HealthPercent > 0
+                            ? Color.FromArgb(255, 250, 0, 23)
+                            : hero.HealthPercent < 50
+                                  ? Color.FromArgb(255, 230, 169, 14)
+                                  : Color.FromArgb(255, 2, 157, 10));
                 }
 
-                i += 20f + (this.Menu.Item("Health.Version").GetValue<StringList>().SelectedIndex == 1 ? 5 : this.HudSpacing);
+                i += 20f
+                     + (this.Menu.Item("Health.Version").GetValue<StringList>().SelectedIndex == 1 ? 5 : this.HudSpacing);
             }
         }
 
