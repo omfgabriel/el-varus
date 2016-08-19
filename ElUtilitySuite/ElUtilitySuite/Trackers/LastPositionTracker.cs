@@ -94,6 +94,7 @@ namespace ElUtilitySuite.Trackers
                 ssMenu.AddItem(new MenuItem("LastPosition.FontSize", "Font Size").SetValue(new Slider(13, 3, 30)));
                 ssMenu.AddItem(new MenuItem("LastPosition.SSTimerOffset", "SS Timer Offset").SetValue(new Slider(5, 0, 20)));
                 ssMenu.AddItem(
+                   new MenuItem("LastPosition.CircleColor", "Circle Color").SetValue(new Circle(true, System.Drawing.Color.White)));
                 ssMenu.AddItem(new MenuItem("LastPosition.SSTimer", "SS Timer").SetValue(false));
                 ssMenu.AddItem(new MenuItem("LastPosition.SSCircle", "SS Circle").SetValue(false));
                 ssMenu.AddItem(new MenuItem("LastPosition.Minimap", "Minimap").SetValue(true));
