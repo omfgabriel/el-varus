@@ -746,14 +746,13 @@
                     }
                 }
 
-                if (!this.Menu.Item("Smite.Ammo").IsActive() || (this.Menu.Item("Smite.Ammo").IsActive() && this.Player.GetSpell(this.SmiteSpell.Slot).Ammo > 1))
+                if (!this.Menu.Item("Smite.Ammo").IsActive() || this.Menu.Item("Smite.Ammo").IsActive() && this.Player.GetSpell(this.SmiteSpell.Slot).Ammo > 1)
                 {
                     if (this.Menu.Item("ElSmite.Combo.Mode").GetValue<StringList>().SelectedIndex == 0
                         && this.Player.GetSpell(this.SmiteSpell.Slot)
-                               .Name.Equals("s5_summonersmiteduel", StringComparison.InvariantCultureIgnoreCase))
+                               .Name.Equals("s5_summonersmiteplayerganker", StringComparison.InvariantCultureIgnoreCase))
                     {
                         var kSableEnemy = HeroManager.Enemies.FirstOrDefault(hero => hero.IsValidTarget(SmiteRange) && this.SmiteSpell.GetDamage(hero) >= hero.Health);
-
                         if (kSableEnemy != null)
                         {
                             this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, kSableEnemy);
