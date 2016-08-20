@@ -746,6 +746,11 @@
                     }
                 }
 
+                if (this.Menu.Item("ElSmite.Combo.Mode").GetValue<StringList>().SelectedIndex == 2) //never
+                {
+                    return;
+                }
+
                 if (!this.Menu.Item("Smite.Ammo").IsActive() || this.Menu.Item("Smite.Ammo").IsActive() && this.Player.GetSpell(this.SmiteSpell.Slot).Ammo > 1)
                 {
                     if (this.Menu.Item("ElSmite.Combo.Mode").GetValue<StringList>().SelectedIndex == 0
