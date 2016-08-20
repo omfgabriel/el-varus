@@ -175,9 +175,6 @@
     <None Include="Resources\Corki.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Darius.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Diana.png" />
   </ItemGroup>
   <ItemGroup>
@@ -193,13 +190,7 @@
     <None Include="Resources\Elise.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Evelynn.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Ezreal.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\FiddleSticks.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fiora.png" />
@@ -269,9 +260,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Kayle.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Kennen.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Khazix.png" />
@@ -361,9 +349,6 @@
     <None Include="Resources\Quinn.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Rammus.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\RekSai.png" />
   </ItemGroup>
   <ItemGroup>
@@ -412,9 +397,6 @@
     <None Include="Resources\Soraka.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Swain.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Syndra.png" />
   </ItemGroup>
   <ItemGroup>
@@ -422,9 +404,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Talon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Taric.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Teemo.png" />
@@ -478,13 +457,7 @@
     <None Include="Resources\Volibear.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Warwick.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Xerath.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\XinZhao.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Yasuo.png" />
@@ -569,9 +542,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\WT_Pink.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Aurelionsol.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\CooldownNotifIcons\AbsoluteZero.png" />
@@ -690,6 +660,19 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\CooldownNotifIcons\Zacrebirthready.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AurelionSol.png" />
+    <None Include="Resources\Darius.png" />
+    <None Include="Resources\Evelynn.png" />
+    <None Include="Resources\FiddleSticks.png" />
+    <None Include="Resources\Kennen.png" />
+    <None Include="Resources\Kled.png" />
+    <None Include="Resources\Rammus.png" />
+    <None Include="Resources\Swain.png" />
+    <None Include="Resources\Taric.png" />
+    <None Include="Resources\Warwick.png" />
+    <None Include="Resources\XinZhao.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
