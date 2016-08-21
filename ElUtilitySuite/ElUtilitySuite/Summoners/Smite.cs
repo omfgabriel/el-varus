@@ -707,6 +707,8 @@
             }
         }
 
+
+
         /// <summary>
         ///     Fired when the game is updated.
         /// </summary>
@@ -746,7 +748,7 @@
                     }
                 }
 
-                if (this.Menu.Item("ElSmite.Combo.Mode").GetValue<StringList>().SelectedIndex == 2) //never
+                if (this.Menu.Item("ElSmite.Combo.Mode").GetValue<StringList>().SelectedIndex == 2)
                 {
                     return;
                 }
@@ -757,7 +759,7 @@
                         && this.Player.GetSpell(this.SmiteSpell.Slot)
                                .Name.Equals("s5_summonersmiteplayerganker", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        var kSableEnemy = HeroManager.Enemies.FirstOrDefault(hero => hero.IsValidTarget(SmiteRange) && this.SmiteSpell.GetDamage(hero) >= hero.Health);
+                        var kSableEnemy = HeroManager.Enemies.FirstOrDefault(hero => hero.IsValidTarget(SmiteRange) && hero.Health <= 20 + 8 * this.Player.Level);
                         if (kSableEnemy != null)
                         {
                             this.Player.Spellbook.CastSpell(this.SmiteSpell.Slot, kSableEnemy);
