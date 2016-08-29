@@ -192,9 +192,10 @@
 
 
                 newCleanseMenu.AddItem(new MenuItem("CleanseEnabled.Health", "Cleanse on health").SetValue(false));
-                newCleanseMenu.AddItem(new MenuItem("Cleanse.HealthPercent", "Cleanse when HP <=").SetValue(new Slider(75, 0, 100)));
+                newCleanseMenu.AddItem(new MenuItem("Cleanse.HealthPercent", "Cleanse when HP <=").SetValue(new Slider(75)));
 
-                newCleanseMenu.AddItem(new MenuItem("CleanseEnabled", "Enabled").SetValue(true));
+                newCleanseMenu.AddItem(new MenuItem("CleanseEnabled", "Enabled").SetValue(true))
+                    .SetTooltip("Settings also apply on mikael's crucible.");
                 newCleanseMenu.AddItem(new MenuItem("sep-112-cleanse", "Settings:"))
                     .SetFontStyle(FontStyle.Bold, Color.GreenYellow)
                     .SetTooltip("Counts for QSS and Mikaels usage");
@@ -202,7 +203,7 @@
 
                 foreach (var allies in HeroManager.Allies)
                 {
-                    newCleanseMenu.AddItem(new MenuItem($"3cleanseon{allies.ChampionName}", "Use for " + allies.ChampionName))
+                    newCleanseMenu.AddItem(new MenuItem($"3cleanseon{allies.ChampionName}", "Use on " + allies.ChampionName))
                         .SetValue(true);
                 }
 
@@ -383,9 +384,7 @@
                     {
                         continue;
                     }
-
-                    Console.WriteLine($"Casted bufftype: {buff.Type} by {buff.Caster.Name} - {buff.Name}");
-
+    
                     this.BuffIndexesHandled[ally.NetworkId].Add(buff.Index);
 
                     if (Menu.Item("HumanizerEnabled").IsActive())

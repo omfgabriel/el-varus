@@ -814,7 +814,8 @@ namespace ElUtilitySuite.Summoners
 
                 cleanseOldMenu.AddItem(new MenuItem("CleanseActivatedHumanize", "Use humanizer")
                    .SetValue(false)).SetTooltip("This can cause QSS to cast late! (Keep this disabled)", Color.Pink);
-                cleanseOldMenu.AddItem(new MenuItem("CleanseActivated", "Use Cleanse").SetValue(true));
+                cleanseOldMenu.AddItem(new MenuItem("CleanseActivated", "Use Cleanse").SetValue(true))
+                    .SetTooltip("Settings also apply on mikael's crucible.");
                 cleanseOldMenu.AddItem(new MenuItem("seperator211", ""));
                 foreach (var x in HeroManager.Allies)
                 {

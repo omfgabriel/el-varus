@@ -71,12 +71,13 @@
 
             var exhaustMenu = menu.AddSubMenu(new Menu("Exhaust", "Exhaust"));
             {
-                exhaustMenu.AddItem(new MenuItem("Exhaust.Activated", "Exhaust activated").SetValue(false));
+                exhaustMenu.AddItem(new MenuItem("Exhaust.Activated", "Exhaust activated").SetValue(false))
+                    .SetTooltip("Will only exhaust on dangerous spells.");
                 exhaustMenu.AddItem(new MenuItem("blank_line3000", ""));
                 foreach (var x in HeroManager.Enemies)
                 {
                     exhaustMenu.AddItem(
-                        new MenuItem($"exhauston{x.CharData.BaseSkinName}", "Use for " + x.ChampionName)).SetValue(true);
+                        new MenuItem($"exhauston{x.CharData.BaseSkinName}", "Use on " + x.ChampionName)).SetValue(true);
                 }
             }
 
