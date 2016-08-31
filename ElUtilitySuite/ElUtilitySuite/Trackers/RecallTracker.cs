@@ -77,22 +77,6 @@ namespace ElUtilitySuite.Trackers
         #region Public Methods and Operators
 
         /// <summary>
-        ///     Gets or sets the start x.
-        /// </summary>
-        /// <value>
-        ///     The start x.
-        /// </value>
-        private int StartX => this.Menu.Item("3XPos").GetValue<Slider>().Value;
-
-        /// <summary>
-        ///     Gets or sets the start y.
-        /// </summary>
-        /// <value>
-        ///     The start y.
-        /// </value>
-        private int StartY => this.Menu.Item("4YPos").GetValue<Slider>().Value;
-
-        /// <summary>
         ///     Creates the menu.
         /// </summary>
         /// <param name="rootMenu">The root menu.</param>
@@ -113,13 +97,6 @@ namespace ElUtilitySuite.Trackers
                     new MenuItem("RecallTracker.OffsetBottom", "Offset bottom").SetValue(new Slider(52, 0, 1500)));
                 notificationsMenu.AddItem(
                     new MenuItem("RecallTracker.FontSize", "Font size").SetValue(new Slider(13, 13, 30)));
-
-                notificationsMenu.AddItem(
-                   new MenuItem("RecallTracker.FontSizex", "Font size").SetValue(new Slider(0, 0, 30)));
-
-                notificationsMenu.AddItem(
-                    new MenuItem("3XPos", "X Position").SetValue(new Slider(75, 0, Drawing.Width)));
-                notificationsMenu.AddItem(new MenuItem("4YPos", "Y Position").SetValue(new Slider(250, 0, Drawing.Height)));
             }
 
             this.Menu = menu;
@@ -128,7 +105,7 @@ namespace ElUtilitySuite.Trackers
         public void Load()
         {
             this.Heroes = ObjectManager.Get<Obj_AI_Hero>().ToList();
-            this.Enemies = HeroManager.AllHeroes.ToList(); //enemies
+            this.Enemies = HeroManager.Enemies.ToList();
 
             this.EnemyInfo = this.Enemies.Select(x => new EnemyInfo(x)).ToList();
             this.Map = Utility.Map.GetMap().Type;
@@ -142,19 +119,6 @@ namespace ElUtilitySuite.Trackers
                     Width = 6,
                     OutputPrecision = FontPrecision.Default,
                     Quality = FontQuality.Default
-                });
-
-
-
-            Font = new Font(
-                Drawing.Direct3DDevice,
-                new FontDescription
-                {
-                    FaceName = "Tahoma",
-                    Height = 16,
-                    Weight = FontWeight.Bold,
-                    OutputPrecision = FontPrecision.Default,
-                    Quality = FontQuality.Antialiased
                 });
 
             Obj_AI_Base.OnTeleport += this.Obj_AI_Base_OnTeleport;
@@ -174,14 +138,6 @@ namespace ElUtilitySuite.Trackers
             this.Text.Dispose();
         }
 
-        /// <summary>
-        ///     Gets or sets the font.
-        /// </summary>
-        /// <value>
-        ///     The font.
-        /// </value>
-        private static Font Font { get; set; }
-
         private void Drawing_OnDraw(EventArgs args)
         {
             if (!this.Menu.Item("showRecalls").GetValue<bool>() || Drawing.Direct3DDevice == null
@@ -190,53 +146,28 @@ namespace ElUtilitySuite.Trackers
                 return;
             }
 
-
             var indicated = false;
 
             var fadeout = 1f;
             var count = 0;
 
-            float i = 0;
-
             foreach (var enemyInfo in
                 this.EnemyInfo.Where(
                     x =>
-                    x.Player.IsValid<Obj_AI_Hero>() && !x.Player.IsDead && x.RecallInfo.GetRecallCountdown() > 0
-                   ).OrderBy(x => x.RecallInfo.GetRecallCountdown())) //  && x.RecallInfo.ShouldDraw() &&
-            { // 
-
-                /* recall */
-                const int height = 25;
-                string championInfo = $"{enemyInfo.Player.ChampionName} ({(int)enemyInfo.Player.HealthPercent})%";
-
-                this.DrawRect(
-                   Drawing.Width - StartX,
-                   StartY + i,
-                   200,
-                   height,
-                   1,
-                   Color.FromArgb(175, 51, 55, 51));
-
-                this.DrawRect(
-                    x: Drawing.Width - StartX + 2, 
-                    y: StartY + i - (-2), 
-                    width: (int)(enemyInfo.RecallInfo.GetRecallCountdown() / 80 - 1) * 2, 
-                    height: height - 4, 
-                    thickness: 1, 
-                    color: Color.FromArgb(255, 10, 144, 33));
-
-                Font.DrawText(
-                     null,
-                     championInfo,
-                     (int)
-                     ((Drawing.Width - StartX - Font.MeasureText(null, championInfo, FontDrawFlags.Center).Width) + 151),
-                     (int)(StartY + 12 + i - Font.MeasureText(null, championInfo, FontDrawFlags.Center).Height / 2f),
-                     new ColorBGRA(255, 255, 255, 175));
-
-
-                i += 20f + 5f;
-
-                /* recall */
+                    x.Player.IsValid<Obj_AI_Hero>() && x.RecallInfo.ShouldDraw() && !x.Player.IsDead
+                    && x.RecallInfo.GetRecallCountdown() > 0).OrderBy(x => x.RecallInfo.GetRecallCountdown()))
+            {
+                if (!indicated && (int)enemyInfo.RecallInfo.EstimatedShootT != 0)
+                {
+                    indicated = true;
+                    this.DrawRect(
+                        this.BarX + this.Scale * enemyInfo.RecallInfo.EstimatedShootT,
+                        this.BarY + this.SeperatorHeight + BarHeight - 3,
+                        0,
+                        this.SeperatorHeight * 2,
+                        2,
+                        Color.White);
+                }
 
                 this.DrawRect(
                     this.BarX,
@@ -296,7 +227,6 @@ namespace ElUtilitySuite.Trackers
                     1,
                     1,
                     Color.FromArgb((int)(255f * fadeout), Color.White));
-
                 this.DrawRect(
                     this.BarX - 1,
                     this.BarY + BarHeight,
@@ -304,7 +234,6 @@ namespace ElUtilitySuite.Trackers
                     1,
                     1,
                     Color.FromArgb((int)(255f * fadeout), Color.White));
-
                 this.DrawRect(
                     this.BarX + 1 + this.BarWidth,
                     this.BarY + 1,
@@ -323,14 +252,11 @@ namespace ElUtilitySuite.Trackers
             }
         }
 
-
-
-
         private void Obj_AI_Base_OnTeleport(GameObject sender, GameObjectTeleportEventArgs args)
         {
             var unit = sender as Obj_AI_Hero;
 
-            if (unit == null || !unit.IsValid) // || unit.IsAlly
+            if (unit == null || !unit.IsValid || unit.IsAlly)
             {
                 return;
             }
@@ -360,7 +286,6 @@ namespace ElUtilitySuite.Trackers
                                 enemyInfo.Player.ChampionName + ": Recall FINISHED",
                                 Color.White,
                                 4000);
-
                         }
 
                         break;
