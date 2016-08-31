@@ -75,6 +75,7 @@
             {
                 killstealMenu.AddItem(new MenuItem("Killsteal.On", "Active").SetValue(true));
                 killstealMenu.AddItem(new MenuItem("Killsteal.Use.W", "Use W").SetValue(true));
+                killstealMenu.AddItem(new MenuItem("Killsteal.Use.E", "Use E").SetValue(true));
             }
 
             var betaMenu = Menu.AddSubMenu(new Menu("Beta options", "BetaOptions"));

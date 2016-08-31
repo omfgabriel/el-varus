@@ -134,7 +134,12 @@
 
         private static void KillstealHandler()
         {
-            if (!IsActive("Killsteal.On") || Player.IsRecalling() || RengarR)
+            if (RengarR)
+            {
+                return;
+            }
+
+            if (!IsActive("Killsteal.On") || Player.IsRecalling())
             {
                 return;
             }
@@ -145,20 +150,17 @@
                 return;
             }
 
-            if (!RengarR)
+            if (IsActive("Killsteal.Use.W") && spells[Spells.W].GetDamage(target) > target.Health && target.IsValidTarget(spells[Spells.W].Range))
             {
-                if (spells[Spells.W].GetDamage(target) > target.Health && target.IsValidTarget(spells[Spells.W].Range))
-                {
-                    spells[Spells.W].Cast();
-                }
+                spells[Spells.W].Cast();
+            }
 
-                if (spells[Spells.E].GetDamage(target) > target.Health && target.IsValidTarget(spells[Spells.E].Range))
+            if (IsActive("Killsteal.Use.E") && spells[Spells.E].GetDamage(target) > target.Health && target.IsValidTarget(spells[Spells.E].Range))
+            {
+                var prediction = spells[Spells.E].GetPrediction(target);
+                if (prediction.Hitchance >= HitChance.VeryHigh)
                 {
-                    var prediction = spells[Spells.E].GetPrediction(target);
-                    if (prediction.Hitchance >= HitChance.VeryHigh)
-                    {
-                        spells[Spells.E].Cast(prediction.CastPosition);
-                    }
+                    spells[Spells.E].Cast(prediction.CastPosition);
                 }
             }
         }
