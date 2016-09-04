@@ -159,12 +159,6 @@
 
             _menu.AddSubMenu(miscMenu);
 
-            //Here comes the moneyyy, money, money, moneyyyy
-            var credits = new Menu("Credits", "jQuery");
-            credits.AddItem(new MenuItem("ElDiana.Paypal", "if you would like to donate via paypal:"));
-            credits.AddItem(new MenuItem("ElDiana.Email", "info@zavox.nl"));
-            _menu.AddSubMenu(credits);
-
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
             _menu.AddItem(new MenuItem("422442fsaafsf", string.Format("Version: {0}", Diana.ScriptVersion)));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
