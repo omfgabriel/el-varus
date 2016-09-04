@@ -90,11 +90,6 @@ namespace ElRumble
 
             _menu.AddSubMenu(miscMenu);
 
-            //Here comes the moneyyy, money, money, moneyyyy
-            var credits = _menu.AddSubMenu(new Menu("Credits", "jQuery"));
-            credits.AddItem(new MenuItem("ElRumble.Paypal", "if you would like to donate via paypal:"));
-            credits.AddItem(new MenuItem("ElRumble.Email", "info@zavox.nl"));
-
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
             _menu.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.0"));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
