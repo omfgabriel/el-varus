@@ -93,7 +93,7 @@
                 Drawing.OnDraw += OnDraw;
                 Interrupter2.OnInterruptableTarget += Interrupter_OnPosibleToInterrupt;
 
-                spells[Spells.Q].SetSkillshot(0.25f, 70f, 2000f, false, SkillshotType.SkillshotLine);
+                spells[Spells.Q].SetSkillshot(0.25f, 70f, 2000f, true, SkillshotType.SkillshotLine);
                 spells[Spells.W].SetSkillshot(1.35f, 225f, float.MaxValue, false, SkillshotType.SkillshotCircle);
                 spells[Spells.E].SetSkillshot(.8f, 350f, float.MaxValue, false, SkillshotType.SkillshotCircle);
                 spells[Spells.R].SetTargetted(0.25f, 1400);
@@ -160,14 +160,15 @@
                     }
                 }
 
-                var prediction = spells[Spells.Q].GetPrediction(target);
+                
 
                 if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target)
                     && MenuInit.IsActive("ElVeigar.Combo.Q"))
                 {
-                    if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
+                    var pred = spells[Spells.Q].GetPrediction(target);
+                    if (pred.Hitchance >= HitChance.High && pred.CollisionObjects.Count <= 0)
                     {
-                        spells[Spells.Q].Cast(target.Position);
+                        spells[Spells.Q].Cast(pred.CastPosition);
                     }
                 }
 
@@ -236,13 +237,13 @@
                             }
                         }
     
-                        var prediction = spells[Spells.Q].GetPrediction(target);
-
+                       
                         if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                         {
+                            var prediction = spells[Spells.Q].GetPrediction(target);
                             if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)
                             {
-                                spells[Spells.Q].Cast(target.Position);
+                                spells[Spells.Q].Cast(prediction.CastPosition);
                             }
                         }
                         break;
@@ -263,13 +264,13 @@
                         break;
 
                     case 2: // Q
-                        var predictionQ = spells[Spells.Q].GetPrediction(target);
-
+                       
                         if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                         {
+                            var predictionQ = spells[Spells.Q].GetPrediction(target);
                             if (predictionQ.Hitchance >= HitChance.High && predictionQ.CollisionObjects.Count == 0)
                             {
-                                spells[Spells.Q].Cast(target.Position);
+                                spells[Spells.Q].Cast(predictionQ.CastPosition);
                             }
                         }
                         break;
@@ -420,14 +421,15 @@
                     {
                         if (target.IsEnemy && target.IsValidTarget() && Player.Distance(target) < spells[Spells.W].Range)
                         {
-                            var predictionQ = spells[Spells.Q].GetPrediction(target);
+                            
                             if (spells[Spells.Q].GetDamage(target) > target.Health
                                 && MenuInit.IsActive("ElVeigar.Combo.KS.Q"))
                             {
+                                var predictionQ = spells[Spells.Q].GetPrediction(target);
                                 if (predictionQ.Hitchance >= HitChance.High && predictionQ.CollisionObjects.Count == 0
                                     && spells[Spells.Q].IsInRange(target))
                                 {
-                                    spells[Spells.Q].Cast(target.Position);
+                                    spells[Spells.Q].Cast(predictionQ.CastPosition);
                                 }
                             }
 
