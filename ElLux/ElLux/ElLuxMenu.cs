@@ -97,12 +97,6 @@
                 drawMenu.AddItem(new MenuItem("ElLux.Draw.R", "Draw R").SetValue(new Circle()));
             }
 
-            var credits = Menu.AddSubMenu(new Menu("Credits", "jQuery"));
-            {
-                credits.AddItem(new MenuItem("ElLux.Paypal", "if you would like to donate via paypal:"));
-                credits.AddItem(new MenuItem("ElLux.Email", "info@zavox.nl"));
-            }
-
             Menu.AddItem(new MenuItem("422442fssddsaafs4242f", ""));
             Menu.AddItem(new MenuItem("ElLux.Combo.Semi.R", "Semi-manual R").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
             Menu.AddItem(new MenuItem("ElLux.Combo.Semi.Q", "Semi-manual Q").SetValue(new KeyBind("Y".ToCharArray()[0], KeyBindType.Press)));
