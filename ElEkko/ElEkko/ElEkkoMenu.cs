@@ -114,11 +114,6 @@ namespace ElEkko
 
             _menu.AddSubMenu(miscMenu);
 
-            //Here comes the moneyyy, money, money, moneyyyy
-            var credits = _menu.AddSubMenu(new Menu("Credits", "jQuery"));
-            credits.AddItem(new MenuItem("ElRumble.Paypal", "if you would like to donate via paypal:"));
-            credits.AddItem(new MenuItem("ElRumble.Email", "info@zavox.nl"));
-
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
             _menu.AddItem(new MenuItem("422442fsaafsf", String.Format("Version: {0}", ElEkko.ScriptVersion)));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
