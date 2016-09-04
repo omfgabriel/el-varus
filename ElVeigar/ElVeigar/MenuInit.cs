@@ -126,11 +126,6 @@
                 }
             }
 
-            var credits = Menu.AddSubMenu(new Menu("Credits", "jQuery"));
-            {
-                credits.AddItem(new MenuItem("Paypal", "if you would like to donate via paypal:"));
-                credits.AddItem(new MenuItem("Email", "info@zavox.nl"));
-            }
 
             Menu.AddItem(new MenuItem("sep3", "Made By jQuery"));
             Menu.AddItem(new MenuItem("sep2", string.Format("Version: {0}", Entry.ScriptVersion)));
