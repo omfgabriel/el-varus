@@ -652,11 +652,6 @@ namespace ElKatarina
                 config.SubMenu("misc").AddItem(new MenuItem("autoIgnite", "Auto ignite when killable").SetValue(true));
             }
 
-            var credits = new Menu("Credits", "jQuery");
-            credits.AddItem(new MenuItem("ElKatarina.Paypal", "if you would like to donate via paypal:"));
-            credits.AddItem(new MenuItem("ElKatarina.Email", "info@zavox.nl"));
-            config.AddSubMenu(credits);
-
             config.AddItem(new MenuItem("422442fsaafs4242f", ""));
             config.AddItem(new MenuItem("422442fsaafsf", "Version: 1.0.0.9"));
             config.AddItem(new MenuItem("fsasfafsfsafsa", "Made By Jouza - jQuery "));
