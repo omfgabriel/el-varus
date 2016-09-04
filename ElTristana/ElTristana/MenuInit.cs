@@ -177,13 +177,6 @@ namespace ElTristana
 
             #region 
 
-            var credits = new Menu("Credits", "jQuery");
-            {
-                credits.AddItem(new MenuItem("ElTristana.Paypal", "if you would like to donate via paypal:"));
-                credits.AddItem(new MenuItem("ElTristana.Email", "info@zavox.nl"));
-            }
-            Menu.AddSubMenu(credits);
-
             Menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
             Menu.AddItem(
                 new MenuItem("422442fsaafsf", ($"ElTristana by jQuery v{Tristana.ScriptVersion}")));
