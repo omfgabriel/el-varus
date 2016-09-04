@@ -101,13 +101,6 @@
 
             Menu.AddSubMenu(miscMenu);
 
-            var credits = new Menu("Credits", "jQuery");
-            {
-                credits.AddItem(new MenuItem("ElNamiReborn.Paypal", "if you would like to donate via paypal:"));
-                credits.AddItem(new MenuItem("ElNamiReborn.Email", "info@zavox.nl"));
-            }
-            Menu.AddSubMenu(credits);
-
             Menu.AddItem(new MenuItem("sep2", ""));
             Menu.AddItem(new MenuItem("sep3", "Version: 1.0.0.2"));
             Menu.AddItem(new MenuItem("sep4", "Made By jQuery"));
