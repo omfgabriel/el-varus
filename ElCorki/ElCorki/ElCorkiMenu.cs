@@ -124,7 +124,7 @@
 
             _menu.AddItem(new MenuItem("422442fsaafs4242f", ""));
 
-            _menu.AddItem(new MenuItem("422442fsaafsf", (string.Format("ElCorki by jQuery v{0}", ScriptVersion))));
+            _menu.AddItem(new MenuItem("422442fsaafsf", ($"ElCorki by jQuery v{ScriptVersion}")));
             _menu.AddItem(new MenuItem("fsasfafsfsafsa", "Made By jQuery"));
 
             _menu.AddToMainMenu();
