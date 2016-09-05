@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
 
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -48,33 +47,85 @@
 
         #region Public Properties
 
-        public static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        public static Obj_AI_Hero Player => ObjectManager.Player;
 
-        public static string ScriptVersion
-        {
-            get
-            {
-                return typeof(ElVeigar).Assembly.GetName().Version.ToString();
-            }
-        }
+        public static string ScriptVersion => typeof(ElVeigar).Assembly.GetName().Version.ToString();
 
         #endregion
 
         #region Public Methods and Operators
 
-        private static float IgniteDamage(Obj_AI_Hero target)
+        public static void CastE(Obj_AI_Base target)
         {
+            var pred = Prediction.GetPrediction(target, spells[Spells.E].Delay);
+            var castVec = pred.UnitPosition.To2D()
+                          - Vector2.Normalize(pred.UnitPosition.To2D() - Player.Position.To2D())
+                          * spells[Spells.E].Width;
+
+            if (pred.Hitchance >= HitChance.High && spells[Spells.E].IsReady())
+            {
+                spells[Spells.E].Cast(castVec);
+            }
+        }
+
+        public static void CastE(Obj_AI_Hero target)
+        {
+            var pred = Prediction.GetPrediction(target, spells[Spells.E].Delay);
+            var castVec = pred.UnitPosition.To2D()
+                          - Vector2.Normalize(pred.UnitPosition.To2D() - Player.Position.To2D())
+                          * spells[Spells.E].Width;
+
+            if (pred.Hitchance >= HitChance.VeryHigh && spells[Spells.E].IsReady())
+            {
+                spells[Spells.E].Cast(castVec);
+            }
+        }
+
+        public static void CastE(Vector3 pos)
+        {
+            var castVec = pos.To2D() - Vector2.Normalize(pos.To2D() - Player.Position.To2D()) * spells[Spells.E].Width;
+
+            if (spells[Spells.E].IsReady())
+            {
+                spells[Spells.E].Cast(castVec);
+            }
+        }
+
+        public static void CastE(Vector2 pos)
+        {
+            var castVec = pos;
+
+            if (spells[Spells.E].IsReady())
+            {
+                spells[Spells.E].Cast(castVec);
+            }
+        }
+
+        public static float GetComboDamage(Obj_AI_Base enemy)
+        {
+            float damage = 0;
+
+            if (spells[Spells.Q].IsReady())
+            {
+                damage += spells[Spells.Q].GetDamage(enemy);
+            }
+
+            if (spells[Spells.W].IsReady())
+            {
+                damage += spells[Spells.W].GetDamage(enemy);
+            }
+
+            if (spells[Spells.R].IsReady())
+            {
+                damage += spells[Spells.R].GetDamage(enemy);
+            }
+
             if (Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
             {
-                return 0f;
+                damage += (float)Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
             }
-            return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+
+            return damage;
         }
 
         public static void OnLoad(EventArgs args)
@@ -87,7 +138,7 @@
                 }
 
                 Ignite = Player.GetSpellSlot("summonerdot");
-                Notifications.AddNotification(string.Format("ElVeigar by jQuery v{0}", ScriptVersion), 10000);
+                Notifications.AddNotification($"ElVeigar by jQuery v{ScriptVersion}", 10000);
                 MenuInit.Initialize();
                 Game.OnUpdate += OnUpdate;
                 Drawing.OnDraw += OnDraw;
@@ -125,29 +176,19 @@
             }
         }
 
-        private static float ComboDamage(this Obj_AI_Base target)
-        {
-            return 0;
-        }
-
-        // Later, :cat_lazy: atm.
-        private static void ComboModes(this Obj_AI_Base target)
-        {
-        }
-
         private static void DoCombo()
         {
             try
             {
-                var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
-                if (target == null || !target.IsValidTarget())
+                var target = TargetSelector.GetTarget(spells[Spells.E].Range + 200, TargetSelector.DamageType.Magical);
+                if (!target.IsValidTarget())
                 {
                     return;
                 }
 
                 if (spells[Spells.E].IsReady() && MenuInit.IsActive("ElVeigar.Combo.E"))
                 {
-                    if (Player.Distance(target.Position) <= spells[Spells.E].Range)
+                    if (Player.Distance(target.Position) <= spells[Spells.E].Range + 200)
                     {
                         var predE = spells[Spells.E].GetPrediction(target);
                         if (spells[Spells.E].IsReady() && predE.Hitchance == HitChance.VeryHigh)
@@ -159,8 +200,6 @@
                         }
                     }
                 }
-
-                
 
                 if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target)
                     && MenuInit.IsActive("ElVeigar.Combo.Q"))
@@ -225,7 +264,7 @@
                 switch (MenuInit.IsListActive("Harass.Mode").SelectedIndex)
                 {
                     case 0: // E - Q - W
-                        if (spells[Spells.E].IsReady() &&  Player.Distance(target.Position) <= spells[Spells.E].Range)
+                        if (spells[Spells.E].IsReady() && Player.Distance(target.Position) <= spells[Spells.E].Range)
                         {
                             var predE = spells[Spells.E].GetPrediction(target);
                             if (spells[Spells.E].IsReady() && predE.Hitchance == HitChance.VeryHigh)
@@ -236,8 +275,7 @@
                                 }
                             }
                         }
-    
-                       
+
                         if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                         {
                             var prediction = spells[Spells.Q].GetPrediction(target);
@@ -264,7 +302,7 @@
                         break;
 
                     case 2: // Q
-                       
+
                         if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
                         {
                             var predictionQ = spells[Spells.Q].GetPrediction(target);
@@ -370,7 +408,7 @@
                     Player.CalcDamage(
                         target,
                         Damage.DamageType.Magical,
-                        new float[] { 250, 375, 500 }[spells[Spells.R].Level - 1] + 1.2f * Player.TotalMagicalDamage()
+                        new float[] { 250, 375, 500 }[spells[Spells.R].Level - 1] + 1.2f * Player.TotalMagicalDamage
                         + (target.TotalMagicalDamage * 0.8f));
             }
 
@@ -388,6 +426,15 @@
                     .Aggregate(0f, (current, buff) => Math.Max(current, buff.EndTime)) - Game.Time;
         }
 
+        private static float IgniteDamage(Obj_AI_Hero target)
+        {
+            if (Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
+            {
+                return 0f;
+            }
+            return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+        }
+
         private static void Interrupter_OnPosibleToInterrupt(
             Obj_AI_Hero unit,
             Interrupter2.InterruptableTargetEventArgs spell)
@@ -402,7 +449,7 @@
                 if (!IsInvulnerable(unit))
                 {
                     CastE(unit);
-                } 
+                }
             }
         }
 
@@ -417,32 +464,36 @@
             {
                 if (MenuInit.IsActive("ElVeigar.Combo.KS.R"))
                 {
-                    foreach (var target in ObjectManager.Get<Obj_AI_Hero>())
+                    foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(spells[Spells.Q].Range)))
                     {
-                        if (target.IsEnemy && target.IsValidTarget() && Player.Distance(target) < spells[Spells.W].Range)
+                        if (target.IsValidTarget(spells[Spells.Q].Range))
                         {
-                            
                             if (spells[Spells.Q].GetDamage(target) > target.Health
                                 && MenuInit.IsActive("ElVeigar.Combo.KS.Q"))
                             {
                                 var predictionQ = spells[Spells.Q].GetPrediction(target);
                                 if (predictionQ.Hitchance >= HitChance.High && predictionQ.CollisionObjects.Count == 0
-                                    && spells[Spells.Q].IsInRange(target))
+                                    && target.IsValidTarget(spells[Spells.Q].Range))
                                 {
                                     spells[Spells.Q].Cast(predictionQ.CastPosition);
                                 }
                             }
+                        }
 
+                        if (target.IsValidTarget(spells[Spells.W].Range))
+                        {
                             var predictionW = spells[Spells.W].GetPrediction(target);
                             if (spells[Spells.W].GetDamage(target) > target.Health
                                 && MenuInit.IsActive("ElVeigar.Combo.KS.W"))
                             {
                                 if (predictionW.Hitchance >= HitChance.High)
                                 {
-                                    spells[Spells.W].Cast(target.ServerPosition); // ehhhhhhhhhhhhh
+                                    spells[Spells.W].Cast(predictionW.CastPosition);
                                 }
                             }
-
+                        }
+                        if (target.IsValidTarget(spells[Spells.R].Range))
+                        {
                             var getEnemies = MenuInit.Menu.Item("ElVeigar.KS.R.On" + target.CharData.BaseSkinName);
                             if (getEnemies != null && getEnemies.GetValue<bool>())
                             {
@@ -610,82 +661,5 @@
         }
 
         #endregion
-
-        #region DedToto
-
-        public static void CastE(Obj_AI_Base target)
-        {
-            var pred = Prediction.GetPrediction(target, spells[Spells.E].Delay);
-            var castVec = pred.UnitPosition.To2D()
-                          - Vector2.Normalize(pred.UnitPosition.To2D() - Player.Position.To2D())
-                          * spells[Spells.E].Width;
-
-            if (pred.Hitchance >= HitChance.High && spells[Spells.E].IsReady())
-            {
-                spells[Spells.E].Cast(castVec);
-            }
-        }
-
-        public static void CastE(Obj_AI_Hero target)
-        {
-            var pred = Prediction.GetPrediction(target, spells[Spells.E].Delay);
-            var castVec = pred.UnitPosition.To2D()
-                          - Vector2.Normalize(pred.UnitPosition.To2D() - Player.Position.To2D())
-                          * spells[Spells.E].Width;
-
-            if (pred.Hitchance >= HitChance.High && spells[Spells.E].IsReady())
-            {
-                spells[Spells.E].Cast(castVec);
-            }
-        }
-
-        public static void CastE(Vector3 pos)
-        {
-            var castVec = pos.To2D() - Vector2.Normalize(pos.To2D() - Player.Position.To2D()) * spells[Spells.E].Width;
-
-            if (spells[Spells.E].IsReady())
-            {
-                spells[Spells.E].Cast(castVec);
-            }
-        }
-
-        public static void CastE(Vector2 pos)
-        {
-            var castVec = pos;
-
-            if (spells[Spells.E].IsReady())
-            {
-                spells[Spells.E].Cast(castVec);
-            }
-        }
-
-        public static float GetComboDamage(Obj_AI_Base enemy)
-        {
-            float damage = 0;
-
-            if (spells[Spells.Q].IsReady())
-            {
-                damage += spells[Spells.Q].GetDamage(enemy);
-            }
-
-            if (spells[Spells.W].IsReady())
-            {
-                damage += spells[Spells.W].GetDamage(enemy);
-            }
-
-            if (spells[Spells.R].IsReady())
-            {
-                damage += spells[Spells.R].GetDamage(enemy);
-            }
-
-            if (Ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
-            {
-                damage += (float)Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
-            }
-
-            return damage;
-        }
-        #endregion
-
     }
 }
