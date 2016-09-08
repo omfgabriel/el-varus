@@ -178,71 +178,64 @@
 
         private static void DoCombo()
         {
-            try
+            var target = TargetSelector.GetTarget(spells[Spells.E].Range + 200, TargetSelector.DamageType.Magical);
+            if (!target.IsValidTarget())
             {
+                return;
+            }
 
-                var target = TargetSelector.GetTarget(spells[Spells.E].Range + 200, TargetSelector.DamageType.Magical);
-                if (!target.IsValidTarget())
+
+            if (spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range) && MenuInit.IsActive("ElVeigar.Combo.R"))
+            {
+                if (spells[Spells.R].GetDamage(target) > target.Health)
                 {
-                    return;
+                    if (!IsInvulnerable(target))
+                    {
+                        spells[Spells.R].CastOnUnit(target);
+                    }
                 }
+            }
 
-                if (spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) && MenuInit.IsActive("ElVeigar.Combo.R"))
+            if (spells[Spells.E].IsReady() && MenuInit.IsActive("ElVeigar.Combo.E"))
+            {
+                if (Player.Distance(target.Position) <= spells[Spells.E].Range + 200)
                 {
-                    if (GetExecuteDamage(target) > target.Health)
+                    var predE = spells[Spells.E].GetPrediction(target);
+                    if (spells[Spells.E].IsReady() && predE.Hitchance == HitChance.VeryHigh)
                     {
                         if (!IsInvulnerable(target))
                         {
-                            spells[Spells.R].CastOnUnit(target);
+                            CastE(target);
                         }
                     }
-                }
-
-                if (spells[Spells.E].IsReady() && MenuInit.IsActive("ElVeigar.Combo.E"))
-                {
-                    if (Player.Distance(target.Position) <= spells[Spells.E].Range + 200)
-                    {
-                        var predE = spells[Spells.E].GetPrediction(target);
-                        if (spells[Spells.E].IsReady() && predE.Hitchance == HitChance.VeryHigh)
-                        {
-                            if (!IsInvulnerable(target))
-                            {
-                                CastE(target);
-                            }
-                        }
-                    }
-                }
-
-                if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target)
-                    && MenuInit.IsActive("ElVeigar.Combo.Q"))
-                {
-                    var pred = spells[Spells.Q].GetPrediction(target);
-                    if (pred.Hitchance >= HitChance.VeryHigh && pred.CollisionObjects.Count == 0)
-                    {
-                        spells[Spells.Q].Cast(pred.CastPosition);
-                    }
-                }
-
-                var predictionW = spells[Spells.W].GetPrediction(target);
-
-                if (spells[Spells.W].IsReady() && Player.Distance(target.Position) <= spells[Spells.W].Range
-                    && MenuInit.IsActive("ElVeigar.Combo.W"))
-                {
-                    if (predictionW.Hitchance >= HitChance.VeryHigh)
-                    {
-                        spells[Spells.W].Cast(predictionW.CastPosition);
-                    }
-                }
-
-                if (MenuInit.IsActive("ElVeigar.Combo.Use.Ignite") && Player.Distance(target) <= 600
-                    && IgniteDamage(target) >= target.Health)
-                {
-                    Player.Spellbook.CastSpell(Ignite, target);
                 }
             }
-            catch (Exception e)
+
+            if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target)
+                && MenuInit.IsActive("ElVeigar.Combo.Q"))
             {
-                Console.WriteLine("An error occurred: '{0}'", e);
+                var pred = spells[Spells.Q].GetPrediction(target);
+                if (pred.Hitchance >= HitChance.VeryHigh && pred.CollisionObjects.Count == 0)
+                {
+                    spells[Spells.Q].Cast(pred.CastPosition);
+                }
+            }
+
+            var predictionW = spells[Spells.W].GetPrediction(target);
+
+            if (spells[Spells.W].IsReady() && Player.Distance(target.Position) <= spells[Spells.W].Range - 80f
+                && MenuInit.IsActive("ElVeigar.Combo.W"))
+            {
+                if (predictionW.Hitchance >= HitChance.VeryHigh)
+                {
+                    spells[Spells.W].Cast(predictionW.CastPosition);
+                }
+            }
+
+            if (MenuInit.IsActive("ElVeigar.Combo.Use.Ignite") && Player.Distance(target) <= 600
+                && IgniteDamage(target) >= target.Health)
+            {
+                Player.Spellbook.CastSpell(Ignite, target);
             }
         }
 
@@ -399,22 +392,6 @@
             }
         }
 
-        private static float GetExecuteDamage(Obj_AI_Base target)
-        {
-            if (spells[Spells.R].IsReady())
-            {
-                return
-                    (float)
-                    Player.CalcDamage(
-                        target,
-                        Damage.DamageType.Magical,
-                        new float[] { 175, 250, 325 }[spells[Spells.R].Level - 1] + 1.2f * Player.TotalMagicalDamage
-                        + (target.TotalMagicalDamage * 0.75f));
-            }
-
-            return 0;
-        }
-
         private static float GetStunDuration(this Obj_AI_Base target)
         {
             return
@@ -464,17 +441,13 @@
             {
                 var target =
                     HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.R].Range));
-                if (!target.IsValidTarget(spells[Spells.R].Range))
-                {
-                    return;
-                }
 
                 if (target != null)
                 {
                     var getEnemies = MenuInit.Menu.Item("ElVeigar.KS.R.On" + target.CharData.BaseSkinName);
                     if (getEnemies != null && getEnemies.GetValue<bool>())
                     {
-                        if (GetExecuteDamage(target) > target.Health)
+                        if (spells[Spells.R].GetDamage(target) > target.Health)
                         {
                             spells[Spells.R].CastOnUnit(target);
                         }
@@ -486,10 +459,6 @@
             {
                 var target =
                     HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.Q].Range));
-                if (!target.IsValidTarget(spells[Spells.Q].Range))
-                {
-                    return;
-                }
 
                 if (target != null && (spells[Spells.Q].GetDamage(target) > target.Health
                                        && MenuInit.IsActive("ElVeigar.Combo.KS.Q")))
@@ -506,10 +475,6 @@
             {
                 var target =
                     HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.W].Range));
-                if (!target.IsValidTarget(spells[Spells.W].Range))
-                {
-                    return;
-                }
 
                 var predictionW = spells[Spells.W].GetPrediction(target);
                 if (target != null && (spells[Spells.W].GetDamage(target) > target.Health
@@ -571,40 +536,43 @@
                 return;
             }
 
-            try
+            switch (Orbwalker.ActiveMode)
             {
-                switch (Orbwalker.ActiveMode)
-                {
-                    case Orbwalking.OrbwalkingMode.Combo:
-                        DoCombo();
-                        break;
+                case Orbwalking.OrbwalkingMode.Combo:
+                    DoCombo();
+                    break;
 
-                    case Orbwalking.OrbwalkingMode.LaneClear:
-                        DoLaneClear();
-                        DoJungleClear();
-                        break;
+                case Orbwalking.OrbwalkingMode.LaneClear:
+                    DoLaneClear();
+                    DoJungleClear();
+                    break;
 
-                    case Orbwalking.OrbwalkingMode.Mixed:
-                        DoHarass();
-                        break;
+                case Orbwalking.OrbwalkingMode.Mixed:
+                    DoHarass();
+                    break;
 
-                    case Orbwalking.OrbwalkingMode.LastHit:
-                        QStack();
-                        break;
-                }
-
-                if (MenuInit.Menu.Item("ElVeigar.Stack.Q").GetValue<KeyBind>().Active)
-                {
+                case Orbwalking.OrbwalkingMode.LastHit:
                     QStack();
-                }
+                    break;
+            }
 
-                AutoW();
-                KillstealHandler();
-            }
-            catch (Exception e)
+            KillstealHandler();
+            AutoW();
+
+            if (MenuInit.Menu.Item("ElVeigar.Combo.Multi").IsActive())
             {
-                Console.WriteLine("An error occurred: '{0}'", e);
+                var target = spells[Spells.W].GetTarget();
+                var pred = spells[Spells.W].GetPrediction(target);
+                if (pred.AoeTargetsHitCount >= 3 && spells[Spells.W].IsReady())
+                {
+                    spells[Spells.W].Cast(pred.CastPosition);
+                }
             }
+
+            if (MenuInit.Menu.Item("ElVeigar.Stack.Q").GetValue<KeyBind>().Active)
+            {
+                QStack();
+            }  
         }
 
         private static List<Obj_AI_Base> QGetCollisionMinions(Obj_AI_Hero source, Vector3 targetposition)
@@ -635,7 +603,7 @@
                 ObjectManager.Get<Obj_AI_Base>()
                     .Where(
                         m =>
-                        m.IsMinion && m.IsEnemy && Player.Distance(m.Position) <= spells[Spells.Q].Range
+                        m.IsMinion && !m.Name.Contains("ward") && m.IsEnemy && Player.Distance(m.Position) <= spells[Spells.Q].Range
                         && m.Health < ((Player.GetSpellDamage(m, SpellSlot.Q)))
                         && HealthPrediction.GetHealthPrediction(
                             m,

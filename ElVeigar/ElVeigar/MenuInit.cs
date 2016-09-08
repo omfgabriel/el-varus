@@ -34,6 +34,8 @@
                 comboMenu.AddItem(new MenuItem("ElVeigar.Combo.E", "Use E").SetValue(true));
                 comboMenu.AddItem(new MenuItem("ElVeigar.Combo.R", "Use R").SetValue(true));
                 comboMenu.AddItem(new MenuItem("ElVeigar.Combo.Use.Ignite", "Use Ignite").SetValue(true));
+                comboMenu.AddItem(new MenuItem("ElVeigar.Combo.Multi", "Hit Multiple").SetValue(false));
+
             }
 
             var harassMenu = Menu.AddSubMenu(new Menu("Harass", "Harass"));
