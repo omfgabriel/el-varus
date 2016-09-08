@@ -96,7 +96,7 @@
         {
             try
             {
-                if (!sender.IsValid || !sender.IsAlly || sender.Type != GameObjectType.obj_AI_Minion)
+                if (!sender.IsValid || this.Player.IsChampion("Thresh") || !sender.IsAlly || sender.Type != GameObjectType.obj_AI_Minion)
                 {
                     return;
                 }
