@@ -408,8 +408,8 @@
                     Player.CalcDamage(
                         target,
                         Damage.DamageType.Magical,
-                        new float[] { 250, 375, 500 }[spells[Spells.R].Level - 1] + 1.2f * Player.TotalMagicalDamage
-                        + (target.TotalMagicalDamage * 0.8f));
+                        new float[] { 175, 250, 325 }[spells[Spells.R].Level - 1] + 1.2f * Player.TotalMagicalDamage
+                        + (target.TotalMagicalDamage * 0.75f));
             }
 
             return 0;

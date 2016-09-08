@@ -1,11 +1,8 @@
 ﻿namespace ElVeigar
 {
-    using System.Linq;
-
-    using LeagueSharp;
-    using LeagueSharp.Common;
     using System.Drawing;
 
+    using LeagueSharp.Common;
 
     public class MenuInit
     {
@@ -36,13 +33,14 @@
                 comboMenu.AddItem(new MenuItem("ElVeigar.Combo.W", "Use W").SetValue(false));
                 comboMenu.AddItem(new MenuItem("ElVeigar.Combo.E", "Use E").SetValue(true));
                 comboMenu.AddItem(new MenuItem("ElVeigar.Combo.R", "Use R").SetValue(true));
-                comboMenu.AddItem(new MenuItem("ElVeigar.Combo.Use.Ignite", "Use Ignite").SetValue(true)); 
+                comboMenu.AddItem(new MenuItem("ElVeigar.Combo.Use.Ignite", "Use Ignite").SetValue(true));
             }
 
             var harassMenu = Menu.AddSubMenu(new Menu("Harass", "Harass"));
             {
                 harassMenu.AddItem(
-                   new MenuItem("Harass.Mode", "Harass Mode").SetValue(new StringList(new[] { "E - W - Q", "E - W", "Q" }, 1)));
+                    new MenuItem("Harass.Mode", "Harass Mode").SetValue(
+                        new StringList(new[] { "E - W - Q", "E - W", "Q" }, 1)));
                 harassMenu.AddItem(new MenuItem("ElVeigar.Harass.Mana", "Minimum mana").SetValue(new Slider(20)));
             }
 
@@ -52,7 +50,8 @@
                     new MenuItem("ElVeigar.Stack.Q", "Auto Q stack").SetValue(
                         new KeyBind("M".ToCharArray()[0], KeyBindType.Toggle)));
 
-                stackMenu.AddItem(new MenuItem("ElVeigar.Stack.Q2", "Minimum minions for Q").SetValue(new Slider(2, 1, 2)));
+                stackMenu.AddItem(
+                    new MenuItem("ElVeigar.Stack.Q2", "Minimum minions for Q").SetValue(new Slider(2, 1, 2)));
                 stackMenu.AddItem(new MenuItem("ElVeigar.Stack.Mana", "Minimum mana").SetValue(new Slider(20)));
             }
 
@@ -97,17 +96,16 @@
                 DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
 
                 dmgAfterE.ValueChanged +=
-                    delegate (object sender, OnValueChangeEventArgs eventArgs)
+                    delegate(object sender, OnValueChangeEventArgs eventArgs)
+                        {
+                            DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
+                        };
+
+                drawFill.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
                     {
-                        DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
+                        DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
+                        DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
                     };
-
-                drawFill.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs)
-                {
-                    DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
-                    DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
-                };
-
             }
 
             var ksMenu = Menu.AddSubMenu(new Menu("Killsteal", "Killsteal"));
@@ -126,7 +124,6 @@
                 }
             }
 
-
             Menu.AddItem(new MenuItem("sep3", "Made By jQuery"));
             Menu.AddItem(new MenuItem("sep2", $"Version: {Entry.ScriptVersion}"));
             Menu.AddToMainMenu();
@@ -139,7 +136,7 @@
 
         public static StringList IsListActive(string menuItem)
         {
-            return MenuInit.Menu.Item(menuItem).GetValue<StringList>();
+            return Menu.Item(menuItem).GetValue<StringList>();
         }
 
         #endregion
