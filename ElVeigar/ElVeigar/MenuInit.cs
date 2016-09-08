@@ -117,7 +117,7 @@
 
                 ksMenu.AddItem(new MenuItem("ElVeigar.Combo.KS.R", "KS with R").SetValue(true));
 
-                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy))
+                foreach (var hero in HeroManager.Enemies)
                 {
                     ksMenu.SubMenu("Use R on")
                         .AddItem(
@@ -128,7 +128,7 @@
 
 
             Menu.AddItem(new MenuItem("sep3", "Made By jQuery"));
-            Menu.AddItem(new MenuItem("sep2", string.Format("Version: {0}", Entry.ScriptVersion)));
+            Menu.AddItem(new MenuItem("sep2", $"Version: {Entry.ScriptVersion}"));
             Menu.AddToMainMenu();
         }
 

@@ -62,7 +62,7 @@
                           - Vector2.Normalize(pred.UnitPosition.To2D() - Player.Position.To2D())
                           * spells[Spells.E].Width;
 
-            if (pred.Hitchance >= HitChance.High && spells[Spells.E].IsReady())
+            if (pred.Hitchance >= HitChance.VeryHigh && spells[Spells.E].IsReady())
             {
                 spells[Spells.E].Cast(castVec);
             }
@@ -180,10 +180,22 @@
         {
             try
             {
+
                 var target = TargetSelector.GetTarget(spells[Spells.E].Range + 200, TargetSelector.DamageType.Magical);
                 if (!target.IsValidTarget())
                 {
                     return;
+                }
+
+                if (spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target) && MenuInit.IsActive("ElVeigar.Combo.R"))
+                {
+                    if (GetExecuteDamage(target) > target.Health)
+                    {
+                        if (!IsInvulnerable(target))
+                        {
+                            spells[Spells.R].CastOnUnit(target);
+                        }
+                    }
                 }
 
                 if (spells[Spells.E].IsReady() && MenuInit.IsActive("ElVeigar.Combo.E"))
@@ -205,7 +217,7 @@
                     && MenuInit.IsActive("ElVeigar.Combo.Q"))
                 {
                     var pred = spells[Spells.Q].GetPrediction(target);
-                    if (pred.Hitchance >= HitChance.High && pred.CollisionObjects.Count <= 0)
+                    if (pred.Hitchance >= HitChance.VeryHigh && pred.CollisionObjects.Count == 0)
                     {
                         spells[Spells.Q].Cast(pred.CastPosition);
                     }
@@ -216,21 +228,9 @@
                 if (spells[Spells.W].IsReady() && Player.Distance(target.Position) <= spells[Spells.W].Range
                     && MenuInit.IsActive("ElVeigar.Combo.W"))
                 {
-                    if (predictionW.Hitchance >= HitChance.High)
+                    if (predictionW.Hitchance >= HitChance.VeryHigh)
                     {
-                        spells[Spells.W].Cast(target.Position);
-                    }
-                }
-
-                if (spells[Spells.R].IsReady() && spells[Spells.R].IsInRange(target)
-                    && MenuInit.IsActive("ElVeigar.Combo.R"))
-                {
-                    if (GetExecuteDamage(target) > target.Health)
-                    {
-                        if (!IsInvulnerable(target))
-                        {
-                            spells[Spells.R].CastOnUnit(target);
-                        }
+                        spells[Spells.W].Cast(predictionW.CastPosition);
                     }
                 }
 
@@ -460,55 +460,67 @@
 
         private static void KillstealHandler()
         {
-            try
+            if (MenuInit.IsActive("ElVeigar.Combo.KS.R"))
             {
-                if (MenuInit.IsActive("ElVeigar.Combo.KS.R"))
+                var target =
+                    HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.R].Range));
+                if (!target.IsValidTarget(spells[Spells.R].Range))
                 {
-                    foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(spells[Spells.Q].Range)))
-                    {
-                        if (target.IsValidTarget(spells[Spells.Q].Range))
-                        {
-                            if (spells[Spells.Q].GetDamage(target) > target.Health
-                                && MenuInit.IsActive("ElVeigar.Combo.KS.Q"))
-                            {
-                                var predictionQ = spells[Spells.Q].GetPrediction(target);
-                                if (predictionQ.Hitchance >= HitChance.High && predictionQ.CollisionObjects.Count == 0
-                                    && target.IsValidTarget(spells[Spells.Q].Range))
-                                {
-                                    spells[Spells.Q].Cast(predictionQ.CastPosition);
-                                }
-                            }
-                        }
+                    return;
+                }
 
-                        if (target.IsValidTarget(spells[Spells.W].Range))
+                if (target != null)
+                {
+                    var getEnemies = MenuInit.Menu.Item("ElVeigar.KS.R.On" + target.CharData.BaseSkinName);
+                    if (getEnemies != null && getEnemies.GetValue<bool>())
+                    {
+                        if (GetExecuteDamage(target) > target.Health)
                         {
-                            var predictionW = spells[Spells.W].GetPrediction(target);
-                            if (spells[Spells.W].GetDamage(target) > target.Health
-                                && MenuInit.IsActive("ElVeigar.Combo.KS.W"))
-                            {
-                                if (predictionW.Hitchance >= HitChance.High)
-                                {
-                                    spells[Spells.W].Cast(predictionW.CastPosition);
-                                }
-                            }
-                        }
-                        if (target.IsValidTarget(spells[Spells.R].Range))
-                        {
-                            var getEnemies = MenuInit.Menu.Item("ElVeigar.KS.R.On" + target.CharData.BaseSkinName);
-                            if (getEnemies != null && getEnemies.GetValue<bool>())
-                            {
-                                if (GetExecuteDamage(target) > target.Health)
-                                {
-                                    spells[Spells.R].CastOnUnit(target);
-                                }
-                            }
+                            spells[Spells.R].CastOnUnit(target);
                         }
                     }
                 }
             }
-            catch (Exception e)
+
+            if (MenuInit.IsActive("ElVeigar.Combo.KS.Q"))
             {
-                Console.WriteLine("An error occurred: '{0}'", e);
+                var target =
+                    HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.Q].Range));
+                if (!target.IsValidTarget(spells[Spells.Q].Range))
+                {
+                    return;
+                }
+
+                if (target != null && (spells[Spells.Q].GetDamage(target) > target.Health
+                                       && MenuInit.IsActive("ElVeigar.Combo.KS.Q")))
+                {
+                    var predictionQ = spells[Spells.Q].GetPrediction(target);
+                    if (predictionQ.Hitchance >= HitChance.High && predictionQ.CollisionObjects.Count == 0)
+                    {
+                        spells[Spells.Q].Cast(predictionQ.CastPosition);
+                    }
+                }
+            }
+
+            if (MenuInit.IsActive("ElVeigar.Combo.KS.W"))
+            {
+                var target =
+                    HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.W].Range));
+                if (!target.IsValidTarget(spells[Spells.W].Range))
+                {
+                    return;
+                }
+
+                var predictionW = spells[Spells.W].GetPrediction(target);
+                if (target != null && (spells[Spells.W].GetDamage(target) > target.Health
+                                       && MenuInit.IsActive("ElVeigar.Combo.KS.W")))
+                {
+                    if (predictionW.Hitchance >= HitChance.High)
+                    {
+                        spells[Spells.W].Cast(predictionW.CastPosition);
+                    }
+                }
+
             }
         }
 
