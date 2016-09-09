@@ -359,7 +359,7 @@
                 return;
             }
 
-            foreach (var ally in HeroManager.Allies)
+            foreach (var ally in HeroManager.Allies.Where(x => x.IsValidTarget(800f, false)))
             {
                 foreach (
                     var buff in
