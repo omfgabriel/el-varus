@@ -22,7 +22,7 @@
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
                                                              {
-                                                                 { Spells.Q, new Spell(SpellSlot.Q, 950f) },
+                                                                 { Spells.Q, new Spell(SpellSlot.Q, 920f) },
                                                                  { Spells.W, new Spell(SpellSlot.W, 900f) },
                                                                  { Spells.E, new Spell(SpellSlot.E, 1050f) },
                                                                  { Spells.R, new Spell(SpellSlot.R, 650f) }
@@ -138,7 +138,6 @@
                 }
 
                 Ignite = Player.GetSpellSlot("summonerdot");
-                Notifications.AddNotification($"ElVeigar by jQuery v{ScriptVersion}", 10000);
                 MenuInit.Initialize();
                 Game.OnUpdate += OnUpdate;
                 Drawing.OnDraw += OnDraw;
@@ -201,7 +200,7 @@
                 if (Player.Distance(target.Position) <= spells[Spells.E].Range + 200)
                 {
                     var predE = spells[Spells.E].GetPrediction(target);
-                    if (spells[Spells.E].IsReady() && predE.Hitchance == HitChance.VeryHigh)
+                    if (predE.Hitchance == HitChance.VeryHigh)
                     {
                         if (!IsInvulnerable(target))
                         {
@@ -260,7 +259,7 @@
                         if (spells[Spells.E].IsReady() && Player.Distance(target.Position) <= spells[Spells.E].Range)
                         {
                             var predE = spells[Spells.E].GetPrediction(target);
-                            if (spells[Spells.E].IsReady() && predE.Hitchance == HitChance.VeryHigh)
+                            if (predE.Hitchance == HitChance.VeryHigh)
                             {
                                 if (!IsInvulnerable(target))
                                 {
@@ -283,7 +282,7 @@
                         if (spells[Spells.E].IsReady() && Player.Distance(target.Position) <= spells[Spells.E].Range)
                         {
                             var predE = spells[Spells.E].GetPrediction(target);
-                            if (spells[Spells.E].IsReady() && predE.Hitchance == HitChance.VeryHigh)
+                            if (predE.Hitchance == HitChance.VeryHigh)
                             {
                                 if (!IsInvulnerable(target))
                                 {
@@ -440,17 +439,14 @@
             if (MenuInit.IsActive("ElVeigar.Combo.KS.R"))
             {
                 var target =
-                    HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.R].Range));
+                    HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.R].Range) && spells[Spells.R].GetDamage(x) > x.Health);
 
                 if (target != null)
                 {
                     var getEnemies = MenuInit.Menu.Item("ElVeigar.KS.R.On" + target.CharData.BaseSkinName);
                     if (getEnemies != null && getEnemies.GetValue<bool>())
                     {
-                        if (spells[Spells.R].GetDamage(target) > target.Health)
-                        {
-                            spells[Spells.R].CastOnUnit(target);
-                        }
+                        spells[Spells.R].CastOnUnit(target);
                     }
                 }
             }
@@ -458,10 +454,9 @@
             if (MenuInit.IsActive("ElVeigar.Combo.KS.Q"))
             {
                 var target =
-                    HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.Q].Range));
+                    HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.Q].Range) && spells[Spells.Q].GetDamage(x) > x.Health);
 
-                if (target != null && (spells[Spells.Q].GetDamage(target) > target.Health
-                                       && MenuInit.IsActive("ElVeigar.Combo.KS.Q")))
+                if (target != null)
                 {
                     var predictionQ = spells[Spells.Q].GetPrediction(target);
                     if (predictionQ.Hitchance >= HitChance.High && predictionQ.CollisionObjects.Count == 0)
@@ -474,18 +469,16 @@
             if (MenuInit.IsActive("ElVeigar.Combo.KS.W"))
             {
                 var target =
-                    HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.W].Range));
+                    HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(spells[Spells.W].Range) && spells[Spells.W].GetDamage(x) > x.Health);
 
                 var predictionW = spells[Spells.W].GetPrediction(target);
-                if (target != null && (spells[Spells.W].GetDamage(target) > target.Health
-                                       && MenuInit.IsActive("ElVeigar.Combo.KS.W")))
+                if (target != null)
                 {
                     if (predictionW.Hitchance >= HitChance.High)
                     {
                         spells[Spells.W].Cast(predictionW.CastPosition);
                     }
                 }
-
             }
         }
 
@@ -563,7 +556,7 @@
             {
                 var target = spells[Spells.W].GetTarget();
                 var pred = spells[Spells.W].GetPrediction(target);
-                if (pred.AoeTargetsHitCount >= 3 && spells[Spells.W].IsReady())
+                if (pred.AoeTargetsHitCount >= 2 && spells[Spells.W].IsReady())
                 {
                     spells[Spells.W].Cast(pred.CastPosition);
                 }
