@@ -213,11 +213,6 @@
                                  },
                              new ZhonyaSpell
                                  {
-                                     ChampionName = "kassadin", SDataName = "nulllance", MissileName = "", Delay = 250,
-                                     MissileSpeed = 1900, CastRange = 650f
-                                 },
-                             new ZhonyaSpell
-                                 {
                                      ChampionName = "kassadin", SDataName = "forcepulse", MissileName = "", Delay = 250,
                                      MissileSpeed = int.MaxValue, CastRange = 700f
                                  },
