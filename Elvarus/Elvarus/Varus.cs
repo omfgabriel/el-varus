@@ -28,7 +28,7 @@ namespace Elvarus
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
                                                              {
-                                                                 { Spells.Q, new Spell(SpellSlot.Q, 925) },
+                                                                 { Spells.Q, new Spell(SpellSlot.Q, 925F) },
                                                                  { Spells.W, new Spell(SpellSlot.W, 0) },
                                                                  { Spells.E, new Spell(SpellSlot.E, 925) },
                                                                  { Spells.R, new Spell(SpellSlot.R, 1100) }
@@ -57,11 +57,11 @@ namespace Elvarus
                 return;
             }
 
-            spells[Spells.Q].SetSkillshot(.25f, 70f, 1650f, false, SkillshotType.SkillshotLine);
+            spells[Spells.Q].SetSkillshot(.25f, 70f, 1800f, false, SkillshotType.SkillshotLine);
             spells[Spells.E].SetSkillshot(0.35f, 120, 1500, false, SkillshotType.SkillshotCircle);
             spells[Spells.R].SetSkillshot(.25f, 120f, 1950f, false, SkillshotType.SkillshotLine);
 
-            spells[Spells.Q].SetCharged("VarusQ", "VarusQ", 250, 1600, 1.2f);
+            spells[Spells.Q].SetCharged("VarusQ", "VarusQ", 925, 1700, 1.2f);
 
             ElVarusMenu.Initialize();
             Game.OnUpdate += OnGameUpdate;
@@ -87,14 +87,13 @@ namespace Elvarus
             if (spells[Spells.E].IsReady() && !spells[Spells.Q].IsCharging
                 && ElVarusMenu.Menu.Item("ElVarus.Combo.E").IsActive())
             {
-                if (spells[Spells.E].IsKillable(target) || GetWStacks(target) >= 1)
-                {
+
                     var prediction = spells[Spells.E].GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.VeryHigh)
                     {
                         spells[Spells.E].Cast(prediction.CastPosition);
                     }
-                }
+
             }
 
             if (spells[Spells.Q].IsReady() && ElVarusMenu.Menu.Item("ElVarus.Combo.Q").IsActive())
@@ -150,7 +149,7 @@ namespace Elvarus
 
             if (Player.ManaPercent > ElVarusMenu.Menu.Item("minmanaharass").GetValue<Slider>().Value)
             {
-                if (ElVarusMenu.Menu.Item("ElVarus.Harass.E").IsActive() && spells[Spells.E].IsReady() && GetWStacks(target) >= 1)
+                if (ElVarusMenu.Menu.Item("ElVarus.Harass.E").IsActive() && spells[Spells.E].IsReady() )
                 {
                     var prediction = spells[Spells.E].GetPrediction(target);
                     if (prediction.Hitchance >= HitChance.VeryHigh)
