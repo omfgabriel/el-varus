@@ -79,7 +79,6 @@ namespace ElRengarRevamped
                             {
                                 CastE(target);
 
-                                // switch combo mode
                                 if (IsActive("Combo.Switch.E") && Utils.GameTimeTickCount - LastSwitch >= 350)
                                 {
                                     MenuInit.Menu.Item("Combo.Prio")
@@ -239,21 +238,17 @@ namespace ElRengarRevamped
                     spells[Spells.Q].Cast();
                 }
 
-                if (RengarR)
+                if (!RengarR)
                 {
-                    return;
-                }
+                    if (!HasPassive && IsActive("Harass.Use.E") && spells[Spells.E].IsReady())
+                    {
+                        CastE(target);
+                    }
 
-                //CastItems(target);
-
-                if (!HasPassive && IsActive("Harass.Use.E") && spells[Spells.E].IsReady())
-                {
-                    CastE(target);
-                }
-
-                if (IsActive("Harass.Use.W"))
-                {
-                    CastW();
+                    if (IsActive("Harass.Use.W"))
+                    {
+                        CastW();
+                    }
                 }
             }
         }
@@ -263,72 +258,60 @@ namespace ElRengarRevamped
         /// </summary>
         public static void Jungleclear()
         {
-            try
+            var minion =
+          MinionManager.GetMinions(
+              Player.ServerPosition,
+              spells[Spells.W].Range,
+              MinionTypes.All,
+              MinionTeam.Neutral,
+              MinionOrderTypes.MaxHealth).FirstOrDefault();
+
+            if (minion == null)
             {
-                var minion =
-                    MinionManager.GetMinions(
-                        Player.ServerPosition,
-                        spells[Spells.W].Range,
-                        MinionTypes.All,
-                        MinionTeam.Neutral,
-                        MinionOrderTypes.MaxHealth).FirstOrDefault();
+                return;
+            }
 
-                if (minion == null)
+            CastItems(minion);
+
+            if (Ferocity == 5 && IsActive("Jungle.Save.Ferocity"))
+            {
+                if (minion.IsValidTarget(spells[Spells.W].Range) && !HasPassive)
                 {
-                    return;
+                    LaneItems(minion);
                 }
+                return;
+            }
 
-                CastItems(minion);
+            if (IsActive("Jungle.Use.Q") && spells[Spells.Q].IsReady()
+                && minion.IsValidTarget(spells[Spells.Q].Range + 100))
+            {
+                spells[Spells.Q].Cast();
+            }
 
-                if (Ferocity == 5 && IsActive("Jungle.Save.Ferocity"))
+            LaneItems(minion);
+
+            if (Ferocity == 5 && (Player.Health / Player.MaxHealth) * 100 <= 20)
+            {
+                spells[Spells.W].Cast();
+            }
+
+            if (!HasPassive)
+            {
+                if (IsActive("Jungle.Use.W") && spells[Spells.W].IsReady()
+                    && minion.IsValidTarget(spells[Spells.W].Range))
                 {
-                    if (minion.IsValidTarget(spells[Spells.W].Range) && !HasPassive)
-                    {
-                        LaneItems(minion);
-                    }
-                    return;
-                }
-
-                if (IsActive("Jungle.Use.Q") && spells[Spells.Q].IsReady()
-                    && minion.IsValidTarget(spells[Spells.Q].Range + 100))
-                {
-                    spells[Spells.Q].Cast();
-                }
-
-                LaneItems(minion);
-
-                if (Ferocity == 5 && (Player.Health / Player.MaxHealth) * 100 <= 20)
-                {
-                    spells[Spells.W].Cast();
-                }
-
-                if (!HasPassive)
-                {
-                    if (IsActive("Jungle.Use.W") && spells[Spells.W].IsReady()
-                        && minion.IsValidTarget(spells[Spells.W].Range))
-                    {
-                        if (Ferocity == 5 && spells[Spells.Q].IsReady())
-                        {
-                            return;
-                        }
-                        spells[Spells.W].Cast();
-                    }
-                }
-
-                if (IsActive("Jungle.Use.E") && spells[Spells.E].IsReady()
-                    && minion.IsValidTarget(spells[Spells.E].Range))
-                {
-                    if (Ferocity == 5)
+                    if (Ferocity == 5 && spells[Spells.Q].IsReady())
                     {
                         return;
                     }
-
-                    spells[Spells.E].Cast(minion);
+                    spells[Spells.W].Cast();
                 }
             }
-            catch (Exception e)
+
+            if (IsActive("Jungle.Use.E") && spells[Spells.E].IsReady()
+                && minion.IsValidTarget(spells[Spells.E].Range) && Ferocity != 5)
             {
-                Console.WriteLine(e);
+                spells[Spells.E].Cast(minion);
             }
         }
 
@@ -389,7 +372,7 @@ namespace ElRengarRevamped
         /// <value>
         ///     Youmuus Ghostblade
         /// </value>
-        public static new Items.Item Youmuu => ItemData.Youmuus_Ghostblade.GetItem();
+        public static Items.Item Youmuu => ItemData.Youmuus_Ghostblade.GetItem();
 
         /// <summary>
         ///     Gets Ravenous Hydra
