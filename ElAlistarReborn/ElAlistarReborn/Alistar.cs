@@ -41,13 +41,7 @@
         /// <value>
         ///     The player.
         /// </value>
-        private static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private static Obj_AI_Hero Player => ObjectManager.Player;
 
         /// <summary>
         ///     Gets or sets the Q spell
