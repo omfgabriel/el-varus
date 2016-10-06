@@ -26,47 +26,27 @@
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
                                                              {
-                                                                 { Spells.Q, new Spell(SpellSlot.Q, 895) },
-                                                                 { Spells.W, new Spell(SpellSlot.W, 240) },
-                                                                 { Spells.E, new Spell(SpellSlot.E, 450) },
-                                                                 { Spells.R, new Spell(SpellSlot.R, 825) }
+                                                                     { Spells.Q, new Spell(SpellSlot.Q, 830) },
+                                                                     { Spells.W, new Spell(SpellSlot.W, 250) },
+                                                                     { Spells.E, new Spell(SpellSlot.E, 450) },
+                                                                     { Spells.R, new Spell(SpellSlot.R, 825) }
                                                              };
 
         private static SpellSlot ignite;
-
-        private static int lastNotification;
 
         #endregion
 
         #region Public Properties
 
-        public static string ScriptVersion
-        {
-            get
-            {
-                return typeof(Diana).Assembly.GetName().Version.ToString();
-            }
-        }
+        public static string ScriptVersion => typeof(Diana).Assembly.GetName().Version.ToString();
 
         #endregion
 
         #region Properties
 
-        private static HitChance CustomHitChance
-        {
-            get
-            {
-                return GetHitchance();
-            }
-        }
+        private static HitChance CustomHitChance => GetHitchance();
 
-        private static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
+        private static Obj_AI_Hero Player => ObjectManager.Player;
 
         #endregion
 
@@ -111,18 +91,19 @@
                 return;
             }
 
-            spells[Spells.Q].SetSkillshot(0.25f, 150f, 1400f, false, SkillshotType.SkillshotCircle);
+            spells[Spells.Q].SetSkillshot(0.25f, 185f, 1620f, false, SkillshotType.SkillshotCircle);
             ignite = Player.GetSpellSlot("summonerdot");
 
             ElDianaMenu.Initialize();
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
 
+            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Interrupter2.OnInterruptableTarget += (source, eventArgs) =>
                 {
                     var eSlot = spells[Spells.E];
-                    if (ElDianaMenu._menu.Item("ElDiana.Interrupt.UseEInterrupt").GetValue<bool>() && eSlot.IsReady()
-                        && eSlot.Range >= Player.Distance(source, false))
+                    if (ElDianaMenu.Menu.Item("ElDiana.Interrupt.UseEInterrupt").GetValue<bool>() && eSlot.IsReady()
+                        && eSlot.Range >= Player.Distance(source))
                     {
                         eSlot.Cast();
                     }
@@ -137,7 +118,7 @@
 
                     var eSlot = spells[Spells.E];
                     var dis = Player.Distance(source);
-                    if (!eventArgs.IsBlink && ElDianaMenu._menu.Item("ElDiana.Interrupt.UseEDashes").GetValue<bool>()
+                    if (!eventArgs.IsBlink && ElDianaMenu.Menu.Item("ElDiana.Interrupt.UseEDashes").GetValue<bool>()
                         && eSlot.IsReady() && eSlot.Range >= dis)
                     {
                         eSlot.Cast();
@@ -149,6 +130,22 @@
 
         #region Methods
 
+        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        {
+            if (!gapcloser.Sender.IsValidTarget(spells[Spells.E].Range))
+            {
+                return;
+            }
+
+            if (gapcloser.Sender.IsValidTarget(spells[Spells.E].Range))
+            {
+                if (IsActive("ElDiana.Interrupt.G") && spells[Spells.E].IsReady())
+                {
+                    spells[Spells.E].Cast(gapcloser.Sender);
+                }
+            }
+        }
+
         private static void Combo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
@@ -157,58 +154,85 @@
                 return;
             }
 
-            var useQ = ElDianaMenu._menu.Item("ElDiana.Combo.Q").GetValue<bool>();
-            var useW = ElDianaMenu._menu.Item("ElDiana.Combo.W").GetValue<bool>();
-            var useE = ElDianaMenu._menu.Item("ElDiana.Combo.E").GetValue<bool>();
-            var useR = ElDianaMenu._menu.Item("ElDiana.Combo.R").GetValue<bool>();
-            var useIgnite = ElDianaMenu._menu.Item("ElDiana.Combo.Ignite").GetValue<bool>();
-            var secondR = ElDianaMenu._menu.Item("ElDiana.Combo.Secure").GetValue<bool>();
-            var useSecondRLimitation =
-                ElDianaMenu._menu.Item("ElDiana.Combo.UseSecondRLimitation").GetValue<Slider>().Value;
-            var minHpToDive = ElDianaMenu._menu.Item("ElDiana.Combo.R.PreventUnderTower").GetValue<Slider>().Value;
-
-            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+            if (IsActive("ElDiana.Combo.Q") && spells[Spells.Q].IsReady())
             {
-                var pred = spells[Spells.Q].GetPrediction(target);
-                if (pred.Hitchance >= HitChance.VeryHigh)
+                if (Player.Distance(target) <= spells[Spells.Q].Range)
                 {
-                    spells[Spells.Q].Cast(pred.CastPosition);
+                    var prediction = spells[Spells.Q].GetPrediction(target);
+                    if (prediction.Hitchance >= HitChance.VeryHigh)
+                    {
+                        spells[Spells.Q].Cast(prediction.CastPosition);
+                    }
                 }
             }
 
-            if (useR && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range)
-                && target.HasBuff("dianamoonlight")
-                && (!target.UnderTurret(true) || (minHpToDive <= Player.HealthPercent)))
+            if (IsActive("ElDiana.Combo.QR"))
             {
-                spells[Spells.R].Cast(target);
+                var killableTarget =
+                    HeroManager.Enemies.FirstOrDefault(
+                        x => spells[Spells.R].IsKillable(x) && x.Distance(Player) <= spells[Spells.R].Range * 2);
+
+                if (killableTarget != null)
+                {
+                    GapCloser(killableTarget);
+                }
             }
 
-            if (useW && spells[Spells.W].IsReady()
-                && target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)))
+            if (IsActive("ElDiana.Combo.R") && spells[Spells.R].IsReady())
             {
+                if (Player.Distance(target) <= spells[Spells.R].Range)
+                {
+                    if (HasQBuff(target)
+                        && (!target.UnderTurret(true)
+                            || (ElDianaMenu.Menu.Item("ElDiana.Combo.R.PreventUnderTower").GetValue<Slider>().Value
+                                <= Player.HealthPercent)))
+                    {
+                        spells[Spells.R].Cast(target);
+                    }
+                }
+            }
+
+            if (IsActive("ElDiana.Combo.W") && spells[Spells.W].IsReady())
+            {
+                if (!Player.IsDashing() || !target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)))
+                {
+                    return;
+                }
+
                 spells[Spells.W].Cast();
             }
 
-            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(400f))
+            if (IsActive("ElDiana.Combo.E") && spells[Spells.E].IsReady())
             {
+                if (!Player.IsDashing() || Player.Distance(target) > spells[Spells.E].Range)
+                {
+                    return;
+                }
+
                 spells[Spells.E].Cast();
             }
 
-            if (secondR && (!target.UnderTurret(true) || (minHpToDive <= Player.HealthPercent)))
+            if (IsActive("ElDiana.Combo.Secure")
+                && (!target.UnderTurret(true)
+                    || (ElDianaMenu.Menu.Item("ElDiana.Combo.R.PreventUnderTower").GetValue<Slider>().Value
+                        <= Player.HealthPercent)))
             {
                 var closeEnemies = Player.GetEnemiesInRange(spells[Spells.R].Range * 2).Count;
 
-                if (closeEnemies <= useSecondRLimitation && useR && !spells[Spells.Q].IsReady()
-                    && spells[Spells.R].IsReady())
+                if (closeEnemies <= ElDianaMenu.Menu.Item("ElDiana.Combo.UseSecondRLimitation").GetValue<Slider>().Value
+                    && IsActive("ElDiana.Combo.R") && !spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
                 {
                     if (target.Health < spells[Spells.R].GetDamage(target)
-                        && (!target.UnderTurret(true) || (minHpToDive <= Player.HealthPercent)))
+                        && (!target.UnderTurret(true)
+                            || (ElDianaMenu.Menu.Item("ElDiana.Combo.R.PreventUnderTower").GetValue<Slider>().Value
+                                <= Player.HealthPercent)))
                     {
                         spells[Spells.R].Cast(target);
                     }
                 }
 
-                if (closeEnemies <= useSecondRLimitation && spells[Spells.R].IsReady())
+                if (closeEnemies <= ElDianaMenu.Menu.Item("ElDiana.Combo.UseSecondRLimitation").GetValue<Slider>().Value
+                    && spells[Spells.R].IsReady())
                 {
                     if (target.Health < spells[Spells.R].GetDamage(target))
                     {
@@ -217,15 +241,41 @@
                 }
             }
 
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useIgnite)
+            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health
+                && IsActive("ElDiana.Combo.Ignite"))
             {
                 Player.Spellbook.CastSpell(ignite, target);
             }
         }
 
+        private static void GapCloser(Obj_AI_Base target)
+        {
+            if (target == null || !spells[Spells.R].IsInRange(target))
+            {
+                return;
+            }
+
+            if (spells[Spells.Q].IsReady() && spells[Spells.R].IsReady())
+            {
+                var closeMinion =
+                    MinionManager.GetMinions(Player.ServerPosition, spells[Spells.R].Range)
+                        .OrderBy(x => x.Distance(target))
+                        .FirstOrDefault(x => !spells[Spells.Q].IsKillable(x));
+
+                if (closeMinion != null)
+                {
+                    spells[Spells.Q].Cast(closeMinion);
+                    if (HasQBuff(closeMinion))
+                    {
+                        spells[Spells.R].Cast(closeMinion);
+                    }
+                }
+            }
+        }
+
         private static HitChance GetHitchance()
         {
-            switch (ElDianaMenu._menu.Item("ElDiana.hitChance").GetValue<StringList>().SelectedIndex)
+            switch (ElDianaMenu.Menu.Item("ElDiana.hitChance").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
                     return HitChance.Low;
@@ -243,22 +293,17 @@
         private static void Harass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Physical);
-            if (target == null || !target.IsValid)
+            if (target == null)
             {
                 return;
             }
 
-            var useQ = ElDianaMenu._menu.Item("ElDiana.Harass.Q").GetValue<bool>();
-            var useW = ElDianaMenu._menu.Item("ElDiana.Harass.W").GetValue<bool>();
-            var useE = ElDianaMenu._menu.Item("ElDiana.Harass.E").GetValue<bool>();
-            var checkMana = ElDianaMenu._menu.Item("ElDiana.Harass.Mana").GetValue<Slider>().Value;
-
-            if (Player.ManaPercent < checkMana)
+            if (Player.ManaPercent <= ElDianaMenu.Menu.Item("ElDiana.Harass.Mana").GetValue<Slider>().Value)
             {
                 return;
             }
 
-            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+            if (IsActive("ElDiana.Harass.Q") && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
             {
                 var pred = spells[Spells.Q].GetPrediction(target);
                 if (pred.Hitchance >= CustomHitChance)
@@ -267,15 +312,21 @@
                 }
             }
 
-            if (useW && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
+            if (IsActive("ElDiana.Harass.W") && spells[Spells.W].IsReady() && spells[Spells.W].IsInRange(target))
             {
                 spells[Spells.W].Cast();
             }
 
-            if (useE && spells[Spells.E].IsReady() && Player.Distance(target) <= spells[Spells.E].Range)
+            if (IsActive("ElDiana.Harass.E") && spells[Spells.E].IsReady()
+                && Player.Distance(target) <= spells[Spells.E].Range)
             {
                 spells[Spells.E].Cast();
             }
+        }
+
+        private static bool HasQBuff(Obj_AI_Base target)
+        {
+            return target.HasBuff("dianamoonlight");
         }
 
         private static float IgniteDamage(Obj_AI_Hero target)
@@ -287,6 +338,11 @@
             return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
+        private static bool IsActive(string menuItem)
+        {
+            return ElDianaMenu.Menu.Item(menuItem).IsActive();
+        }
+
         private static void JungleClear()
         {
             var minions = MinionManager.GetMinions(
@@ -296,11 +352,6 @@
                 MinionTeam.Neutral,
                 MinionOrderTypes.MaxHealth);
 
-            var useQ = ElDianaMenu._menu.Item("ElDiana.JungleClear.Q").GetValue<bool>();
-            var useW = ElDianaMenu._menu.Item("ElDiana.JungleClear.W").GetValue<bool>();
-            var useE = ElDianaMenu._menu.Item("ElDiana.JungleClear.E").GetValue<bool>();
-            var useR = ElDianaMenu._menu.Item("ElDiana.JungleClear.R").GetValue<bool>();
-
             var qMinions = minions.FindAll(minion => minion.IsValidTarget(spells[Spells.Q].Range));
             var qMinion = qMinions.FirstOrDefault();
 
@@ -309,7 +360,7 @@
                 return;
             }
 
-            if (useQ && spells[Spells.Q].IsReady())
+            if (IsActive("ElDiana.JungleClear.Q") && spells[Spells.Q].IsReady())
             {
                 if (qMinion.IsValidTarget())
                 {
@@ -317,28 +368,24 @@
                 }
             }
 
-            if (useW && spells[Spells.W].IsReady())
+            if (IsActive("ElDiana.JungleClear.W") && spells[Spells.W].IsReady())
             {
                 spells[Spells.W].Cast();
             }
 
-            if (useE && spells[Spells.E].IsReady()
-                && qMinions.Count(m => Player.Distance(m, false) < spells[Spells.W].Range) < 1)
+            if (IsActive("ElDiana.JungleClear.E") && spells[Spells.E].IsReady()
+                && qMinions.Count(m => Player.Distance(m) < spells[Spells.W].Range) < 1)
             {
                 spells[Spells.E].Cast();
             }
 
-            if (useR && spells[Spells.R].IsReady())
+            if (IsActive("ElDiana.JungleClear.R") && spells[Spells.R].IsReady())
             {
-                //find Mob with moonlight buff
                 var moonlightMob =
-                    minions.FindAll(minion => minion.HasBuff("dianamoonlight")).OrderBy(minion => minion.HealthPercent);
+                    minions.FindAll(minion => HasQBuff(minion)).OrderBy(minion => minion.HealthPercent);
                 if (moonlightMob.Any())
                 {
-                    //only cast when killable
                     var canBeKilled = moonlightMob.Find(minion => minion.Health < spells[Spells.R].GetDamage(minion));
-
-                    //cast R on mob that can be killed
                     if (canBeKilled.IsValidTarget())
                     {
                         spells[Spells.R].Cast(canBeKilled);
@@ -356,14 +403,9 @@
                 return;
             }
 
-            var useQ = ElDianaMenu._menu.Item("ElDiana.LaneClear.Q").GetValue<bool>();
-            var useW = ElDianaMenu._menu.Item("ElDiana.LaneClear.W").GetValue<bool>();
-            var useE = ElDianaMenu._menu.Item("ElDiana.LaneClear.E").GetValue<bool>();
-            var useR = ElDianaMenu._menu.Item("ElDiana.LaneClear.R").GetValue<bool>();
-
-            var countQ = ElDianaMenu._menu.Item("ElDiana.LaneClear.Count.Minions.Q").GetValue<Slider>().Value;
-            var countW = ElDianaMenu._menu.Item("ElDiana.LaneClear.Count.Minions.W").GetValue<Slider>().Value;
-            var countE = ElDianaMenu._menu.Item("ElDiana.LaneClear.Count.Minions.E").GetValue<Slider>().Value;
+            var countQ = ElDianaMenu.Menu.Item("ElDiana.LaneClear.Count.Minions.Q").GetValue<Slider>().Value;
+            var countW = ElDianaMenu.Menu.Item("ElDiana.LaneClear.Count.Minions.W").GetValue<Slider>().Value;
+            var countE = ElDianaMenu.Menu.Item("ElDiana.LaneClear.Count.Minions.E").GetValue<Slider>().Value;
 
             var minions = MinionManager.GetMinions(
                 ObjectManager.Player.ServerPosition,
@@ -374,19 +416,19 @@
             var qMinions = minions.FindAll(minionQ => minion.IsValidTarget(spells[Spells.Q].Range));
             var qMinion = qMinions.Find(minionQ => minionQ.IsValidTarget());
 
-            if (useQ && spells[Spells.Q].IsReady()
+            if (IsActive("ElDiana.LaneClear.Q") && spells[Spells.Q].IsReady()
                 && spells[Spells.Q].GetCircularFarmLocation(minions).MinionsHit >= countQ)
             {
                 spells[Spells.Q].Cast(qMinion);
             }
 
-            if (useW && spells[Spells.W].IsReady()
+            if (IsActive("ElDiana.LaneClear.W") && spells[Spells.W].IsReady()
                 && spells[Spells.W].GetCircularFarmLocation(minions).MinionsHit >= countW)
             {
                 spells[Spells.W].Cast();
             }
 
-            if (useE && spells[Spells.E].IsReady() && Player.Distance(qMinion, false) < 200
+            if (IsActive("ElDiana.LaneClear.E") && spells[Spells.E].IsReady() && Player.Distance(qMinion, false) < 200
                 && spells[Spells.E].GetCircularFarmLocation(minions).MinionsHit >= countE)
             {
                 spells[Spells.E].Cast();
@@ -399,22 +441,37 @@
                 MinionTeam.NotAlly,
                 MinionOrderTypes.MaxHealth);
 
-            if (useR && spells[Spells.R].IsReady())
+            if (IsActive("ElDiana.LaneClear.R") && spells[Spells.R].IsReady())
             {
-                //find Mob with moonlight buff
-                var moonlightMob = minionsR.FindAll(x => x.HasBuff("dianamoonlight")).OrderBy(x => minion.HealthPercent);
+                var moonlightMob = minionsR.FindAll(x => HasQBuff(x)).OrderBy(x => minion.HealthPercent);
                 if (moonlightMob.Any())
                 {
-                    //only cast when killable
                     var canBeKilled = moonlightMob.Find(x => minion.Health < spells[Spells.R].GetDamage(minion));
-
-                    //cast R on mob that can be killed
                     if (canBeKilled.IsValidTarget())
                     {
                         spells[Spells.R].Cast(canBeKilled);
                     }
                 }
             }
+        }
+
+        private static void Lasthit()
+        {
+            var qKillableMinion =
+                MinionManager.GetMinions(
+                    ObjectManager.Player.ServerPosition,
+                    spells[Spells.Q].Range,
+                    MinionTypes.All,
+                    MinionTeam.NotAlly,
+                    MinionOrderTypes.MaxHealth).FirstOrDefault(x => spells[Spells.Q].IsKillable(x));
+
+            if (qKillableMinion == null
+                || Player.ManaPercent <= ElDianaMenu.Menu.Item("ElDiana.LastHit.Mana").GetValue<Slider>().Value)
+            {
+                return;
+            }
+
+            spells[Spells.Q].Cast(qKillableMinion);
         }
 
         private static void MisayaCombo()
@@ -425,38 +482,32 @@
                 return;
             }
 
-            var minHpToDive = ElDianaMenu._menu.Item("ElDiana.Combo.R.PreventUnderTower").GetValue<Slider>().Value;
+            var minHpToDive = ElDianaMenu.Menu.Item("ElDiana.Combo.R.PreventUnderTower").GetValue<Slider>().Value;
 
-            var useQ = ElDianaMenu._menu.Item("ElDiana.Combo.Q").GetValue<bool>();
-            var useW = ElDianaMenu._menu.Item("ElDiana.Combo.W").GetValue<bool>();
-            var useE = ElDianaMenu._menu.Item("ElDiana.Combo.E").GetValue<bool>();
-            var useR = ElDianaMenu._menu.Item("ElDiana.Combo.R").GetValue<bool>()
+            var useR = ElDianaMenu.Menu.Item("ElDiana.Combo.R").GetValue<bool>()
                        && (!target.UnderTurret(true) || (minHpToDive <= Player.HealthPercent));
-            var useIgnite = ElDianaMenu._menu.Item("ElDiana.Combo.Ignite").GetValue<bool>();
-            var secondR = ElDianaMenu._menu.Item("ElDiana.Combo.Secure").GetValue<bool>()
+            var useIgnite = ElDianaMenu.Menu.Item("ElDiana.Combo.Ignite").GetValue<bool>();
+            var secondR = ElDianaMenu.Menu.Item("ElDiana.Combo.Secure").GetValue<bool>()
                           && (!target.UnderTurret(true) || (minHpToDive <= Player.HealthPercent));
             var distToTarget = Player.Distance(target, false);
-            var misayaMinRange = ElDianaMenu._menu.Item("ElDiana.Combo.R.MisayaMinRange").GetValue<Slider>().Value;
+            var misayaMinRange = ElDianaMenu.Menu.Item("ElDiana.Combo.R.MisayaMinRange").GetValue<Slider>().Value;
             var useSecondRLimitation =
-                ElDianaMenu._menu.Item("ElDiana.Combo.UseSecondRLimitation").GetValue<Slider>().Value;
+                ElDianaMenu.Menu.Item("ElDiana.Combo.UseSecondRLimitation").GetValue<Slider>().Value;
 
-            // Can use R, R is ready but player too far from the target => do nothing
             if (useR && spells[Spells.R].IsReady() && distToTarget > spells[Spells.R].Range)
             {
                 return;
             }
 
-            // Prerequisites for Misaya Combo : If target is too close, won't work
-            if (useQ && useR && spells[Spells.Q].IsReady() && spells[Spells.R].IsReady()
+            if (IsActive("ElDiana.Combo.Q") && useR && spells[Spells.Q].IsReady() && spells[Spells.R].IsReady()
                 && distToTarget >= misayaMinRange)
             {
                 spells[Spells.R].Cast(target);
-                // No need to check the hitchance since R is a targeted dash.
                 spells[Spells.Q].Cast(target);
             }
 
-            // Misaya Combo is not possible, classic mode then
-            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
+            if (IsActive("ElDiana.Combo.Q") && spells[Spells.Q].IsReady()
+                && target.IsValidTarget(spells[Spells.Q].Range))
             {
                 var pred = spells[Spells.Q].GetPrediction(target);
                 if (pred.Hitchance >= HitChance.VeryHigh)
@@ -466,18 +517,18 @@
             }
 
             if (useR && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range)
-                && target.HasBuff("dianamoonlight"))
+                && HasQBuff(target))
             {
                 spells[Spells.R].Cast(target);
             }
 
-            if (useW && spells[Spells.W].IsReady()
+            if (IsActive("ElDiana.Combo.W") && spells[Spells.W].IsReady()
                 && target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(ObjectManager.Player)))
             {
                 spells[Spells.W].Cast();
             }
 
-            if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(400f))
+            if (IsActive("ElDiana.Combo.E") && spells[Spells.E].IsReady() && target.IsValidTarget(400f))
             {
                 spells[Spells.E].Cast();
             }
@@ -504,7 +555,7 @@
                 }
             }
 
-            if (Player.Distance(target, false) <= 600 && IgniteDamage(target) >= target.Health && useIgnite)
+            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useIgnite)
             {
                 Player.Spellbook.CastSpell(ignite, target);
             }
@@ -520,8 +571,8 @@
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    var ultType = ElDianaMenu._menu.Item("ElDiana.Combo.R.Mode").GetValue<StringList>().SelectedIndex;
-                    if (ElDianaMenu._menu.Item("ElDiana.Hotkey.ToggleComboMode").GetValue<KeyBind>().Active)
+                    var ultType = ElDianaMenu.Menu.Item("ElDiana.Combo.R.Mode").GetValue<StringList>().SelectedIndex;
+                    if (ElDianaMenu.Menu.Item("ElDiana.Hotkey.ToggleComboMode").GetValue<KeyBind>().Active)
                     {
                         ultType = (ultType + 1) % 2;
                     }
@@ -535,11 +586,13 @@
                             MisayaCombo();
                             break;
                     }
-
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     LaneClear();
                     JungleClear();
+                    break;
+                case Orbwalking.OrbwalkingMode.LastHit:
+                    Lasthit();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     Harass();

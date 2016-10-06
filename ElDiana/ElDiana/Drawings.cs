@@ -12,13 +12,13 @@
 
         public static void Drawing_OnDraw(EventArgs args)
         {
-            var drawOff = ElDianaMenu._menu.Item("ElDiana.Draw.off").GetValue<bool>();
-            var drawQ = ElDianaMenu._menu.Item("ElDiana.Draw.Q").GetValue<Circle>();
-            var drawW = ElDianaMenu._menu.Item("ElDiana.Draw.W").GetValue<Circle>();
-            var drawE = ElDianaMenu._menu.Item("ElDiana.Draw.E").GetValue<Circle>();
-            var drawR = ElDianaMenu._menu.Item("ElDiana.Draw.R").GetValue<Circle>();
-            var drawRMisaya = ElDianaMenu._menu.Item("ElDiana.Draw.RMisaya").GetValue<Circle>();
-            var misayaRange = ElDianaMenu._menu.Item("ElDiana.Combo.R.MisayaMinRange").GetValue<Slider>().Value;
+            var drawOff = ElDianaMenu.Menu.Item("ElDiana.Draw.off").GetValue<bool>();
+            var drawQ = ElDianaMenu.Menu.Item("ElDiana.Draw.Q").GetValue<Circle>();
+            var drawW = ElDianaMenu.Menu.Item("ElDiana.Draw.W").GetValue<Circle>();
+            var drawE = ElDianaMenu.Menu.Item("ElDiana.Draw.E").GetValue<Circle>();
+            var drawR = ElDianaMenu.Menu.Item("ElDiana.Draw.R").GetValue<Circle>();
+            var drawRMisaya = ElDianaMenu.Menu.Item("ElDiana.Draw.RMisaya").GetValue<Circle>();
+            var misayaRange = ElDianaMenu.Menu.Item("ElDiana.Combo.R.MisayaMinRange").GetValue<Slider>().Value;
 
             if (drawOff)
             {
