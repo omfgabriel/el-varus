@@ -194,7 +194,7 @@
 
             if (IsActive("ElDiana.Combo.W") && spells[Spells.W].IsReady())
             {
-                if (!Player.IsDashing() || !target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)))
+                if (Player.IsDashing() || !target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)))
                 {
                     return;
                 }
@@ -204,7 +204,7 @@
 
             if (IsActive("ElDiana.Combo.E") && spells[Spells.E].IsReady())
             {
-                if (!Player.IsDashing() || Player.Distance(target) > spells[Spells.E].Range)
+                if (Player.IsDashing() || Player.Distance(target) > spells[Spells.E].Range)
                 {
                     return;
                 }
