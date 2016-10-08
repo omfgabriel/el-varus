@@ -30,7 +30,7 @@ namespace Elvarus
                                                              {
                                                                  { Spells.Q, new Spell(SpellSlot.Q, 925F) },
                                                                  { Spells.W, new Spell(SpellSlot.W, 0) },
-                                                                 { Spells.E, new Spell(SpellSlot.E, 925) },
+                                                                 { Spells.E, new Spell(SpellSlot.E, 950F) },
                                                                  { Spells.R, new Spell(SpellSlot.R, 1100) }
                                                              };
 
@@ -58,7 +58,7 @@ namespace Elvarus
             }
 
             spells[Spells.Q].SetSkillshot(.25f, 70f, 1800f, false, SkillshotType.SkillshotLine);
-            spells[Spells.E].SetSkillshot(0.35f, 120, 1500, false, SkillshotType.SkillshotCircle);
+            spells[Spells.E].SetSkillshot(0.25f, 250f, 1500f, false, SkillshotType.SkillshotCircle);
             spells[Spells.R].SetSkillshot(.25f, 120f, 1950f, false, SkillshotType.SkillshotLine);
 
             spells[Spells.Q].SetCharged("VarusQ", "VarusQ", 250, 1700, 1.2f);
