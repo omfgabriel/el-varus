@@ -32,7 +32,8 @@ namespace ElRumble
             comboMenu.AddItem(new MenuItem("ElRumble.Combo.W", "Use W").SetValue(false));
             comboMenu.AddItem(new MenuItem("ElRumble.Combo.E", "Use E").SetValue(true));
             comboMenu.AddItem(new MenuItem("ElRumble.Combo.R", "Use R").SetValue(true));
-            comboMenu.AddItem(new MenuItem("ElRumble.Combo.Count.Enemies", "Enemies in range for R").SetValue(new Slider(2, 1, 5)));
+            comboMenu.AddItem(new MenuItem("ElRumble.Combo.RKS", "Use R to KS").SetValue(true));
+            comboMenu.AddItem(new MenuItem("ElRumble.Combo.Count.Enemies", "R when can hit: ").SetValue(new Slider(2, 1, 5)));
             comboMenu.AddItem(new MenuItem("ElRumble.Combo.Ignite", "Use Ignite").SetValue(true));
 
             _menu.AddSubMenu(comboMenu);

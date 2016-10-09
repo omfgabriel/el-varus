@@ -32,11 +32,11 @@
 
         public static Dictionary<Spells, Spell> spells = new Dictionary<Spells, Spell>
                                                              {
-                                                                 { Spells.Q, new Spell(SpellSlot.Q, 500) },
-                                                                 { Spells.W, new Spell(SpellSlot.W, 0) },
-                                                                 { Spells.E, new Spell(SpellSlot.E, 950) },
-                                                                 { Spells.R, new Spell(SpellSlot.R, 1700) },
-                                                                 { Spells.R1, new Spell(SpellSlot.R, 800) }
+                                                                     { Spells.Q, new Spell(SpellSlot.Q, 500) },
+                                                                     { Spells.W, new Spell(SpellSlot.W, 0) },
+                                                                     { Spells.E, new Spell(SpellSlot.E, 950) },
+                                                                     { Spells.R, new Spell(SpellSlot.R, 1700) },
+                                                                     { Spells.R1, new Spell(SpellSlot.R, 800) }
                                                              };
 
         private static SpellSlot _ignite;
@@ -61,37 +61,22 @@
         {
             return
                 ObjectManager.Get<Obj_AI_Hero>()
-                    .Count(hero => hero.IsEnemy && !hero.IsDead && hero.IsValid && hero.Distance(pos) <= range);
+                    .Count(hero => hero.IsEnemy && !hero.IsDead && hero.IsValid && (hero.Distance(pos) <= range));
         }
 
         public static float GetComboDamage(Obj_AI_Base enemy)
         {
             float damage = 0;
 
-            if (spells[Spells.Q].IsReady())
-            {
-                damage += spells[Spells.Q].GetDamage(enemy);
-            }
+            if (spells[Spells.Q].IsReady()) damage += spells[Spells.Q].GetDamage(enemy);
 
-            if (spells[Spells.W].IsReady())
-            {
-                damage += spells[Spells.W].GetDamage(enemy);
-            }
+            if (spells[Spells.W].IsReady()) damage += spells[Spells.W].GetDamage(enemy);
 
-            if (spells[Spells.E].IsReady())
-            {
-                damage += spells[Spells.E].GetDamage(enemy);
-            }
+            if (spells[Spells.E].IsReady()) damage += spells[Spells.E].GetDamage(enemy);
 
-            if (spells[Spells.R].IsReady())
-            {
-                damage += spells[Spells.R].GetDamage(enemy);
-            }
+            if (spells[Spells.R].IsReady()) damage += spells[Spells.R].GetDamage(enemy);
 
-            if (_ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(_ignite) != SpellState.Ready)
-            {
-                damage += (float)Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
-            }
+            if ((_ignite == SpellSlot.Unknown) || (Player.Spellbook.CanUseSpell(_ignite) != SpellState.Ready)) damage += (float)Player.GetSummonerSpellDamage(enemy, Damage.SummonerSpell.Ignite);
 
             return damage;
         }
@@ -103,42 +88,21 @@
             var drawE = ElRumbleMenu._menu.Item("ElRumble.Draw.E").GetValue<Circle>();
             var drawR = ElRumbleMenu._menu.Item("ElRumble.Draw.R").GetValue<Circle>();
 
-            if (drawOff)
-            {
-                return;
-            }
+            if (drawOff) return;
 
-            if (drawQ.Active)
-            {
-                if (spells[Spells.Q].Level > 0)
-                {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.Q].Range, Color.White);
-                }
-            }
+            if (drawQ.Active) if (spells[Spells.Q].Level > 0) Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.Q].Range, Color.White);
 
-            if (drawE.Active)
-            {
-                if (spells[Spells.E].Level > 0)
-                {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.E].Range, Color.White);
-                }
-            }
+            if (drawE.Active) if (spells[Spells.E].Level > 0) Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.E].Range, Color.White);
 
             if (drawR.Active)
             {
-                if (spells[Spells.R].Level > 0)
-                {
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.R].Range, Color.White);
-                }
+                if (spells[Spells.R].Level > 0) Render.Circle.DrawCircle(ObjectManager.Player.Position, spells[Spells.R].Range, Color.White);
 
                 if (CountEnemiesNearPosition(Player.ServerPosition, spells[Spells.R].Range + 500) < 2)
                 {
                     var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
 
-                    if (target == null)
-                    {
-                        return;
-                    }
+                    if (target == null) return;
 
                     var vector1 = target.ServerPosition
                                   - Vector3.Normalize(target.ServerPosition - Player.ServerPosition) * 300;
@@ -188,10 +152,7 @@
 
         public static void OnLoad(EventArgs args)
         {
-            if (ObjectManager.Player.CharData.BaseSkinName != "Rumble")
-            {
-                return;
-            }
+            if (ObjectManager.Player.CharData.BaseSkinName != "Rumble") return;
 
             _ignite = Player.GetSpellSlot("summonerdot");
 
@@ -208,14 +169,10 @@
 
         #region Methods
 
-        //CREDITS TO XSALICE - Made a few changes to it
         private static void CastR()
         {
             var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValidTarget())
-            {
-                return;
-            }
+            if (!target.IsValidTarget(spells[Spells.R].Range)) return;
 
             var vector1 = target.ServerPosition - Vector3.Normalize(target.ServerPosition - Player.ServerPosition) * 300;
 
@@ -230,36 +187,24 @@
                 vector1 = midpoint + Vector3.Normalize(pred.UnitPosition - Player.ServerPosition) * 800;
                 var vector2 = midpoint - Vector3.Normalize(pred.UnitPosition - Player.ServerPosition) * 300;
 
-                if (!IsPassWall(pred.UnitPosition, vector1) && !IsPassWall(pred.UnitPosition, vector2))
-                {
-                    CastR2(vector1, vector2);
-                }
+                if (!IsPassWall(pred.UnitPosition, vector1) && !IsPassWall(pred.UnitPosition, vector2)) CastR2(vector1, vector2);
             }
             else if (!IsPassWall(pred.UnitPosition, vector1) && !IsPassWall(pred.UnitPosition, pred.CastPosition))
             {
-                if (pred.Hitchance >= HitChance.High)
-                {
-                    CastR2(vector1, pred.CastPosition);
-                }
+                if (pred.Hitchance >= HitChance.VeryHigh) CastR2(vector1, pred.CastPosition);
             }
         }
 
         private static void CastR2(Vector3 start, Vector3 end)
         {
-            if (!spells[Spells.R].IsReady())
-            {
-                return;
-            }
+            if (!spells[Spells.R].IsReady()) return;
 
             spells[Spells.R].Cast(start, end);
         }
 
         private static float IgniteDamage(Obj_AI_Hero target)
         {
-            if (_ignite == SpellSlot.Unknown || Player.Spellbook.CanUseSpell(_ignite) != SpellState.Ready)
-            {
-                return 0f;
-            }
+            if ((_ignite == SpellSlot.Unknown) || (Player.Spellbook.CanUseSpell(_ignite) != SpellState.Ready)) return 0f;
             return (float)Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
@@ -269,19 +214,15 @@
             for (uint i = 0; i <= count; i += 25)
             {
                 var pos = start.To2D().Extend(Player.ServerPosition.To2D(), -i);
-                if (IsWall(pos))
-                {
-                    return true;
-                }
+                if (IsWall(pos)) return true;
             }
             return false;
         }
 
-        //CREDITS TO XSALICE
         private static bool IsWall(Vector2 pos)
         {
-            return (NavMesh.GetCollisionFlags(pos.X, pos.Y) == CollisionFlags.Wall
-                    || NavMesh.GetCollisionFlags(pos.X, pos.Y) == CollisionFlags.Building);
+            return (NavMesh.GetCollisionFlags(pos.X, pos.Y) == CollisionFlags.Wall)
+                   || (NavMesh.GetCollisionFlags(pos.X, pos.Y) == CollisionFlags.Building);
         }
 
         private static void KeepHeat()
@@ -291,15 +232,9 @@
 
             if (Player.Mana < 50)
             {
-                if (useQ && spells[Spells.Q].IsReady())
-                {
-                    spells[Spells.Q].Cast(Game.CursorPos);
-                }
+                if (useQ && spells[Spells.Q].IsReady()) spells[Spells.Q].Cast(Game.CursorPos);
 
-                if (useW && spells[Spells.W].IsReady())
-                {
-                    spells[Spells.W].Cast();
-                }
+                if (useW && spells[Spells.W].IsReady()) spells[Spells.W].Cast();
             }
         }
 
@@ -309,35 +244,22 @@
             var useE = ElRumbleMenu._menu.Item("ElRumble.LaneClear.E").IsActive();
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, spells[Spells.Q].Range);
-            if (minions.Count <= 0)
-            {
-                return;
-            }
+            if (minions.Count <= 0) return;
 
             if (useQ && spells[Spells.Q].IsReady())
-            {
                 if (minions.Count > 1)
                 {
                     var farmLocation = spells[Spells.Q].GetCircularFarmLocation(minions);
                     spells[Spells.Q].Cast(farmLocation.Position);
                 }
-            }
 
-            if (useE && spells[Spells.E].IsReady())
-            {
-                spells[Spells.E].Cast(minions.FirstOrDefault());
-            }
+            if (useE && spells[Spells.E].IsReady()) spells[Spells.E].Cast(minions.FirstOrDefault());
         }
 
         private static void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            var rTarget = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
-
-            if (target == null || !target.IsValid)
-            {
-                return;
-            }
+            if (target == null) return;
 
             var useQ = ElRumbleMenu._menu.Item("ElRumble.Combo.Q").IsActive();
             var useW = ElRumbleMenu._menu.Item("ElRumble.Combo.W").IsActive();
@@ -346,67 +268,38 @@
             var useI = ElRumbleMenu._menu.Item("ElRumble.Combo.Ignite").IsActive();
             var countEnemies = ElRumbleMenu._menu.Item("ElRumble.Combo.Count.Enemies").GetValue<Slider>().Value;
 
-            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range))
-            {
-                spells[Spells.Q].Cast(target);
-            }
+            if (useQ && spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range)) spells[Spells.Q].Cast(target);
 
             if (useE && spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range))
             {
                 var pred = spells[Spells.E].GetPrediction(target);
-                if (pred.Hitchance >= HitChance.High)
-                {
-                    spells[Spells.E].Cast(pred.CastPosition);
-                }
+                if (pred.Hitchance >= HitChance.Medium) spells[Spells.E].Cast(pred.CastPosition);
             }
 
-            if (useW && spells[Spells.W].IsReady())
-            {
-                spells[Spells.W].Cast();
-            }
+            if (useW && spells[Spells.W].IsReady()) spells[Spells.W].Cast();
 
-            if (useR && spells[Spells.R].IsReady() && Player.CountEnemiesInRange(spells[Spells.R].Range) >= countEnemies)
-            {
-                CastR();
-            }
+            if (useR && spells[Spells.R].IsReady()
+                && (Player.CountEnemiesInRange(spells[Spells.R].Range) >= countEnemies)) CastR();
 
-            if (useR && spells[Spells.R].IsReady())
-            {
-                if (target.Health < spells[Spells.R].GetDamage(target))
-                {
-                    CastR();
-                }
-            }
+            if (useR && spells[Spells.R].IsReady() && ElRumbleMenu._menu.Item("ElRumble.Combo.RKS").IsActive()) if (target.Health < spells[Spells.R].GetDamage(target)) CastR();
 
-            if (Player.Distance(target) <= 600 && IgniteDamage(target) >= target.Health && useI)
-            {
-                Player.Spellbook.CastSpell(_ignite, target);
-            }
+            if ((Player.Distance(target) <= 600) && (IgniteDamage(target) >= target.Health) && useI) Player.Spellbook.CastSpell(_ignite, target);
         }
 
         private static void OnHarass()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValid)
-            {
-                return;
-            }
+            if ((target == null) || !target.IsValid) return;
 
             var useQ = ElRumbleMenu._menu.Item("ElRumble.Harass.Q").IsActive();
             var useE = ElRumbleMenu._menu.Item("ElRumble.Harass.E").IsActive();
 
-            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
-            {
-                spells[Spells.Q].Cast(target);
-            }
+            if (useQ && spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target)) spells[Spells.Q].Cast(target);
 
             if (useE && spells[Spells.E].IsReady() && spells[Spells.E].IsInRange(target))
             {
                 var pred = spells[Spells.E].GetPrediction(target);
-                if (pred.Hitchance >= HitChance.High)
-                {
-                    spells[Spells.E].Cast(target);
-                }
+                if (pred.Hitchance >= HitChance.High) spells[Spells.E].Cast(target);
             }
         }
 
@@ -422,24 +315,16 @@
                 MinionTeam.Neutral,
                 MinionOrderTypes.MaxHealth);
 
-            if (minions.Count <= 0)
-            {
-                return;
-            }
+            if (minions.Count <= 0) return;
 
             if (useQ && spells[Spells.Q].IsReady())
-            {
                 if (minions.Count > 1)
                 {
                     var farmLocation = spells[Spells.Q].GetCircularFarmLocation(minions);
                     spells[Spells.Q].Cast(farmLocation.Position);
                 }
-            }
 
-            if (useE && spells[Spells.E].IsReady())
-            {
-                spells[Spells.E].Cast(minions.FirstOrDefault());
-            }
+            if (useE && spells[Spells.E].IsReady()) spells[Spells.E].Cast(minions.FirstOrDefault());
         }
 
         private static void OnLastHit()
@@ -452,23 +337,18 @@
                     foreach (var minion in
                         allMinions.Where(
                             minion => minion.Health <= ObjectManager.Player.GetSpellDamage(minion, SpellSlot.E)))
-                    {
                         if (minion.IsValidTarget())
                         {
                             spells[Spells.E].Cast(minion);
                             return;
                         }
-                    }
                 }
             }
         }
 
         private static void OnUpdate(EventArgs args)
         {
-            if (Player.IsDead)
-            {
-                return;
-            }
+            if (Player.IsDead) return;
 
             switch (Orbwalker.ActiveMode)
             {
@@ -491,15 +371,9 @@
             }
 
             var keepHeat = ElRumbleMenu._menu.Item("ElRumble.KeepHeat.Activated", true).GetValue<KeyBind>().Active;
-            if (keepHeat)
-            {
-                KeepHeat();
-            }
+            if (keepHeat) KeepHeat();
 
-            if (ElRumbleMenu._menu.Item("ElRumble.Misc.R").GetValue<KeyBind>().Active && spells[Spells.R].IsReady())
-            {
-                CastR();
-            }
+            if (ElRumbleMenu._menu.Item("ElRumble.Misc.R").GetValue<KeyBind>().Active && spells[Spells.R].IsReady()) CastR();
         }
 
         #endregion
