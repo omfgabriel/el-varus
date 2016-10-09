@@ -1,18 +1,14 @@
 ﻿namespace ElAurelion_Sol
 {
     using System;
+    using System.Drawing;
     using System.Linq;
 
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    using SharpDX;
-
-    using Color = System.Drawing.Color;
-
     internal class AurelionSol
     {
-
         #region Public Properties
 
         /// <summary>
@@ -97,11 +93,6 @@
         /// </value>
         private static Spell W1 { get; set; }
 
-        private static bool HasPassive()
-        {
-            return Player.HasBuff("AurelionSolWActive");
-        }
-
         #endregion
 
         #region Public Methods and Operators
@@ -114,18 +105,11 @@
         {
             try
             {
-                if (Player.ChampionName != "AurelionSol")
-                {
-                    return;
-                }
+                if (Player.ChampionName != "AurelionSol") return;
 
                 var igniteSlot = Player.GetSpellSlot("summonerdot");
 
-                if (igniteSlot != SpellSlot.Unknown)
-                {   
-                    IgniteSpell = new Spell(igniteSlot, 600f);
-                }
-
+                if (igniteSlot != SpellSlot.Unknown) IgniteSpell = new Spell(igniteSlot, 600f);
 
                 Q = new Spell(SpellSlot.Q, 650f);
                 W1 = new Spell(SpellSlot.W, 350f);
@@ -143,7 +127,6 @@
                 Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
                 AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
                 Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
-
             }
             catch (Exception exception)
             {
@@ -154,6 +137,21 @@
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// </summary>
+        /// <param name="gapcloser"></param>
+        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        {
+            if (!IsActive("gapcloser")) return;
+
+            if (Q.IsReady() && (gapcloser.Sender.Distance(Player) < Q.Range))
+                if (gapcloser.Sender.IsValidTarget(Q.Range) && Q.IsReady())
+                {
+                    var prediction = Q.GetPrediction(gapcloser.Sender);
+                    if (prediction.Hitchance >= HitChance.High) Q.Cast(prediction.CastPosition);
+                }
+        }
 
         /// <summary>
         ///     Creates the menu
@@ -186,8 +184,6 @@
                     comboMenu.AddItem(new MenuItem("Combo.Q", "Use Q").SetValue(true));
                     comboMenu.AddItem(new MenuItem("Combo.W", "Use W").SetValue(true));
                     comboMenu.AddItem(new MenuItem("Combo.R", "Use R").SetValue(true));
-                    comboMenu.AddItem(new MenuItem("Combo.R.Multiple", "R multiple targets:").SetValue(true));
-                    comboMenu.AddItem(new MenuItem("Combo.R.Count", "Auto R on:").SetValue(new Slider(3, 2, 4)));
                 }
 
                 Menu.AddSubMenu(comboMenu);
@@ -202,8 +198,7 @@
                 {
                     laneclearMenu.AddItem(new MenuItem("laneclear.Q", "Use Q").SetValue(true));
                     laneclearMenu.AddItem(
-                        new MenuItem("laneclear.minionshit", "Minimum minions hit (Q)").SetValue(
-                            new Slider(2, 1, 5)));
+                        new MenuItem("laneclear.minionshit", "Minimum minions hit (Q)").SetValue(new Slider(2, 1, 5)));
                     laneclearMenu.AddItem(
                         new MenuItem("laneclear.Mana", "Minimum mana").SetValue(new Slider(20, 0, 100)));
                 }
@@ -241,7 +236,6 @@
 
                 Menu.AddSubMenu(miscMenu);
 
-
                 var drawingsMenu = new Menu("Drawings", "Drawings");
                 {
                     drawingsMenu.AddItem(new MenuItem("Draw.Off", "Disable drawings").SetValue(false));
@@ -270,17 +264,39 @@
                 var kSableEnemy =
                     HeroManager.Enemies.FirstOrDefault(
                         hero =>
-                        hero.IsValidTarget(550) && ShieldCheck(hero) && !hero.HasBuff("summonerdot") && !hero.IsZombie
-                        && Player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite) >= hero.Health);
+                            hero.IsValidTarget(550) && ShieldCheck(hero) && !hero.HasBuff("summonerdot")
+                            && !hero.IsZombie
+                            && (Player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite) >= hero.Health));
 
-                if (kSableEnemy != null && IgniteSpell.Slot != SpellSlot.Unknown)
-                {
-                    Player.Spellbook.CastSpell(IgniteSpell.Slot, kSableEnemy);
-                }
+                if ((kSableEnemy != null) && (IgniteSpell.Slot != SpellSlot.Unknown)) Player.Spellbook.CastSpell(IgniteSpell.Slot, kSableEnemy);
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
+            }
+        }
+
+        private static bool HasPassive()
+        {
+            return Player.HasBuff("AurelionSolWActive");
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private static void Interrupter2_OnInterruptableTarget(
+            Obj_AI_Hero sender,
+            Interrupter2.InterruptableTargetEventArgs args)
+        {
+            if (!IsActive("inter")) return;
+
+            if ((args.DangerLevel != Interrupter2.DangerLevel.High) || (sender.Distance(Player) > Q.Range)) return;
+
+            if (sender.IsValidTarget(Q.Range) && (args.DangerLevel == Interrupter2.DangerLevel.High) && Q.IsReady())
+            {
+                var prediction = Q.GetPrediction(sender);
+                if (prediction.Hitchance >= HitChance.High) Q.Cast(prediction.CastPosition);
             }
         }
 
@@ -296,31 +312,6 @@
         }
 
         /// <summary>
-        /// Calculates the R damage
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns>
-        /// The R damage
-        /// </returns>
-        private static double RDamage(Obj_AI_Base target)
-        {
-            return Player.CalcDamage(target, Damage.DamageType.Magical,
-                (float)new double[] { 200, 400, 600 }[R.Level - 1] + 0.70f * Player.TotalMagicalDamage);
-        }
-        /// <summary>
-        /// Calculates the Q damage
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns>
-        /// The Q damage
-        /// </returns>
-        private static double QDamage(Obj_AI_Base target)
-        {
-            return Player.CalcDamage(target, Damage.DamageType.Magical,
-                (float)new double[] { 70 , 110 , 150 , 190 , 230 }[Q.Level - 1] + 0.65f * Player.TotalMagicalDamage);
-        }
-
-        /// <summary>
         ///     Combo logic
         /// </summary>
         private static void OnCombo()
@@ -328,137 +319,38 @@
             try
             {
                 var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
-                if (target == null)
-                {
-                    return;
-                }
+                if (target == null) return;
 
                 if (Q.IsReady() && IsActive("Combo.Q"))
                 {
-                    var prediction = Q.GetPrediction(target);
-                    if (prediction.Hitchance >= HitChance.High)
-                    {
-                        Q.Cast(prediction.CastPosition);
-                    }
+                    if (Q.Instance.ToggleState != 1) return;
+
+                    Q.Cast(target, false, true);
+                }
+
+                if (R.IsReady() && IsActive("Combo.R") && (R.GetDamage(target) > target.Health + target.PhysicalShield))
+                {
+                    var prediction = R.GetPrediction(target);
+                    if (prediction.Hitchance >= HitChance.VeryHigh) R.Cast(prediction.CastPosition);
                 }
 
                 if (W.IsReady() && IsActive("Combo.W"))
-                {
                     if (!HasPassive())
                     {
-                        if (target.IsValidTarget(W1.Range))
-                        {
-                            return;
-                        }
+                        if (target.IsValidTarget(W1.Range)) return;
 
-                        if (Player.Distance(target) > W1.Range && Player.Distance(target) < W.Range)
-                        {
-                            W.Cast();
-                        }
+                        if ((Player.Distance(target) > W1.Range) && (Player.Distance(target) < W.Range)) W.Cast();
                     }
-                    else if(HasPassive())
+                    else if (HasPassive())
                     {
-                        if (Player.Distance(target) > W1.Range && Player.Distance(target) < W.Range + 100)
-                        {
-                            return;
-                        }
+                        if ((Player.Distance(target) > W1.Range) && (Player.Distance(target) < W.Range + 100)) return;
 
-                        if (Player.Distance(target) > W1.Range + 150)
-                        {
-                            W.Cast();
-                        }
+                        if (Player.Distance(target) > W1.Range + 150) W.Cast();
                     }
-                }
-
-                if (R.IsReady() && IsActive("Combo.R") && RDamage(target) > target.Health + target.PhysicalShield) 
-                {
-                    var prediction = R.GetPrediction(target);
-                    if (prediction.Hitchance >= HitChance.High)
-                    {   
-                        R.Cast(prediction.CastPosition);
-                    }
-                }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="args"></param>
-        private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
-        {
-            if (Menu.Item("AA.Block").IsActive() && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-            {
-                args.Process = false;
-            }
-            else
-            {
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-                {
-                    args.Process =
-                        !(Q.IsReady() 
-                          || Player.Distance(args.Target) >= 1000);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private static void Interrupter2_OnInterruptableTarget(
-            Obj_AI_Hero sender,
-            Interrupter2.InterruptableTargetEventArgs args)
-        {
-
-            if (!IsActive("inter"))
-            {
-                return;
-            }
-
-            if (args.DangerLevel != Interrupter2.DangerLevel.High
-                || sender.Distance(Player) > Q.Range)
-            {
-                return;
-            }
-
-            if (sender.IsValidTarget(Q.Range) && args.DangerLevel == Interrupter2.DangerLevel.High
-                && Q.IsReady())
-            {
-                var prediction = Q.GetPrediction(sender);
-                if (prediction.Hitchance >= HitChance.High)
-                {
-                    Q.Cast(prediction.CastPosition);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="gapcloser"></param>
-        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
-        {
-            if (!IsActive("gapcloser"))
-            {
-                return;
-            }
-
-            if (Q.IsReady() && gapcloser.Sender.Distance(Player) < Q.Range)
-            {
-                if (gapcloser.Sender.IsValidTarget(Q.Range) && Q.IsReady())
-                {
-                    var prediction = Q.GetPrediction(gapcloser.Sender);
-                    if (prediction.Hitchance >= HitChance.High)
-                    {
-                        Q.Cast(prediction.CastPosition);
-                    }
-                }
             }
         }
 
@@ -470,52 +362,26 @@
         {
             try
             {
-                if (IsActive("Draw.Off"))
-                {
-                    return;
-                }
+                if (IsActive("Draw.Off")) return;
 
                 if (Menu.Item("Draw.W").GetValue<Circle>().Active)
-                {
-
                     if (!HasPassive())
                     {
-                        if (W.Level > 0)
-                        {
-                            Render.Circle.DrawCircle(ObjectManager.Player.Position, W1.Range, Color.Red);
-                        }
+                        if (W.Level > 0) Render.Circle.DrawCircle(ObjectManager.Player.Position, W1.Range, Color.Red);
                     }
                     else
                     {
-                        if (W.Level > 0)
-                        {
-                            Render.Circle.DrawCircle(ObjectManager.Player.Position, W.Range, Color.MediumVioletRed);
-                        }
+                        if (W.Level > 0) Render.Circle.DrawCircle(ObjectManager.Player.Position, W.Range, Color.MediumVioletRed);
                     }
-                }
-                if (Menu.Item("Draw.W").GetValue<Circle>().Active)
-                {
-                    if (Q.Level > 0)
-                    {
-                        Render.Circle.DrawCircle(ObjectManager.Player.Position, Q.Range, Color.Goldenrod);
-                    }
-                }
+                if (Menu.Item("Draw.W").GetValue<Circle>().Active) if (Q.Level > 0) Render.Circle.DrawCircle(ObjectManager.Player.Position, Q.Range, Color.Goldenrod);
 
-                if (Menu.Item("Draw.R").GetValue<Circle>().Active)
-                {
-                    if (R.Level > 0)
-                    {
-                        Render.Circle.DrawCircle(ObjectManager.Player.Position, R.Range, Color.DeepSkyBlue);
-                    }
-                }
-
+                if (Menu.Item("Draw.R").GetValue<Circle>().Active) if (R.Level > 0) Render.Circle.DrawCircle(ObjectManager.Player.Position, R.Range, Color.DeepSkyBlue);
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
             }
         }
-
 
         /// <summary>
         ///     Harass logic
@@ -525,20 +391,13 @@
             try
             {
                 var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
-                if (target == null)
-                {
-                    return;
-                }
+                if (target == null) return;
 
                 if (Q.IsReady() && IsActive("Harass.Q"))
                 {
                     var prediction = Q.GetPrediction(target);
-                    if (prediction.Hitchance >= HitChance.High)
-                    {
-                        Q.Cast(prediction.CastPosition);
-                    }
+                    if (prediction.Hitchance >= HitChance.High) Q.Cast(prediction.CastPosition);
                 }
-
             }
             catch (Exception e)
             {
@@ -560,23 +419,14 @@
                     MinionTeam.Neutral,
                     MinionOrderTypes.MaxHealth);
 
-                if (minion == null)
-                {
-                    return;
-                }
+                if (minion == null) return;
 
-                if (Player.ManaPercent < Menu.Item("jungleclear.Mana").GetValue<Slider>().Value)
-                {
-                    return;
-                }
+                if (Player.ManaPercent < Menu.Item("jungleclear.Mana").GetValue<Slider>().Value) return;
 
                 if (IsActive("jungleclear.Q") && Q.IsReady())
                 {
                     var prediction = Q.GetCircularFarmLocation(minion);
-                    if (prediction.MinionsHit >= 1)
-                    {
-                        Q.Cast(prediction.Position);
-                    }
+                    if (prediction.MinionsHit >= 1) Q.Cast(prediction.Position);
                 }
             }
             catch (Exception exception)
@@ -595,22 +445,16 @@
                 foreach (
                     var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range) && !x.IsDead && !x.IsZombie))
                 {
-                    if (Q.IsReady() && enemy.IsValidTarget(Q.Range) && enemy.Health < QDamage(enemy))
+                    if (Q.IsReady() && enemy.IsValidTarget(Q.Range) && (enemy.Health < Q.GetDamage(enemy)))
                     {
                         var prediction = Q.GetPrediction(enemy);
-                        if (prediction.Hitchance >= HitChance.High)
-                        {
-                            Q.Cast(prediction.CastPosition);
-                        }
+                        if (prediction.Hitchance >= HitChance.High) Q.Cast(prediction.CastPosition);
                     }
 
-                    if(R.IsReady() && enemy.IsValidTarget(R.Range) && enemy.Health < RDamage(enemy))
+                    if (R.IsReady() && enemy.IsValidTarget(R.Range) && (enemy.Health < R.GetDamage(enemy)))
                     {
                         var prediction = R.GetPrediction(enemy);
-                        if (prediction.Hitchance >= HitChance.High)
-                        {
-                            R.Cast(prediction.CastPosition);
-                        }
+                        if (prediction.Hitchance >= HitChance.High) R.Cast(prediction.CastPosition);
                     }
                 }
             }
@@ -627,24 +471,15 @@
         {
             try
             {
-                if (Player.ManaPercent < Menu.Item("laneclear.Mana").GetValue<Slider>().Value)
-                {
-                    return;
-                }
+                if (Player.ManaPercent < Menu.Item("laneclear.Mana").GetValue<Slider>().Value) return;
 
                 var minion = MinionManager.GetMinions(Player.Position, Q.Range);
-                if (minion == null)
-                {
-                    return;
-                }
+                if (minion == null) return;
 
                 if (IsActive("laneclear.Q") && Q.IsReady())
                 {
                     var prediction = Q.GetCircularFarmLocation(minion);
-                    if (prediction.MinionsHit >= 2)
-                    {
-                        Q.Cast(prediction.Position);
-                    }
+                    if (prediction.MinionsHit >= 2) Q.Cast(prediction.Position);
                 }
             }
             catch (Exception exception)
@@ -661,10 +496,7 @@
         {
             try
             {
-                if (Player.IsDead)
-                {
-                    return;
-                }
+                if (Player.IsDead) return;
 
                 switch (Orbwalker.ActiveMode)
                 {
@@ -680,46 +512,47 @@
                         break;
                 }
 
-                if (IsActive("Killsteal.Active"))
-                {
-                    OnKillsteal();
-                }
+                Qhander();
 
-                if (IsActive("Ignite"))
-                {
-                    HandleIgnite();
-                }
+                if (IsActive("Killsteal.Active")) OnKillsteal();
 
-                if (IsActive("Misc.Auto.W"))
-                {
-                    if (HasPassive() && Player.GetEnemiesInRange(2000f).Count == 0)
-                    {
-                        W.Cast();
-                    }
-                }
+                if (IsActive("Ignite")) HandleIgnite();
 
-                if (IsActive("Combo.R.Multiple"))
-                {
-                    float RDistance = 1420;
-                    float RWidth = 120;
-                    var minREnemies = Menu.Item("Combo.R.Count").GetValue<Slider>().Value;
-                    foreach (var enemy in HeroManager.Enemies)
-                    {
-                        var startPos = enemy.ServerPosition;
-                        var endPos = Player.ServerPosition.Extend(startPos, Player.Distance(enemy) + RDistance);
-                        var rectangle = new Geometry.Polygon.Rectangle(startPos, endPos, RWidth);
-
-                        if (HeroManager.Enemies.Count(x => rectangle.IsInside(x)) >= minREnemies)
-                        {
-                            R.Cast(enemy);
-                        }
-                    }
-                }
+                if (IsActive("Misc.Auto.W")) if (HasPassive() && (Player.GetEnemiesInRange(2000f).Count == 0)) W.Cast();
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
             }
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="args"></param>
+        private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            if (Menu.Item("AA.Block").IsActive() && (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo))
+            {
+                args.Process = false;
+            }
+            else
+            {
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo) args.Process = !(Q.IsReady() || (Player.Distance(args.Target) >= 1000));
+            }
+        }
+
+        private static void Qhander()
+        {
+            if (Q.Instance.ToggleState != 2) return;
+
+            var missile =
+                ObjectManager.Get<MissileClient>()
+                    .FirstOrDefault(obj => (obj.SData.Name == "AurelionSolQMissile") && obj.SpellCaster.IsMe);
+
+            if (missile != null)
+                if (
+                    HeroManager.Enemies.Any(
+                        hero => hero.IsValidTarget() & (hero.ServerPosition.Distance(missile.Position) <= Q.Width))) Q.Cast();
         }
 
         /// <summary>
@@ -729,9 +562,8 @@
         {
             try
             {
-                return !hero.HasBuff("summonerbarrier") || !hero.HasBuff("BlackShield")
-                       || !hero.HasBuff("SivirShield") || !hero.HasBuff("BansheesVeil")
-                       || !hero.HasBuff("ShroudofDarkness");
+                return !hero.HasBuff("summonerbarrier") || !hero.HasBuff("BlackShield") || !hero.HasBuff("SivirShield")
+                       || !hero.HasBuff("BansheesVeil") || !hero.HasBuff("ShroudofDarkness");
             }
             catch (Exception exception)
             {
