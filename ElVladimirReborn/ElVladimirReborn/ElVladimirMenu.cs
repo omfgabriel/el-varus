@@ -55,6 +55,7 @@
             var clearMenu = new Menu("Waveclear", "Waveclear");
             {
                 clearMenu.AddItem(new MenuItem("ElVladimir.WaveClear.Q", "Use Q").SetValue(true));
+                clearMenu.AddItem(new MenuItem("ElVladimir.WaveClear.Q.Last", "Lasthit with Q").SetValue(true));
                 clearMenu.AddItem(new MenuItem("ElVladimir.WaveClear.E", "Use E").SetValue(true));
                 clearMenu.AddItem(new MenuItem("ElVladimir.JungleClear.Q", "Use Q in jungle").SetValue(true));
                 clearMenu.AddItem(new MenuItem("ElVladimir.JungleClear.E", "Use E in jungle").SetValue(true));
