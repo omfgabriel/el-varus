@@ -242,8 +242,8 @@
         {
             try
             {
-                var target = TargetSelector.GetTarget(spells[Spells.E].Range, TargetSelector.DamageType.Magical);
-                if (target == null || !target.IsValidTarget())
+                var target = TargetSelector.GetTarget(spells[Spells.E].Range + 50, TargetSelector.DamageType.Magical);
+                if (!target.IsValidTarget())
                 {
                     return;
                 }
@@ -256,7 +256,7 @@
                 switch (MenuInit.IsListActive("Harass.Mode").SelectedIndex)
                 {
                     case 0: // E - Q - W
-                        if (spells[Spells.E].IsReady() && Player.Distance(target.Position) <= spells[Spells.E].Range)
+                        if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range - 50f))
                         {
                             var predE = spells[Spells.E].GetPrediction(target);
                             if (predE.Hitchance == HitChance.VeryHigh)
@@ -268,7 +268,7 @@
                             }
                         }
 
-                        if (spells[Spells.Q].IsReady() && spells[Spells.Q].IsInRange(target))
+                        if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range - 50f))
                         {
                             var prediction = spells[Spells.Q].GetPrediction(target);
                             if (prediction.Hitchance >= HitChance.High && prediction.CollisionObjects.Count == 0)

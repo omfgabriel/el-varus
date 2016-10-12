@@ -63,6 +63,14 @@
         /// </value>
         private Random Random { get; set; }
 
+        /// <summary>
+        ///     Gets a value indicating whether the combo mode is active.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if combo mode is active; otherwise, <c>false</c>.
+        /// </value>
+        public bool ComboModeActive => Entry.Menu.Item("usecombo").GetValue<KeyBind>().Active || Orbwalking.Orbwalker.Instances.Any(x => x.ActiveMode == Orbwalking.OrbwalkingMode.Combo);
+
         #endregion
 
         #region Public Methods and Operators
@@ -82,9 +90,19 @@
 
         /// <summary>
         ///     Credits to Exory
+        ///     Invalid snare buff casters
         /// </summary>
         public static readonly List<string> InvalidSnareCasters = new List<string> { "Leona", "Zyra", "Lissandra" };
+
+        /// <summary>
+        ///     Invalid stun buff casters
+        /// </summary>
         public static readonly List<string> InvalidStunCasters = new List<string> { "Amumu", "LeeSin", "Alistar", "Hecarim", "Blitzcrank" };
+        
+        /// <summary>
+        ///     Invalid root buff casters
+        /// </summary>
+        public static readonly List<string> InvalidRootCasters = new List<string> { "Caitlyn" };
 
         /// <summary>
         ///     Gets a value indicating the cleanse version
@@ -92,7 +110,7 @@
         /// <value>
         ///     <c>true</c> if Cleanse.Version is active; otherwise, <c>false</c>.
         /// </value>
-         public static int CleansingVersion => Menu.Item("Cleanse.Version").GetValue<StringList>().SelectedIndex;
+        public static int CleansingVersion => Menu.Item("Cleanse.Version").GetValue<StringList>().SelectedIndex;
 
         /// <summary>
         ///     Initializes the <see cref="Cleanse" /> class.
@@ -190,6 +208,7 @@
                 newCleanseMenu.AddItem(new MenuItem("MinDuration", "Minimum Duration (MS)").SetValue(new Slider(500, 0, 25000)))
                 .SetTooltip("The minimum duration of the spell to get cleansed");
 
+                newCleanseMenu.AddItem(new MenuItem("CleanseEnabled.ComboOnly", "Only use in combo").SetValue(false));
 
                 newCleanseMenu.AddItem(new MenuItem("CleanseEnabled.Health", "Cleanse on health").SetValue(false));
                 newCleanseMenu.AddItem(new MenuItem("Cleanse.HealthPercent", "Cleanse when HP <=").SetValue(new Slider(75)));
@@ -359,6 +378,11 @@
                 return;
             }
 
+            if (Menu.Item("CleanseEnabled.ComboOnly").IsActive() && !this.ComboModeActive)
+            {
+                return;
+            }
+
             foreach (var ally in HeroManager.Allies.Where(x => x.IsValidTarget(800f, false)))
             {
                 foreach (
@@ -374,7 +398,7 @@
                         continue;
                     }
 
-                    if (buff.Type == BuffType.Snare && InvalidSnareCasters.Contains(((Obj_AI_Hero)buff.Caster).ChampionName, StringComparer.InvariantCultureIgnoreCase) || buff.Type == BuffType.Stun && InvalidStunCasters.Contains(((Obj_AI_Hero)buff.Caster).ChampionName, StringComparer.InvariantCultureIgnoreCase))
+                    if (buff.Type == BuffType.Snare && InvalidRootCasters.Contains(((Obj_AI_Hero)buff.Caster).ChampionName, StringComparer.InvariantCultureIgnoreCase) || buff.Type == BuffType.Snare && InvalidSnareCasters.Contains(((Obj_AI_Hero)buff.Caster).ChampionName, StringComparer.InvariantCultureIgnoreCase) || buff.Type == BuffType.Stun && InvalidStunCasters.Contains(((Obj_AI_Hero)buff.Caster).ChampionName, StringComparer.InvariantCultureIgnoreCase))
                     {
                         continue;
                     }

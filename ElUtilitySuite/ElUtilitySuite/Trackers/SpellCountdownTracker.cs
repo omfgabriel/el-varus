@@ -48,7 +48,7 @@
         /// <summary>
         ///     The move right speed
         /// </summary>
-        private const int MoveRightSpeed = 1000;
+        private const int MoveRightSpeed = 1500;
 
         #endregion
 

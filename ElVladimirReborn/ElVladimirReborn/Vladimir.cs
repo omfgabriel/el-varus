@@ -50,7 +50,6 @@
 
             spells[Spells.Q].SetTargetted(0.25f, spells[Spells.Q].Instance.SData.MissileSpeed);
             spells[Spells.R].SetSkillshot(0.25f, 175, 700, false, SkillshotType.SkillshotCircle);
-
             ignite = Player.GetSpellSlot("summonerdot");
 
             ElVladimirMenu.Initialize();
@@ -77,7 +76,10 @@
             if (CheckMenu("ElVladimir.Combo.R") && spells[Spells.R].IsReady())
             {
                 var target = TargetSelector.GetTarget(spells[Spells.R].Range, TargetSelector.DamageType.Magical);
-                if (target == null) return;
+                if (target == null)
+                {
+                    return;
+                }
 
                 var hits = HeroManager.Enemies.Where(x => x.Distance(target) <= 400f).ToList();
                 if (
@@ -87,7 +89,10 @@
                             >= ElVladimirMenu.Menu.Item("ElVladimir.Combo.Count.R").GetValue<Slider>().Value))
                 {
                     var pred = spells[Spells.R].GetPrediction(target);
-                    if (pred.Hitchance >= HitChance.High) spells[Spells.R].Cast(pred.CastPosition);
+                    if (pred.Hitchance >= HitChance.High)
+                    {
+                        spells[Spells.R].Cast(pred.CastPosition);
+                    }
                 }
             }
         }
@@ -97,41 +102,80 @@
             return ElVladimirMenu.Menu.Item(menuName).IsActive();
         }
 
+        /// <summary>
+        ///     Gets the targets that can be hit with E
+        /// </summary>
+        /// <returns></returns>
+        private static Tuple<int, List<Obj_AI_Hero>> GetEHits()
+        {
+            var hits =
+                    HeroManager.Enemies.Where(
+                        e =>
+                            (e.IsValidTarget() && (e.Distance(ObjectManager.Player) < spells[Spells.E].Width * 0.8f))
+                            || (e.Distance(ObjectManager.Player) < spells[Spells.E].Width)).ToList();
+
+            return new Tuple<int, List<Obj_AI_Hero>>(hits.Count, hits);
+        }
+
         private static void OnCombo()
         {
             var target = TargetSelector.GetTarget(spells[Spells.Q].Range, TargetSelector.DamageType.Magical);
             if (target == null) return;
 
             if (CheckMenu("ElVladimir.Combo.Q") && spells[Spells.Q].IsReady()
-                && target.IsValidTarget(spells[Spells.Q].Range)) spells[Spells.Q].CastOnUnit(target);
-
-            if (CheckMenu("ElVladimir.Combo.E") && spells[Spells.E].IsReady()
-                && target.IsValidTarget(spells[Spells.E].Range))
+                && target.IsValidTarget(spells[Spells.Q].Range))
             {
-                if (!spells[Spells.E].IsCharging) spells[Spells.E].StartCharging(Game.CursorPos);
+                spells[Spells.Q].CastOnUnit(target);
+            }
 
-                if (spells[Spells.E].IsCharging) if (target.IsValidTarget(spells[Spells.E].Range + 50f)) ObjectManager.Player.Spellbook.CastSpell(spells[Spells.E].Slot, false);
+            if (CheckMenu("ElVladimir.Combo.E"))
+            {
+                if (spells[Spells.E].IsReady() && target.IsValidTarget(spells[Spells.E].Range + 200))
+                {
+                    spells[Spells.E].Cast();
+                }
+
+                // add minimum duration to hold the E
+                // duration before auto cast is 1500MS
+                if (Player.HasBuff("VladimirE")
+                    && (target.IsValidTarget(spells[Spells.E].Range) || (GetEHits().Item1 > 0)))
+                {
+                    Player.Spellbook.UpdateChargedSpell(spells[Spells.E].Slot, Player.Position, true, false);
+                    Player.Spellbook.CastSpell(spells[Spells.E].Slot, Player.Position, false);
+                }
             }
 
             if (CheckMenu("ElVladimir.Combo.W") && spells[Spells.W].IsReady()
-                && target.IsValidTarget(spells[Spells.W].Range)) spells[Spells.W].Cast();
+                && target.IsValidTarget(spells[Spells.W].Range))
+            {
+                spells[Spells.W].Cast(Game.CursorPos);
+            }
 
             if (CheckMenu("ElVladimir.Combo.R.Killable"))
                 if (CheckMenu("ElVladimir.Combo.SmartUlt"))
                 {
                     if (spells[Spells.Q].IsReady() && target.IsValidTarget(spells[Spells.Q].Range)
-                        && (spells[Spells.Q].GetDamage(target) >= target.Health)) spells[Spells.Q].Cast();
+                        && (spells[Spells.Q].GetDamage(target) >= target.Health))
+                    {
+                        spells[Spells.Q].Cast();
+                    }
 
                     if (spells[Spells.R].IsReady() && (spells[Spells.R].GetDamage(target) >= target.Health)
                         && !target.IsDead)
                     {
                         var pred = spells[Spells.R].GetPrediction(target);
-                        if (pred.Hitchance >= HitChance.VeryHigh) spells[Spells.R].Cast(pred.CastPosition);
+                        if (pred.Hitchance >= HitChance.VeryHigh)
+                        {
+                            spells[Spells.R].Cast(pred.CastPosition);
+                        }
                     }
                 }
 
             if (CheckMenu("ElVladimir.Combo.Ignite") && (Player.Distance(target) <= 600)
-                && (Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite) >= target.Health)) Player.Spellbook.CastSpell(ignite, target);
+                && (Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite) >= target.Health))
+            {
+                Player.Spellbook.CastSpell(ignite, target);
+            }
         }
 
         private static void OnHarass()
