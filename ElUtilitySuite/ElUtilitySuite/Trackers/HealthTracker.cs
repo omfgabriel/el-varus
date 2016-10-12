@@ -213,10 +213,6 @@
                         1,
                         Color.FromArgb(255, 51, 55, 51));
 
-
-                    // Draw the champion image
-
-
                     // Fils the rectangle
                     this.DrawRect(
                         Drawing.Width - this.HudOffsetRight,
