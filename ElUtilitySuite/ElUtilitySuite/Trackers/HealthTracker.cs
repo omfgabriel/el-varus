@@ -88,6 +88,7 @@
             {
                 enemySidebarMenu.AddItem(new MenuItem("DrawHealth_", "Activated").SetValue(true));
                 enemySidebarMenu.AddItem(new MenuItem("DrawHealth_percent", "Champion health %").SetValue(true));
+                enemySidebarMenu.AddItem(new MenuItem("DrawHealth_ultimate", "Champion ultimate").SetValue(true));
                 enemySidebarMenu.AddItem(
                     new MenuItem("HealthTracker.OffsetText", "Offset Text").SetValue(new Slider(30, 0, 100)));
                 enemySidebarMenu.AddItem(
@@ -152,6 +153,16 @@
                                        ? $"{champion} ({(int)hero.HealthPercent}%)"
                                        : champion;
 
+                if (this.Menu.Item("DrawHealth_ultimate").IsActive())
+                {
+                    var timeR = hero.Spellbook.GetSpell(SpellSlot.R).CooldownExpires - Game.Time;
+                    var ultText = timeR <= 0
+                        ? "READY"
+                        : (timeR < 10 ? timeR.ToString("N1") : ((int)timeR).ToString());
+
+                    championInfo += $" - R: {ultText}";
+                }
+
                 if (this.Menu.Item("Health.Version").GetValue<StringList>().SelectedIndex == 1)
                 {
                     const int Height = 25;
@@ -179,14 +190,13 @@
                     // Draws the championnames
                     Font.DrawText(
                         null,
-                        $"{champion} ({(int)hero.HealthPercent}%)",
+                        championInfo,
                         (int)
-                        ((Drawing.Width - this.HudOffsetRight
-                          - Font.MeasureText(null, $"{champion} ({(int)hero.HealthPercent}%)", FontDrawFlags.Left).Width)
-                         + 140),
+                        ((Drawing.Width - this.HudOffsetRight)
+                          - Font.MeasureText(null, championInfo).Width /2f) + 200 / 2,
                         (int)
                         (this.HudOffsetTop + i + 13
-                         - Font.MeasureText(null, $"{champion} ({(int)hero.HealthPercent}%)", FontDrawFlags.Left).Height
+                         - Font.MeasureText(null, championInfo).Height
                          / 2f),
                         new ColorBGRA(255, 255, 255, 175));
                 }
@@ -198,10 +208,10 @@
                         championInfo,
                         (int)
                         ((Drawing.Width - this.HudOffsetRight - this.HudOffsetText
-                          - Font.MeasureText(null, championInfo, FontDrawFlags.Left).Width)),
+                          - Font.MeasureText(null, championInfo).Width)),
                         (int)
                         (this.HudOffsetTop + i + 4
-                         - Font.MeasureText(null, championInfo, FontDrawFlags.Left).Height / 2f),
+                         - Font.MeasureText(null, championInfo).Height / 2f),
                         hero.HealthPercent > 0 ? new ColorBGRA(255, 255, 255, 255) : new ColorBGRA(244, 8, 8, 255));
 
                     // Draws the rectangle
