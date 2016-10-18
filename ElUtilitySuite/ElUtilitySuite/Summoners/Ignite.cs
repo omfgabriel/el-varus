@@ -130,8 +130,15 @@
                         hero.IsValidTarget(600) && !hero.IsZombie
                         && this.Player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite) > hero.Health);
 
+
                 if (kSableEnemy != null)
                 {
+                    if (this.Player.CanAttack && this.Player.Distance(kSableEnemy) < Orbwalking.GetAttackRange(this.Player) 
+                        && this.Player.GetAutoAttackDamage(kSableEnemy) * 2 > kSableEnemy.Health)
+                    {
+                        return;
+                    }
+
                     if (!Menu.Item($"igniteon{kSableEnemy.ChampionName}").IsActive())
                     {
                         return;
