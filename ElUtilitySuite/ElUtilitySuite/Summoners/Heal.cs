@@ -117,7 +117,12 @@
 
                 foreach (var ally in HeroManager.Allies)
                 {
-                    if (!this.Menu.Item($"healon{ally.ChampionName}").IsActive() || ally.IsRecalling() || ally.IsInvulnerable || ally.HasBuff("ChronoShift"))
+                    if (!this.Menu.Item($"healon{ally.ChampionName}").IsActive())
+                    {
+                        return;
+                    }
+
+                    if (ally.IsRecalling() || ally.IsInvulnerable || ally.HasBuff("ChronoShift"))
                     {
                         return;
                     }
