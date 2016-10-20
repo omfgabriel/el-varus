@@ -5,3 +5,11 @@
 		//Credits to Kortatu for Interrupter (orianna#)
 		//Credits to Lizzarran for W stack drawing (sfxchallenger)
 		//Beaving is the best admin
+
+
+AD Mode - Spams spells regardless of W stacks
+AP Mode - Uses Q and E (with sliders) on W stacks without overlap
+R -  KS/1v1, Gapcloser, Interrupter, AOE, ChainCC
+Q/E - Perfect W Detonation, Killsteal
+Charged Q Safety - Uses on closes target if someone gets too close
+W Stack drawing over HP bar
