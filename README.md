@@ -10,6 +10,6 @@
 		//AD Mode - Spams spells regardless of W stacks
 		//AP Mode - Uses Q and E (with sliders) on W stacks without overlap
 		//R -  KS/1v1, Gapcloser, Interrupter, AOE, ChainCC
-		//Q/E - Perfect W Detonation, Killsteal
+		//Q+E - Perfect W Detonation (no double proc or overlap), Killsteal
 		//Charged Q Safety - Uses on closes target if someone gets too close
 		//W Stack drawing over HP bar
