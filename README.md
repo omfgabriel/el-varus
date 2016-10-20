@@ -1,16 +1,7 @@
-LeagueSharp
-===========
-
-LeagueSharp (abbreviated L#) is a tool for League of Legends which allows the user to inject assemblies or so called LoL scripts into the game.
-
-All assemblies released here are written by Nathan 'jQuery'  (https://www.joduska.me/forum/user/71627-/)
-
-Forum:
-===========
-
-http://www.joduska.me/forum/
-
-Donations:
-===========
-
-BTC: 1CAB2Q9qAbEmTqW3y7ePZnav2T99KG1rMi
+        //Credits to Sebby for Gapcloser, R KS, R AOE, R etc gapcloser function, some OKTWCommon functions (oktw)
+		//Credits to God for his Q/E killsteal, ChainCC (godvarus)
+		//Credits to Nathan for a lot of Reworked features I stole and learned from and elvarus base (elvarus, elvarus reworked)
+		//Credits to Seph for Safety functions template (lissandra - ice witch)
+		//Credits to Kortatu for Interrupter (orianna#)
+		//Credits to Lizzarran for W stack drawing (sfxchallenger)
+		//Beaving is the best admin
