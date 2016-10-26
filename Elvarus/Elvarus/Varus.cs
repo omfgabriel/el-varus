@@ -61,11 +61,11 @@ namespace Elvarus
                 return;
             }
 
-            spells[Spells.Q].SetSkillshot(.225f, 71f, 1835f, false, SkillshotType.SkillshotLine) ;
-            spells[Spells.E].SetSkillshot(0.50f, 250f, 1500f, false, SkillshotType.SkillshotCircle);
+            spells[Spells.Q].SetSkillshot(.225f, 71f, 1650f, false, SkillshotType.SkillshotLine) ;
+            spells[Spells.E].SetSkillshot(0.35f, 120f, 1500f, false, SkillshotType.SkillshotCircle);
             spells[Spells.R].SetSkillshot(.25f, 120f, 1950f, false, SkillshotType.SkillshotLine);
 
-            spells[Spells.Q].SetCharged("VarusQ", "VarusQ", 250, 1625, 1.2f);
+            spells[Spells.Q].SetCharged("VarusQ", "VarusQ", 250, 1600, 1.2f);
 
 
             ElVarusMenu.Initialize();
@@ -155,7 +155,8 @@ namespace Elvarus
 			
             if (spells[Spells.Q].IsReady() && ElVarusMenu.Menu.Item("ElVarus.Combo.Q").IsActive() && ElVarusMenu.Menu.Item("ElVarus.omfgabriel").GetValue<StringList>().SelectedIndex == 1)
             {
-                if (spells[Spells.Q].IsCharging || target.Distance(Player) > Orbwalking.GetRealAutoAttackRange(target) * 1.2f && target.Distance(Player) < 1600
+                if (spells[Spells.Q].IsCharging 
+					// || target.Distance(Player) > Orbwalking.GetRealAutoAttackRange(target) * 1.2f && target.Distance(Player) < 1600
                     || GetWStacks(target) >= ElVarusMenu.Menu.Item("ElVarus.Combo.Stack.Count").GetValue<Slider>().Value
                     || spells[Spells.Q].IsKillable(target))
                 {
@@ -169,7 +170,12 @@ namespace Elvarus
                         {
                             spells[Spells.Q].Cast(target);	
                         }
-                    }					
+                    }
+
+                   if (ObjectManager.Player.Distance(target) <= Orbwalking.GetRealAutoAttackRange(ObjectManager.Player) + 200)
+                   {
+                       spells[Spells.Q].Cast(target);
+                   }
 
                 }
             }			
@@ -205,23 +211,31 @@ namespace Elvarus
                     {
                         spells[Spells.Q].StartCharging();
                     }
-
-                    if (spells[Spells.Q].IsCharging)
+					
+                    var prediction = spells[Spells.Q].GetPrediction(target);
+                    if (prediction.Hitchance >= HitChance.High)
+                    {
+                        spells[Spells.Q].Cast(prediction.CastPosition);
+						LastQ = Environment.TickCount;						
+                    }
+										
+                    /*if (spells[Spells.Q].IsCharging)
                     {
                         {
                             spells[Spells.Q].Cast(target);
                         }
                     }
+					*/
                     
-					/*if (spells[Spells.Q].IsCharging)
+					if (spells[Spells.Q].IsCharging)
                     {
-                        if (Player.Health < Player.MaxHealth * 0.5 && target.Distance(ObjectManager.Player) < 700 || target.Distance(ObjectManager.Player) < 600)		
+                        if (Player.Health < Player.MaxHealth * 0.5 && target.Distance(ObjectManager.Player) < 700 || ObjectManager.Player.Distance(target) <= Orbwalking.GetRealAutoAttackRange(ObjectManager.Player) + 200)		
                             
                         {
-                            fart[Spells.Q].Cast(target);
+                            spells[Spells.Q].Cast(target);
                         }
 					}		
-					*/
+					
                 }
             }
         }
@@ -242,7 +256,7 @@ namespace Elvarus
                     spells[Spells.R].Cast(enemy);				
                 }
             }
-            if (Player.Health < Player.MaxHealth * 0.6 )
+            if (Player.Health < Player.MaxHealth * 0.7 )
             {
                 foreach (var target in HeroManager.Enemies.Where(target => target.IsValidTarget(400) && target.IsMelee && ElVarusMenu.Menu.Item("GapCloser" + target.ChampionName).GetValue<bool>()))
                 {
@@ -395,7 +409,7 @@ namespace Elvarus
 			if (ElVarusMenu.Menu.Item("ElVarus.Safety").IsActive() && spells[Spells.Q].IsCharging)
             {
                 Obj_AI_Hero qtarget =
-                    targets.Where(x => x.Distance(Player.Position) < 525 && x.CountEnemiesInRange(1100) >= 1)
+                    targets.Where(x => x.Distance(Player.Position) < 600 && x.CountEnemiesInRange(1000) >= 1)
                     .MinOrDefault(x => x.Distance(ObjectManager.Player));
                 if (qtarget != null)
                 {
